@@ -34,7 +34,7 @@ async function waitForVideoReady(v) {
 }
 
 async function init() {
-   const events = window.Ghostati && window.Ghostati.events;
+   const events = window.gstmxx && window.gstmxx.events;
    if (!events) {
       console.warn('[mediapipe-loop] Ghostati.events non trovato, skip init');
       return;
@@ -55,17 +55,17 @@ async function init() {
          numFaces: 1
       });
       // Esponi le costanti (FACE_LANDMARKS_TESSELATION, FACE_LANDMARKS_LEFT_EYE, ...) ai futuri plugin 3D
-      window.Ghostati.FaceLandmarker = FaceLandmarker;
+      window.gstmxx.FaceLandmarker = FaceLandmarker;
    } catch (err) {
       console.error('[mediapipe-loop] errore init:', err);
-      if (window.Ghostati && window.Ghostati.log) {
+      if (window.gstmxx && window.gstmxx.log) {
          Ghostati.log('Errore caricamento MediaPipe: ' + err.message, 'mediapipe');
       }
       return;
    }
 
    await waitForVideoReady(video);
-   if (window.Ghostati && window.Ghostati.log) {
+   if (window.gstmxx && window.gstmxx.log) {
       Ghostati.log('MediaPipe FaceLandmarker pronto (478 landmark 3D)', 'mediapipe');
    }
    events.dispatchEvent(new CustomEvent('mediapipeReady', { detail: {} }));
@@ -89,7 +89,7 @@ function tick() {
 
       // Cache latest landmarks on state (via the Ghostmaxxing setter) so engine-3d
       // and plugins can read them without re-running inference.
-      if (window.Ghostati) window.Ghostati.lastLandmarks3d = landmarks;
+      if (window.gstmxx) window.gstmxx.lastLandmarks3d = landmarks;
 
       Ghostati.events.dispatchEvent(new CustomEvent('landmarks3d', {
          detail: { landmarks, results }

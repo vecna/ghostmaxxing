@@ -54,7 +54,7 @@ describe('ghostyles-manager', () => {
     vi.clearAllMocks();
     state.activeEffect = null;
     state.loadedGhostyles = new Map();
-    state.ghostatiEvents = new EventTarget();
+    state.gstmxxEvents = new EventTarget();
     els.ghostylesContainer.appendChild.mockClear();
   });
 
@@ -245,7 +245,7 @@ describe('ghostyles-manager', () => {
       state.activeEffect = 'draw-fail';
 
       const onEffectChanged = vi.fn();
-      state.ghostatiEvents.addEventListener('effectChanged', onEffectChanged);
+      state.gstmxxEvents.addEventListener('effectChanged', onEffectChanged);
 
       ghostyle.module.onDraw({}, {}, {});
 
@@ -288,7 +288,7 @@ describe('ghostyles-manager', () => {
       state.loadedGhostyles.set('graphic-liner', mockEffect);
 
       const eventListener = vi.fn();
-      state.ghostatiEvents.addEventListener('effectChanged', eventListener);
+      state.gstmxxEvents.addEventListener('effectChanged', eventListener);
 
       toggleEffect('graphic-liner', null);
 
@@ -311,7 +311,7 @@ describe('ghostyles-manager', () => {
       state.loadedGhostyles.set('graphic-liner', mockEffect);
 
       const eventListener = vi.fn();
-      state.ghostatiEvents.addEventListener('effectChanged', eventListener);
+      state.gstmxxEvents.addEventListener('effectChanged', eventListener);
 
       const dummyButton = {};
       toggleEffect('graphic-liner', dummyButton);

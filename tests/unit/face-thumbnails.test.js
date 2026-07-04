@@ -21,7 +21,7 @@ describe('face-thumbnails', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
-    window.Ghostati = {
+    window.gstmxx = {
       log: vi.fn(),
     };
   });
@@ -142,8 +142,8 @@ describe('face-thumbnails', () => {
     vi.setSystemTime(new Date('2026-06-29T10:00:01.000Z'));
     saveThumbnail(11, 'data:image/jpeg;base64,b');
 
-    expect(window.Ghostati.log).toHaveBeenCalledTimes(1);
-    expect(window.Ghostati.log.mock.calls[0][1]).toBe('thumbnails');
+    expect(window.gstmxx.log).toHaveBeenCalledTimes(1);
+    expect(window.gstmxx.log.mock.calls[0][1]).toBe('thumbnails');
   });
 
   it('deleteThumbnail removes only the requested ID', () => {

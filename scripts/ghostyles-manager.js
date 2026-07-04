@@ -8,7 +8,7 @@ import { els, clearActiveEffect, effectSelected } from './dom.js';
  * Parses the script text to extract the `@name` comment and derives an identifier
  * from the filename. Returns an object containing `id`, `name` and the original `url`.
  *
- * window.Ghostati is the local API used by the ghostyle(s)
+ * window.gstmxx is the local API used by the ghostyle(s)
  * In regards of the loading, you can see from the network manager that each JS is loaded twice.
  * The first time is to extract the metadata, the second time is to import the module.
  * @param {string} url - The URL of the ghostyle script to fetch.
@@ -304,7 +304,7 @@ function deactivateEffect() {
  * @see main.js – listens for this event to update UI state.
  */
 function messageEffectChange(effect, previousEffect) {
-   state.ghostatiEvents.dispatchEvent(new CustomEvent('effectChanged', {
+   state.gstmxxEvents.dispatchEvent(new CustomEvent('effectChanged', {
       detail: { activeEffect: effect, previous: previousEffect }
    }));
 }

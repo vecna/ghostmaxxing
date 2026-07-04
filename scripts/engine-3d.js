@@ -185,7 +185,7 @@ export async function saveFace3d(id) {
  * @returns {boolean}
  */
 function hasActivePlugin3d() {
-   const G = window.Ghostati;
+   const G = window.gstmxx;
    const a2d = typeof G?.getActiveEffect  === 'function' && G.getActiveEffect();
    const a3d = typeof G?.getActiveEffect3d === 'function' && G.getActiveEffect3d();
    return !!(a2d || a3d);
@@ -212,7 +212,7 @@ export async function compositeAndDetect3d() {
    ctx.drawImage(els.video, 0, 0, canvas.width, canvas.height);
 
    // Allow 3D ghostyle plugins to draw onto this canvas before embedding.
-   state.ghostatiEvents.dispatchEvent(new CustomEvent('beforeEfficacyComposite3d', {
+   state.gstmxxEvents.dispatchEvent(new CustomEvent('beforeEfficacyComposite3d', {
       detail: { canvas, ctx, landmarks3d: state.lastLandmarks3d }
    }));
 

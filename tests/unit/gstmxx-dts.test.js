@@ -3,10 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-function extractGhostatiKeysFromMain(mainSource) {
-  const assignMatch = mainSource.match(/window\.Ghostati\s*=\s*\{([\s\S]*?)\n\};/);
+function extractGhostmaxxingKeysFromMain(mainSource) {
+  const assignMatch = mainSource.match(/window\.gstmxx\s*=\s*\{([\s\S]*?)\n\};/);
   if (!assignMatch) {
-    throw new Error('window.Ghostati assignment not found in scripts/main.js');
+    throw new Error('window.gstmxx assignment not found in scripts/main.js');
   }
 
   const block = assignMatch[1];
@@ -33,10 +33,10 @@ function extractGhostatiKeysFromMain(mainSource) {
   return keys;
 }
 
-function extractGhostatiKeysFromDts(dtsSource) {
-  const ifaceMatch = dtsSource.match(/export interface GhostatiApi\s*\{([\s\S]*?)\n\}/);
+function extractGhostmaxxingKeysFromDts(dtsSource) {
+  const ifaceMatch = dtsSource.match(/export interface GhostmaxxingApi\s*\{([\s\S]*?)\n\}/);
   if (!ifaceMatch) {
-    throw new Error('GhostatiApi interface not found in scripts/Ghostati.d.ts');
+    throw new Error('GhostmaxxingApi interface not found in scripts/Ghostmaxxing.d.ts');
   }
 
   const block = ifaceMatch[1];
@@ -61,18 +61,18 @@ function extractGhostatiKeysFromDts(dtsSource) {
   return keys;
 }
 
-describe('Ghostati.d.ts smoke', () => {
-  it('declares every key exposed on window.Ghostati in main.js', () => {
+describe('Ghostmaxxing.d.ts smoke', () => {
+  it('declares every key exposed on window.gstmxx in main.js', () => {
     const here = path.dirname(fileURLToPath(import.meta.url));
     const root = path.resolve(here, '..', '..');
     const mainPath = path.join(root, 'scripts', 'main.js');
-    const dtsPath = path.join(root, 'scripts', 'Ghostati.d.ts');
+    const dtsPath = path.join(root, 'scripts', 'Ghostmaxxing.d.ts');
 
     const mainSource = fs.readFileSync(mainPath, 'utf8');
     const dtsSource = fs.readFileSync(dtsPath, 'utf8');
 
-    const runtimeKeys = extractGhostatiKeysFromMain(mainSource);
-    const declaredKeys = extractGhostatiKeysFromDts(dtsSource);
+    const runtimeKeys = extractGhostmaxxingKeysFromMain(mainSource);
+    const declaredKeys = extractGhostmaxxingKeysFromDts(dtsSource);
 
     const missing = [...runtimeKeys].filter((key) => !declaredKeys.has(key));
     expect(missing).toEqual([]);

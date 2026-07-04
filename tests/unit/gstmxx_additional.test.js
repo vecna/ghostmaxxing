@@ -20,7 +20,7 @@ function getDbSnapshot() {
   return structuredClone(state.db);
 }
 
-const Ghostmaxxing = window.Ghostati;
+const Ghostmaxxing = window.gstmxx;
 
 /** Helper to create a mock CanvasRenderingContext2D with spy functions. */
 function createMockContext() {

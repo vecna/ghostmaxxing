@@ -50,7 +50,7 @@ describe('db module', () => {
     state.db = defaultDb();
     state.db3d = defaultDb3d();
     state.MATCH_THRESHOLD = 0.58;
-    state.ghostatiEvents = new EventTarget();
+    state.gstmxxEvents = new EventTarget();
 
     els.dbCount.textContent = '';
     els.nextId.textContent = '';
@@ -119,7 +119,7 @@ describe('db module', () => {
     it('stores DB and dispatches dbChanged event with summary', () => {
       state.db = { nextId: 3, faces: [{ id: 0 }, { id: 1 }] };
       const onDbChanged = vi.fn();
-      state.ghostatiEvents.addEventListener('dbChanged', onDbChanged);
+      state.gstmxxEvents.addEventListener('dbChanged', onDbChanged);
 
       persistDb();
 
@@ -163,8 +163,8 @@ describe('db module', () => {
       state.MATCH_THRESHOLD = 0.58;
       const onDbChanged = vi.fn();
       const onMatchStateChanged = vi.fn();
-      state.ghostatiEvents.addEventListener('dbChanged', onDbChanged);
-      state.ghostatiEvents.addEventListener('matchStateChanged', onMatchStateChanged);
+      state.gstmxxEvents.addEventListener('dbChanged', onDbChanged);
+      state.gstmxxEvents.addEventListener('matchStateChanged', onMatchStateChanged);
 
       clearDb();
 

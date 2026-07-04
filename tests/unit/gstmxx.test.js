@@ -9,7 +9,7 @@ describe('Ghostmaxxing utils and state logic', () => {
     window.localStorage.clear();
     state.db = { nextId: 0, faces: [] };
     state.MATCH_THRESHOLD = 0.58;
-    Ghostmaxxing = window.Ghostati;
+    Ghostmaxxing = window.gstmxx;
   });
 
   describe('Math utilities', () => {

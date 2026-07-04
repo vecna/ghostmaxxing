@@ -25,8 +25,8 @@ function normalizeId(id) {
 }
 
 function logThumbnailEvent(message) {
-   if (window.Ghostati && typeof window.Ghostati.log === 'function') {
-      window.Ghostati.log(message, 'thumbnails');
+   if (window.gstmxx && typeof window.gstmxx.log === 'function') {
+      window.gstmxx.log(message, 'thumbnails');
       return;
    }
    setLog(message, 'thumbnails');

@@ -96,8 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Removed at the moment, should be renamed OR we should clean the Ghostyle effect.
 
     // 2. Clear the visible logs
-    if (window.Ghostati && window.Ghostati.clearVisibleLogs) {
-       window.Ghostati.clearVisibleLogs();
+    if (window.gstmxx && window.gstmxx.clearVisibleLogs) {
+       window.gstmxx.clearVisibleLogs();
     }
   }
 

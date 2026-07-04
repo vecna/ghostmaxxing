@@ -1,5 +1,5 @@
 /**
- * Ghostmaxxing (Ghostati) public API declarations for JS plugin authors.
+ * Ghostmaxxing (Ghostmaxxing) public API declarations for JS plugin authors.
  *
  * This file is intentionally declaration-only (no runtime side effects).
  * Editors like VS Code pick it up automatically to provide autocomplete
@@ -9,7 +9,7 @@
 /**
  * @source scripts/utils.js
  */
-export interface GhostatiPoint {
+export interface GhostmaxxingPoint {
   x: number;
   y: number;
 }
@@ -17,7 +17,7 @@ export interface GhostatiPoint {
 /**
  * @source scripts/engine.js
  */
-export interface GhostatiFaceBox {
+export interface GhostmaxxingFaceBox {
   x: number;
   y: number;
   width: number;
@@ -27,7 +27,7 @@ export interface GhostatiFaceBox {
 /**
  * @source scripts/ghostyle3d-uv-renderer.js
  */
-export interface GhostatiPaintUvParams {
+export interface GhostmaxxingPaintUvParams {
   landmarks3d?: Array<{ x: number; y: number; z?: number }>;
   values?: Record<string, unknown>;
 }
@@ -35,29 +35,29 @@ export interface GhostatiPaintUvParams {
 /**
  * @source scripts/ghostyles-manager.js
  */
-export type GhostatiOnDraw = (
+export type GhostmaxxingOnDraw = (
   ctx: CanvasRenderingContext2D,
   landmarks: unknown,
-  box?: GhostatiFaceBox
+  box?: GhostmaxxingFaceBox
 ) => void;
 
 /**
  * @source scripts/ghostyles-manager.js
  */
-export type GhostatiPaintUV = (
+export type GhostmaxxingPaintUV = (
   ctx: CanvasRenderingContext2D,
-  params?: GhostatiPaintUvParams,
+  params?: GhostmaxxingPaintUvParams,
   helpers?: Record<string, unknown>
 ) => void;
 
 /**
  * @source scripts/ghostyles-manager.js
  */
-export interface GhostatiPluginModule {
+export interface GhostmaxxingPluginModule {
   onInit?: () => string | void;
   onClear?: (ctx: CanvasRenderingContext2D) => void;
-  onDraw?: GhostatiOnDraw;
-  paintUV?: GhostatiPaintUV;
+  onDraw?: GhostmaxxingOnDraw;
+  paintUV?: GhostmaxxingPaintUV;
   params?: Array<{
     name: string;
     label?: string;
@@ -73,7 +73,7 @@ export interface GhostatiPluginModule {
 /**
  * @source scripts/ghostyles-manager.js
  */
-export interface GhostatiPluginRecord {
+export interface GhostmaxxingPluginRecord {
   id: string;
   name: string;
   url: string;
@@ -81,20 +81,20 @@ export interface GhostatiPluginRecord {
   author: string | null;
   description: string | null;
   releaseDate: string | null;
-  module: GhostatiPluginModule;
+  module: GhostmaxxingPluginModule;
 }
 
 /**
  * @source scripts/state.js
  */
-export interface GhostatiMatchResult {
+export interface GhostmaxxingMatchResult {
   [key: string]: unknown;
 }
 
 /**
  * @source scripts/main.js
  */
-export interface GhostatiApi {
+export interface GhostmaxxingApi {
   /** @source scripts/utils.js */
   log(message: string, sourcePlugin?: string | null): void;
 
@@ -105,21 +105,21 @@ export interface GhostatiApi {
   distance(a: number[], b: number[]): number;
 
   /** @source scripts/utils.js */
-  avgPoint(points: GhostatiPoint[]): GhostatiPoint;
+  avgPoint(points: GhostmaxxingPoint[]): GhostmaxxingPoint;
 
   /** @source scripts/utils.js */
-  lerp(a: GhostatiPoint, b: GhostatiPoint, t: number): GhostatiPoint;
+  lerp(a: GhostmaxxingPoint, b: GhostmaxxingPoint, t: number): GhostmaxxingPoint;
 
   /** @source scripts/utils.js */
-  scaleFrom(center: GhostatiPoint, point: GhostatiPoint, scale: number): GhostatiPoint;
+  scaleFrom(center: GhostmaxxingPoint, point: GhostmaxxingPoint, scale: number): GhostmaxxingPoint;
 
   /** @source scripts/utils.js */
-  point(x: number, y: number): GhostatiPoint;
+  point(x: number, y: number): GhostmaxxingPoint;
 
   /** @source scripts/utils.js */
   drawClosedPath(
     ctx: CanvasRenderingContext2D,
-    points: GhostatiPoint[],
+    points: GhostmaxxingPoint[],
     fillStyle?: string | null,
     strokeStyle?: string | null,
     lineWidth?: number
@@ -128,7 +128,7 @@ export interface GhostatiApi {
   /** @source scripts/utils.js */
   drawOpenPath(
     ctx: CanvasRenderingContext2D,
-    points: GhostatiPoint[],
+    points: GhostmaxxingPoint[],
     strokeStyle: string,
     lineWidth?: number,
     dashed?: boolean
@@ -142,17 +142,17 @@ export interface GhostatiApi {
 
   /** @source scripts/utils.js */
   expandEyePolygon(
-    eye: GhostatiPoint[],
-    eyebrow: GhostatiPoint[],
+    eye: GhostmaxxingPoint[],
+    eyebrow: GhostmaxxingPoint[],
     scale?: number,
     eyebrowLift?: number
-  ): GhostatiPoint[];
+  ): GhostmaxxingPoint[];
 
   /** @source scripts/utils.js */
   drawEyeWing(
     ctx: CanvasRenderingContext2D,
-    eye: GhostatiPoint[],
-    eyebrow: GhostatiPoint[],
+    eye: GhostmaxxingPoint[],
+    eyebrow: GhostmaxxingPoint[],
     label: string,
     tone: {
       scale: number;
@@ -169,17 +169,17 @@ export interface GhostatiApi {
   /** @source scripts/utils.js */
   drawCheekSweep(
     ctx: CanvasRenderingContext2D,
-    anchor: GhostatiPoint,
-    noseSide: GhostatiPoint,
-    mouthCorner: GhostatiPoint,
-    jawPoint: GhostatiPoint,
+    anchor: GhostmaxxingPoint,
+    noseSide: GhostmaxxingPoint,
+    mouthCorner: GhostmaxxingPoint,
+    jawPoint: GhostmaxxingPoint,
     label: string,
     fill: string,
     stroke: string
   ): void;
 
   /** @source scripts/utils.js */
-  drawContourBand(ctx: CanvasRenderingContext2D, pts: GhostatiPoint[], label: string): void;
+  drawContourBand(ctx: CanvasRenderingContext2D, pts: GhostmaxxingPoint[], label: string): void;
 
   /** @source scripts/utils.js */
   clipLeftHalf(ctx: CanvasRenderingContext2D, landmarks: unknown): boolean;
@@ -206,7 +206,7 @@ export interface GhostatiApi {
   getActiveEffect(): string | null;
 
   /** @source scripts/main.js */
-  getLastResult(): GhostatiMatchResult | null;
+  getLastResult(): GhostmaxxingMatchResult | null;
 
   /** @source scripts/main.js */
   getMatchThreshold(): number;
@@ -250,9 +250,7 @@ export interface GhostatiApi {
 
 declare global {
   interface Window {
-    Ghostati: GhostatiApi;
-    /** International alias – identical to {@link GhostatiApi Ghostati}. */
-    Ghostmaxxing: GhostatiApi;
+    Ghostmaxxing: GhostmaxxingApi;
   }
 }
 

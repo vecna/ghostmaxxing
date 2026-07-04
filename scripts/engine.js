@@ -97,7 +97,7 @@ export async function compositeAndDetect(liveResult) {
       }
    }
 
-   state.ghostatiEvents.dispatchEvent(new CustomEvent('beforeEfficacyComposite', {
+   state.gstmxxEvents.dispatchEvent(new CustomEvent('beforeEfficacyComposite', {
       detail: { canvas, ctx, liveResult }
    }));
 
@@ -153,7 +153,7 @@ export async function runEffectPass() {
          state.lastKnownEffectResult = result;
       }
 
-      state.ghostatiEvents.dispatchEvent(new CustomEvent('detection', {
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('detection', {
          detail: { result: result || null, activeEffect: state.activeEffect }
       }));
    } catch (err) {
@@ -371,7 +371,7 @@ export function evaluateMatch(liveInfo, composite) {
  * @see findFace - checks plugin status before compositing.
  */
 export function hasActivePlugin() {
-   const G = window.Ghostati;
+   const G = window.gstmxx;
    const a2d = typeof G.getActiveEffect === 'function' && G.getActiveEffect();
    const a3d = typeof G.getActiveEffect3d === 'function' && G.getActiveEffect3d();
    return !!(a2d || a3d);

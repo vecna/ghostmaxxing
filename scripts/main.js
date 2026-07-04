@@ -60,7 +60,7 @@ if (els.switchCameraBtn) {
 }
 
 
-window.Ghostati = {
+window.gstmxx = {
    log: (message, sourcePlugin) => setLog(message, sourcePlugin),
    clearVisibleLogs: () => {
       state.visibleLogStartIndex = state.logsArchive.length;
@@ -85,7 +85,7 @@ window.Ghostati = {
    clipLeftHalfUV,
    clipRightHalfUV,
    /* fine delle funzioni usate nei plugin, ora implementate in utils.js */
-   events: state.ghostatiEvents,
+   events: state.gstmxxEvents,
    getDb: () => structuredClone(state.db),
    getDb3d: () => structuredClone(state.db3d),
    getActiveEffect: () => state.activeEffect,
@@ -108,7 +108,7 @@ window.Ghostati = {
 };
 
 // International alias (see redesign/ghostati-ghostmaxxing-naming-brief.txt)
-window.Ghostmaxxing = window.Ghostati;
+window.gstmxx = window.gstmxx;
 
 /**
  * Sets the busy flag for the whole UI, disabling/enabling controls during asynchronous operations.
@@ -471,7 +471,7 @@ async function init() {
       }
    }
 
-   state.ghostatiEvents.addEventListener('dbChanged', renderHistoryEntries);
+   state.gstmxxEvents.addEventListener('dbChanged', renderHistoryEntries);
 
    const initialOverlayMode = readInitialOverlayMode();
    setOverlayMode(initialOverlayMode);
@@ -526,7 +526,7 @@ async function init() {
          const saved3d = await saveFace3d(id);
 
          // Keep listeners synced with potential 3D-only status changes on the card.
-         state.ghostatiEvents.dispatchEvent(new CustomEvent('dbChanged', {
+         state.gstmxxEvents.dispatchEvent(new CustomEvent('dbChanged', {
             detail: {
                count: state.db.faces.length,
                nextId: state.db.nextId,
@@ -539,7 +539,7 @@ async function init() {
             ? buildMediapipeSaveSection(saved3d, id)
             : null;
 
-         state.ghostatiEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
+         state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
             detail: {
                source: 'save',
                ghostylePresent: false,
@@ -601,7 +601,7 @@ async function init() {
    setLog('Caricamento plugin di makeup in corso...')
    try {
       initPlugins3dLoader({
-         getFaceLandmarker: () => (window.Ghostati && window.Ghostati.FaceLandmarker) || null
+         getFaceLandmarker: () => (window.gstmxx && window.gstmxx.FaceLandmarker) || null
       });
 
       /* Unified manifest: all plugins are loaded through ghostyles-manager. */
@@ -638,8 +638,8 @@ async function init() {
    });
 
    // DEBUG: log di tutti gli eventi del bus
-   const _origDispatch = state.ghostatiEvents.dispatchEvent.bind(state.ghostatiEvents);
-   state.ghostatiEvents.dispatchEvent = function (event) {
+   const _origDispatch = state.gstmxxEvents.dispatchEvent.bind(state.gstmxxEvents);
+   state.gstmxxEvents.dispatchEvent = function (event) {
       if (!(event.type === "landmarks3d" ||
          event.type === "detection" ||
          event.type === "matchStateChanged"))
@@ -650,10 +650,10 @@ async function init() {
 
    setLog('Tutto pronto! Inizia scansionando il tuo volto o attivando una guida makeup.');
    setBusy(false);
-   state.ghostatiEvents.dispatchEvent(new CustomEvent('ready', { detail: {} }));
+   state.gstmxxEvents.dispatchEvent(new CustomEvent('ready', { detail: {} }));
 
    // Questo evento segnala ai file con i loop, che l'ambiente è pronto, e troveranno
-   // state, els, e window.Ghostati pronti.
+   // state, els, e window.gstmxx pronti.
    window.dispatchEvent(new CustomEvent('ghostatiReady'));
 }
 

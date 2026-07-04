@@ -1,18 +1,49 @@
 {
-  "name": "setup-comprehensive-testing-framework",
-  "version": "1.0.0",
-  "description": "**Web AR laboratory for the development and real-time testing of anti-biometric facial recognition camouflage (CV Dazzle).**",
-  "main": "index.js",
-  "scripts": {
-    "test:unit": "vitest run",
-    "test:e2e": "playwright test",
-    "docs": "jsdoc -c jsdoc.clean.json",
-    "validate-plugin": "node scripts-dev/validate-plugin.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "name": "ghostmaxxing",
+  "version": "0.1.0",
+  "description": "Web AR laboratory for testing adversarial makeup and anti-biometric facial camouflage in the browser.",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
   "type": "commonjs",
+  "homepage": "https://ghostyles.vecna.eu/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vecna/ghostmaxxing.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vecna/ghostmaxxing/issues"
+  },
+  "keywords": [
+    "ghostmaxxing",
+    "adversarial-makeup",
+    "anti-biometric",
+    "computer-vision",
+    "face-recognition",
+    "cv-dazzle",
+    "web-ar",
+    "ghostyles"
+  ],
+  "author": "Vecna",
+  "scripts": {
+    "start": "http-server . -p 8080 -c-1 -o /lab.html",
+    "serve": "http-server . -p 8080 -c-1",
+    "serve:site": "http-server . -p 8080 -c-1 -o /index.html",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "docs": "jsdoc -c jsdoc.clean.json",
+    "docs:clean": "node -e \"require('node:fs').rmSync('docs', { recursive: true, force: true })\"",
+    "docs:rebuild": "npm run docs:clean && npm run docs",
+    "validate:ghostyle": "node scripts-dev/validate-plugin.js",
+    "validate-plugin": "npm run validate:ghostyle --",
+    "validate:ghostyles": "node -e \"const fs=require('node:fs'); const cp=require('node:child_process'); const files=fs.readdirSync('ghostyles').filter((f)=>f.endsWith('.js')).sort(); for (const f of files) cp.execFileSync(process.execPath, ['scripts-dev/validate-plugin.js', 'ghostyles/'+f], { stdio: 'inherit' });\"",
+    "update:readme": "node scripts-dev/update-readme.js",
+    "check": "npm run validate:ghostyles && npm run test:unit",
+    "prepare:e2e": "playwright install chromium"
+  },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@vitest/coverage-v8": "^4.1.8",
@@ -23,5 +54,8 @@
     "jsdom": "^29.1.1",
     "vite": "^8.0.16",
     "vitest": "^4.1.8"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

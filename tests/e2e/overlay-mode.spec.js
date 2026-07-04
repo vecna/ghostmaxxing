@@ -83,16 +83,16 @@ test.describe('Ghostmaxxing Overlay Mode E2E', () => {
           }
         };
 
-        window.Ghostati.events.dispatchEvent(new CustomEvent('detection', {
+        window.gstmxx.events.dispatchEvent(new CustomEvent('detection', {
           detail: { result: null }
         }));
-        window.Ghostati.events.dispatchEvent(new CustomEvent('landmarks3d', {
+        window.gstmxx.events.dispatchEvent(new CustomEvent('landmarks3d', {
           detail: { landmarks: null }
         }));
         window.__resetBboxOverlayCounters();
         window.__captureBboxOverlay = true;
 
-        window.Ghostati.events.dispatchEvent(new CustomEvent('matchStateChanged', {
+        window.gstmxx.events.dispatchEvent(new CustomEvent('matchStateChanged', {
           detail: {
             source,
             overall: 'matched',
@@ -104,10 +104,10 @@ test.describe('Ghostmaxxing Overlay Mode E2E', () => {
           }
         }));
 
-        window.Ghostati.events.dispatchEvent(new CustomEvent('detection', {
+        window.gstmxx.events.dispatchEvent(new CustomEvent('detection', {
           detail: { result: detection }
         }));
-        window.Ghostati.events.dispatchEvent(new CustomEvent('landmarks3d', {
+        window.gstmxx.events.dispatchEvent(new CustomEvent('landmarks3d', {
           detail: { landmarks }
         }));
         window.__captureBboxOverlay = false;
@@ -139,15 +139,15 @@ test.describe('Ghostmaxxing Overlay Mode E2E', () => {
           }
         };
 
-        window.Ghostati.events.dispatchEvent(new CustomEvent('detection', {
+        window.gstmxx.events.dispatchEvent(new CustomEvent('detection', {
           detail: { result: null }
         }));
-        window.Ghostati.events.dispatchEvent(new CustomEvent('landmarks3d', {
+        window.gstmxx.events.dispatchEvent(new CustomEvent('landmarks3d', {
           detail: { landmarks: null }
         }));
         window.__resetBboxOverlayCounters();
         window.__captureBboxOverlay = true;
-        window.Ghostati.events.dispatchEvent(new CustomEvent('matchStateChanged', {
+        window.gstmxx.events.dispatchEvent(new CustomEvent('matchStateChanged', {
           detail: {
             source: 'auto',
             overall: 'matched',
@@ -158,7 +158,7 @@ test.describe('Ghostmaxxing Overlay Mode E2E', () => {
             }
           }
         }));
-        window.Ghostati.events.dispatchEvent(new CustomEvent('detection', {
+        window.gstmxx.events.dispatchEvent(new CustomEvent('detection', {
           detail: { result: detection }
         }));
         window.__captureBboxOverlay = false;

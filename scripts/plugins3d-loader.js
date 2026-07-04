@@ -358,13 +358,13 @@ export function initPlugins3dLoader(options = {}) {
    }
 
    runtime.ctx = runtime.canvas.getContext('2d');
-   runtime.events = state.ghostatiEvents;
+   runtime.events = state.gstmxxEvents;
 
    const relurl = options.baseUrl || window.location.pathname.split('/').slice(0, -1).join('/');
    const uvPath = options.uvPath || (relurl + '/data/face_canonical_uv.json');
    runtime.renderer = createUvRenderer({
       uvPath,
-      getFaceLandmarker: options.getFaceLandmarker || (() => (window.Ghostati && window.Ghostati.FaceLandmarker) || null),
+      getFaceLandmarker: options.getFaceLandmarker || (() => (window.gstmxx && window.gstmxx.FaceLandmarker) || null),
       log: (message) => setLog(message, 'uv-renderer')
    });
    runtime.renderer.ensureLoaded();

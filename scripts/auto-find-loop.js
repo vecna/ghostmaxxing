@@ -69,7 +69,7 @@ async function tick() {
          : (f === m)                          ? f
          :                                      'partial-elusion';
 
-      state.ghostatiEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
          detail: {
             source: 'auto',
             ghostylePresent: hasActivePlugin(),

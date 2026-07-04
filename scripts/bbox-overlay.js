@@ -8,7 +8,7 @@
  * engine (matched / eluded / unclear / unknown). Renders the current metrics
  * next to the box: live detection score, live distance and closest match ID.
  *
- * Reacts to events on `state.ghostatiEvents`. Does not mutate the engine.
+ * Reacts to events on `state.gstmxxEvents`. Does not mutate the engine.
  *
  * Color convention:
  *   red    = identified  (matched)
@@ -100,7 +100,7 @@ let suppressUntil = 0;
 // ---------- Bootstrap ----------
 
 // `main.js` dispatches `ghostatiReady` on `window` when state, DOM elements and
-// `window.Ghostati` are all ready. Same convention as `auto-find-loop.js`.
+// `window.gstmxx` are all ready. Same convention as `auto-find-loop.js`.
 window.addEventListener('ghostatiReady', init, { once: true });
 
 /**
@@ -122,10 +122,10 @@ export function init() {
    const persistedMode = readPersistedOverlayMode();
    if (persistedMode) view.overlayMode = persistedMode;
 
-   state.ghostatiEvents.addEventListener('detection', onDetection);
-   state.ghostatiEvents.addEventListener('landmarks3d', onLandmarks3d);
-   state.ghostatiEvents.addEventListener('matchStateChanged', onMatchStateChanged);
-   state.ghostatiEvents.addEventListener('dbChanged', onDbChanged);
+   state.gstmxxEvents.addEventListener('detection', onDetection);
+   state.gstmxxEvents.addEventListener('landmarks3d', onLandmarks3d);
+   state.gstmxxEvents.addEventListener('matchStateChanged', onMatchStateChanged);
+   state.gstmxxEvents.addEventListener('dbChanged', onDbChanged);
    return true;
 }
 

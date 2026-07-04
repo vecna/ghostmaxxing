@@ -125,14 +125,14 @@ describe('engine core exports', () => {
     state.lastKnownEffectResult = null;
     state.isSystemBusy = false;
     state.effectInferenceInFlight = false;
-    state.ghostatiEvents = new EventTarget();
+    state.gstmxxEvents = new EventTarget();
 
     overlayView.overlayMode = 'bbox';
 
-    window.Ghostati = {
+    window.gstmxx = {
       computeMatchState: vi.fn(() => 'matched')
     };
-    globalThis.Ghostmaxxing = window.Ghostati;
+    globalThis.Ghostmaxxing = window.gstmxx;
 
     const TinyFaceDetectorOptions = vi.fn(function TinyFaceDetectorOptions(opts) {
       Object.assign(this, opts);
@@ -230,7 +230,7 @@ describe('engine core exports', () => {
     faceapi.detectSingleFace.mockResolvedValue(result);
 
     const onDetection = vi.fn();
-    state.ghostatiEvents.addEventListener('detection', onDetection);
+    state.gstmxxEvents.addEventListener('detection', onDetection);
 
     await runEffectPass();
 
@@ -506,7 +506,7 @@ describe('engine core exports', () => {
     faceapi.detectSingleFace.mockReturnValue(makeAgeGenderDescriptorChain(result));
 
     const onMatch = vi.fn();
-    state.ghostatiEvents.addEventListener('matchStateChanged', onMatch);
+    state.gstmxxEvents.addEventListener('matchStateChanged', onMatch);
 
     const saved = await saveFace();
 

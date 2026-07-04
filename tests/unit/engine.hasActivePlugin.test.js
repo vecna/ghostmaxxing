@@ -30,7 +30,7 @@ import { hasActivePlugin } from '../../scripts/engine.js';
 describe('engine.hasActivePlugin', () => {
   beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
-    window.Ghostati = {
+    window.gstmxx = {
       getActiveEffect: () => null,
       getActiveEffect3d: () => null
     };
@@ -45,17 +45,17 @@ describe('engine.hasActivePlugin', () => {
   });
 
   it('returns true when a 2D effect is active', () => {
-    window.Ghostati.getActiveEffect = () => 'graphic-liner';
+    window.gstmxx.getActiveEffect = () => 'graphic-liner';
     expect(hasActivePlugin()).toBe(true);
   });
 
   it('returns true when a 3D effect is active', () => {
-    window.Ghostati.getActiveEffect3d = () => 'uv-stripes';
+    window.gstmxx.getActiveEffect3d = () => 'uv-stripes';
     expect(hasActivePlugin()).toBe(true);
   });
 
   it('returns false when Ghostmaxxing effect accessors are missing', () => {
-    window.Ghostati = {};
+    window.gstmxx = {};
     expect(hasActivePlugin()).toBe(false);
   });
 });

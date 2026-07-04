@@ -141,7 +141,7 @@ export function loadDb() {
  */
 export function persistDb() {
    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.db));
-   state.ghostatiEvents.dispatchEvent(new CustomEvent('dbChanged', {
+   state.gstmxxEvents.dispatchEvent(new CustomEvent('dbChanged', {
       detail: {
          count: state.db.faces.length,
          nextId: state.db.nextId
@@ -187,7 +187,7 @@ export function clearDb() {
    persistDb();
    if (state.db3d !== null) persistDb3d();
    clearAllThumbnails();
-   state.ghostatiEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
+   state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
       detail: { detectionState: 'unknown', source: 'clear' }
    }));
    setLog('Archivio locale cancellato. Il contatore ID riparte da 0.');

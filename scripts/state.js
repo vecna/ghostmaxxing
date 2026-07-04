@@ -9,7 +9,7 @@
  * every field — is documented on the {@link GhostmaxxingState} typedef below, which
  * renders as a properties table.
  *
- * Note on events: the in-app event bus is `state.ghostatiEvents`. The
+ * Note on events: the in-app event bus is `state.gstmxxEvents`. The
  * `ghostatiReady` lifecycle event is the one exception — it is dispatched on
  * `window`, NOT on this bus.
  */
@@ -159,22 +159,22 @@
  *   the current video frame. Cached so engine-3d and plugins can read it without
  *   re-running inference. `null` if MediaPipe has not yet produced a result.
  *   **Used in:** mediapipe-loop.js (written), engine-3d.js (read for compositing),
- *   window.Ghostati.lastLandmarks3d (exposed to plugins).
+ *   window.gstmxx.lastLandmarks3d (exposed to plugins).
  *
  * @property {object|null} imageEmbedder
  *   Loaded MediaPipe ImageEmbedder instance. `null` until
  *   `loadMobileNet()` completes in engine-3d.js.
  *   **Used in:** engine-3d.js (getFaceEmbedding, guards).
  *
- * @property {EventTarget} ghostatiEvents
+ * @property {EventTarget} gstmxxEvents
  *   In-app event bus. All cross-module events are dispatched here and exposed to
- *   plugins as `window.Ghostati.events`. Events on this bus: `ready`, `detection`,
+ *   plugins as `window.gstmxx.events`. Events on this bus: `ready`, `detection`,
  *   `effectChanged`, `effectChanged3d`, `landmarks3d`, `matchStateChanged`,
  *   `beforeEfficacyComposite`, `dbChanged`, `mediapipeReady`. (NB: `ghostatiReady`
  *   is dispatched on `window`, not here.)
  *   **Range:** a single EventTarget instance (never reassigned).
  *   **Used in:** engine.js, ghostyles-manager.js, db.js, main.js (and all add-on
- *   scripts via `window.Ghostati.events`).
+ *   scripts via `window.gstmxx.events`).
  *
  * @property {Map<string, GhostyleEntry>} loadedGhostyles
  *   Registry of loaded 2D ghostyle plugins, keyed by ghostyle id.
@@ -212,7 +212,7 @@ export const state = {
    isLogExpanded: false,
    MATCH_THRESHOLD: 0.58,
    MATCH_THRESHOLD_3D: 0.85,
-   ghostatiEvents: new EventTarget(),
+   gstmxxEvents: new EventTarget(),
    loadedGhostyles: new Map(),
    isRecording: false,
 };

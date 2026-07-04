@@ -2,7 +2,7 @@
  * @module utils
  * @description
  * Pure helpers shared across the codebase and exposed to plugin authors via
- * `window.Ghostati`. Three layers, top to bottom:
+ * `window.gstmxx`. Three layers, top to bottom:
  *
  *   1. Math primitives — `distance`, `avgPoint`, `lerp`, `scaleFrom`, `point`.
  *      Trivial geometric building blocks. Pure functions, no DOM.
