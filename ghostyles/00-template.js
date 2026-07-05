@@ -2,7 +2,7 @@
  * ==Ghostyle==
  * @name         Template
  * @version      2.0.0
- * @author       NINA
+ * @author       vecna
  * @release_date 2026-06-29
  * @description  Template canonico per plugin Ghostmaxxing: esempio minimo con callback 2D + UV.
  * ==/Ghostyle==

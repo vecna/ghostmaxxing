@@ -2,7 +2,7 @@
  * ==Ghostyle==
  * @name         Maximalism
  * @version      1.0.0
- * @author       NINA
+ * @author       vecna
  * @release_date 2026-06-29
  * @description  Pattern massimalista ispirato a trucchi club/drag contemporanei. Spezza la simmetria, ridisegna la bocca, copre lo zigomo, estende l'occhio verso l'alto.
  * ==/Ghostyle==

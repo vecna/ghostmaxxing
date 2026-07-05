@@ -2,7 +2,7 @@
  * ==Ghostyle==
  * @name         CV-Dazzle example 1
  * @version      1.0.0
- * @author       NINA
+ * @author       vecna, but actually a dump of random points
  * @release_date 2026-04-13
  * @description  Pattern ad alto contrasto ispirato al CV-Dazzle per rottura simmetrica del volto.
  * ==/Ghostyle==

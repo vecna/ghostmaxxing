@@ -2,7 +2,7 @@
  * ==Ghostyle==
  * @name         Smokey Eyes (split demo)
  * @version      2.0.0
- * @author       NINA
+ * @author       vecna, but actually inspired by a paper.
  * @release_date 2025-01-01
  * @description  Demo split: pixel-space su meta' sinistra, UV-space su meta' destra.
  * ==/Ghostyle==
