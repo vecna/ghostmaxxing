@@ -1,15 +1,22 @@
 {
   "plugins": ["plugins/markdown"],
   "source": {
-    "include": ["scripts"],
+    "include": ["scripts", "ghostyles"],
     "includePattern": ".+\\.js(doc|x)?$",
     "excludePattern": "(^|\\/|\\\\)_"
   },
   "opts": {
     "template": "node_modules/clean-jsdoc-theme/dist",
+    "tutorials": "./tutorials",
     "basePath": "/docs/",
+    "theme_opts": {
+      "footer": "<div style='text-align: center; padding: 1rem 0;'>Ghostmaxxing v0.1.0 | Last updated: July 6, 2026</div>"
+    },
     "destination": "./docs",
     "recurse": true,
-    "readme": "./JSDOC_README.md"
+    "readme": "./docs_index.md"
+  },
+  "markdown": {
+    "idInHeadings": true
   }
 }
