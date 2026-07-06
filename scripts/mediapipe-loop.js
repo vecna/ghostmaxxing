@@ -1,10 +1,10 @@
 /**
  * @module mediapipe-loop
  * @description
- * MediaPipe FaceLandmarker loop — add-on per ghostati.html
+ * MediaPipe FaceLandmarker loop
  *
  * Carica il modello MediaPipe (478 landmark 3D), esegue inferenza
- * sul tag <video> e dispatcha `Ghostati.events.landmarks3d` su ogni
+ * sul tag <video> e dispatcha `gstmxx.events.landmarks3d` su ogni
  * frame nuovo. Plugin futuri si registrano ascoltando questo evento.
  *
  * Non modifica l'engine. Gira in parallelo a face-api senza interferire
@@ -36,7 +36,7 @@ async function waitForVideoReady(v) {
 async function init() {
    const events = window.gstmxx && window.gstmxx.events;
    if (!events) {
-      console.warn('[mediapipe-loop] Ghostati.events non trovato, skip init');
+      console.warn('[mediapipe-loop] gstmxx.events non trovato, skip init');
       return;
    }
    video = document.getElementById('video');
@@ -59,14 +59,14 @@ async function init() {
    } catch (err) {
       console.error('[mediapipe-loop] errore init:', err);
       if (window.gstmxx && window.gstmxx.log) {
-         Ghostati.log('Errore caricamento MediaPipe: ' + err.message, 'mediapipe');
+         gstmxx.log('Errore caricamento MediaPipe: ' + err.message, 'mediapipe');
       }
       return;
    }
 
    await waitForVideoReady(video);
    if (window.gstmxx && window.gstmxx.log) {
-      Ghostati.log('MediaPipe FaceLandmarker pronto (478 landmark 3D)', 'mediapipe');
+      gstmxx.log('MediaPipe FaceLandmarker pronto (478 landmark 3D)', 'mediapipe');
    }
    events.dispatchEvent(new CustomEvent('mediapipeReady', { detail: {} }));
 
@@ -91,7 +91,7 @@ function tick() {
       // and plugins can read them without re-running inference.
       if (window.gstmxx) window.gstmxx.lastLandmarks3d = landmarks;
 
-      Ghostati.events.dispatchEvent(new CustomEvent('landmarks3d', {
+      gstmxx.events.dispatchEvent(new CustomEvent('landmarks3d', {
          detail: { landmarks, results }
       }));
    } catch (err) {

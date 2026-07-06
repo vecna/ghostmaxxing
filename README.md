@@ -1,4 +1,5 @@
 # ghòstati
+![Unit Test Coverage](https://img.shields.io/badge/coverage-48.07%25-lightgrey)
 
 ```text
         _          _        _   _
@@ -328,3 +329,12 @@ Good contributions include:
 - additions to [`REFERENCES.json`](REFERENCES.json) following [`PROMPT-REFERENCES-UPDATE.txt`](PROMPT-REFERENCES-UPDATE.txt).
 
 Please keep claims narrow and technical: say which model, browser, lighting, camera, and threshold produced which result.
+
+**Last commit:** `3703e25` – new ghostyle entry that might change everything
+
+## Recent changes
+- `3703e25` new ghostyle entry that might change everything
+- `c8dad07` massive variable renaming to Ghostmaxxing or gstmxx
+- `b0282fd` improved references page, added report page
+- `9fbd06a` large index, about, references restructuring
+- `5ef1ffe` rebranding in progress

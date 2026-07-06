@@ -23,7 +23,7 @@
         </a>
 
         <nav class="editorial-homepage__nav" aria-label="Project navigation">
-          <a class="navlink" href="https://github.com/vecna/ghostati" target="_blank" rel="noopener noreferrer">Code</a>
+          <a class="navlink" href="/references/" rel="noopener noreferrer">Research References</a>
           <a class="navlink" href="about.html" aria-current="page">Vision &amp; About</a>
           <a class="cta-inline" href="report.html">How to <i>leak</i> to us<span aria-hidden="true">↗</span></a>
         </nav>
@@ -48,8 +48,9 @@
             <h2>Workshop assistant.</h2>
             <p>
               Designed to support group workshops, where participants play with makeup and learn how different faces
-              read to a recognition model: point a browser camera at your face, record a baseline, apply a Ghostyle,
-              and compare how the local recognition pipeline reacts.
+              read to a recognition model: point a browser camera at your face, record a baseline, then change your
+              look &mdash; paint directly on the tracked face or follow a guided pattern &mdash; and watch how the
+              local recognition pipeline reacts in real time.
             </p>
             <p>
               The goal is to lower the barrier to entry. You don't need a makeup specialist to take part &mdash; only
@@ -77,18 +78,21 @@
               </li>
               <li>A one-second video of a successful attempt.</li>
               <li>
-                Ghostyles: modular camouflage plugins that others can study, adapt, or retest.
-                <!-- TODO: write the Ghostyle plugin docs and link them here (e.g. /docs) -->
-                Build your own by following the Ghostyle documentation.
+                A camouflage pattern you baked from a look that worked, so others can study and retest it. This is
+                the technical layer &mdash; mostly for people who want to look into how it works; see the
+                <!-- TODO: publish the Ghostyle authoring guide and confirm this link -->
+                <a href="/docs">Ghostyle documentation</a>.
               </li>
             </ol>
           </section>
 
           <section class="content-section" id="before-after">
-            <h2>From before/after experiments to Ghostyles.</h2>
+            <h2>Keep what works.</h2>
             <p>
-              This part matters: we want a system that can run a "diff" between an after image and a before image,
-              and turn the result into a Ghostyle plugin that others can upload and retest.
+              When a look defeats the local match, you can keep that exact state: paint it on the tracked face in the
+              lab and bake it into a reusable pattern others can study and retest. Automatically extracting a pattern
+              from a pair of before/after photos is a much harder research problem, and one we deliberately don't
+              depend on.
             </p>
             <div class="callout">
               <p>
@@ -199,9 +203,9 @@
               infrastructure when it appears in the world.
             </p>
             <div class="resource-grid">
-              <a class="resource-card" href="ghostati.html">
+              <a class="resource-card" href="lab.html">
                 <h3>Open the lab</h3>
-                <p>Run local browser tests, try Ghostyles, and compare before/after behaviour.</p>
+                <p>Run local browser tests and watch a recognition pipeline react to your face in real time.</p>
               </a>
               <a class="resource-card" href="/references/">
                 <h3>Research references</h3>
@@ -223,7 +227,7 @@
           <h2>On this page</h2>
           <nav>
             <a href="#workshop-assistant">Workshop assistant</a>
-            <a href="#before-after">Before / after</a>
+            <a href="#before-after">Gallery of success cases</a>
             <a href="#origin">Origin</a>
             <a href="#research-question">Research question</a>
             <a href="#leaks">Why leaking matters</a>

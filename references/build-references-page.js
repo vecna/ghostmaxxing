@@ -62,9 +62,9 @@ const LINK_LABELS = [
 // Order matters: this is both the display order of the sections in the page
 // and the order of links in the "Jump to" nav.
 const GROUP_DEFS = [
-  { key: 'research', label: 'Peer-reviewed papers', anchor: 'group-research' },
   { key: 'artistic', label: 'Art initiatives', anchor: 'group-artistic' },
   { key: 'activism', label: 'Advocacy efforts', anchor: 'group-activism' },
+  { key: 'research', label: 'Peer-reviewed papers', anchor: 'group-research' },
 ];
 // Anything whose "type" isn't one of the three above lands here. Empty today,
 // but this keeps the page from silently dropping an entry if a new type
@@ -87,8 +87,8 @@ function sortReferences(refs) {
   // Matches REFERENCES.json's own ordering_definition:
   // year desc, closeness desc, title asc.
   return [...refs].sort((a, b) => {
-    if (a.year !== b.year) return b.year - a.year;
     if (a.closeness !== b.closeness) return b.closeness - a.closeness;
+    if (a.year !== b.year) return b.year - a.year;
     return a.title.localeCompare(b.title);
   });
 }
@@ -175,7 +175,7 @@ function linksRow(ref) {
     }
   }
   if (items.length === 0) return '';
-  return `<p class="reference-entry__links" aria-label="Links for ${esc(ref.title)}">${items.join(' &middot; ')}</p>`;
+  return `<span class="reference-entry__links" aria-label="Links for ${esc(ref.title)}">${items.join(' &middot; ')}</span>`;
 }
 
 function entryHtml(ref, tagStats) {
@@ -186,8 +186,8 @@ function entryHtml(ref, tagStats) {
             <p class="reference-entry__authors">${esc(ref.author.join(', '))}</p>
             <p>${esc(ref.description)}</p>
             ${topicTags(ref, tagStats)}
-            <details class="reference-entry__assessment">
-              <summary>Full assessment</summary>
+            <span class="reference-entry__assessment">
+              <!-- <summary>Full assessment</summary> -->
               <dl class="reference-entry__facts">
                 <div class="reference-entry__fact">
                   <dt>Demonstrated</dt>
@@ -206,9 +206,11 @@ function entryHtml(ref, tagStats) {
                   <dd>${esc(ref.limitations)}</dd>
                 </div>
               </dl>
-            </details>
-            <p class="reference-entry__citation">${esc(ref.citation)} &middot; ${esc(ref.reproducibility.replace(/-/g, ' '))}</p>
-            ${linksRow(ref)}
+            </span>
+            <p>
+              <span class="reference-entry__citation">${esc(ref.citation)} &middot; ${esc(ref.reproducibility.replace(/-/g, ' '))}</span>
+              ${linksRow(ref)}
+            </p>
           </article>`;
 }
 

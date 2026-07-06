@@ -89,7 +89,7 @@
 
 .content-page__deck {
   max-width: 48rem !important;
-  margin-top: 1.1rem !important;
+  margin-top: 3.1rem !important;
   color: var(--gm-muted) !important;
   font-size: clamp(1rem, 0.45vw + 0.95rem, 1.22rem) !important;
   line-height: 1.48 !important;

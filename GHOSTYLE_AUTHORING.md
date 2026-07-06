@@ -91,8 +91,6 @@ After the runtime migration is complete, examples can be simplified to:
 const G = window.gstmxx;
 ```
 
-Do not introduce new plugin documentation that treats `Ghostati` as the project name. It may appear only as a legacy compatibility name.
-
 ---
 
 ## 4. Minimal Ghostyle
@@ -465,18 +463,12 @@ try {
 
 Or, if not using `try/finally`, return only after restoring the context.
 
-### Mistake: using legacy globals directly in new examples
+### Suggested convention: 
 
-Avoid writing new docs that teach this:
-
-```js
-Ghostati.drawLabel(ctx, 'demo', 10, 10);
-```
-
-Prefer:
+Call always the `window.gstmxx` global object as capital **`G`**:
 
 ```js
-const G = window.gstmxx || window.gstmxx || window.gstmxx;
+const G = window.gstmxx;
 G.drawLabel(ctx, 'demo', 10, 10);
 ```
 
@@ -497,7 +489,7 @@ Copy this into `ghostyles/my-ghostyle.js`:
  * ==/Ghostyle==
  */
 
-const G = window.gstmxx || window.gstmxx || window.gstmxx;
+const G = window.gstmxx;
 
 export const params = [
   { name: 'alpha', type: 'range', label: 'Opacity', min: 0, max: 1, step: 0.01, default: 0.45 }
@@ -538,55 +530,3 @@ Then add:
 ```
 
 to `ghostyles.json`.
-
----
-
-## 15. What AI agents should and should not do
-
-When asked to create a Ghostyle, an AI agent should:
-
-- start from this file and `ghostyles/00-template.js`;
-- produce a single ES module under `ghostyles/`;
-- include a valid Ghostyle header;
-- export `onDraw`, `paintUV`, or both;
-- use only the public runtime helpers;
-- update `ghostyles.json` if asked to integrate the plugin;
-- avoid adding dependencies;
-- avoid remote assets;
-- keep rendering synchronous;
-- explain whether the plugin is 2D, UV, or hybrid.
-
-An AI agent should not:
-
-- invent undocumented runtime functions;
-- assume remote plugin loading is supported for end users;
-- rename the project back to Ghostati;
-- treat the current visual effect as guaranteed biometric protection;
-- promise that a Ghostyle defeats real-world face recognition;
-- modify unrelated app architecture when only a plugin was requested.
-
----
-
-## 16. Documentation order recommendation
-
-The `/docs` entry point should prioritize information like this:
-
-1. **Create a Ghostyle** — this guide.
-2. **Plugin template** — `ghostyles/00-template.js`.
-3. **Existing examples** — `ghostyles/*.js`.
-4. **Runtime API declarations** — `scripts/Ghostati.d.ts`, later `scripts/gstmxx.d.ts`.
-5. **Generated JSDoc** — complete internal reference for maintainers.
-
-This order matches the project goal: most contributors will want to create or modify Ghostyles, not understand every internal module first.
-
----
-
-## 17. Next improvements to pair with this file
-
-High-value follow-up changes:
-
-1. Rename `scripts/Ghostati.d.ts` to `scripts/gstmxx.d.ts` or add a new declaration file with the future API name.
-2. Update `package.json` metadata: project name, AGPL-3.0 license, repository URL, keywords, author.
-3. Update README references from Ghostati/`ghostati.html` to Ghostmaxxing/`lab.html`.
-4. Extend `scripts-dev/validate-plugin.js` to check proposed tags and forbid obvious network usage.
-5. Add a small script to regenerate `ghostyles.json` metadata from Ghostyle headers.

@@ -220,6 +220,7 @@ describe('ghostyles-manager', () => {
     });
 
     it('wraps onInit errors without rejecting load', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       vi.spyOn(globalThis, 'fetch').mockResolvedValue({
         ok: true,
         status: 200,
@@ -232,9 +233,12 @@ describe('ghostyles-manager', () => {
         expect.stringContaining('Plugin init-fail ha lanciato: Error: init boom (onInit)'),
         'init-fail'
       );
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      consoleErrorSpy.mockRestore();
     });
 
     it('deactivates plugin when wrapped onDraw throws', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       vi.spyOn(globalThis, 'fetch').mockResolvedValue({
         ok: true,
         status: 200,
@@ -255,6 +259,8 @@ describe('ghostyles-manager', () => {
         expect.stringContaining('Plugin draw-fail ha lanciato: TypeError: draw boom (onDraw)'),
         'draw-fail'
       );
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      consoleErrorSpy.mockRestore();
     });
 
     it('wraps metadata fetch errors with requested plugin name', async () => {

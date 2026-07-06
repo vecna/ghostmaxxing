@@ -657,4 +657,6 @@ async function init() {
    window.dispatchEvent(new CustomEvent('ghostatiReady'));
 }
 
-init();
+if (typeof process === 'undefined' || !process.env.VITEST) {
+   init();
+}

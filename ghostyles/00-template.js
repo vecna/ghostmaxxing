@@ -4,32 +4,54 @@
  * @version      2.0.0
  * @author       vecna
  * @release_date 2026-06-29
- * @description  Template canonico per plugin Ghostmaxxing: esempio minimo con callback 2D + UV.
+ * @description  Canonical template for Ghostmaxxing plugins: minimal example with 2D + UV callbacks.
  * ==/Ghostyle==
  */
 
-// Questo file e' volutamente molto commentato: il suo scopo non e' l'effetto
-// visivo, ma mostrare come si costruisce un plugin compatibile col modello
-// unificato (onDraw per face-api e paintUV per MediaPipe).
+/**
+ * This file is intentionally heavily commented. Its purpose is not the visual
+ * effect itself, but to demonstrate how to build a plugin compatible with the
+ * unified model (onInit, onDraw, paintUV, and onClear).
+ *
+ * @module ghostyles/00-template
+ */
+
+const G = window.gstmxx || window.Ghostmaxxing || window.Ghostati;
 
 /**
- * Callback 2D chiamata durante il tick face-api.
+ * Initialization callback called when the plugin is loaded or activated.
+ * Used to set up any initial state, perform one-time calculations, or log initialization.
  *
- * Per un template didattico vogliamo un gesto minimo: un cerchio sottile
- * centrato sul naso. Non usiamo forme complesse per evitare di "sovra-educare"
- * chi copia questo file come base.
+ * @returns {string|void} An optional initialization message.
+ */
+export function onInit() {
+  if (G && typeof G.log === 'function') {
+    G.log('Template plugin initialized.', 'Template');
+  }
+  return 'Template initialized';
+}
+
+/**
+ * 2D callback called during the face-api rendering tick.
+ *
+ * For a teaching template, we want a minimal visual action: a thin circle
+ * centered on the nose. We avoid complex shapes to keep the template easy
+ * to understand and copy.
+ *
+ * @param {CanvasRenderingContext2D} ctx - The overlay canvas 2D rendering context.
+ * @param {object} landmarks - The face-api landmarks object containing facial features.
  */
 export function onDraw(ctx, landmarks) {
-  // I landmark del naso sono 9 punti. Il centroide e' la media geometrica
-  // dell'area, robusta anche se il volto ruota leggermente.
+  // Nose landmarks contain 9 points. The centroid is the geometric average
+  // of the area, which is robust even if the face rotates slightly.
   const nose = landmarks.getNose();
-  const c = Ghostati.avgPoint(nose);
+  const c = G.avgPoint(nose);
 
-  // Il raggio cresce con la distanza verticale del naso per adattarsi a
-  // facce grandi/piccole senza hardcode in pixel assoluti.
-  const radius = Math.max(8, Ghostati.distance(nose[0], nose[6]) * 0.18);
+  // The radius scales with the vertical length of the nose to adapt to
+  // larger/smaller faces without using hardcoded absolute pixel values.
+  const radius = Math.max(8, G.distance(nose[0], nose[6]) * 0.18);
 
-  // Disegno volutamente sottile: un template non deve dominare il frame.
+  // Draw a subtle thin circle so the template doesn't dominate the frame.
   ctx.save();
   ctx.beginPath();
   ctx.arc(c.x, c.y, radius, 0, Math.PI * 2);
@@ -40,33 +62,46 @@ export function onDraw(ctx, landmarks) {
 }
 
 /**
- * Callback UV chiamata durante il tick MediaPipe.
+ * UV callback called during the MediaPipe rendering tick.
  *
- * Qui mostriamo una banda trasparente nella zona fronte UV. E' utile per
- * capire che paintUV non disegna sul video in pixel-space, ma sulla texture
- * canonica del volto che poi viene warpata triangolo-per-triangolo.
+ * This draws a semi-transparent band in the forehead area of the UV texture.
+ * It demonstrates that paintUV does not draw directly on the screen/video space,
+ * but on the canonical face texture which is then warped onto the 3D face mesh.
+ *
+ * @param {CanvasRenderingContext2D} ctx - The UV texture canvas 2D context.
  */
 export function paintUV(ctx) {
-  // Non e' necessario conoscere i 478 indici per un primo esempio: tracciamo
-  // una fascia nella parte alta della texture UV, dove tipicamente ricade
-  // la fronte nella mappa canonica.
+  // It is not necessary to know all 478 indices for a basic example: we draw
+  // a band across the upper section of the UV texture, where the forehead is located.
   const w = ctx.canvas.width;
   const h = ctx.canvas.height;
 
-  // Colore leggibile ma trasparente, cosi' si vede bene la sovrapposizione.
+  // Use a highly readable yet semi-transparent color to see the overlay effect.
   ctx.save();
   ctx.fillStyle = 'rgba(90, 210, 235, 0.22)';
 
-  // Banda orizzontale con margini laterali per evitare il bordo della texture.
+  // Horizontal band with side margins to avoid drawing on the very edge of the texture.
   const x = w * 0.18;
   const y = h * 0.08;
   const bw = w * 0.64;
   const bh = h * 0.16;
   ctx.fillRect(x, y, bw, bh);
 
-  // Un bordo leggero aiuta a percepire l'estensione della forma nella UV map.
+  // A subtle border helps outline the shape's boundaries on the UV map.
   ctx.lineWidth = Math.max(1, w * 0.006);
   ctx.strokeStyle = 'rgba(225, 250, 255, 0.4)';
   ctx.strokeRect(x, y, bw, bh);
   ctx.restore();
+}
+
+/**
+ * Cleanup callback called when the plugin is unloaded or deactivated.
+ * Used to clean up any custom event listeners, timers, or custom drawing state.
+ *
+ * @param {CanvasRenderingContext2D} ctx - The overlay canvas 2D rendering context.
+ */
+export function onClear(ctx) {
+  if (G && typeof G.log === 'function') {
+    G.log('Template plugin cleared.', 'Template');
+  }
 }

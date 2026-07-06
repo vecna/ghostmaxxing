@@ -18,7 +18,6 @@ The codebase is organized into several modules within the `scripts/` directory. 
 - **`ghostati-mobile-ui.js`**: Specific user interface interactions tailored for mobile layouts and touch events.
 - **`ghostyle3d-uv-renderer.js`**: Specialized logic for 3D model processing, UV mapping, and 3D rendering.
 - **`ghostyles-manager.js`**: Handles the loading, switching, and parsing of "Ghostyles" (camouflage styles).
-- **`index-effect.js`**: Initialization scripts for visual effects on the main landing/index page.
 - **`main.js`**: Application entry point; initializes all subsystems and triggers the main application flow.
 - **`mediapipe-loop.js`**: Encapsulates the logic for loading and running Google MediaPipe models.
 - **`plugins3d-loader.js`**: Dynamic loader for 3D plugins, enabling extended 3D tracking capabilities.
