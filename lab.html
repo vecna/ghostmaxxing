@@ -35,31 +35,35 @@
 
   <div class="rec-dot" id="gm-recdot"><i></i> REC</div>
 
-  <!-- ============================ READOUT ============================ -->
-  <!-- Fed by the engine's `matchStateChanged` event (see lab-ui.js). -->
-  <div class="readout inert" id="readout" aria-live="polite">
-    <div class="readout__top">
-      <span class="readout__label">MATCH</span>
-      <span class="readout__num" id="gm-num">—</span>
-      <span class="readout__thr" id="gm-thr">/ 0.58</span>
-    </div>
-    <span class="readout__state" id="gm-state">Save your face to measure</span>
-    <svg class="readout__spark" id="gm-spark" viewBox="0 0 110 16" preserveAspectRatio="none"></svg>
-  </div>
-
-  <!-- ============================ VIEW BAR ============================ -->
+  <!-- ==================== VIEW BAR + READOUT (shared top band) ==================== -->
+  <!-- Readout is fed by the engine's `matchStateChanged` event (see lab-ui.js). -->
   <div class="viewbar">
     <div class="selector" role="tablist" aria-label="What you see on the face">
+      <a class="seg seg--home" href="/" role="tab" aria-selected="false" data-view="home" aria-label="Home">
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5 9.5V21h14V9.5" />
+          <path d="M9.5 21v-6h5v6" />
+        </svg>
+        <!-- <span>Home</span> -->
+      </a>
       <button class="seg" role="tab" aria-selected="true" data-view="off">Camera</button>
       <button class="seg" role="tab" aria-selected="false" data-view="2d">2D points</button>
       <button class="seg" role="tab" aria-selected="false" data-view="3d">3D mesh</button>
+    </div>
+    <div class="readout inert" id="readout" aria-live="polite">
+      <span class="readout__label">MATCH</span>
+      <span class="readout__num" id="gm-num">—</span>
+      <span class="readout__thr" id="gm-thr">/ 0.58</span>
+      <span class="readout__state" id="gm-state">Save your face</span>
+      <svg class="readout__spark" id="gm-spark" viewBox="0 0 56 16" preserveAspectRatio="none"></svg>
     </div>
   </div>
 
   <!-- ============================ ACTION RAIL ============================ -->
   <div class="rail">
     <div class="railitem">
-      <button class="railbtn" id="copyMakeupBtn" disabled title="Copy to clipboard">
+      <button class="railbtn" id="copyMakeupBtn" title="Copy to clipboard">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
       </button><span class="railbtn__cap">Copy</span>
     </div>
@@ -81,24 +85,18 @@
   <!-- ============================ SCREENS ============================ -->
   <!-- Faces screen === engine's #historyDrawer (reused). Engine fills #historyEntries. -->
   <section id="historyDrawer" class="screen device hidden" aria-label="Saved faces">
-    <div class="drawer-header">
-      <div><span class="screen__kicker">On device</span><h1>Saved faces</h1></div>
-      <button id="closeHistoryBtn" class="icon-btn" title="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-    </div>
+    <button class="screen__close" data-close-screen title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <span class="screen__kicker">On device</span>
+    <h1>Saved faces</h1>
     <p>Baselines stored on this device. The match is measured against the active one.</p>
     <div class="drawer-content"><div id="historyEntries" class="grid2"></div></div>
   </section>
 
   <!-- Settings screen === engine's #settingsDrawer (reused). -->
   <section id="settingsDrawer" class="screen device hidden" aria-label="Settings">
-    <div class="drawer-header">
-      <div><span class="screen__kicker">On device</span><h1>Settings</h1></div>
-      <button id="closeSettingsBtn" class="icon-btn" title="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-    </div>
+    <button class="screen__close" data-close-screen title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <span class="screen__kicker">On device</span>
+    <h1>Settings</h1>
     <div class="drawer-content">
       <p class="small-note">Real-time Web AR lab for developing face-recognition camouflage.</p>
 
@@ -169,6 +167,7 @@
 
   <!-- Online screens -->
   <section id="gm-screen-upload" class="screen online hidden" aria-label="Upload and report">
+    <button class="screen__close" data-close-screen title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     <span class="screen__kicker">Online</span>
     <h1>Upload &amp; report</h1>
     <p>Send a recorded clip or evidence of a real-world deployment. Goes over the internet — share only what's safe for you.</p>
@@ -179,6 +178,7 @@
   </section>
 
   <section id="gm-screen-gallery" class="screen online hidden" aria-label="Shared gallery">
+    <button class="screen__close" data-close-screen title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     <span class="screen__kicker">Online</span>
     <h1>Shared gallery</h1>
     <p>Results and clips the community has published. Loaded from the server.</p>
@@ -189,6 +189,7 @@
   </section>
 
   <section id="gm-screen-info" class="screen online hidden" aria-label="Info">
+    <button class="screen__close" data-close-screen title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     <span class="screen__kicker">Online</span>
     <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
       <span class="ghostmark"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a8 8 0 0 0-8 8v10.2c0 .9 1 1.4 1.7.8l1.6-1.2 1.7 1.3c.4.3.9.3 1.2 0l1.8-1.3 1.8 1.3c.3.3.8.3 1.2 0l1.7-1.3 1.6 1.2c.7.6 1.7.1 1.7-.8V10a8 8 0 0 0-8-8z"/><circle cx="9.2" cy="10.5" r="1.4" fill="#1a130b"/><circle cx="14.8" cy="10.5" r="1.4" fill="#1a130b"/></svg></span>

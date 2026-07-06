@@ -351,7 +351,12 @@ export function currentColor() {
 
 /** Ratio between intrinsic canvas pixels and CSS pixels at the current layout. */
 function cssScale() {
-   const cssW = canvas.clientWidth || canvas.width;
+   // getBoundingClientRect() is transform-aware, so a CSS zoom on an ancestor
+   // (the lab's #viewer digital zoom) is reflected here. Using it instead of
+   // clientWidth keeps overlay strokes, dots and the info box a constant
+   // on-screen size at any zoom level, and consistent on small monitors.
+   const rect = canvas.getBoundingClientRect();
+   const cssW = rect.width || canvas.clientWidth || canvas.width;
    return canvas.width / cssW;
 }
 
@@ -437,9 +442,9 @@ function drawFaceapiScaffoldLabels(box, resized, scale) {
    if (typeof resized.age === 'number') lines.push(`eta stimata: ${Math.round(resized.age)}`);
    if (resized.gender) lines.push(`genere stimato: ${resized.gender}`);
 
-   const fontSize = 14 * scale;
-   const pad = 6 * scale;
-   const lineHeight = 18 * scale;
+   const fontSize = 12 * scale;
+   const pad = 5 * scale;
+   const lineHeight = 15 * scale;
 
    ctx.font = `${fontSize}px ${LABEL_FONT_FAMILY}`;
    const maxWidth = Math.max(...lines.map(line => ctx.measureText(line).width));

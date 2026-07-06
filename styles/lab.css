@@ -90,14 +90,13 @@ button { font-family: inherit; }
 #mesh3dOverlay { z-index: 4; pointer-events: none; }
 #bboxOverlay { z-index: 5; pointer-events: none; }
 
-/* View-bar drives which overlay canvas is visible via these classes (lab-ui.js) */
-.viewer[data-view="off"] #overlay,
-.viewer[data-view="off"] #mesh3dOverlay,
-.viewer[data-view="3d"] #overlay,
-.viewer[data-view="2d"] #mesh3dOverlay { opacity: 0; }
-.viewer[data-view="2d"] #overlay,
-.viewer[data-view="3d"] #mesh3dOverlay { opacity: 1; }
-#overlay, #mesh3dOverlay { transition: opacity .2s ease; }
+/* Effect canvases (#overlay = 2D, #mesh3dOverlay = 3D) stay visible always.
+   The 2D-points / 3D-mesh *visualisation* is drawn by bbox-overlay onto
+   #bboxOverlay via setOverlayMode() (see lab-ui.js). The View bar only hides
+   #bboxOverlay for the clean "Camera" view. */
+#viewer { transform-origin: 0 0; will-change: transform; }
+#bboxOverlay { transition: opacity .2s ease; }
+#bboxOverlay.gm-canvas-hidden { opacity: 0; }
 
 #placeholder {
   position: absolute;
@@ -134,8 +133,8 @@ button { font-family: inherit; }
 /* ============================ VIEW BAR ============================ */
 .viewbar {
   position: fixed; top: 0; left: 0; right: 0;
-  display: flex; justify-content: center;
-  padding: 14px 12px 8px; z-index: var(--z-chrome);
+  display: flex; justify-content: center; align-items: center; gap: 12px;
+  flex-wrap: wrap; padding: 12px; z-index: var(--z-chrome);
 }
 .selector {
   display: flex; gap: 2px; padding: 3px;
@@ -143,32 +142,37 @@ button { font-family: inherit; }
   border-radius: 999px; backdrop-filter: blur(8px);
 }
 .seg {
+  display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
   appearance: none; border: 0; background: transparent; color: var(--muted);
   font: 600 12.5px var(--sans); padding: 7px 13px; border-radius: 999px;
   cursor: pointer; white-space: nowrap;
+}
+.seg svg {
+  width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
 }
 .seg[aria-selected="true"] { background: var(--cream); color: #1a130b; }
 .seg:focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
 
 /* ============================ READOUT ============================ */
+/* Compact pill; lives in the top band beside the View bar. */
 .readout {
-  position: fixed; left: 14px; top: 64px;
-  display: flex; flex-direction: column; gap: 1px;
-  max-width: 200px; pointer-events: none; z-index: var(--z-chrome);
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 12px; border-radius: 999px;
+  background: rgba(12, 9, 6, .5); border: 1px solid var(--line-soft); backdrop-filter: blur(8px);
+  pointer-events: none;
 }
-.readout__top { display: flex; align-items: baseline; gap: 6px; }
-.readout__label { font: 9.5px var(--mono); letter-spacing: .14em; color: var(--muted); }
+.readout__label { font: 9px var(--mono); letter-spacing: .14em; color: var(--muted); }
 .readout__num {
-  font: 400 34px/.9 var(--serif); color: var(--yellow);
-  font-variant-numeric: tabular-nums; text-shadow: 0 2px 14px rgba(0, 0, 0, .5);
-  transition: color .4s ease;
+  font: 400 22px/1 var(--serif); color: var(--yellow);
+  font-variant-numeric: tabular-nums; transition: color .4s ease;
 }
-.readout__thr { font: 11px var(--mono); color: var(--muted); }
-.readout__state { font: italic 13px var(--serif); color: var(--cream); transition: color .4s ease; }
+.readout__thr { font: 10px var(--mono); color: var(--muted); }
+.readout__state { font: italic 12px var(--serif); color: var(--cream); white-space: nowrap; transition: color .4s ease; }
+.readout__spark { width: 56px; height: 16px; display: block; }
 .readout.broke .readout__num, .readout.broke .readout__state { color: var(--dev); }
 .readout.inert .readout__num { color: var(--faint); }
 .readout.inert .readout__state { color: var(--muted); }
-.readout__spark { margin-top: 3px; width: 110px; height: 16px; display: block; }
 .readout.inert .readout__spark { display: none; }
 
 /* ============================ ACTION RAIL ============================ */
@@ -269,8 +273,16 @@ button { font-family: inherit; }
 /* The engine's #settingsDrawer and #historyDrawer are reused as Screens. */
 .screen {
   position: fixed; inset: 0 0 var(--screen-bottom, 78px) 0; z-index: var(--z-screen);
-  background: var(--ink); overflow: auto; padding: 20px 18px 28px;
+  background: var(--ink); overflow: auto; padding: 62px 18px 28px;
 }
+.screen__close {
+  position: absolute; top: 14px; left: 14px; z-index: 2;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--line); background: rgba(20, 16, 12, .6); color: var(--fg);
+  cursor: pointer; display: grid; place-items: center;
+}
+.screen__close svg { width: 18px; height: 18px; }
+.screen__close:focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
 .screen.hidden { display: none; }
 .screen__kicker { font: 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
 .screen.device .screen__kicker { color: var(--dev); }
@@ -350,6 +362,21 @@ input[type="color"] { width: 40px; height: 28px; border: 0; background: none; pa
 .card { background: var(--panel); border: 1px solid var(--line-soft); border-radius: 14px; padding: 14px; }
 .card + .card { margin-top: 10px; }
 .cardlist { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+
+/* engine-rendered saved-face cards (#historyEntries) */
+.history-empty { grid-column: 1 / -1; color: var(--faint); font-size: 13px; }
+.history-card { display: flex; flex-direction: column; gap: 6px; background: var(--panel); border: 1px solid var(--line-soft); border-radius: 14px; padding: 10px; }
+.history-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; background: #1c130c; }
+.history-placeholder { width: 100%; aspect-ratio: 1/1; border-radius: 10px; display: grid; place-items: center; color: var(--faint); font: 11px var(--mono); background: radial-gradient(70% 60% at 50% 40%, #2c2318, #1a120b); }
+.history-id-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.history-id { font: 12px var(--mono); color: var(--cream); }
+.history-time { font-size: 11px; color: var(--faint); }
+.history-status-row { display: flex; gap: 6px; }
+.history-status-row > * { font: 10px var(--mono); color: var(--muted); border: 1px solid var(--line-soft); border-radius: 999px; padding: 2px 7px; }
+.history-actions { display: flex; justify-content: flex-end; }
+.history-delete { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; display: grid; place-items: center; }
+.history-delete svg { width: 15px; height: 15px; }
+.history-delete.confirm-pending { border-color: var(--orange); color: #ffb98b; font: 700 12px var(--sans); }
 
 /* logs */
 .logbox, #logBox {

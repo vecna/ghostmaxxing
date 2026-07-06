@@ -92,14 +92,14 @@ window.gstmxx = {
    getLastResult: () => state.lastKnownEffectResult,
    getMatchThreshold: () => state.MATCH_THRESHOLD,
    getMatchThreshold3d: () => state.MATCH_THRESHOLD_3D,
-      getActiveEffect3d: () => getActiveEffect3d(),
-      activateEffect3d: (id) => activateEffect3d(id),
-      deactivateEffect3d: () => deactivateEffect3d(),
-      toggleEffect3d: (id) => toggleEffect3d(id),
-      reloadPlugins3d: () => reloadPlugins3d(),
-      reloadPlugins: async () => reloadPlugins({
-         onFaceapiToggle: () => startEffectLoop(state, els)
-      }),
+   getActiveEffect3d: () => getActiveEffect3d(),
+   activateEffect3d: (id) => activateEffect3d(id),
+   deactivateEffect3d: () => deactivateEffect3d(),
+   toggleEffect3d: (id) => toggleEffect3d(id),
+   reloadPlugins3d: () => reloadPlugins3d(),
+   reloadPlugins: async () => reloadPlugins({
+      onFaceapiToggle: () => startEffectLoop(state, els)
+   }),
    get lastLandmarks3d() { return state.lastLandmarks3d; },
    set lastLandmarks3d(v) { state.lastLandmarks3d = v; },
    compositeAndDetect: (liveResult) => compositeAndDetect(liveResult),
@@ -217,7 +217,7 @@ function buildMediapipeSaveSection(saved3d, id) {
       similarity: 1.0, // just saved — perfect self-match
       matchedId: id,
       liveMaxSim: saved3d.liveInfo3d?.liveMaxSim ?? 1.0,
-      liveMaxId:  id,
+      liveMaxId: id,
       obfMaxSim: null,
       obfMaxId: null,
    };
@@ -430,7 +430,7 @@ async function tryCaptureThumbnailOnSave() {
  * @see init(); – the function is invoked at the bottom of the script to start the app.
  */
 async function init() {
-   state.db   = loadDb();
+   state.db = loadDb();
    state.db3d = loadDb3d();
    renderDbStats(state, els);
    resizeCanvas(els);

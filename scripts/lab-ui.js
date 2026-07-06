@@ -19,6 +19,9 @@
  * file has NOT been run against a camera + models; treat it as a first pass.
  */
 import { state } from './state.js';
+// Drives which landmark visualisation bbox-overlay paints onto #bboxOverlay.
+// INTEGRATION: export name confirmed in bbox-overlay.js (setOverlayMode).
+import { setOverlayMode } from './bbox-overlay.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -60,12 +63,20 @@ function toast(msg) {
 }
 
 /* ---- View bar ------------------------------------------------------------ */
+// Camera = clean (bbox canvas hidden); 2D points / 3D mesh = bbox-overlay draws
+// the corresponding visualisation onto #bboxOverlay. The effect canvases
+// (#overlay, #mesh3dOverlay) are never hidden.
+const VIEW_TO_MODE = { off: 'bbox', '2d': '2d', '3d': 'mesh' };
+function applyView(v) {
+  if (els.viewer) els.viewer.dataset.view = v;
+  const bbox = document.getElementById('bboxOverlay');
+  if (bbox) bbox.classList.toggle('gm-canvas-hidden', v === 'off');
+  try { setOverlayMode(VIEW_TO_MODE[v] || 'bbox'); } catch (_) { /* engine not ready */ }
+}
 $$('.seg').forEach(seg => on(seg, 'click', () => {
   $$('.seg').forEach(s => s.setAttribute('aria-selected', 'false'));
   seg.setAttribute('aria-selected', 'true');
-  if (els.viewer) els.viewer.dataset.view = seg.dataset.view;
-  // INTEGRATION: this only toggles canvas visibility (CSS). If the engine also
-  // gates *drawing* by overlay mode, cycle #overlayModeBtn here instead.
+  applyView(seg.dataset.view);
 }));
 
 /* ---- Screens (dock routing) --------------------------------------------- */
@@ -76,7 +87,16 @@ function openScreen(key) {
   const wasOpen = !el.classList.contains('hidden');
   hideAllScreens();
   $$('.navbtn').forEach(b => b.setAttribute('aria-current', 'false'));
-  if (!wasOpen) { el.classList.remove('hidden'); const btn = $(`.navbtn[data-screen="${key}"]`); if (btn) btn.setAttribute('aria-current', 'true'); }
+  if (!wasOpen) {
+    el.classList.remove('hidden');
+    const btn = $(`.navbtn[data-screen="${key}"]`); if (btn) btn.setAttribute('aria-current', 'true');
+    // The engine renders saved faces only on `dbChanged` / its own drawer-open;
+    // our IA opens the drawer directly, so nudge a re-render. Safe: bbox-overlay
+    // only resets its view when count === 0.
+    if (key === 'faces' && bus && state.db) {
+      try { bus.dispatchEvent(new CustomEvent('dbChanged', { detail: { count: (state.db.faces || []).length } })); } catch (_) {}
+    }
+  }
 }
 $$('.navbtn[data-screen]').forEach(b => on(b, 'click', () => {
   if (b.getAttribute('aria-disabled') === 'true') { toast('Record a clip first'); return; }
@@ -85,6 +105,7 @@ $$('.navbtn[data-screen]').forEach(b => on(b, 'click', () => {
 // screen close buttons (also bound by the engine; harmless to double-bind)
 on($('#closeSettingsBtn'), 'click', () => { hideAllScreens(); $$('.navbtn').forEach(b => b.setAttribute('aria-current', 'false')); });
 on($('#closeHistoryBtn'), 'click', () => { hideAllScreens(); $$('.navbtn').forEach(b => b.setAttribute('aria-current', 'false')); });
+$$('[data-close-screen]').forEach(b => on(b, 'click', () => { hideAllScreens(); $$('.navbtn').forEach(n => n.setAttribute('aria-current', 'false')); }));
 hideAllScreens();
 
 /* ---- Fullscreen / threshold display (Settings) --------------------------- */
@@ -226,31 +247,42 @@ function renderReadout(detail) {
   if (!els.readout) return;
   const hasBaseline = facesCount() > 0;
   els.readout.classList.toggle('inert', !hasBaseline);
-  if (!hasBaseline) { els.num.textContent = '—'; els.stateTxt.textContent = 'Save your face to measure'; return; }
-
-  // INTEGRATION: field names come from auto-find-loop's matchStateChanged.
-  // obfMinDist/obfMinId = after-effect; distance/matchedId = live clean face.
-  const d = detail || {};
-  const dist = (d.obfMinDist != null) ? d.obfMinDist : d.distance;
-  const id = (d.obfMinId != null) ? d.obfMinId : d.matchedId;
   const thr = currentThreshold();
   if (els.thr) els.thr.textContent = '/ ' + thr.toFixed(2);
 
-  if (dist == null || (d.detectionState && /no|none|absent/i.test(String(d.detectionState)))) {
+  if (!hasBaseline) { els.num.textContent = '—'; els.stateTxt.textContent = 'Save your face'; return; }
+
+  // The engine's matchStateChanged nests the face-api numbers under
+  // detail.faceapi (liveMinDist / obfMinDist / liveMinId / obfMinId).
+  const fa = detail && detail.faceapi;
+  if (!fa) {
+    // no fresh detail (e.g. a dbChanged refresh) — don't claim "no face"
+    if (els.num.textContent === '—') els.stateTxt.textContent = 'Measuring…';
+    return;
+  }
+  // After-effect distance when a Ghostyle is active; otherwise the live one.
+  const dist = (fa.obfMinDist != null) ? fa.obfMinDist
+    : (fa.liveMinDist != null) ? fa.liveMinDist
+      : fa.distance;
+  const id = (fa.obfMinId != null) ? fa.obfMinId
+    : (fa.liveMinId != null) ? fa.liveMinId
+      : fa.matchedId;
+  if (dist == null) {
     els.num.textContent = '—'; els.stateTxt.textContent = 'No face in frame';
     els.readout.classList.remove('broke'); return;
   }
-  const broke = dist >= thr;
-  els.num.textContent = Number(dist).toFixed(2);
+  const d = Number(dist);
+  const broke = d >= thr;
+  els.num.textContent = d.toFixed(2);
   els.readout.classList.toggle('broke', broke);
-  const who = (id != null) ? ` · face #${id}` : '';
+  const who = (id != null) ? ` · #${id}` : '';
   els.stateTxt.textContent = broke ? `Escaped${who}` : `Recognised${who}`;
-  pushSpark(dist, thr, broke);
+  pushSpark(d, thr, broke);
 }
 function pushSpark(v, thr, broke) {
   if (!els.spark) return;
   ui.history.push(v); if (ui.history.length > 40) ui.history.shift();
-  const w = 110, h = 16, max = 0.9, min = 0.1, clamp = x => Math.min(max, Math.max(min, x));
+  const w = 56, h = 16, max = 0.9, min = 0.1, clamp = x => Math.min(max, Math.max(min, x));
   const pts = ui.history.map((d, i) => `${(i / 39 * w).toFixed(1)},${(h - (clamp(d) - min) / (max - min) * h).toFixed(1)}`).join(' ');
   const thrY = h - (clamp(thr) - min) / (max - min) * h;
   els.spark.innerHTML = `<line x1="0" y1="${thrY}" x2="${w}" y2="${thrY}" stroke="#8a7b6a" stroke-width=".7" stroke-dasharray="3 3"/>` +
@@ -270,8 +302,73 @@ function wireBus() {
   }
 }
 
+/* ---- Bug 6: keep Copy always enabled ------------------------------------- */
+// The engine disables #copyMakeupBtn when no effect is active (dom.js
+// clearActiveEffect); we re-assert it. INTEGRATION: copying with no active
+// composite will copy whatever exportMakeup produces (likely the plain frame).
+(function keepCopyEnabled() {
+  const c = document.getElementById('copyMakeupBtn');
+  if (!c) return;
+  c.disabled = false;
+  if ('MutationObserver' in window) {
+    new MutationObserver(() => { if (c.disabled) c.disabled = false; })
+      .observe(c, { attributes: true, attributeFilter: ['disabled'] });
+  }
+})();
+
+/* ---- Bug 4: zoom (wheel + pinch) on the viewer --------------------------- */
+// Digital zoom for precise makeup placement. Transforms #viewer (scale+translate).
+// Detection still runs on the full raw video; brush coordinates keep mapping
+// correctly because they derive from the canvas's own bounding rect.
+(function zoomController() {
+  const vp = document.getElementById('viewer');
+  if (!vp) return;
+  const MIN = 1, MAX = 4;
+  let z = 1, px = 0, py = 0;
+  function clampPan() {
+    const w = vp.clientWidth, h = vp.clientHeight;
+    px = Math.min(0, Math.max(w * (1 - z), px));
+    py = Math.min(0, Math.max(h * (1 - z), py));
+  }
+  function apply() { clampPan(); vp.style.transform = z <= 1 ? '' : `translate(${px}px,${py}px) scale(${z})`; }
+  function zoomAt(clientX, clientY, factor) {
+    const r = vp.getBoundingClientRect();
+    const cx = clientX - r.left, cy = clientY - r.top;
+    const nz = Math.min(MAX, Math.max(MIN, z * factor));
+    if (nz === z) return;
+    px = cx - (cx - px) * (nz / z); py = cy - (cy - py) * (nz / z); z = nz;
+    if (z <= 1) { z = 1; px = 0; py = 0; }
+    apply();
+  }
+  vp.addEventListener('wheel', e => { e.preventDefault(); zoomAt(e.clientX, e.clientY, e.deltaY < 0 ? 1.12 : 1 / 1.12); }, { passive: false });
+  vp.addEventListener('dblclick', () => { z = 1; px = 0; py = 0; apply(); });
+
+  const pts = new Map(); let base = null;
+  const snap = () => { const [a, b] = [...pts.values()]; return { dist: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY), mx: (a.clientX + b.clientX) / 2, my: (a.clientY + b.clientY) / 2, z, px, py }; };
+  vp.addEventListener('pointerdown', e => { pts.set(e.pointerId, e); if (pts.size === 2) base = snap(); });
+  vp.addEventListener('pointermove', e => {
+    if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, e);
+    if (pts.size === 2 && base) {
+      const [a, b] = [...pts.values()];
+      const dist = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+      const mx = (a.clientX + b.clientX) / 2, my = (a.clientY + b.clientY) / 2;
+      const r = vp.getBoundingClientRect();
+      const cx = base.mx - r.left, cy = base.my - r.top;
+      z = Math.min(MAX, Math.max(MIN, base.z * (dist / base.dist)));
+      px = cx - (cx - base.px) * (z / base.z) + (mx - base.mx);
+      py = cy - (cy - base.py) * (z / base.z) + (my - base.my);
+      if (z <= 1) { z = 1; px = 0; py = 0; }
+      apply();
+    }
+  });
+  const up = e => { pts.delete(e.pointerId); if (pts.size < 2) base = null; };
+  vp.addEventListener('pointerup', up);
+  vp.addEventListener('pointercancel', up);
+})();
+
 /* ---- boot ---------------------------------------------------------------- */
 async function boot() {
+  applyView('off');
   ui.pins = await resolvePins();
   paintPins(); buildPinSelects(); refreshUploadGate(); renderReadout(null); reflectActive();
 }
