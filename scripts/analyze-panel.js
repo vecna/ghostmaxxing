@@ -453,26 +453,3 @@ export function generateReportText() {
 
    return lines.join('\n');
 }
-
-export function _renderForTests(snapshot, faceapiResult, extra = {}) {
-   latestReportData = panelStateFromAnalysis({
-      snapshot,
-      faceResult: faceapiResult,
-      dominantEmotion: faceapiResult ? getDominantEmotion(faceapiResult.expressions) : null,
-      dbHasFaces: !!extra.dbHasFaces,
-      closestId: extra.closestId ?? null,
-      closestDistance: extra.closestDistance ?? null,
-      matchHeadline: extra.matchHeadline || null,
-      visualComparison: extra.visualComparison || null,
-      embedderBestId: extra.embedderBestId ?? null,
-      embedderBestSimilarity: extra.embedderBestSimilarity ?? null,
-      embedderClosestSimilarity: extra.embedderClosestSimilarity ?? null,
-   });
-   return latestReportData;
-}
-
-export function _renderInfoForTests(snapshot, faceapiResult, extra = {}) {
-   const analysis = _renderForTests(snapshot, faceapiResult, extra);
-   renderInfo(analysis);
-   return ensureModalEls().info?.innerHTML || '';
-}

@@ -652,3 +652,33 @@ export function asErrorLabel(err) {
    if (err instanceof Error) return `${err.name}: ${err.message}`;
    return String(err);
 }
+
+/**
+ * Keeps the hidden 3D plugin canvas matched to the live overlay dimensions so
+ * UV paint is composited into the same coordinate space as the camera frame.
+ *
+ * @param {HTMLCanvasElement} canvas  The hidden 3D plugin canvas.
+ * @param {HTMLCanvasElement} overlayEl  The main overlay canvas.
+ * @returns {void}
+ * @see initPlugins3dLoader - Called on each `landmarks3d` frame before drawing the active ghostyle.
+ */
+export function syncSize(canvas, overlayEl) {
+   if (canvas.width !== overlayEl.width || canvas.height !== overlayEl.height) {
+      canvas.width = overlayEl.width;
+      canvas.height = overlayEl.height;
+   }
+}
+
+/**
+ * Mirrors the 3D plugin canvas with the main overlay transform, preserving the
+ * webcam mirror mode when UV-painted effects are displayed or composited.
+ *
+ * @param {HTMLCanvasElement} canvas  The hidden 3D plugin canvas.
+ * @param {HTMLCanvasElement} overlayEl  The main overlay canvas.
+ * @returns {void}
+ * @see initPlugins3dLoader - Called on each `landmarks3d` frame before drawing the active ghostyle.
+ */
+export function syncMirror(canvas, overlayEl) {
+   const transform = overlayEl.style.transform;
+   if (canvas.style.transform !== transform) canvas.style.transform = transform;
+}

@@ -1,7 +1,7 @@
 /**
  * @module bbox-overlay
  * @description
- * Bbox match-state overlay — add-on for ghostati.html.
+ * Bbox match-state overlay — layer for Ghostmaxxing.
  *
  * Draws a bounding box around the detected face on its dedicated canvas
  * (`#bboxOverlay`), colored to reflect the latest match state computed by the
@@ -25,7 +25,7 @@
  */
 
 import { state } from './state.js';
-import { avgPoint, drawClosedPath, drawOpenPath, roundRect } from './utils.js';
+import { avgPoint, drawClosedPath, drawOpenPath, roundRect, syncMirror, syncSize } from './utils.js';
 
 // ---------- Style constants ----------
 
@@ -213,30 +213,7 @@ export function setOverlayMode(mode) {
    return view.overlayMode;
 }
 
-/**
- * @returns {'bbox'|'mesh'|'entrambi'|'2d'}
- */
-export function cycleOverlayMode() {
-   const keys = Object.keys(OVERLAY_MODES);
-   const index = keys.indexOf(view.overlayMode);
-   return setOverlayMode(keys[(index + 1) % keys.length]);
-}
-
 // ---------- Geometry / rendering helpers ----------
-
-/** Match the bbox canvas's intrinsic size to the engine overlay's. */
-function syncSize() {
-   if (canvas.width !== overlayEl.width || canvas.height !== overlayEl.height) {
-      canvas.width = overlayEl.width;
-      canvas.height = overlayEl.height;
-   }
-}
-
-/** Mirror the bbox canvas in lockstep with the engine overlay (CSS transform). */
-function syncMirror() {
-   const t = overlayEl.style.transform;
-   if (canvas.style.transform !== t) canvas.style.transform = t;
-}
 
 /** Clear the entire bbox canvas. */
 function clearBbox() {
@@ -246,8 +223,8 @@ function clearBbox() {
 /** Repaint the shared overlay canvas from the latest cached streams. */
 function renderOverlay() {
    if (!canvas || !overlayEl || !ctx) return;
-   syncSize();
-   syncMirror();
+   syncSize(canvas, overlayEl);
+   syncMirror(canvas, overlayEl);
    clearBbox();
    if (performance.now() < suppressUntil) return;
 

@@ -407,7 +407,6 @@ describe('engine core exports', () => {
 
     drawGhostyleOverlay(result, false);
 
-    expect(console.log).toHaveBeenCalledWith('drawGhostyleOverlay: no detection?', expect.any(Object));
     expect(state.lastKnownEffectResult).toBe(null);
   });
 

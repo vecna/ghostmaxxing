@@ -50,12 +50,11 @@ document.body.innerHTML = `
   <button id="toggleSettingsBtn"></button>
   <button id="closeSettingsBtn"></button>
   <div id="settingsDrawer" class="settings-drawer hidden"></div>
-  <button id="toggleHistoryBtn"></button>
-  <button id="closeHistoryBtn"></button>
   <div id="historyDrawer" class="settings-drawer hidden"></div>
   <div id="historyEntries"></div>
   <button id="saveBtn"></button>
   <button id="analyzeBtn"></button>
+  <button id="recordBtn"></button>
   <button id="overlayModeBtn">Vista: bbox</button>
   <span id="dbCountBadge"></span>
   <button id="clearDbBtn"></button>

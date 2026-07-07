@@ -12,7 +12,7 @@ import { state } from './state.js';
 import { setLog } from './utils.js';
 import { createUvRenderer } from './ghostyle3d-uv-renderer.js';
 import { clearActiveEffect } from './dom.js';
-import { asErrorLabel } from './utils.js';
+import { asErrorLabel, syncMirror, syncSize } from './utils.js';
 
 const runtime = {
    initialized: false,
@@ -90,32 +90,6 @@ function requireInit() {
    if (!runtime.initialized) {
       throw new Error('[plugins3d] initPlugins3dLoader() non chiamato');
    }
-}
-
-/**
- * Keeps the hidden 3D plugin canvas matched to the live overlay dimensions so
- * UV paint is composited into the same coordinate space as the camera frame.
- *
- * @returns {void}
- * @see initPlugins3dLoader - Called on each `landmarks3d` frame before drawing the active ghostyle.
- */
-function syncSize() {
-   if (runtime.canvas.width !== runtime.overlayEl.width || runtime.canvas.height !== runtime.overlayEl.height) {
-      runtime.canvas.width = runtime.overlayEl.width;
-      runtime.canvas.height = runtime.overlayEl.height;
-   }
-}
-
-/**
- * Mirrors the 3D plugin canvas with the main overlay transform, preserving the
- * webcam mirror mode when UV-painted effects are displayed or composited.
- *
- * @returns {void}
- * @see initPlugins3dLoader - Called on each `landmarks3d` frame before drawing the active ghostyle.
- */
-function syncMirror() {
-   const transform = runtime.overlayEl.style.transform;
-   if (runtime.canvas.style.transform !== transform) runtime.canvas.style.transform = transform;
 }
 
 /**
@@ -592,8 +566,8 @@ export function initPlugins3dLoader(options = {}) {
 
    runtime.events.addEventListener('landmarks3d', (e) => {
       const landmarks = e.detail && e.detail.landmarks;
-      syncSize();
-      syncMirror();
+      syncSize(runtime.canvas, runtime.overlayEl);
+      syncMirror(runtime.canvas, runtime.overlayEl);
       clearCanvas();
 
       if (!runtime.activePluginId || !landmarks) return;

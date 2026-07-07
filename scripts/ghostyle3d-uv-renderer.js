@@ -24,6 +24,20 @@ export function createUvRenderer(options) {
 
    if (!uvPath) throw new Error('[uv-renderer] uvPath obbligatorio');
 
+   function resolveUvPath(path) {
+      try {
+         return new URL(path).href;
+      } catch {
+         const base =
+            (typeof document !== 'undefined' && document.baseURI && document.baseURI !== 'about:blank')
+               ? document.baseURI
+               : (typeof window !== 'undefined' && window.location && window.location.href && window.location.href !== 'about:blank')
+                  ? window.location.href
+                  : import.meta.url;
+         return new URL(path, base).href;
+      }
+   }
+
    let uvData = null;
    let loadPromise = null;
 
@@ -31,7 +45,7 @@ export function createUvRenderer(options) {
       if (uvData) return Promise.resolve();
       if (loadPromise) return loadPromise;
 
-      loadPromise = fetch(uvPath)
+      loadPromise = fetch(resolveUvPath(uvPath))
          .then((response) => {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return response.json();

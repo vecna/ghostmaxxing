@@ -388,30 +388,6 @@ function renderHistoryEntries() {
    }
 }
 
-function openHistoryDrawer() {
-   if (!els.historyDrawer) return;
-   if (els.settingsDrawer) els.settingsDrawer.classList.add('hidden');
-   if (!historyInitialized) {
-      historyInitialized = true;
-      renderHistoryEntries();
-   }
-   els.historyDrawer.classList.remove('hidden');
-}
-
-function closeHistoryDrawer() {
-   if (!els.historyDrawer) return;
-   els.historyDrawer.classList.add('hidden');
-}
-
-function toggleHistoryDrawer() {
-   if (!els.historyDrawer) return;
-   if (els.historyDrawer.classList.contains('hidden')) {
-      openHistoryDrawer();
-      return;
-   }
-   closeHistoryDrawer();
-}
-
 async function tryCaptureThumbnailOnSave() {
    const detection = state.lastKnownEffectResult?.detection?.box
       ? { box: state.lastKnownEffectResult.detection.box }
@@ -435,12 +411,6 @@ async function init() {
    renderDbStats(state, els);
    resizeCanvas(els);
 
-   if (els.toggleHistoryBtn) {
-      els.toggleHistoryBtn.addEventListener('click', toggleHistoryDrawer);
-   }
-   if (els.closeHistoryBtn) {
-      els.closeHistoryBtn.addEventListener('click', closeHistoryDrawer);
-   }
    if (els.toggleSettingsBtn && els.historyDrawer && els.settingsDrawer) {
       els.toggleSettingsBtn.addEventListener('click', () => {
          if (!els.settingsDrawer.classList.contains('hidden')) {

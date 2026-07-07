@@ -115,6 +115,7 @@ describe('main.setBusy', () => {
       els.analyzeBtn,
       els.overlayModeBtn,
       els.clearDbBtn,
+      els.recordBtn,
     ].forEach(btn => {
       if (btn) btn.disabled = false;
     });
@@ -155,5 +156,15 @@ describe('main.setBusy', () => {
     setBusy(false);
 
     expect(els.copyMakeupBtn.disabled).toBe(false);
+  });
+
+  it('keeps record button disabled while recording, even when the UI is not busy', () => {
+    state.isRecording = true;
+
+    setBusy(false);
+
+    expect(els.recordBtn.disabled).toBe(true);
+
+    state.isRecording = false;
   });
 });

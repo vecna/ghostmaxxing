@@ -178,8 +178,8 @@ export function drawGhostyleOverlay(result, includeDetectionScaffold = false) {
    ctx.clearRect(0, 0, els.overlay.width, els.overlay.height);
    const resized = faceapi.resizeResults(result, { width: els.overlay.width, height: els.overlay.height });
    if (!resized.detection) {
-      console.log("drawGhostyleOverlay: no detection?", resized);
-      // messo questo log perché a volte è undefined?
+      // console.log("drawGhostyleOverlay: no detection?", resized);
+      // added because sometimes this is undefined?
       return;
    }
    if (includeDetectionScaffold) drawDetectionScaffold(resized);

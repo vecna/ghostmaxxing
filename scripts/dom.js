@@ -42,7 +42,6 @@ export const els = {
    toggleSettingsBtn: document.getElementById('toggleSettingsBtn'),
    closeSettingsBtn: document.getElementById('closeSettingsBtn'),
    settingsDrawer: document.getElementById('settingsDrawer'),
-   toggleHistoryBtn: document.getElementById('toggleHistoryBtn'),
    closeHistoryBtn: document.getElementById('closeHistoryBtn'),
    historyDrawer: document.getElementById('historyDrawer'),
    historyEntries: document.getElementById('historyEntries'),
