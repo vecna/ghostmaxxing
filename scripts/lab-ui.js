@@ -165,6 +165,24 @@ function ghostyleName(id) {
 }
 function shortCap(name) { return (name || '').split(/\s+/).pop().slice(0, 8) || '—'; }
 
+function updatePinButtonStates() {
+  $$('.ghostyle-row').forEach(row => {
+    const id = row.dataset.effect;
+    const pin1Btn = row.querySelector('.pin-btn--1');
+    const pin2Btn = row.querySelector('.pin-btn--2');
+    if (pin1Btn) {
+      const isPinned1 = ui.pins[0] === id;
+      pin1Btn.classList.toggle('active', isPinned1);
+      pin1Btn.setAttribute('aria-pressed', isPinned1 ? 'true' : 'false');
+    }
+    if (pin2Btn) {
+      const isPinned2 = ui.pins[1] === id;
+      pin2Btn.classList.toggle('active', isPinned2);
+      pin2Btn.setAttribute('aria-pressed', isPinned2 ? 'true' : 'false');
+    }
+  });
+}
+
 function paintPins() {
   ui.pins.forEach((id, i) => {
     const n = i + 1;
@@ -177,6 +195,7 @@ function paintPins() {
     if (pic) pic.innerHTML = id ? iconFor(id) : '';
     if (pnm) pnm.textContent = name;
   });
+  updatePinButtonStates();
 }
 function proxyPin(i) {
   const id = ui.pins[i]; if (!id) return;
@@ -187,19 +206,40 @@ function proxyPin(i) {
 on($('#gm-slot1'), 'click', () => proxyPin(0));
 on($('#gm-slot2'), 'click', () => proxyPin(1));
 
-function buildPinSelects() {
-  const all = $$('.preview-btn[data-effect]', els.ghostyles).map(b => ({ id: b.dataset.effect, name: ghostyleName(b.dataset.effect) }));
-  [1, 2].forEach(n => {
-    const sel = $(`#gm-pin${n}-sel`); if (!sel) return;
-    sel.innerHTML = all.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
-    if (ui.pins[n - 1]) sel.value = ui.pins[n - 1];
-    on(sel, 'change', () => {
-      // turn the current slot's effect off if it's active before swapping
-      const cur = $(`.preview-btn[data-effect="${ui.pins[n - 1]}"]`);
-      if (cur && cur.classList.contains('active')) cur.click();
-      ui.pins[n - 1] = sel.value; paintPins();
-      toast('Rail slot ' + n + ' → ' + ghostyleName(sel.value));
-    });
+function wirePinClicks() {
+  on($('#ghostylesContainer'), 'click', e => {
+    const pinBtn = e.target.closest('.pin-btn');
+    if (!pinBtn) return;
+    
+    const row = pinBtn.closest('.ghostyle-row');
+    if (!row) return;
+    const id = row.dataset.effect;
+    
+    const isPin1 = pinBtn.classList.contains('pin-btn--1');
+    const slotIdx = isPin1 ? 0 : 1;
+    const slotNum = slotIdx + 1;
+
+    // Turn off previous pinned ghostyle if it was active
+    const prevId = ui.pins[slotIdx];
+    if (prevId) {
+      const prevBtn = $(`.preview-btn[data-effect="${prevId}"]`);
+      if (prevBtn && prevBtn.classList.contains('active')) {
+        prevBtn.click();
+      }
+    }
+
+    // If this ghostyle was already in the other slot, clear it from the other slot
+    const otherIdx = 1 - slotIdx;
+    if (ui.pins[otherIdx] === id) {
+      ui.pins[otherIdx] = null;
+    }
+
+    // Update this slot
+    ui.pins[slotIdx] = id;
+
+    paintPins();
+    reflectActive();
+    toast(`Pinned to Slot ${slotNum} → ${ghostyleName(id)}`);
   });
 }
 
@@ -219,7 +259,6 @@ function reflectActive() {
 function hasParamRows() { const p = $('#plugin3dParamsPanel'); return !!(p && p.querySelector('.pp-row')); }
 function showPluginBar(id) {
   if (!els.pluginbar) return;
-  if (els.pbTitle) els.pbTitle.innerHTML = (iconFor(id).replace('width="24"', 'width="18"')) + ' ' + ghostyleName(id);
   els.pluginbar.classList.add('show'); els.pluginbar.setAttribute('aria-hidden', 'false');
   if (els.dock) els.dock.style.display = 'none';
   hideAllScreens();
@@ -297,8 +336,8 @@ function wireBus() {
   bus.addEventListener('dbChanged', () => renderReadout(null));
   // MutationObserver as a backstop for active-state mirroring
   if (els.ghostyles && 'MutationObserver' in window) {
-    new MutationObserver(() => reflectActive())
-      .observe(els.ghostyles, { attributes: true, subtree: true, attributeFilter: ['class'] });
+    new MutationObserver(() => { reflectActive(); updatePinButtonStates(); })
+      .observe(els.ghostyles, { attributes: true, childList: true, subtree: true, attributeFilter: ['class'] });
   }
 }
 
@@ -370,7 +409,7 @@ function wireBus() {
 async function boot() {
   applyView('off');
   ui.pins = await resolvePins();
-  paintPins(); buildPinSelects(); refreshUploadGate(); renderReadout(null); reflectActive();
+  paintPins(); wirePinClicks(); refreshUploadGate(); renderReadout(null); reflectActive();
 }
 // The engine builds ghostyle buttons during its async init and fires
 // `ghostatiReady` on window when state/els/window.gstmxx are ready.

@@ -333,14 +333,54 @@ input[type="color"] { width: 40px; height: 28px; border: 0; background: none; pa
 
 /* Ghostyle buttons the engine builds into #ghostylesContainer */
 .stack { display: flex; flex-direction: column; gap: 8px; padding: 8px 0; }
+.ghostyle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
 .preview-btn {
   display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
   background: var(--panel); border: 1px solid var(--line-soft); border-radius: 12px;
   padding: 11px 12px; color: var(--fg); cursor: pointer;
 }
+.ghostyle-row .preview-btn {
+  flex: 1;
+  width: auto;
+}
 .preview-btn.active { border-color: var(--orange); background: rgba(253, 85, 3, .12); }
 .preview-btn__title { font-size: 14px; font-weight: 600; }
 .preview-btn__meta { font-size: 12px; color: var(--muted); }
+
+.ghostyle-pins {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.pin-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--line-soft);
+  background: var(--panel-2);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 600 13px var(--sans);
+  transition: all 0.18s ease;
+}
+.pin-btn:hover {
+  background: var(--panel);
+  border-color: var(--line);
+  color: var(--fg);
+}
+.pin-btn.active {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #fff;
+}
 
 /* pinned-ghostyle rows in Settings */
 .pin { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }

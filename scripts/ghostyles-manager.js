@@ -267,6 +267,34 @@ function addGhostyleBtn(record) {
    btn.dataset.effect = record.id;
    els.ghostylesContainer.appendChild(btn);
 
+   const row = document.createElement('div');
+   row.className = 'ghostyle-row';
+   row.dataset.effect = record.id;
+
+   if (btn.parentNode) {
+      btn.parentNode.insertBefore(row, btn);
+   }
+   row.appendChild(btn);
+
+   const pinsDiv = document.createElement('div');
+   pinsDiv.className = 'ghostyle-pins';
+
+   const pin1 = document.createElement('button');
+   pin1.className = 'pin-btn pin-btn--1';
+   pin1.title = 'Pin to Slot 1';
+   pin1.setAttribute('aria-label', `Pin ${record.name} to Slot 1`);
+   pin1.innerHTML = '1';
+   pinsDiv.appendChild(pin1);
+
+   const pin2 = document.createElement('button');
+   pin2.className = 'pin-btn pin-btn--2';
+   pin2.title = 'Pin to Slot 2';
+   pin2.setAttribute('aria-label', `Pin ${record.name} to Slot 2`);
+   pin2.innerHTML = '2';
+   pinsDiv.appendChild(pin2);
+
+   row.appendChild(pinsDiv);
+
    return btn;
 }
 
