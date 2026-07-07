@@ -11,9 +11,15 @@
   --gm-text: #071a33;
   --gm-muted: #253a54;
   --gm-green: #063f32;
+  --gm-green-soft: #1e6b4f;
   --gm-yellow: #f3c747;
   --gm-cream: #ffe7a8;
   --gm-border: rgba(5, 5, 5, 0.22);
+  --gm-border-strong: rgba(5, 5, 5, 0.55);
+  --gm-panel: rgba(255, 231, 168, 0.16);
+  --gm-panel-strong: rgba(255, 231, 168, 0.4);
+  --gm-shadow-block: 4px 4px 0 rgba(5, 5, 5, 0.13);
+  --gm-focus-ring: 2px solid rgba(5, 5, 5, 0.55);
   --page-max: 1440px;
   --camera-band-min-width: 2400px;
   --camera-band-height: clamp(10rem, 23vw, 21rem);
@@ -84,6 +90,14 @@ a {
 
 .wordmark {
   display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.22rem;
+  max-width: min(100%, 32rem);
+}
+
+.wordmark__main {
+  display: inline-flex;
   align-items: flex-start;
   gap: 0.7rem;
 }
@@ -93,12 +107,6 @@ a {
   height: auto;
   flex: 0 0 auto;
   margin-top: 0.05rem;
-}
-
-.wordmark__text {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 0.15rem;
 }
 
 .wordmark__title {
@@ -114,6 +122,7 @@ a {
   font-size: 0.82rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  line-height: 1.25;
   color: var(--gm-text);
   opacity: 0.78;
 }
@@ -142,7 +151,7 @@ a {
   align-items: center;
   gap: 0.55rem;
   padding: 0.9rem 1.4rem;
-  border: 1.5px solid rgba(5, 5, 5, 0.65);
+  border: 1.5px solid var(--gm-border-strong);
   color: var(--gm-ink);
   font-weight: 700;
 }

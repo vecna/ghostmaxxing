@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 142" width="700" height="142" role="img" aria-labelledby="title desc">
 <title id="title">Ghostmaxxing</title>
-<desc id="desc">The Ghostmaxxing wordmark, paired with the broken-lens camera mark: privacy activism meets public-research platform.</desc>
+<desc id="desc">The Ghostmaxxing wordmark, paired with the broken-lens camera mark: a public lab for testing face-recognition camouflage.</desc>
 <g transform="translate(70 40)">
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5"/>
@@ -12,5 +12,5 @@
   </g>
 </g>
 <text x="170" y="72" font-family="&quot;Iowan Old Style&quot;, &quot;Palatino Linotype&quot;, &quot;Book Antiqua&quot;, Palatino, Georgia, serif" font-weight="700" font-size="46" letter-spacing="-1.5" fill="#050505">Ghostmaxxing</text>
-<text x="172" y="96" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-weight="600" font-size="12" letter-spacing="1.5" fill="#071a33">PRIVACY ACTIVISM MEETS PUBLIC-RESEARCH PLATFORM</text>
+<text x="172" y="96" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-weight="600" font-size="12" letter-spacing="1.1" fill="#071a33">A PUBLIC LAB FOR TESTING FACE-RECOGNITION CAMOUFLAGE</text>
 </svg>

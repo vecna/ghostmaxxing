@@ -8,6 +8,9 @@
   "visual-direction": {
     "title": "(internal) Visual direction"
   },
+  "international-copy": {
+    "title": "(internal) International copy"
+  },
   "globaleaks-submission-channels": {
     "title": "(internal) Leaking channels"
   }

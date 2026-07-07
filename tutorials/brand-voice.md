@@ -7,7 +7,7 @@ Ghostmaxxing is a public research lab for testing, explaining, and questioning f
 The project should sound like a tool made by people who understand code, research, public space, and political risk — without overselling protection or turning critique into spectacle.
 
 Ghostmaxxing is not a magic invisibility product.
-Ghostmaxxing is a test bench, a visual lab, and a civic intelligence gateway.
+Ghostmaxxing is a public lab, a visual test bench, and an investigative archive gateway.
 
 ## Core voice
 
@@ -23,13 +23,13 @@ Use a tone that is:
 - skeptical of biometric inevitability
 - respectful of people whose faces, bodies, and data are affected
 
-The voice is: cyberlab + festival + evidence archive.
+The public voice is: activist cultural lab + investigative archive + technically grounded workshop.
 
 Think:
 
-- a public research console
+- an activist, exhibition-like interface
 - a workshop table
-- a browser-based adversarial lab
+- a browser-based adversarial lab that explains its limits
 - an exhibition label that still respects technical detail
 - a software project that knows it lives in political reality
 
@@ -44,7 +44,7 @@ Avoid sounding like:
 
 ## One-line description
 
-Ghostmaxxing is a browser-based lab for testing face-recognition camouflage and documenting the technical, cultural, and political history of anti-biometric appearance design.
+Ghostmaxxing is a public lab for testing face-recognition camouflage and documenting the technical, cultural, and political history of anti-biometric appearance design.
 
 ## Short description
 
@@ -52,7 +52,7 @@ Ghostmaxxing lets people experiment with face-recognition camouflage directly in
 
 ## Longer description
 
-Ghostmaxxing is a Web AR laboratory for developing and testing anti-biometric camouflage. It lets developers, researchers, digital rights groups, artists, and curious people apply modular visual overlays to a face, compare recognition behavior before and after the intervention, and understand where this field comes from through a curated technical and cultural references archive.
+Ghostmaxxing is a public Web AR lab for developing and testing anti-biometric camouflage. It lets developers, researchers, digital rights groups, artists, and curious people apply modular visual overlays to a face, compare recognition behavior before and after the intervention, and understand where this field comes from through a curated technical and cultural references archive.
 
 It does not guarantee anonymity. It does not defeat all facial recognition systems. It helps make biometric claims testable, visible, and discussable.
 
@@ -543,7 +543,7 @@ Before publishing a new page or section, check:
 - Does it help a non-specialist understand the stakes?
 - Does it avoid collecting or encouraging unnecessary biometric data?
 - Does it use consistent names: Ghostmaxxing, Ghòstati, Ghostyle?
-- Does it preserve the cyberlab + festival tone?
+- Does it preserve the activist cultural lab + investigative archive tone?
 - Does it make the reporting node visible when discussing real-world deployments?
 
 ## Short boilerplate

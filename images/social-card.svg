@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-labelledby="title desc">
+<title id="title">Ghostmaxxing social card</title>
+<desc id="desc">Orange editorial social card for Ghostmaxxing with the broken-lens camera mark and camera-flower landscape motif.</desc>
+<rect width="1200" height="630" fill="#f26a1b"/>
+<rect y="0" width="1200" height="630" fill="url(#warmth)"/>
+<defs>
+  <linearGradient id="warmth" x1="0" x2="0" y1="0" y2="1">
+    <stop offset="0" stop-color="#fd5503"/>
+    <stop offset="1" stop-color="#df5512"/>
+  </linearGradient>
+</defs>
+<image href="ghostmaxxing-mark.svg" x="82" y="76" width="142" height="120" preserveAspectRatio="xMidYMid meet"/>
+<text x="250" y="154" font-family="Iowan Old Style, Palatino Linotype, Book Antiqua, Palatino, Georgia, serif" font-size="78" font-weight="700" fill="#050505">Ghostmaxxing</text>
+<text x="88" y="298" font-family="Iowan Old Style, Palatino Linotype, Book Antiqua, Palatino, Georgia, serif" font-size="92" font-weight="700" fill="#050505">Disrupt the read.</text>
+<text x="92" y="362" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="30" font-weight="760" fill="#071a33">A public lab for testing face-recognition camouflage</text>
+<text x="92" y="407" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="24" font-weight="620" fill="#071a33">Browser experiments, Ghostyles, references, and reporting.</text>
+<image href="homepage-camera-band.svg" x="-510" y="362" width="1940" height="291" preserveAspectRatio="xMidYMax slice" opacity="0.96"/>
+</svg>
