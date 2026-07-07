@@ -16,15 +16,15 @@ export function onDraw(ctx, landmarks) {
   const nose = landmarks.getNose();
 
   ctx.save();
-  if (!Ghostati.clipLeftHalf(ctx, landmarks)) {
+  if (!gstmxx.clipLeftHalf(ctx, landmarks)) {
     ctx.restore();
     return;
   }
 
-  Ghostati.drawContourBand(ctx, [jaw[1], jaw[2], jaw[3], jaw[4], jaw[5]], 'contour 2D');
-  Ghostati.drawContourBand(ctx, [jaw[15], jaw[14], jaw[13], jaw[12], jaw[11]], 'contour 2D');
-  Ghostati.drawContourBand(ctx, [nose[0], nose[1], nose[2]], 'nose 2D');
-  Ghostati.drawContourBand(ctx, [nose[4], nose[5], nose[6]], 'nose 2D');
+  gstmxx.drawContourBand(ctx, [jaw[1], jaw[2], jaw[3], jaw[4], jaw[5]], 'contour 2D');
+  gstmxx.drawContourBand(ctx, [jaw[15], jaw[14], jaw[13], jaw[12], jaw[11]], 'contour 2D');
+  gstmxx.drawContourBand(ctx, [nose[0], nose[1], nose[2]], 'nose 2D');
+  gstmxx.drawContourBand(ctx, [nose[4], nose[5], nose[6]], 'nose 2D');
 
   ctx.restore();
 }
@@ -34,10 +34,10 @@ export function onDraw(ctx, landmarks) {
  * E' lo stesso intento visivo del contour 2D, ma con pipeline mesh UV.
  */
 export function paintUV(ctx) {
-  const landmarks3d = Ghostati.lastLandmarks3d;
+  const landmarks3d = gstmxx.lastLandmarks3d;
 
   ctx.save();
-  if (!Ghostati.clipRightHalfUV(ctx, landmarks3d)) {
+  if (!gstmxx.clipRightHalfUV(ctx, landmarks3d)) {
     ctx.restore();
     return;
   }

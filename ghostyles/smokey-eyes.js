@@ -19,21 +19,21 @@ export function onDraw(ctx, landmarks) {
   const rightBrow = landmarks.getRightEyeBrow();
 
   ctx.save();
-  if (!Ghostati.clipLeftHalf(ctx, landmarks)) {
+  if (!gstmxx.clipLeftHalf(ctx, landmarks)) {
     ctx.restore();
     return;
   }
 
-  const leftShape = Ghostati.expandEyePolygon(leftEye, leftBrow, 1.32, 0.8).map((p) => Ghostati.point(p.x - 8, p.y + 4));
-  const rightShape = Ghostati.expandEyePolygon(rightEye, rightBrow, 1.32, 0.8).map((p) => Ghostati.point(p.x + 8, p.y + 4));
+  const leftShape = gstmxx.expandEyePolygon(leftEye, leftBrow, 1.32, 0.8).map((p) => gstmxx.point(p.x - 8, p.y + 4));
+  const rightShape = gstmxx.expandEyePolygon(rightEye, rightBrow, 1.32, 0.8).map((p) => gstmxx.point(p.x + 8, p.y + 4));
 
-  Ghostati.drawClosedPath(ctx, leftShape, 'rgba(125, 86, 172, 0.32)', 'rgba(194, 157, 255, 0.44)', 2);
-  Ghostati.drawClosedPath(ctx, rightShape, 'rgba(125, 86, 172, 0.32)', 'rgba(194, 157, 255, 0.44)', 2);
-  Ghostati.drawOpenPath(ctx, [leftEye[0], leftEye[1], leftEye[2], leftEye[3]], 'rgba(244, 236, 255, 0.92)', 2.6);
-  Ghostati.drawOpenPath(ctx, [rightEye[0], rightEye[1], rightEye[2], rightEye[3]], 'rgba(244, 236, 255, 0.92)', 2.6);
+  gstmxx.drawClosedPath(ctx, leftShape, 'rgba(125, 86, 172, 0.32)', 'rgba(194, 157, 255, 0.44)', 2);
+  gstmxx.drawClosedPath(ctx, rightShape, 'rgba(125, 86, 172, 0.32)', 'rgba(194, 157, 255, 0.44)', 2);
+  gstmxx.drawOpenPath(ctx, [leftEye[0], leftEye[1], leftEye[2], leftEye[3]], 'rgba(244, 236, 255, 0.92)', 2.6);
+  gstmxx.drawOpenPath(ctx, [rightEye[0], rightEye[1], rightEye[2], rightEye[3]], 'rgba(244, 236, 255, 0.92)', 2.6);
 
-  const lc = Ghostati.avgPoint(leftEye);
-  Ghostati.drawLabel(ctx, 'smokey 2D', lc.x - 24, lc.y - 36);
+  const lc = gstmxx.avgPoint(leftEye);
+  gstmxx.drawLabel(ctx, 'smokey 2D', lc.x - 24, lc.y - 36);
   ctx.restore();
 }
 
@@ -42,10 +42,10 @@ export function onDraw(ctx, landmarks) {
  * Questa texture viene poi warpata sui triangoli del volto dal renderer UV.
  */
 export function paintUV(ctx) {
-  const landmarks3d = Ghostati.lastLandmarks3d;
+  const landmarks3d = gstmxx.lastLandmarks3d;
 
   ctx.save();
-  if (!Ghostati.clipRightHalfUV(ctx, landmarks3d)) {
+  if (!gstmxx.clipRightHalfUV(ctx, landmarks3d)) {
     ctx.restore();
     return;
   }
