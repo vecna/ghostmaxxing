@@ -175,6 +175,18 @@ button { font-family: inherit; }
 .readout.inert .readout__state { color: var(--muted); }
 .readout.inert .readout__spark { display: none; }
 
+/* Strongest elusion: the detector lost the face entirely. Highlight the whole
+   HUD so it reads at a glance as a clean escape, not a dropped signal. */
+.readout.no-face {
+  border-color: rgba(127, 227, 176, .55);
+  background: rgba(18, 40, 30, .58);
+  box-shadow: 0 0 0 1px rgba(127, 227, 176, .18), 0 0 14px rgba(127, 227, 176, .22);
+}
+.readout.no-face .readout__num { color: var(--dev); }
+.readout.no-face .readout__state {
+  color: var(--dev); font-style: normal; font-weight: 700; letter-spacing: .01em;
+}
+
 /* ============================ ACTION RAIL ============================ */
 .rail {
   position: fixed; right: 10px; top: 50%; transform: translateY(-46%);

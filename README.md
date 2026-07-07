@@ -1,5 +1,5 @@
 # ghòstati
-![Unit Test Coverage](https://img.shields.io/badge/coverage-62.95%25-lightgrey)
+![Unit Test Coverage](https://img.shields.io/badge/coverage-62.97%25-lightgrey)
 ```text
         _          _        _   _
    __ _| |__   ___| |_ __ _| |_(_)
@@ -332,7 +332,10 @@ Please keep claims narrow and technical: say which model, browser, lighting, cam
 
 
 
-**Last commit:** `b09f30a` – removal of duplicated code
+
+**Last commit:** `3b32d40` – deleted some dead code and improved UT
+
+
 
 
 
@@ -341,8 +344,8 @@ Please keep claims narrow and technical: say which model, browser, lighting, cam
 
 
 ## Recent changes
+- `3b32d40` deleted some dead code and improved UT
 - `b09f30a` removal of duplicated code
 - `4a063a2` completed visual direction tasks
 - `53cc5ef` trimmed logo, docs, internal material, and favicon
 - `d20d4a8` fixed e2e test for the new UX
-- `b758823` moved to docs the communication guidelines

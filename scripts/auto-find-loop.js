@@ -72,9 +72,9 @@ async function tick() {
 
       // ── 2D (face-api) ───────────────────────────────────────────────────────
       let faceapiSection = null;
+      const composite  = hasActivePlugin() ? await compositeAndDetect(liveResult) : null;
       if (state.db.faces.length > 0) {
          const liveInfo   = seekFaceInDb(liveResult);
-         const composite  = hasActivePlugin() ? await compositeAndDetect(liveResult) : null;
          const { detail } = evaluateMatch(liveInfo, composite);
          faceapiSection = {
             detectionState: detail.detectionState,
@@ -88,7 +88,11 @@ async function tick() {
       }
 
       // ── 3D (MobileNet) ──────────────────────────────────────────────────────
-      const result3d         = await findFace3d();
+      // Embed the *2D-composited* frame (video + active 2D Ghostyle) so a 2D
+      // overlay such as the Face Brush actually shifts the ImageEmbedder score.
+      // Falls back to the raw video inside compositeAndDetect3d when there is no
+      // 2D composite (e.g. only a 3D/UV plugin is active).
+      const result3d         = await findFace3d(composite?.canvas ?? null);
       const mediapipeSection = evaluateMatch3d(result3d);
 
       // ── overall ─────────────────────────────────────────────────────────────

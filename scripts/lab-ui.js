@@ -288,6 +288,9 @@ function renderReadout(detail) {
   els.readout.classList.toggle('inert', !hasBaseline);
   const thr = currentThreshold();
   if (els.thr) els.thr.textContent = '/ ' + thr.toFixed(2);
+  // Cleared every pass; re-armed below only when the overlay defeats detection
+  // entirely. Keeps the "face not found" highlight from sticking across frames.
+  els.readout.classList.remove('no-face');
 
   if (!hasBaseline) { els.num.textContent = '—'; els.stateTxt.textContent = 'Save your face'; return; }
 
@@ -299,13 +302,56 @@ function renderReadout(detail) {
     if (els.num.textContent === '—') els.stateTxt.textContent = 'Measuring…';
     return;
   }
-  // After-effect distance when a Ghostyle is active; otherwise the live one.
-  const dist = (fa.obfMinDist != null) ? fa.obfMinDist
-    : (fa.liveMinDist != null) ? fa.liveMinDist
-      : fa.distance;
-  const id = (fa.obfMinId != null) ? fa.obfMinId
-    : (fa.liveMinId != null) ? fa.liveMinId
-      : fa.matchedId;
+  // Is an obfuscation Ghostyle currently applied? When one is, the only honest
+  // measurement is the *composite* (post-overlay) one, and the engine has
+  // ALREADY decided matched / unclear / eluded from it. We must trust that
+  // decision rather than re-deriving state from a raw number.
+  //
+  // The bug this guards against: a Ghostyle strong enough to defeat detection
+  // produces no composite descriptor at all (obfMinDist === null). The old code
+  // then fell through to `liveMinDist` — the pre-overlay live distance — and,
+  // because that number is small, mislabelled the strongest possible elusion as
+  // "Recognised". A full-face cover must never read as a match.
+  const ghostyleOn = !!(detail && detail.ghostylePresent);
+
+  if (ghostyleOn) {
+    // detectionState is authoritative: 'eluded' → the overlay worked;
+    // 'matched'/'unclear' → the composite still resolves to a saved identity
+    // (the overlay did NOT work). Fall back defensively if it's absent.
+    let escaped;
+    if (fa.detectionState) escaped = fa.detectionState === 'eluded';
+    else if (fa.obfMinDist != null) escaped = Number(fa.obfMinDist) >= thr;
+    else escaped = true; // Ghostyle on, no composite face found → eluded.
+
+    const id = (fa.obfMinId != null) ? fa.obfMinId : fa.matchedId;
+    const who = (id != null) ? ` · #${id}` : '';
+
+    // The composite distance drives the number. When detection was defeated
+    // entirely there is no composite descriptor, so there is nothing to show —
+    // that is the strongest elusion, rendered as '—', never as a match.
+    const cd = (fa.obfMinDist != null) ? Number(fa.obfMinDist) : null;
+
+    // Distinguish the two ways an overlay can "escape": the detector still finds
+    // a face but the embedding drifts past threshold (cd is a number), versus
+    // the detector losing the face altogether (cd === null). The latter is the
+    // strongest result and gets its own highlighted "No face found" state.
+    const faceLost = escaped && cd == null;
+    els.readout.classList.toggle('no-face', faceLost);
+
+    els.num.textContent = (cd != null) ? cd.toFixed(2) : '—';
+    els.readout.classList.toggle('broke', escaped);
+    els.stateTxt.textContent = faceLost ? `No face found${who}`
+      : escaped ? `Escaped${who}`
+        : `Recognised${who}`;
+    // Plot the composite distance; when detection was fully defeated, peg the
+    // spark to the top of its range so the trace reads as a clear escape.
+    pushSpark(cd != null ? cd : 0.9, thr, escaped);
+    return;
+  }
+
+  // No Ghostyle applied: report the live (pre-overlay) match against the DB.
+  const dist = (fa.liveMinDist != null) ? fa.liveMinDist : fa.distance;
+  const id = (fa.liveMinId != null) ? fa.liveMinId : fa.matchedId;
   if (dist == null) {
     els.num.textContent = '—'; els.stateTxt.textContent = 'No face in frame';
     els.readout.classList.remove('broke'); return;

@@ -192,24 +192,41 @@ function hasActivePlugin3d() {
 }
 
 /**
- * Build a composited canvas (video frame + active 3D ghostyle overlay) and
- * extract an ImageEmbedder embedding from it.
+ * Build a composited canvas and extract an ImageEmbedder embedding from it.
  *
- * Dispatches `beforeEfficacyComposite3d` on the event bus so 3D plugins can
- * draw onto the canvas before the embedding is extracted. Plugins receive:
+ * The base of the composite is, in order of preference:
+ *   1. `baseCanvas` — the 2D-composited frame from engine.js's
+ *      `compositeAndDetect` (video + active 2D Ghostyle already baked in). This
+ *      is what makes a 2D overlay such as the Face Brush actually move the 3D
+ *      similarity score: the embedder must see the *painted* pixels, not the
+ *      bare video. Without it the ImageEmbedder embeds the un-obfuscated frame
+ *      and reports a match no matter how much the user paints.
+ *   2. the raw video frame, when no 2D composite was supplied (e.g. only a
+ *      3D/UV plugin is active).
+ *
+ * On top of that base it dispatches `beforeEfficacyComposite3d` so 3D plugins
+ * can draw before the embedding is extracted. Plugins receive:
  *   `{ canvas, ctx, landmarks3d: state.lastLandmarks3d }`
  *
+ * The base is copied into a fresh canvas (never mutated in place), so passing
+ * the 2D path's canvas here is safe even though 3D plugins may draw on top.
+ *
+ * @param {HTMLCanvasElement|null} [baseCanvas=null] Pre-composited 2D frame to embed.
  * @returns {Promise<{ canvas: HTMLCanvasElement, embedding: number[] }|null>}
  *   Returns null if model not ready.
  */
-export async function compositeAndDetect3d() {
+export async function compositeAndDetect3d(baseCanvas = null) {
    if (!state.imageEmbedder) return null;
 
    const canvas = document.createElement('canvas');
    canvas.width  = els.overlay.width;
    canvas.height = els.overlay.height;
    const ctx = canvas.getContext('2d');
-   ctx.drawImage(els.video, 0, 0, canvas.width, canvas.height);
+
+   // Prefer the 2D-composited frame (video + 2D Ghostyle) so 2D makeup is
+   // reflected in the embedding; otherwise fall back to the raw video frame.
+   const source = baseCanvas || els.video;
+   ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
 
    // Allow 3D ghostyle plugins to draw onto this canvas before embedding.
    state.gstmxxEvents.dispatchEvent(new CustomEvent('beforeEfficacyComposite3d', {
@@ -239,9 +256,13 @@ export async function compositeAndDetect3d() {
  * Returns `{ liveInfo3d, composite3d }` otherwise, where composite3d is
  * null when no plugin is active.
  *
+ * @param {HTMLCanvasElement|null} [baseCanvas=null] 2D-composited frame (video +
+ *   active 2D Ghostyle) to embed for the composite comparison. Passed straight
+ *   through to `compositeAndDetect3d`; when omitted the composite falls back to
+ *   the raw video frame.
  * @returns {Promise<{ liveInfo3d: object, composite3d: object|null }|null>}
  */
-export async function findFace3d() {
+export async function findFace3d(baseCanvas = null) {
    if (!state.imageEmbedder) {
       setLog('[3D] ImageEmbedder non pronto — confronto 3D saltato.', 'engine-3d');
       return null;
@@ -259,7 +280,7 @@ export async function findFace3d() {
    }
 
    const liveInfo3d = seekFaceInDb3d(liveEmbedding);
-   const composite3d = hasActivePlugin3d() ? await compositeAndDetect3d() : null;
+   const composite3d = hasActivePlugin3d() ? await compositeAndDetect3d(baseCanvas) : null;
 
    return { liveInfo3d, composite3d };
 }
