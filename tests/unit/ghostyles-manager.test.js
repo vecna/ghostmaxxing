@@ -14,6 +14,7 @@ vi.mock('../../scripts/dom.js', () => ({
 }));
 
 vi.mock('../../scripts/utils.js', () => ({
+  asErrorLabel: vi.fn((err) => (err instanceof Error ? err.name + ': ' + err.message : String(err))),
   setLog: vi.fn(),
   formatRelativeTime: vi.fn((dateLike) => {
     if (!dateLike) return 'n/d';

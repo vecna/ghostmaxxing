@@ -12,6 +12,7 @@ import { state } from './state.js';
 import { setLog } from './utils.js';
 import { createUvRenderer } from './ghostyle3d-uv-renderer.js';
 import { clearActiveEffect } from './dom.js';
+import { asErrorLabel } from './utils.js';
 
 const runtime = {
    initialized: false,
@@ -36,20 +37,6 @@ const runtime = {
  */
 function log3d(message) {
    setLog(message, 'plugins3d');
-}
-
-/**
- * Converts thrown plugin failures into the compact label used by loader logs.
- * In this project it keeps broken `paintUV` errors readable while preserving
- * non-Error throws from third-party ghostyles.
- *
- * @param {*} err - Value caught while rendering a 3D ghostyle.
- * @returns {string} Error name and message, or a stringified thrown value.
- * @see deactivateBroken3dPlugin - Formats the `paintUV` failure logged for a disabled plugin.
- */
-function asErrorLabel(err) {
-   if (err instanceof Error) return `${err.name}: ${err.message}`;
-   return String(err);
 }
 
 /**

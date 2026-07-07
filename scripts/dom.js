@@ -101,63 +101,6 @@ export function clearOverlay() {
 }
 
 /**
- * Create a UI button for a freshly loaded ghostyle and register the record
- * in `state.loadedGhostyles`. The button has no click handler attached here:
- * the caller (the loader) attaches one so it can decide whether to delegate
- * to `toggleEffect`, run a custom callback, or both.
- *
- * NOTE: a near-identical helper currently lives inside
- * `ghostyles-manager.js` and is the one actually wired up in the loader
- * path. This exported version is a vestige from an earlier architecture and
- * is scheduled for removal during the upcoming loader unification.
- *
- * @param {{id:string, name:string, url:string, module:any}} record
- *   Ghostyle metadata and the imported module.
- * @returns {HTMLButtonElement} The created button (not yet appended click
- *   listeners — that's the caller's job).
- * @see tests/unit/dom.test.js – verifies registration and button creation.
- */
-export function addGhostyleBtn(record) {
-   state.loadedGhostyles.set(record.id, record);
-
-   const btn = document.createElement('button');
-   btn.className = 'preview-btn';
-   btn.textContent = record.name;
-   btn.dataset.effect = record.id;
-   els.ghostylesContainer.appendChild(btn);
-
-   const row = document.createElement('div');
-   row.className = 'ghostyle-row';
-   row.dataset.effect = record.id;
-
-   if (btn.parentNode) {
-      btn.parentNode.insertBefore(row, btn);
-   }
-   row.appendChild(btn);
-
-   const pinsDiv = document.createElement('div');
-   pinsDiv.className = 'ghostyle-pins';
-
-   const pin1 = document.createElement('button');
-   pin1.className = 'pin-btn pin-btn--1';
-   pin1.title = 'Pin to Slot 1';
-   pin1.setAttribute('aria-label', `Pin ${record.name} to Slot 1`);
-   pin1.innerHTML = '1';
-   pinsDiv.appendChild(pin1);
-
-   const pin2 = document.createElement('button');
-   pin2.className = 'pin-btn pin-btn--2';
-   pin2.title = 'Pin to Slot 2';
-   pin2.setAttribute('aria-label', `Pin ${record.name} to Slot 2`);
-   pin2.innerHTML = '2';
-   pinsDiv.appendChild(pin2);
-
-   row.appendChild(pinsDiv);
-
-   return btn;
-}
-
-/**
  * Reset UI and runtime state after an effect is deactivated: drop the active
  * class from every preview button, undo the scan-button styling, blank the
  * "effect name" / "tracking" labels, null out the cached detection result

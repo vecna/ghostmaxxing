@@ -1,6 +1,6 @@
 /** @module ghostyles-manager */
 import { state } from './state.js';
-import { setLog, formatRelativeTime } from './utils.js';
+import { setLog, formatRelativeTime, asErrorLabel } from './utils.js';
 import { els, clearActiveEffect, effectSelected } from './dom.js';
 
 /**
@@ -157,11 +157,6 @@ function isValidDate(dateLike) {
    if (!dateLike) return false;
    const parsed = new Date(dateLike);
    return !Number.isNaN(parsed.getTime());
-}
-
-function asErrorLabel(err) {
-   if (err instanceof Error) return `${err.name}: ${err.message}`;
-   return String(err);
 }
 
 function reportPluginRuntimeError(pluginId, err, hookName) {
