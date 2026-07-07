@@ -1,5 +1,14 @@
 {
   "ghostyle-authoring": {
     "title": "Ghostyle Authoring Guide"
+  },
+  "brand-voice": {
+    "title": "(internal) Voice/Tone"
+  },
+  "visual-direction": {
+    "title": "(internal) Visual direction"
+  },
+  "globaleaks-submission-channels": {
+    "title": "(internal) Leaking channels"
   }
 }

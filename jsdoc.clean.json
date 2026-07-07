@@ -14,7 +14,7 @@
     },
     "destination": "./docs",
     "recurse": true,
-    "readme": "./docs_index.md"
+    "readme": "./JSDOC_index.md"
   },
   "markdown": {
     "idInHeadings": true

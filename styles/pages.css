@@ -84,6 +84,19 @@ a {
 
 .wordmark {
   display: inline-flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
+.wordmark__mark {
+  width: clamp(2.55rem, 1.5vw + 2.1rem, 3.75rem);
+  height: auto;
+  flex: 0 0 auto;
+  margin-top: 0.05rem;
+}
+
+.wordmark__text {
+  display: inline-flex;
   flex-direction: column;
   gap: 0.15rem;
 }
@@ -93,7 +106,7 @@ a {
   font-size: clamp(2.25rem, 2vw + 1.8rem, 3.4rem);
   font-weight: 700;
   line-height: 0.98;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
   color: var(--gm-ink);
 }
 

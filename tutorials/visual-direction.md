@@ -1,4 +1,4 @@
-# Ghostmaxxing Visual Direction
+# (Internal) Ghostmaxxing Visual Direction
 
 ## Working definition
 
@@ -640,9 +640,9 @@ Layout direction:
 
 - [x] Build a static SVG camera-flower border.
 - [x] Replace the cyberlab landing prototype with a static editorial landing prototype.
-- [] Update brand-voice.md to include Ghostmaxxing and the new visual direction.
-- [] Adapt references.css away from cyberlab toward investigative archive.
+- [ ] Update brand-voice.md to include Ghostmaxxing and the new visual direction.
+- [x] Adapt references.css away from cyberlab toward investigative archive.
 - [x] Create a report.html design using the same visual system.
-- [] Define international copy around Ghostmaxxing.
-- [] Create social cards using the orange/camera-flower/serif system.
-- [] Build reusable CSS tokens and components for the broader site.
+- [ ] Define international copy around Ghostmaxxing.
+- [ ] Create social cards using the orange/camera-flower/serif system.
+- [ ] Build reusable CSS tokens and components for the broader site.

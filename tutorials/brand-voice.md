@@ -1,4 +1,4 @@
-# Ghostmaxxing Brand Voice
+# (Internal) Ghostmaxxing Brand Voice
 
 ## Purpose
 

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2800 420" width="2800" height="420" role="img" aria-labelledby="title desc">
-<title id="title">Camera flowers footer band, broken</title>
-<desc id="desc">A wide decorative band of surveillance cameras growing from stems and leaves, each lens crossed out like a knocked-out eye, designed as a bottom-aligned footer motif.</desc>
+<title id="title">Camera flowers footer band</title>
+<desc id="desc">A wide decorative band of surveillance cameras growing from stems and leaves, designed as a bottom-aligned footer motif.</desc>
 <rect width="2800" height="420" fill="none"/>
 
 
@@ -188,9 +188,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -203,9 +204,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -218,9 +220,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -233,9 +236,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -248,9 +252,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -263,9 +268,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -278,9 +284,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -293,9 +300,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -308,9 +316,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -323,9 +332,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -338,9 +348,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -353,9 +364,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -368,9 +380,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -383,9 +396,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -398,9 +412,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -413,9 +428,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -428,9 +444,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -443,9 +460,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -458,9 +476,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
@@ -473,9 +492,10 @@
   <g transform="translate(-62 -18) rotate(-8)">
     <path d="M0 20 L105 0 L138 24 L128 72 L19 88 L-12 62 Z" fill="#f3c747" stroke="#071a33" stroke-width="5" />
     <path d="M18 84 L128 68 L121 100 L13 113 Z" fill="#0a332b" stroke="#071a33" stroke-width="4" />
-    <circle cx="104" cy="30" r="24" fill="#071a33"/>
-    <circle cx="104" cy="30" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-    <path d="M92 18 L116 42 M116 18 L92 42" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 30 A28 28 0 1 0 104.1 30" fill="#071a33" />
+    <circle cx="104" cy="30" r="15" fill="#0e4939"/>
+    <circle cx="104" cy="30" r="7" fill="#020a10"/>
+    <circle cx="110" cy="24" r="3.5" fill="#f7dc77"/>
     <path d="M-12 62 L19 88 L13 113 L-20 86 Z" fill="#0b342e" stroke="#071a33" stroke-width="4" />
   </g>
 </g>
