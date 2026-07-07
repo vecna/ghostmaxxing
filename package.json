@@ -41,6 +41,7 @@
     "validate-plugin": "npm run validate:ghostyle --",
     "validate:ghostyles": "node -e \"const fs=require('node:fs'); const cp=require('node:child_process'); const files=fs.readdirSync('ghostyles').filter((f)=>f.endsWith('.js')).sort(); for (const f of files) cp.execFileSync(process.execPath, ['scripts-dev/validate-plugin.js', 'ghostyles/'+f], { stdio: 'inherit' });\"",
     "update:readme": "node scripts-dev/update-readme.js",
+    "update:references": "node references/build-references-page.js",
     "check": "npm run validate:ghostyles && npm run test:unit",
     "prepare:e2e": "playwright install chromium"
   },
@@ -56,6 +57,6 @@
     "vitest": "^4.1.8"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=18"
   }
 }

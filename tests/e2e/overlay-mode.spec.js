@@ -9,7 +9,7 @@ function makeLandmarks478() {
 }
 
 test.describe('Ghostmaxxing Overlay Mode E2E', () => {
-  test('cycles overlay modes, persists selection, renders mesh/bbox, and suppresses after save', async ({ page }) => {
+  test('switches the lab view tabs, stores overlay mode, renders 2D/3D overlays, and suppresses after save', async ({ page }) => {
     test.setTimeout(90000);
 
     await page.addInitScript(() => {
@@ -46,33 +46,36 @@ test.describe('Ghostmaxxing Overlay Mode E2E', () => {
       };
     });
 
-    await page.goto('/ghostati.html');
+    await page.goto('/lab.html');
 
     await expect(page.locator('#logBox')).toContainText('MediaPipe FaceLandmarker pronto', { timeout: 45000 });
     await expect(page.locator('#logBox')).toContainText('Webcam attiva', { timeout: 45000 });
 
-    const overlayModeBtn = page.locator('#overlayModeBtn');
-    await expect(overlayModeBtn).toHaveText('Vista: bbox');
+    const viewer = page.locator('#viewer');
+    const bboxOverlay = page.locator('#bboxOverlay');
+    const cameraTab = page.getByRole('tab', { name: 'Camera' });
+    const points2dTab = page.getByRole('tab', { name: '2D points' });
+    const mesh3dTab = page.getByRole('tab', { name: '3D mesh' });
 
-    await overlayModeBtn.click();
-    await expect(overlayModeBtn).toHaveText('Vista: mesh');
-    await expect.poll(() => page.evaluate(() => localStorage.getItem('ghostati-overlay-mode-v1'))).toBe('mesh');
+    const expectSelectedView = async ({ selected, view, overlayMode, bboxHidden }) => {
+      await expect(selected).toHaveAttribute('aria-selected', 'true');
+      for (const tab of [cameraTab, points2dTab, mesh3dTab]) {
+        if (tab !== selected) await expect(tab).toHaveAttribute('aria-selected', 'false');
+      }
+      await expect(viewer).toHaveAttribute('data-view', view);
+      if (bboxHidden) await expect(bboxOverlay).toHaveClass(/gm-canvas-hidden/);
+      else await expect(bboxOverlay).not.toHaveClass(/gm-canvas-hidden/);
+      await expect.poll(() => page.evaluate(() => localStorage.getItem('ghostati-overlay-mode-v1'))).toBe(overlayMode);
+    };
 
-    await overlayModeBtn.click();
-    await expect(overlayModeBtn).toHaveText('Vista: entrambi');
-    await expect.poll(() => page.evaluate(() => localStorage.getItem('ghostati-overlay-mode-v1'))).toBe('entrambi');
+    await cameraTab.click();
+    await expectSelectedView({ selected: cameraTab, view: 'off', overlayMode: 'bbox', bboxHidden: true });
 
-    await overlayModeBtn.click();
-    await expect(overlayModeBtn).toHaveText('Vista: 2D');
-    await expect.poll(() => page.evaluate(() => localStorage.getItem('ghostati-overlay-mode-v1'))).toBe('2d');
+    await points2dTab.click();
+    await expectSelectedView({ selected: points2dTab, view: '2d', overlayMode: '2d', bboxHidden: false });
 
-    await page.reload();
-    await expect(page.locator('#logBox')).toContainText('MediaPipe FaceLandmarker pronto', { timeout: 45000 });
-    await expect(overlayModeBtn).toHaveText('Vista: 2D');
-
-    await overlayModeBtn.click();
-    await expect(overlayModeBtn).toHaveText('Vista: bbox');
-    await expect.poll(() => page.evaluate(() => localStorage.getItem('ghostati-overlay-mode-v1'))).toBe('bbox');
+    await cameraTab.click();
+    await expectSelectedView({ selected: cameraTab, view: 'off', overlayMode: 'bbox', bboxHidden: true });
 
     const dispatchSyntheticOverlayData = async (source = 'auto') => {
       return page.evaluate(({ landmarks, source }) => {
@@ -175,8 +178,8 @@ test.describe('Ghostmaxxing Overlay Mode E2E', () => {
       fillText: 6,
     });
 
-    await overlayModeBtn.click();
-    await expect(overlayModeBtn).toHaveText('Vista: mesh');
+    await mesh3dTab.click();
+    await expectSelectedView({ selected: mesh3dTab, view: '3d', overlayMode: 'mesh', bboxHidden: false });
     await expect(await dispatchSyntheticOverlayData()).toEqual({
       strokeRect: 0,
       arc: 478,
@@ -184,17 +187,8 @@ test.describe('Ghostmaxxing Overlay Mode E2E', () => {
       fillText: 0,
     });
 
-    await overlayModeBtn.click();
-    await expect(overlayModeBtn).toHaveText('Vista: entrambi');
-    await expect(await dispatchSyntheticOverlayData()).toEqual({
-      strokeRect: 2,
-      arc: 478,
-      clearRect: 3,
-      fillText: 6,
-    });
-
-    await overlayModeBtn.click();
-    await expect(overlayModeBtn).toHaveText('Vista: 2D');
+    await points2dTab.click();
+    await expectSelectedView({ selected: points2dTab, view: '2d', overlayMode: '2d', bboxHidden: false });
     await expect(await dispatchSyntheticDetailedOverlayData()).toEqual({
       strokeRect: 1,
       arc: 4,

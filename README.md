@@ -1,6 +1,5 @@
 # ghòstati
-![Unit Test Coverage](https://img.shields.io/badge/coverage-48.07%25-lightgrey)
-
+![Unit Test Coverage](https://img.shields.io/badge/coverage-48.53%25-lightgrey)
 ```text
         _          _        _   _
    __ _| |__   ___| |_ __ _| |_(_)
@@ -330,11 +329,14 @@ Good contributions include:
 
 Please keep claims narrow and technical: say which model, browser, lighting, camera, and threshold produced which result.
 
-**Last commit:** `3703e25` – new ghostyle entry that might change everything
+
+**Last commit:** `b758823` – moved to docs the communication guidelines
+
+
 
 ## Recent changes
-- `3703e25` new ghostyle entry that might change everything
-- `c8dad07` massive variable renaming to Ghostmaxxing or gstmxx
-- `b0282fd` improved references page, added report page
-- `9fbd06a` large index, about, references restructuring
-- `5ef1ffe` rebranding in progress
+- `b758823` moved to docs the communication guidelines
+- `f08ff0a` removed last references of Ghostati
+- `dfe9e67` improved pinned Ghostyle UX selection
+- `32da10d` getting close to a UX stability + completed docs
+- `6664149` added tutorial section, extended docs
