@@ -13,6 +13,7 @@ import { setLog } from './utils.js';
 import { createUvRenderer } from './ghostyle3d-uv-renderer.js';
 import { clearActiveEffect } from './dom.js';
 import { asErrorLabel, syncMirror, syncSize } from './utils.js';
+import { t } from './i18n.js';
 
 const runtime = {
    initialized: false,
@@ -55,7 +56,7 @@ function deactivateBroken3dPlugin(entry, err) {
    const pluginId = entry?.id || runtime.activePluginId;
    if (!pluginId) return;
 
-   setLog(`Plugin ${pluginId} ha lanciato: ${asErrorLabel(err)} (paintUV)`, pluginId);
+   setLog(t('plugin_runtime_error_log', { id: pluginId, message: asErrorLabel(err), hook: 'paintUV' }), pluginId);
    console.error(`[plugins3d] paintUV errore in ${entry?.name || pluginId}:`, err);
 
    const btn = document.querySelector(`[data-effect="${pluginId}"]`);
@@ -88,7 +89,7 @@ function deactivateBroken3dPlugin(entry, err) {
  */
 function requireInit() {
    if (!runtime.initialized) {
-      throw new Error('[plugins3d] initPlugins3dLoader() non chiamato');
+      throw new Error(t('plugins3d_not_initialized_error'));
    }
 }
 
@@ -370,7 +371,7 @@ function renderParamsPanel(entry) {
 
    const title = document.createElement('div');
    title.className = 'pp-header';
-   title.textContent = `Parametri - ${entry.name}`;
+   title.textContent = t('params_heading', { name: entry.name });
    runtime.panel.appendChild(title);
 
    for (const p of entry.module.params) {
@@ -533,7 +534,7 @@ export function initPlugins3dLoader(options = {}) {
    runtime.video = document.getElementById(options.videoId || 'video');
 
    if (!runtime.canvas || !runtime.overlayEl || !runtime.panel || !runtime.video) {
-      throw new Error('[plugins3d] elementi DOM mancanti');
+      throw new Error(t('plugins3d_missing_dom_error'));
    }
 
    runtime.ctx = runtime.canvas.getContext('2d');

@@ -12,15 +12,16 @@ import {
    decideMatchState,
    distanceToDiversity,
 } from './landmark-analysis.js';
+import { t } from './i18n.js';
 
 const EXPLAINERS = {
-   age: 'Eta stimata dal modello - e solo una statistica, puo sbagliare di 5-10 anni.',
-   gender: 'Genere predetto dal modello - addestrato su dataset con bias noti.',
-   emotion: 'Emozione dominante tra quelle che il modello distingue: happy, sad, angry, fearful, disgusted, surprised, neutral.',
-   confidence: 'Quanto il rilevatore e sicuro di vedere un volto nello snapshot. Sotto 50% spesso non viene rilevato nulla.',
-   distanceClosest: 'Quanto il tuo volto attuale e diverso dal volto base salvato con questo ID. Piu la percentuale e alta, meno il sistema riesce a riconoscerti.',
-   threshold: 'Sopra questa percentuale di diversita il sistema non ti riconosce piu. Sotto, si.',
-   embedder: 'Il motore 3D usa una scala diversa (cosine similarity, 0-1, piu alto = piu simile).',
+   age: 'analysis_explainer_age',
+   gender: 'analysis_explainer_gender',
+   emotion: 'analysis_explainer_emotion',
+   confidence: 'analysis_explainer_confidence',
+   distanceClosest: 'analysis_explainer_distance',
+   threshold: 'analysis_explainer_threshold',
+   embedder: 'analysis_explainer_embedder',
 };
 
 let modalEls = null;
@@ -134,21 +135,21 @@ function buildVisualComparisonSection(analysis) {
    }
 
    const leftPreview = visual.baseDataUrl
-      ? `<img class="analyze-compare-image" src="${visual.baseDataUrl}" alt="Thumbnail volto base ID ${visual.closestId}" />`
-      : '<div class="history-placeholder analyze-compare-placeholder">no preview</div>';
+      ? `<img class="analyze-compare-image" src="${visual.baseDataUrl}" alt="${t('baseline_thumbnail_alt', { id: visual.closestId })}" />`
+      : `<div class="history-placeholder analyze-compare-placeholder">${t('no_preview')}</div>`;
 
    return `
       <section class="analyze-section">
-         <h3>Confronto visivo</h3>
-         <div class="analyze-compare-row" aria-label="Confronto visivo base vs attuale">
+         <h3>${t('visual_comparison_title')}</h3>
+         <div class="analyze-compare-row" aria-label="${t('visual_comparison_label')}">
             <div class="analyze-compare-col">
                ${leftPreview}
                <div class="analyze-compare-label">ID ${visual.closestId}</div>
             </div>
             <div class="analyze-compare-arrow" aria-hidden="true">↔</div>
             <div class="analyze-compare-col">
-               <img class="analyze-compare-image" src="${visual.currentDataUrl}" alt="Thumbnail volto attuale" />
-               <div class="analyze-compare-label">Tu ora</div>
+               <img class="analyze-compare-image" src="${visual.currentDataUrl}" alt="${t('current_thumbnail_alt')}" />
+               <div class="analyze-compare-label">${t('current_you_label')}</div>
             </div>
          </div>
       </section>
@@ -164,12 +165,12 @@ function renderInfo(analysis) {
    if (!hasFace) {
       ui.info.innerHTML = `
          <section class="analyze-section">
-            <h3>Volto rilevato</h3>
-            <p class="analyze-empty">Nessun volto rilevato nello snapshot.</p>
+            <h3>${t('face_detected_title')}</h3>
+            <p class="analyze-empty">${t('no_face_snapshot')}</p>
          </section>
          <section class="analyze-section">
-            <h3>Riconoscimento</h3>
-            <p>${analysis.matchHeadline || 'Nessun dato di riconoscimento disponibile.'}</p>
+            <h3>${t('recognition_title')}</h3>
+            <p>${analysis.matchHeadline || t('no_recognition_data')}</p>
          </section>
       `;
       return;
@@ -177,7 +178,7 @@ function renderInfo(analysis) {
 
    const closestLine = typeof analysis.closestId === 'number'
       ? `ID ${analysis.closestId}`
-      : 'Nessun ID trovato';
+      : t('no_id_found');
    const diversityLine = analysis.closestDiversity != null
       ? `${analysis.closestDiversity}%`
       : '-';
@@ -191,28 +192,28 @@ function renderInfo(analysis) {
 
    ui.info.innerHTML = `
       <section class="analyze-section">
-         <h3>Volto rilevato</h3>
-         <div class="analyze-metric"><strong>Eta stimata:</strong> ${Math.round(analysis.faceResult.age || 0)}</div>
-         <p>${EXPLAINERS.age}</p>
-         <div class="analyze-metric"><strong>Genere predetto:</strong> ${analysis.faceResult.gender || '-'}</div>
-         <p>${EXPLAINERS.gender}</p>
-         <div class="analyze-metric"><strong>Emozione dominante:</strong> ${analysis.dominantEmotion || '-'}</div>
-         <p>${EXPLAINERS.emotion}</p>
-         <div class="analyze-metric"><strong>Confidence detection:</strong> ${pct(analysis.faceResult.detection?.score)}</div>
-         <p>${EXPLAINERS.confidence}</p>
+         <h3>${t('face_detected_title')}</h3>
+         <div class="analyze-metric"><strong>${t('estimated_age_label')}</strong> ${Math.round(analysis.faceResult.age || 0)}</div>
+         <p>${t(EXPLAINERS.age)}</p>
+         <div class="analyze-metric"><strong>${t('predicted_gender_label')}</strong> ${analysis.faceResult.gender || '-'}</div>
+         <p>${t(EXPLAINERS.gender)}</p>
+         <div class="analyze-metric"><strong>${t('dominant_emotion_label')}</strong> ${analysis.dominantEmotion || '-'}</div>
+         <p>${t(EXPLAINERS.emotion)}</p>
+         <div class="analyze-metric"><strong>${t('detection_confidence_label')}</strong> ${pct(analysis.faceResult.detection?.score)}</div>
+         <p>${t(EXPLAINERS.confidence)}</p>
       </section>
 
       <section class="analyze-section">
-         <h3>Riconoscimento</h3>
-         <div class="analyze-metric"><strong>Stato:</strong> ${analysis.matchHeadline || '-'}</div>
-         <div class="analyze-metric"><strong>Match con ID:</strong> ${closestLine}</div>
-         <div class="analyze-metric"><strong>Diversita dal volto base:</strong> ${diversityLine}</div>
-         <p>${EXPLAINERS.distanceClosest}</p>
-         <div class="analyze-metric"><strong>Soglia di riconoscimento:</strong> ${analysis.thresholdDiversity}%</div>
-         <p>${EXPLAINERS.threshold}</p>
-         <div class="analyze-metric"><strong>Interpretazione:</strong> il tuo volto attuale e ${diversityLine} diverso dal volto base ${typeof analysis.closestId === 'number' ? `ID ${analysis.closestId}` : ''}; sopra ${analysis.thresholdDiversity}% di diversita il sistema non ti riconosce.</div>
+         <h3>${t('recognition_title')}</h3>
+         <div class="analyze-metric"><strong>${t('state_label')}</strong> ${analysis.matchHeadline || '-'}</div>
+         <div class="analyze-metric"><strong>${t('match_with_id_label')}</strong> ${closestLine}</div>
+         <div class="analyze-metric"><strong>${t('diversity_from_baseline_label')}</strong> ${diversityLine}</div>
+         <p>${t(EXPLAINERS.distanceClosest)}</p>
+         <div class="analyze-metric"><strong>${t('recognition_threshold_label')}</strong> ${analysis.thresholdDiversity}%</div>
+         <p>${t(EXPLAINERS.threshold)}</p>
+         <div class="analyze-metric"><strong>${t('interpretation_label')}</strong> ${t('analysis_interpretation', { diversity: diversityLine, id: typeof analysis.closestId === 'number' ? `ID ${analysis.closestId}` : '', threshold: analysis.thresholdDiversity })}</div>
          <div class="analyze-metric"><strong>Embedder 3D:</strong> similarity con ${section3dId != null ? `ID ${section3dId}` : 'closest match'}: ${Number.isFinite(section3dValue) ? section3dValue.toFixed(3) : '-'}</div>
-         <p>${EXPLAINERS.embedder}</p>
+         <p>${t(EXPLAINERS.embedder)}</p>
       </section>
 
       ${visualComparisonSection}
@@ -227,9 +228,9 @@ function wireModalEvents() {
       const text = generateReportText();
       try {
          await navigator.clipboard.writeText(text);
-         setLog('Report copiato negli appunti');
+         setLog(t('report_copied_log'));
       } catch {
-         setLog('Impossibile copiare il report negli appunti');
+         setLog(t('report_copy_failed_log'));
       }
    };
 
@@ -266,7 +267,7 @@ async function detectOnSnapshot(snapshotCanvas) {
          .withAgeAndGender()
          .withFaceExpressions();
    } catch (err) {
-      setLog(`[ERRORE analyze] ${err.message || String(err)}`);
+      setLog(t('analyze_error_log', { message: err.message || String(err) }));
       return null;
    }
 }
@@ -396,59 +397,59 @@ export function generateReportText() {
    const data = latestReportData;
    if (!data) {
       return [
-         '### Ghostmaxxing - Analisi del trucco',
+         t('report_title_markdown'),
          '',
-         'Volto rilevato: no',
+         t('report_face_detected_line', { value: t('no_value') }),
          '',
-         'Riconoscimento (face-api 2D)',
+         t('report_recognition_2d_heading'),
          '',
-         'Nessun dato disponibile.',
+         t('no_data_available'),
       ].join('\n');
    }
 
    const lines = [];
-   lines.push('### Ghostmaxxing - Analisi del trucco');
+   lines.push(t('report_title_markdown'));
    lines.push('');
-   lines.push(`Volto rilevato: ${data.faceResult ? 'si' : 'no'}`);
+   lines.push(t('report_face_detected_line', { value: data.faceResult ? t('yes_value') : t('no_value') }));
 
    if (data.faceResult) {
       lines.push('');
-      lines.push(`Eta stimata: ${Math.round(data.faceResult.age || 0)}`);
+      lines.push(t('report_estimated_age_line', { value: Math.round(data.faceResult.age || 0) }));
       lines.push('');
-      lines.push(`Genere predetto: ${data.faceResult.gender || '-'}`);
+      lines.push(t('report_predicted_gender_line', { value: data.faceResult.gender || '-' }));
       lines.push('');
-      lines.push(`Emozione dominante: ${data.dominantEmotion || '-'}`);
+      lines.push(t('report_dominant_emotion_line', { value: data.dominantEmotion || '-' }));
       lines.push('');
-      lines.push(`Confidence detection: ${pct(data.faceResult.detection?.score)}`);
+      lines.push(t('report_detection_confidence_line', { value: pct(data.faceResult.detection?.score) }));
    }
 
    lines.push('');
-   lines.push('Riconoscimento (face-api 2D)');
+   lines.push(t('report_recognition_2d_heading'));
    lines.push('');
 
    if (!data.faceResult) {
-      lines.push('Nessun volto rilevato nello snapshot.');
+      lines.push(t('no_face_snapshot'));
    } else if (!data.dbHasFaces) {
-      lines.push('Nessun volto base nel database.');
+      lines.push(t('no_baseline_face_database'));
    } else {
-      lines.push(`Match con ID: ${data.closestId ?? '-'}`);
+      lines.push(t('report_match_with_id_line', { value: data.closestId ?? '-' }));
       lines.push('');
-      lines.push(`Diversita dal volto base: ${data.closestDiversity != null ? `${data.closestDiversity}%` : '-'}`);
+      lines.push(t('report_diversity_line', { value: data.closestDiversity != null ? `${data.closestDiversity}%` : '-' }));
       lines.push('');
-      lines.push(`Soglia di riconoscimento: ${data.thresholdDiversity}%`);
+      lines.push(t('report_recognition_threshold_line', { value: `${data.thresholdDiversity}%` }));
       lines.push('');
-      lines.push(`Stato: ${data.matchHeadline || '-'}`);
+      lines.push(t('report_status_line', { value: data.matchHeadline || '-' }));
    }
 
    lines.push('');
-   lines.push('Embedder 3D (MediaPipe)');
+   lines.push(t('report_embedder_3d_heading'));
    lines.push('');
    if (Number.isFinite(data.embedderClosestSimilarity) && typeof data.closestId === 'number') {
-      lines.push(`Cosine similarity con ID ${data.closestId}: ${data.embedderClosestSimilarity.toFixed(3)}`);
+      lines.push(t('report_cosine_similarity_line', { id: data.closestId, value: data.embedderClosestSimilarity.toFixed(3) }));
    } else if (Number.isFinite(data.embedderBestSimilarity)) {
-      lines.push(`Cosine similarity con ID ${data.embedderBestId}: ${data.embedderBestSimilarity.toFixed(3)}`);
+      lines.push(t('report_cosine_similarity_line', { id: data.embedderBestId, value: data.embedderBestSimilarity.toFixed(3) }));
    } else {
-      lines.push('Nessun dato embedding disponibile.');
+      lines.push(t('no_embedding_data_available'));
    }
 
    return lines.join('\n');

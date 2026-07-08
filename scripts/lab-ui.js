@@ -22,6 +22,7 @@ import { state } from './state.js';
 // Drives which landmark visualisation bbox-overlay paints onto #bboxOverlay.
 // INTEGRATION: export name confirmed in bbox-overlay.js (setOverlayMode).
 import { setOverlayMode } from './bbox-overlay.js';
+import { applyI18n, t } from './i18n.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -99,7 +100,7 @@ function openScreen(key) {
   }
 }
 $$('.navbtn[data-screen]').forEach(b => on(b, 'click', () => {
-  if (b.getAttribute('aria-disabled') === 'true') { toast('Record a clip first'); return; }
+  if (b.getAttribute('aria-disabled') === 'true') { toast(t('record_clip_first_toast')); return; }
   openScreen(b.dataset.screen);
 }));
 // screen close buttons (also bound by the engine; harmless to double-bind)
@@ -113,9 +114,9 @@ on($('#gm-fs'), 'click', () => {
   const t = document.documentElement;
   if (!document.fullscreenElement) {
     (t.requestFullscreen ? t.requestFullscreen() : Promise.reject())
-      .then(() => { $('#gm-fs').textContent = 'Exit fullscreen'; })
-      .catch(() => toast('Fullscreen not available here'));
-  } else { document.exitFullscreen(); $('#gm-fs').textContent = 'Enter fullscreen'; }
+      .then(() => { $('#gm-fs').textContent = t('exit_fullscreen_button'); })
+      .catch(() => toast(t('fullscreen_not_available_toast')));
+  } else { document.exitFullscreen(); $('#gm-fs').textContent = t('enter_fullscreen_button'); }
 });
 on($('#gm-thr-input'), 'input', e => {
   const v = parseFloat(e.target.value);
@@ -139,7 +140,7 @@ on($('#recordBtn'), 'click', () => {
 function refreshUploadGate() {
   if (els.uploadBadge) { els.uploadBadge.hidden = ui.recordings === 0; els.uploadBadge.textContent = ui.recordings; }
   if (els.uploadNav) els.uploadNav.setAttribute('aria-disabled', ui.recordings === 0 ? 'true' : 'false');
-  if (els.uploadCount) els.uploadCount.textContent = ui.recordings ? `${ui.recordings} clip(s) ready to send.` : 'No clips recorded yet.';
+  if (els.uploadCount) els.uploadCount.textContent = ui.recordings ? t('clips_ready_to_send', { count: ui.recordings }) : t('no_clips_recorded');
 }
 
 /* ---- Pinned Ghostyles on the rail --------------------------------------- */
@@ -201,7 +202,7 @@ function proxyPin(i) {
   const id = ui.pins[i]; if (!id) return;
   const btn = $(`.preview-btn[data-effect="${id}"]`);
   if (btn) btn.click();                 // let the engine toggle the effect
-  else toast('Ghostyle "' + id + '" not loaded');
+  else toast(t('ghostyle_not_loaded_toast', { id }));
 }
 on($('#gm-slot1'), 'click', () => proxyPin(0));
 on($('#gm-slot2'), 'click', () => proxyPin(1));
@@ -239,7 +240,7 @@ function wirePinClicks() {
 
     paintPins();
     reflectActive();
-    toast(`Pinned to Slot ${slotNum} → ${ghostyleName(id)}`);
+    toast(t('pinned_to_slot_toast', { slot: slotNum, name: ghostyleName(id) }));
   });
 }
 
@@ -292,14 +293,14 @@ function renderReadout(detail) {
   // entirely. Keeps the "face not found" highlight from sticking across frames.
   els.readout.classList.remove('no-face');
 
-  if (!hasBaseline) { els.num.textContent = '—'; els.stateTxt.textContent = 'Save your face'; return; }
+  if (!hasBaseline) { els.num.textContent = '—'; els.stateTxt.textContent = t('save_your_face_status'); return; }
 
   // The engine's matchStateChanged nests the face-api numbers under
   // detail.faceapi (liveMinDist / obfMinDist / liveMinId / obfMinId).
   const fa = detail && detail.faceapi;
   if (!fa) {
     // no fresh detail (e.g. a dbChanged refresh) — don't claim "no face"
-    if (els.num.textContent === '—') els.stateTxt.textContent = 'Measuring…';
+    if (els.num.textContent === '—') els.stateTxt.textContent = t('measuring_status');
     return;
   }
   // Is an obfuscation Ghostyle currently applied? When one is, the only honest
@@ -340,9 +341,9 @@ function renderReadout(detail) {
 
     els.num.textContent = (cd != null) ? cd.toFixed(2) : '—';
     els.readout.classList.toggle('broke', escaped);
-    els.stateTxt.textContent = faceLost ? `No face found${who}`
-      : escaped ? `Escaped${who}`
-        : `Recognised${who}`;
+    els.stateTxt.textContent = faceLost ? `${t('no_face_found_status')}${who}`
+      : escaped ? `${t('escaped_status')}${who}`
+        : `${t('recognised_status')}${who}`;
     // Plot the composite distance; when detection was fully defeated, peg the
     // spark to the top of its range so the trace reads as a clear escape.
     pushSpark(cd != null ? cd : 0.9, thr, escaped);
@@ -353,7 +354,7 @@ function renderReadout(detail) {
   const dist = (fa.liveMinDist != null) ? fa.liveMinDist : fa.distance;
   const id = (fa.liveMinId != null) ? fa.liveMinId : fa.matchedId;
   if (dist == null) {
-    els.num.textContent = '—'; els.stateTxt.textContent = 'No face in frame';
+    els.num.textContent = '—'; els.stateTxt.textContent = t('no_face_in_frame_status');
     els.readout.classList.remove('broke'); return;
   }
   const d = Number(dist);
@@ -361,7 +362,7 @@ function renderReadout(detail) {
   els.num.textContent = d.toFixed(2);
   els.readout.classList.toggle('broke', broke);
   const who = (id != null) ? ` · #${id}` : '';
-  els.stateTxt.textContent = broke ? `Escaped${who}` : `Recognised${who}`;
+  els.stateTxt.textContent = broke ? `${t('escaped_status')}${who}` : `${t('recognised_status')}${who}`;
   pushSpark(d, thr, broke);
 }
 function pushSpark(v, thr, broke) {
@@ -376,7 +377,7 @@ function pushSpark(v, thr, broke) {
 
 /* ---- wire the engine event bus ------------------------------------------ */
 function wireBus() {
-  if (!bus) { console.warn('[lab-ui] state.gstmxxEvents not found — readout/effect mirroring disabled'); return; }
+  if (!bus) { console.warn(t('console_lab_ui_bus_missing')); return; }
   bus.addEventListener('matchStateChanged', e => renderReadout(e.detail));
   bus.addEventListener('effectChanged', () => reflectActive());
   bus.addEventListener('dbChanged', () => renderReadout(null));
@@ -453,10 +454,16 @@ function wireBus() {
 
 /* ---- boot ---------------------------------------------------------------- */
 async function boot() {
+  applyI18n();
   applyView('off');
   ui.pins = await resolvePins();
   paintPins(); wirePinClicks(); refreshUploadGate(); renderReadout(null); reflectActive();
 }
+window.addEventListener('i18n:localeChanged', () => {
+  applyI18n();
+  refreshUploadGate();
+  renderReadout(null);
+});
 // The engine builds ghostyle buttons during its async init and fires
 // `ghostatiReady` on window when state/els/window.gstmxx are ready.
 if (window.gstmxx) { wireBus(); boot(); }

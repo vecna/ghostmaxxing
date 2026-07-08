@@ -1,3 +1,5 @@
+import { t } from './i18n.js';
+
 /**
  * @module ghostyle3d-uv-renderer
  * @description
@@ -22,7 +24,7 @@ export function createUvRenderer(options) {
       : () => null;
    const log = (options && options.log) ? options.log : () => {};
 
-   if (!uvPath) throw new Error('[uv-renderer] uvPath obbligatorio');
+   if (!uvPath) throw new Error(t('uv_path_required_error'));
 
    function resolveUvPath(path) {
       try {
@@ -52,11 +54,11 @@ export function createUvRenderer(options) {
          })
          .then((data) => {
             uvData = data;
-            log(`UV map caricata (${data.numLandmarks} landmark, ${data.numTriangles} triangoli)`);
+            log(t('uv_map_loaded_log', { landmarks: data.numLandmarks, triangles: data.numTriangles }));
          })
          .catch((err) => {
-            console.error('[uv-renderer] errore caricamento UV:', err);
-            log('Errore caricamento UV map: ' + err.message);
+            console.error(t('console_uv_load_error'), err);
+            log(t('uv_map_load_error_log', { message: err.message }));
             loadPromise = null;
          });
 
@@ -365,7 +367,7 @@ export function createUvRenderer(options) {
             const safeParams = makeParamsProxy(module, params);
             module.paintUV(entry.ctx, safeParams, helpers);
          } catch (err) {
-            console.error('[uv-renderer] paintUV errore:', err);
+            console.error(t('console_uv_paint_error'), err);
          }
          // Applica mask dichiarativa `region = { include, exclude }` se
          // dichiarata dal plugin. L'effetto è equivalente a un destination-in.

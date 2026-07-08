@@ -22,6 +22,7 @@ import { els } from './dom.js';
 import { state } from './state.js';
 import { setLog } from './utils.js';
 import { clearAllThumbnails } from './face-thumbnails.js';
+import { t } from './i18n.js';
 
 /** LocalStorage key for the 2D (face-api) face database. */
 export const STORAGE_KEY = 'local-face-lab-db-v1';
@@ -68,7 +69,7 @@ export function loadDb3d() {
       if (!parsed || !Array.isArray(parsed.faces)) return createEmptyDb3d();
       if (parsed.modelVersion !== DB3D_MODEL_VERSION) {
          if (parsed.faces.length > 0) {
-            setLog('Database 3D incompatibile col nuovo modello, svuoto', 'db');
+            setLog(t('incompatible_3d_db_log'), 'db');
          }
          state.db3d = createEmptyDb3d();
          clearDb3d();
@@ -190,6 +191,6 @@ export function clearDb() {
    state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
       detail: { detectionState: 'unknown', source: 'clear' }
    }));
-   setLog('Archivio locale cancellato. Il contatore ID riparte da 0.');
+   setLog(t('local_archive_cleared_log'));
    renderDbStats();
 }

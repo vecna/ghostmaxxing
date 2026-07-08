@@ -13,6 +13,7 @@ import { exportMakeup } from './export-makeup.js';
 import { setOverlayMode, OVERLAY_MODE_STORAGE_KEY, OVERLAY_MODES } from './bbox-overlay.js';
 import { openAnalyzePanel } from './analyze-panel.js';
 import { captureThumbnail, deleteThumbnail, getThumbnail, saveThumbnail } from './face-thumbnails.js';
+import { applyI18n, initI18n, setupLocaleSelect, t } from './i18n.js';
 
 function overlayModeLabel(mode) {
    return OVERLAY_MODES[mode] || OVERLAY_MODES.bbox;
@@ -39,7 +40,7 @@ if (els.mirrorToggle) {
       els.video.style.transform = state.isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
       els.overlay.style.transform = state.isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
       els.mirrorToggle.classList.toggle('mirrored', state.isMirrored);
-      els.mirrorToggle.textContent = state.isMirrored ? 'Webcam speculare: ON' : 'Mirror webcam';
+      els.mirrorToggle.textContent = state.isMirrored ? t('mirror_webcam_on_status') : t('mirror_webcam_button');
    });
 }
 
@@ -47,14 +48,14 @@ if (els.mirrorToggle) {
 if (els.switchCameraBtn) {
    els.switchCameraBtn.addEventListener('click', async () => {
       state.currentFacingMode = state.currentFacingMode === 'user' ? 'environment' : 'user';
-      setLog(`Cambio fotocamera... (${state.currentFacingMode})`);
+      setLog(t('switching_camera_log', { mode: state.currentFacingMode }));
       if (els.video.srcObject) {
          els.video.srcObject.getTracks().forEach(track => track.stop());
       }
       try {
          await startCamera(state, els);
       } catch (err) {
-         handleError(err, 'Errore nel cambio fotocamera.');
+         handleError(err, t('camera_switch_error'));
       }
    });
 }
@@ -139,7 +140,7 @@ export function setBusy(isBusy) {
  * @see setStatus – updates UI status while models are being loaded.
  */
 async function loadModels() {
-   setStatus('init', 'caricamento modelli');
+   setStatus('init', t('loading_models_status'));
    await Promise.all([
       faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URLS.tiny),
       faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URLS.landmarks),
@@ -159,9 +160,9 @@ async function loadModels() {
  * @see toggleEffect – uses handleError when scanning or applying effects fails.
  */
 function handleError(err, fallbackMessage) {
-   console.log('Errore:', fallbackMessage);
+   console.log(t('error_console_prefix'), fallbackMessage);
    console.error(err);
-   setStatus('error', 'errore');
+   setStatus('error', t('error_status'));
    els.placeholder.style.display = 'grid';
    const detail = err && err.message ? ` (${err.message})` : '';
    setLog(fallbackMessage + detail);
@@ -293,13 +294,13 @@ function createHistoryCard(id) {
    if (dataUrl) {
       const thumb = document.createElement('img');
       thumb.className = 'history-thumb';
-      thumb.alt = `Face thumbnail ID ${id}`;
+      thumb.alt = t('face_thumbnail_alt', { id });
       thumb.src = dataUrl;
       card.appendChild(thumb);
    } else {
       const placeholder = document.createElement('div');
       placeholder.className = 'history-placeholder';
-      placeholder.textContent = 'no preview';
+      placeholder.textContent = t('no_preview');
       card.appendChild(placeholder);
    }
 
@@ -331,7 +332,7 @@ function createHistoryCard(id) {
    const deleteBtn = document.createElement('button');
    deleteBtn.type = 'button';
    deleteBtn.className = 'history-delete';
-   deleteBtn.title = `Cancella ID ${id}`;
+   deleteBtn.title = t('delete_id_label', { id });
    const deleteIconMarkup = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
    let confirmTimeoutId = null;
 
@@ -342,18 +343,18 @@ function createHistoryCard(id) {
       }
       deleteBtn.classList.remove('confirm-pending');
       deleteBtn.innerHTML = deleteIconMarkup;
-      deleteBtn.title = `Cancella ID ${id}`;
-      deleteBtn.setAttribute('aria-label', `Cancella ID ${id}`);
+      deleteBtn.title = t('delete_id_label', { id });
+      deleteBtn.setAttribute('aria-label', t('delete_id_label', { id }));
    }
 
    deleteBtn.innerHTML = deleteIconMarkup;
-   deleteBtn.setAttribute('aria-label', `Cancella ID ${id}`);
+   deleteBtn.setAttribute('aria-label', t('delete_id_label', { id }));
    deleteBtn.addEventListener('click', () => {
       if (!deleteBtn.classList.contains('confirm-pending')) {
          deleteBtn.classList.add('confirm-pending');
          deleteBtn.textContent = 'OK';
-         deleteBtn.title = `Conferma cancellazione ID ${id}`;
-         deleteBtn.setAttribute('aria-label', `Conferma cancellazione ID ${id}`);
+         deleteBtn.title = t('confirm_delete_id_label', { id });
+         deleteBtn.setAttribute('aria-label', t('confirm_delete_id_label', { id }));
          confirmTimeoutId = setTimeout(resetDeleteButton, 2000);
          return;
       }
@@ -378,7 +379,7 @@ function renderHistoryEntries() {
    if (!ids.length) {
       const empty = document.createElement('p');
       empty.className = 'history-empty';
-      empty.textContent = 'Nessun volto salvato.';
+      empty.textContent = t('no_saved_faces_empty');
       els.historyEntries.appendChild(empty);
       return;
    }
@@ -406,6 +407,15 @@ async function tryCaptureThumbnailOnSave() {
  * @see init(); – the function is invoked at the bottom of the script to start the app.
  */
 async function init() {
+   initI18n();
+   setupLocaleSelect(els.localeSelect, () => {
+      applyI18n();
+      renderHistoryEntries();
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('dbChanged', {
+         detail: { count: state.db.faces.length, nextId: state.db.nextId }
+      }));
+   });
+
    state.db = loadDb();
    state.db3d = loadDb3d();
    renderDbStats(state, els);
@@ -426,14 +436,14 @@ async function init() {
       if (isLocalPluginDevHost()) {
          els.reloadPluginsBtn.style.display = '';
          els.reloadPluginsBtn.addEventListener('click', async () => {
-            setLog('Ricarica plugin in corso...', 'loader');
+            setLog(t('plugin_reload_started_log'), 'loader');
             try {
                const loaded = await reloadPlugins({
                   onFaceapiToggle: () => startEffectLoop(state, els)
                });
-               setLog(`Reload completato: ${loaded} plugin caricati.`, 'loader');
+               setLog(t('plugin_reload_done_log', { count: loaded }), 'loader');
             } catch (err) {
-               setLog(`Errore durante reload plugins: ${err.message || err}`, 'loader');
+               setLog(t('plugin_reload_error_log', { message: err.message || err }), 'loader');
             }
          });
       } else {
@@ -482,7 +492,7 @@ async function init() {
          try {
             thumbnailDataUrl = await tryCaptureThumbnailOnSave();
          } catch (thumbErr) {
-            setLog(`Thumbnail capture failed: ${thumbErr.message || thumbErr}`, 'thumbnails');
+            setLog(t('thumbnail_capture_failed_log', { message: thumbErr.message || thumbErr }), 'thumbnails');
          }
 
          // 1. 2D engine: detect + save; returns { id, result } or null
@@ -519,7 +529,7 @@ async function init() {
             }
          }));
       }
-      catch (err) { handleError(err, 'Errore durante il salvataggio del volto.'); }
+      catch (err) { handleError(err, t('save_face_error')); }
       finally {
          setBusy(false);
          if (state.activeEffect) startEffectLoop(state, els);
@@ -531,7 +541,7 @@ async function init() {
       try {
          await openAnalyzePanel();
       }
-      catch (err) { handleError(err, 'Errore durante l\'analisi del trucco.'); }
+      catch (err) { handleError(err, t('makeup_analysis_error')); }
       finally {
          setBusy(false);
       }
@@ -539,36 +549,38 @@ async function init() {
 
    els.clearDbBtn.addEventListener('click', () => {
       const svgIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
-      if (els.clearDbBtn.textContent === 'Conferma?') {
+      if (els.clearDbBtn.textContent === t('confirm_question')) {
          clearDb(state, els);
          els.clearDbBtn.innerHTML = svgIcon;
       } else {
-         els.clearDbBtn.textContent = 'Conferma?';
+         els.clearDbBtn.textContent = t('confirm_question');
          setTimeout(() => {
-            if (els.clearDbBtn.textContent === 'Conferma?') {
+            if (els.clearDbBtn.textContent === t('confirm_question')) {
                els.clearDbBtn.innerHTML = svgIcon;
+               els.clearDbBtn.dataset.i18n = 'delete_all_button';
+               applyI18n(els.clearDbBtn.parentElement || document);
             }
          }, 4000);
       }
    });
 
    setBusy(true);
-   setLog('Caricamento sistema di riconoscimento facciale (face-api.js)...')
+   setLog(t('loading_face_system_log'))
    try {
       await loadModels();
    } catch (err) {
-      setLog('Errore durante il caricamento: ' + err.message);
+      setLog(t('loading_error_log', { message: err.message }));
       return;
    }
 
-   setLog('Caricamento ImageEmbedder per il motore di riconoscimento 3D...');
+   setLog(t('loading_embedder_log'));
    try {
       await loadMobileNet();
    } catch (err) {
-      setLog('ImageEmbedder non disponibile: ' + err.message + ' — solo face-api attivo.');
+      setLog(t('embedder_unavailable_log', { message: err.message }));
    }
 
-   setLog('Caricamento plugin di makeup in corso...')
+   setLog(t('loading_makeup_plugins_log'))
    try {
       initPlugins3dLoader({
          getFaceLandmarker: () => (window.gstmxx && window.gstmxx.FaceLandmarker) || null
@@ -590,14 +602,14 @@ async function init() {
       else
          throw new Error(`HTTP ${ghostylistRes.status}`);
    } catch (err) {
-      setLog('Errore durante la lettura di ghostyles.json: ' + err.message);
+      setLog(t('ghostyles_json_error_log', { message: err.message }));
    }
 
-   setLog('Inizializzazione completata. Avvio webcam in corso...');
+   setLog(t('init_complete_webcam_log'));
    try {
       await startCamera(state, els);
    } catch (err) {
-      handleError(err, 'Impossibile inizializzare webcam: verifica i permessi camera per ' + window.location.origin);
+      handleError(err, t('webcam_permission_error', { origin: window.location.origin }));
       return;
    }
 
@@ -618,7 +630,7 @@ async function init() {
    };
    */
 
-   setLog('Tutto pronto! Inizia scansionando il tuo volto o attivando una guida makeup.');
+   setLog(t('ready_start_log'));
    setBusy(false);
    state.gstmxxEvents.dispatchEvent(new CustomEvent('ready', { detail: {} }));
 

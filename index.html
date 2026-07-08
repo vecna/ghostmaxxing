@@ -23,45 +23,49 @@
   <main class="editorial-homepage variant-a editorial-homepage--svg-footer-band">
     <div class="editorial-homepage__shell">
       <header class="editorial-homepage__header">
-        <a class="wordmark" href="#" aria-label="Ghostmaxxing homepage prototype">
+        <a class="wordmark" href="#" aria-label="Ghostmaxxing homepage prototype" data-i18n-aria-label="homepage_wordmark_label">
           <span class="wordmark__main">
             <img class="wordmark__mark" src="images/ghostmaxxing-mark.svg" alt="" aria-hidden="true" />
             <span class="wordmark__title">Ghostmaxxing</span>
           </span>
-          <span class="wordmark__subtitle">
+          <span class="wordmark__subtitle" data-i18n="homepage_subtitle">
             A public lab for testing face-recognition camouflage
           </span>
         </a>
 
-        <nav class="editorial-homepage__nav" aria-label="Prototype navigation">
-          <a class="navlink" href="/references/" target="_blank" rel="noopener noreferrer">Research References</a>
-          <a class="navlink" href="about.html">Vision & About</a>
-          <a class="cta-inline" href="report.html">How to <i>leak</i> to us<span aria-hidden="true">↗</span></a>
+        <nav class="editorial-homepage__nav" aria-label="Prototype navigation" data-i18n-aria-label="prototype_navigation_label">
+          <a class="navlink" href="/references/" target="_blank" rel="noopener noreferrer" data-i18n="research_references_link">Research References</a>
+          <a class="navlink" href="about.html" data-i18n="vision_about_link">Vision & About</a>
+          <a class="cta-inline" href="report.html" data-i18n-html="leak_to_us_link_html">How to <i>leak</i> to us<span aria-hidden="true">↗</span></a>
+          <span class="locale-control" aria-hidden="false">
+            <span class="locale-control__flag" aria-hidden="true"></span>
+            <select id="localeSelect" class="locale-select" aria-label="Language" data-i18n-aria-label="language_label"></select>
+          </span>
         </nav>
       </header>
 
       <section class="editorial-homepage__hero" aria-labelledby="hero-title-a">
         <div class="hero-copy">
-          <h1 class="hero-copy__title" id="hero-title-a">Disrupt<br>the read.</h1>
-          <p class="hero-copy__lead">Ghostmaxxing is a real-time web app for testing face-recognition
+          <h1 class="hero-copy__title" id="hero-title-a" data-i18n-html="hero_title_html">Disrupt<br>the read.</h1>
+          <p class="hero-copy__lead" data-i18n="homepage_lead">Ghostmaxxing is a real-time web app for testing face-recognition
             camouflage. Point your camera, change how your face looks, and watch a local recognition
             pipeline react &mdash; live. Everything runs in your browser, so your data stays with you.</p>
-          <p class="hero-copy__small">Built for hands-on <a href="workshops.html">workshops</a> and
+          <p class="hero-copy__small" data-i18n-html="homepage_small_html">Built for hands-on <a href="workshops.html">workshops</a> and
             self-experiments: see for yourself when a look stops a match, under your own conditions
             &mdash; not a promise that it will hold anywhere else.</p>
           <div class="hero-copy__actions">
-            <a class="btn-primary" href="lab.html">Open the lab <span aria-hidden="true">↗</span></a>
+            <a class="btn-primary" href="lab.html" data-i18n-html="open_lab_link_html">Open the lab <span aria-hidden="true">↗</span></a>
           </div>
-          <div class="hero-copy__meta" aria-label="Explore further">
-            <span><a href="/docs">Technical documentation</a></span>
-            <span><a href="https://github.com/vecna/ghostati">Code</a></span>
+          <div class="hero-copy__meta" aria-label="Explore further" data-i18n-aria-label="explore_further_label">
+            <span><a href="/docs" data-i18n="technical_documentation_link">Technical documentation</a></span>
+            <span><a href="https://github.com/vecna/ghostati" data-i18n="code_link">Code</a></span>
           </div>
         </div>
 
         <figure class="hero-figure">
           <div class="hero-figure__frame">
             <img class="hero-figure__image" src="images/ghostmaxxing-homepage.webp"
-              alt="Portrait split between face-recognition overlay and adversarial camouflage." />
+              alt="Portrait split between face-recognition overlay and adversarial camouflage." data-i18n-alt="homepage_hero_alt" />
           </div>
           <!-- <figcaption class="hero-figure__origin">Ghostmaxxing helps you in understanding and mitigating facial recognition technologies.</figcaption> -->
         </figure>
@@ -71,6 +75,7 @@
     <br class="editorial-homepage__spacer" />
     <div class="camera-band" aria-hidden="true"></div>
   </main>
+  <script type="module" src="scripts/home.js"></script>
 </body>
 
 </html>

@@ -6,6 +6,7 @@ import {
    THUMBNAIL_OUTPUT_SIZE,
 } from './config.js';
 import { setLog } from './utils.js';
+import { t } from './i18n.js';
 
 export const THUMBNAILS_STORAGE_KEY = 'local-face-lab-thumbnails-v1';
 
@@ -151,15 +152,15 @@ export async function captureThumbnail(videoEl, box, options = {}) {
    const outputSize = Number.isFinite(options.outputSize) ? options.outputSize : THUMBNAIL_OUTPUT_SIZE;
    const jpegQuality = Number.isFinite(options.jpegQuality) ? options.jpegQuality : THUMBNAIL_JPEG_QUALITY;
 
-   if (!videoEl) throw new Error('captureThumbnail: video element is required.');
+   if (!videoEl) throw new Error(t('capture_thumbnail_video_required_error'));
    if (!box || !Number.isFinite(box.x) || !Number.isFinite(box.y) || !Number.isFinite(box.width) || !Number.isFinite(box.height)) {
-      throw new Error('captureThumbnail: invalid face box.');
+      throw new Error(t('capture_thumbnail_invalid_box_error'));
    }
 
    const frameWidth = Number(videoEl.videoWidth || videoEl.clientWidth || 0);
    const frameHeight = Number(videoEl.videoHeight || videoEl.clientHeight || 0);
    if (!frameWidth || !frameHeight) {
-      throw new Error('captureThumbnail: video frame not ready.');
+      throw new Error(t('capture_thumbnail_frame_not_ready_error'));
    }
 
    const shortSide = Math.min(box.width, box.height);
@@ -178,7 +179,7 @@ export async function captureThumbnail(videoEl, box, options = {}) {
    canvas.width = outputSize;
    canvas.height = outputSize;
    const ctx = canvas.getContext('2d');
-   if (!ctx) throw new Error('captureThumbnail: 2d context unavailable.');
+   if (!ctx) throw new Error(t('capture_thumbnail_context_error'));
 
    const scale = Math.min(outputSize / cropRect.width, outputSize / cropRect.height);
    const destWidth = cropRect.width * scale;

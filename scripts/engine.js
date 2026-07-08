@@ -8,6 +8,7 @@ import { setLog } from './utils.js';
 import { DETECTOR_OPTIONS } from './config.js';
 import { overlayModeNeedsDetailedFaceapi, view as overlayView } from './bbox-overlay.js';
 import { computeCompositeMetrics, decideMatchState } from './landmark-analysis.js';
+import { t } from './i18n.js';
 
 export { seekFaceInDb, computeCompositeMetrics, decideMatchState } from './landmark-analysis.js';
 
@@ -24,7 +25,7 @@ export async function detectFaceInCam(drawOverlay) {
    clearOverlay();
    try {
       if (!faceapi || !faceapi.detectSingleFace) {
-         setLog('[ERROR] face-api modelli non caricati. Riprova tra pochi secondi.');
+         setLog(t('face_api_models_not_loaded_log'));
          state.lastKnownEffectResult = null;
          return null;
       }
@@ -35,16 +36,16 @@ export async function detectFaceInCam(drawOverlay) {
 
       if (!result) {
          state.lastKnownEffectResult = null;
-         setLog('Nessun volto rilevato nella webcam.');
+         setLog(t('no_face_webcam_log'));
          return null;
       }
 
       if (drawOverlay) drawResult(result);
       return result;
    } catch (err) {
-      console.error('[detectFaceInCam]', err);
+      console.error(t('console_detection_error'), err);
       const msg = err?.message || String(err);
-      setLog(`[ERRORE face-api] ${msg}`);
+      setLog(t('face_api_error_log', { message: msg }));
       state.lastKnownEffectResult = null;
       return null;
    }
@@ -92,7 +93,7 @@ export async function compositeAndDetect(liveResult) {
       const resized = faceapi.resizeResults(liveResult, { width: canvas.width, height: canvas.height });
 
       if (!resized.detection) {
-         console.log('resized.detection non disponibile:', resized);
+         console.log(t('console_resized_detection_missing'), resized);
       } else {
          style.module.onDraw(ctx, resized.landmarks, resized.detection.box);
          ctx.restore();
@@ -117,7 +118,7 @@ export async function compositeAndDetect(liveResult) {
       }
       return { canvas, obfuscatedResult, weakDetection };
    } catch (err) {
-      console.error('[compositeAndDetect]', err);
+      console.error(t('console_composite_detection_error'), err);
       return { canvas, obfuscatedResult: null, weakDetection: false };
    }
 }
@@ -327,7 +328,7 @@ export async function saveFace() {
    persistDb();
    renderDbStats();
    const score = result.detection.score;
-   setLog(`Impronta biometrica salvata con ID ${id}. Detection score: ${score.toFixed(2)}.`);
+   setLog(t('face_saved_log', { id, score: score.toFixed(2) }));
    return { id, result };
 }
 
@@ -379,5 +380,3 @@ export function hasActivePlugin() {
    return !!(a2d || a3d);
    // state.activeEffect = string with the effect name
 }
-
-

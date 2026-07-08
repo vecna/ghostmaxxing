@@ -24,6 +24,7 @@ import { setStatus, els, clearOverlay } from './dom.js';
 import { setLog } from './utils.js';
 import { runEffectPass } from './engine.js';
 import { RECORDING_CONFIG } from './config.js';
+import { t } from './i18n.js';
 
 /**
  * Acquire the webcam stream, attach it to the `<video>` element, configure
@@ -47,9 +48,9 @@ import { RECORDING_CONFIG } from './config.js';
  */
 export async function startCamera() {
    if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
-      const httpsHint = !window.isSecureContext ? ' La pagina deve essere servita via HTTPS o da localhost (su mobile l\'IP locale non basta).' : '';
-      setLog('Webcam non disponibile in questo contesto.' + httpsHint);
-      throw new Error('mediaDevices unavailable (insecure context?)');
+      const httpsHint = !window.isSecureContext ? t('webcam_https_hint') : '';
+      setLog(t('webcam_unavailable_log', { hint: httpsHint }));
+      throw new Error(t('media_devices_unavailable_error'));
    }
    const stream = await navigator.mediaDevices.getUserMedia({
       video: {
@@ -68,7 +69,7 @@ export async function startCamera() {
    els.overlay.style.transform = state.isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
    if (els.mirrorToggle) {
       els.mirrorToggle.classList.toggle('mirrored', state.isMirrored);
-      els.mirrorToggle.textContent = state.isMirrored ? 'Webcam speculare: ON' : 'Mirror webcam';
+      els.mirrorToggle.textContent = state.isMirrored ? t('mirror_webcam_on_status') : t('mirror_webcam_button');
    }
 
    await new Promise(resolve => {
@@ -76,8 +77,8 @@ export async function startCamera() {
    });
    await els.video.play();
    els.placeholder.style.display = 'none';
-   setStatus('live', 'webcam attiva');
-   setLog('Webcam attiva. Premi l\'icona bersaglio per la scansione o scegli un effetto.');
+   setStatus('live', t('webcam_live_status'));
+   setLog(t('webcam_active_log'));
    resizeCanvas();
    startEffectLoop();
 }
@@ -185,7 +186,7 @@ export async function recordOneSecond() {
 
    const stream = els.video.srcObject;
    if (!stream) {
-      setLog("Errore: Webcam stream non attivo.");
+      setLog(t('webcam_stream_inactive_log'));
       return;
    }
 
@@ -195,7 +196,7 @@ export async function recordOneSecond() {
       els.recordBtn.classList.add('recording');
       els.recordBtn.disabled = true;
    }
-   setLog("Registrazione avviata...");
+   setLog(t('recording_started_log'));
 
    // 2. Select format
    let mimeType = 'video/webm';
@@ -230,7 +231,7 @@ export async function recordOneSecond() {
          const isUploadMode = RECORDING_CONFIG.mode === 'upload';
 
          if (isUploadMode) {
-            setLog("Caricamento del video sul server in corso...");
+            setLog(t('video_uploading_log'));
             try {
                const formData = new FormData();
                const filename = `ghostati-recording-${Date.now()}.${extension}`;
@@ -242,12 +243,12 @@ export async function recordOneSecond() {
                });
 
                if (response.ok) {
-                  setLog(`Caricamento completato con successo sul server (HTTP ${response.status}) - File: ${filename}`);
+                  setLog(t('video_upload_done_log', { status: response.status, filename }));
                } else {
-                  setLog(`Errore durante il caricamento del video: Server HTTP ${response.status} ${response.statusText}`);
+                  setLog(t('video_upload_http_error_log', { status: response.status, statusText: response.statusText }));
                }
             } catch (err) {
-               setLog(`Errore di rete durante il caricamento del video: ${err.message}`);
+               setLog(t('video_upload_network_error_log', { message: err.message }));
             }
          } else {
             // Direct download mode
@@ -262,7 +263,7 @@ export async function recordOneSecond() {
                document.body.removeChild(a);
                URL.revokeObjectURL(url);
             }, 100);
-            setLog(`Registrazione completata e scaricata: ${a.download}`);
+            setLog(t('recording_downloaded_log', { filename: a.download }));
          }
 
          // Reset visual styles and state
@@ -285,7 +286,7 @@ export async function recordOneSecond() {
       }, RECORDING_CONFIG.durationMs);
 
    } catch (err) {
-      setLog(`Errore durante l'inizializzazione di MediaRecorder: ${err.message}`);
+      setLog(t('media_recorder_error_log', { message: err.message }));
       state.isRecording = false;
       if (els.recordBtn) {
          els.recordBtn.classList.remove('recording');

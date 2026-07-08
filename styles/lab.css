@@ -329,6 +329,31 @@ select, input[type="number"] {
 }
 input[type="number"] { width: 88px; }
 select { max-width: 60%; }
+.locale-control {
+  display: inline-grid;
+  place-items: center;
+  position: relative;
+  flex: none;
+}
+.locale-control__flag {
+  position: absolute;
+  pointer-events: none;
+  font-size: 18px;
+  line-height: 1;
+}
+.locale-control select.locale-select {
+  width: 54px;
+  min-width: 54px;
+  max-width: none;
+  color: transparent;
+  text-shadow: none;
+  background-image: none;
+  cursor: pointer;
+}
+.locale-control select.locale-select option {
+  color: var(--fg);
+  background: #201711;
+}
 input[type="range"] { accent-color: var(--orange); }
 input[type="color"] { width: 40px; height: 28px; border: 0; background: none; padding: 0; }
 

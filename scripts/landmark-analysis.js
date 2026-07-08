@@ -1,6 +1,7 @@
 /** @module landmark-analysis */
 import { state } from './state.js';
 import { distance } from './utils.js';
+import { t } from './i18n.js';
 
 /**
  * Converts a face-api descriptor distance into the "diversity" percentage used
@@ -131,7 +132,7 @@ export function decideMatchState({
          const obfDiversity = distanceToDiversity(obfMinDist);
          return {
             detectionState: 'unclear',
-            headline: `Il rilevatore con il Ghostyle vede il volto con ID ${obfMinId} - diversita ${obfDiversity}%.`,
+            headline: t('match_2d_ghostyle_unclear_headline', { id: obfMinId, diversity: obfDiversity }),
             distance: obfMinDist,
             matchedId: obfMinId,
          };
@@ -139,7 +140,7 @@ export function decideMatchState({
       if (detectionTotallyFailed) {
          return {
             detectionState: 'eluded',
-            headline: 'Rilevatore ingannato dal Ghostyle! face-api non trova un volto nel disegno composito.',
+            headline: t('match_2d_detector_failed_headline'),
             distance: obfMinDist,
             matchedId: null,
          };
@@ -147,7 +148,7 @@ export function decideMatchState({
       if (weakDetection) {
          return {
             detectionState: 'eluded',
-            headline: 'Individuazione sul Ghostyle con bassa confidenza (face-api non vede chiaramente un volto).',
+            headline: t('match_2d_weak_detection_headline'),
             distance: obfMinDist,
             matchedId: null,
          };
@@ -156,7 +157,7 @@ export function decideMatchState({
       const obfDiversity = distanceToDiversity(obfMinDist);
       return {
          detectionState: 'eluded',
-         headline: `Ghostyle attivo: volto rilevato ma diversita ${obfDiversity}% sopra soglia ${thresholdDiversity}%.`,
+         headline: t('match_2d_ghostyle_eluded_headline', { diversity: obfDiversity, threshold: thresholdDiversity }),
          distance: obfMinDist,
          matchedId: null,
       };
@@ -166,7 +167,7 @@ export function decideMatchState({
       const liveDiversity = distanceToDiversity(liveMinDist);
       return {
          detectionState: 'matched',
-         headline: `Corrispondenza trovata: ID ${liveMinId} (diversita ${liveDiversity}% sotto soglia ${thresholdDiversity}%).`,
+         headline: t('match_2d_live_matched_headline', { id: liveMinId, diversity: liveDiversity, threshold: thresholdDiversity }),
          distance: liveMinDist,
          matchedId: liveMinId,
       };
@@ -175,7 +176,7 @@ export function decideMatchState({
    const liveDiversity = distanceToDiversity(liveMinDist);
    return {
       detectionState: 'eluded',
-      headline: `Nessuna corrispondenza: diversita ${liveDiversity}% sopra soglia ${thresholdDiversity}%.`,
+      headline: t('match_2d_live_eluded_headline', { diversity: liveDiversity, threshold: thresholdDiversity }),
       distance: liveMinDist,
       matchedId: null,
    };

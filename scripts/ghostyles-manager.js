@@ -2,6 +2,7 @@
 import { state } from './state.js';
 import { setLog, formatRelativeTime, asErrorLabel } from './utils.js';
 import { els, clearActiveEffect, effectSelected } from './dom.js';
+import { t } from './i18n.js';
 
 /**
  * Retrieves ghostyle metadata from a remote script URL.
@@ -98,23 +99,23 @@ export async function loadGhostyle(url, expectedName, options = {}) {
    }
 
    if (!metadata.hasName) {
-      setLog(`Plugin ${metadata.id} senza @name nell'header, uso fallback ${metadata.id}`, 'loader');
+      setLog(t('plugin_missing_name_log', { id: metadata.id, fallback: metadata.id }), 'loader');
       ghostyle.name = metadata.id;
    } else {
       ghostyle.name = metadata.name;
    }
 
    if (!metadata.hasVersion) {
-      setLog(`Plugin ${metadata.id} senza @version`, 'loader');
+      setLog(t('plugin_missing_version_log', { id: metadata.id }), 'loader');
    }
 
    if (!hasRenderableCallback(ghostyle.module)) {
-      setLog(`Plugin ${metadata.id} non esporta ne onDraw ne paintUV, ignorato`, 'loader');
+      setLog(t('plugin_not_renderable_log', { id: metadata.id }), 'loader');
       return null;
    }
 
    if (metadata.hasReleaseDate && !isValidDate(metadata.releaseDate)) {
-      setLog(`Plugin ${metadata.id} ha @release_date non valida (${metadata.releaseDate}), ignorata`, 'loader');
+      setLog(t('plugin_invalid_release_date_log', { id: metadata.id, releaseDate: metadata.releaseDate }), 'loader');
       ghostyle.releaseDate = null;
    }
 
@@ -140,7 +141,7 @@ export async function loadGhostyle(url, expectedName, options = {}) {
          options.onFaceapiToggle();
       }
    };
-   setLog(`Caricato con successo ghostyle ${ghostyle.name} da ${url}`);
+   setLog(t('ghostyle_loaded_log', { name: ghostyle.name, url }));
    return ghostyle;
 }
 
@@ -161,7 +162,7 @@ function isValidDate(dateLike) {
 
 function reportPluginRuntimeError(pluginId, err, hookName) {
    const message = asErrorLabel(err);
-   setLog(`Plugin ${pluginId} ha lanciato: ${message} (${hookName})`, pluginId);
+   setLog(t('plugin_runtime_error_log', { id: pluginId, message, hook: hookName }), pluginId);
    console.error(`[plugin:${pluginId}] errore in ${hookName}:`, err);
    deactivatePluginOnError(pluginId);
 }
@@ -255,7 +256,7 @@ function addGhostyleBtn(record) {
 
    const meta = document.createElement('span');
    meta.className = 'preview-btn__meta';
-   meta.textContent = `aggiornato ${record.freshnessLabel || 'n/d'}`;
+   meta.textContent = t('updated_meta_label', { time: record.freshnessLabel || 'n/d' });
    if (record.releaseDate) meta.title = record.releaseDate;
    btn.appendChild(meta);
 
@@ -276,15 +277,15 @@ function addGhostyleBtn(record) {
 
    const pin1 = document.createElement('button');
    pin1.className = 'pin-btn pin-btn--1';
-   pin1.title = 'Pin to Slot 1';
-   pin1.setAttribute('aria-label', `Pin ${record.name} to Slot 1`);
+   pin1.title = t('pin_to_slot_title', { slot: 1 });
+   pin1.setAttribute('aria-label', t('pin_ghostyle_to_slot_label', { name: record.name, slot: 1 }));
    pin1.innerHTML = '1';
    pinsDiv.appendChild(pin1);
 
    const pin2 = document.createElement('button');
    pin2.className = 'pin-btn pin-btn--2';
-   pin2.title = 'Pin to Slot 2';
-   pin2.setAttribute('aria-label', `Pin ${record.name} to Slot 2`);
+   pin2.title = t('pin_to_slot_title', { slot: 2 });
+   pin2.setAttribute('aria-label', t('pin_ghostyle_to_slot_label', { name: record.name, slot: 2 }));
    pin2.innerHTML = '2';
    pinsDiv.appendChild(pin2);
 
@@ -345,7 +346,7 @@ function messageEffectChange(effect, previousEffect) {
 export function toggleEffect(effect, button) {
 
    if (state.activeEffect === effect) {
-      setLog(`Effetto ${state.activeEffect} già attivo. Disattivazione in corso...`);
+      setLog(t('ghostyle_already_active_log', { name: state.activeEffect }));
       deactivateEffect();
       clearActiveEffect();
       messageEffectChange(null, effect);
@@ -364,9 +365,9 @@ export function toggleEffect(effect, button) {
    messageEffectChange(effect, previousEffect);
 
    if (previousEffect) {
-      setLog(`Effetto ${previousEffect} disattivato, abiliato ${ghstyle.name}. Sarà applicato al volto nella webcam.`);
+      setLog(t('ghostyle_switched_log', { previous: previousEffect, name: ghstyle.name }));
    } else {
-      setLog(`Effetto ${ghstyle.name} attivato. Sarà applicato al volto nella webcam.`);
+      setLog(t('ghostyle_activated_log', { name: ghstyle.name }));
    }
 
    effectSelected(button);

@@ -1,0 +1,1795 @@
+# Ghostmaxxing translation template.
+# CopyLeft (C) 2026 vecna.eu
+# This file is distributed under the same license as the Ghostmaxxing package (AGPL-3).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Ghostmaxxing 0.1.0\n"
+"POT-Creation-Date: 2026-07-08\n"
+"Language-Team: NotYetExisting <translators at vecna dot eu>\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#. key: status_initialising
+#. it: inizializzazione…
+#: lab.html:30
+msgid "initialising…"
+msgstr ""
+
+#. key: placeholder_loading_webcam
+#. it: Caricamento modelli e richiesta della webcam…
+#: lab.html:31
+msgid "Loading models and requesting the webcam…"
+msgstr ""
+
+#. key: diagnostic_preview_alt
+#. it: anteprima diagnostica
+#: lab.html:33
+msgid "diagnostic preview"
+msgstr ""
+
+#. key: face_view_tablist_label
+#. it: Cosa vedi sul volto
+#: lab.html:46
+msgid "What you see on the face"
+msgstr ""
+
+#. key: nav_home_label
+#. it: Home
+#: lab.html:47
+msgid "Home"
+msgstr ""
+
+#. key: view_camera
+#. it: Camera
+#: lab.html:55
+msgid "Camera"
+msgstr ""
+
+#. Glossary: 2D points.
+#. key: view_2d_points
+#. it: Punti 2D
+#: lab.html:56
+msgid "2D points"
+msgstr ""
+
+#. Glossary: 3D mesh.
+#. key: view_3d_mesh
+#. it: Mesh 3D
+#: lab.html:57
+msgid "3D mesh"
+msgstr ""
+
+#. key: save_your_face_status
+#. it: Salva il tuo volto
+#: lab.html:63
+#: scripts/lab-ui.js:295
+msgid "Save your face"
+msgstr ""
+
+#. Glossary: match.
+#. key: match_label
+#. it: MATCH
+#: lab.html:60
+msgid "MATCH"
+msgstr ""
+
+#. key: copy_to_clipboard_title
+#. it: Copia negli appunti
+#: lab.html:71
+msgid "Copy to clipboard"
+msgstr ""
+
+#. key: copy_button
+#. it: Copia
+#: lab.html:73
+msgid "Copy"
+msgstr ""
+
+#. Glossary: Ghostyle, pinned.
+#. key: pinned_ghostyle_1_title
+#. it: Ghostyle fissato 1
+#: lab.html:76
+msgid "Pinned Ghostyle 1"
+msgstr ""
+
+#. Glossary: Ghostyle, pinned.
+#. key: pinned_ghostyle_2_title
+#. it: Ghostyle fissato 2
+#: lab.html:80
+msgid "Pinned Ghostyle 2"
+msgstr ""
+
+#. key: record_2s_title
+#. it: Registra 2s
+#: lab.html:84
+msgid "Record 2s"
+msgstr ""
+
+#. key: record_button
+#. it: Registra
+#: lab.html:86
+msgid "Record"
+msgstr ""
+
+#. key: language_label
+#. it: Lingua
+#: lab.html:118
+msgid "Language"
+msgstr ""
+
+#. key: language_help
+#. it: Lingua dell'interfaccia
+#: lab.html:118
+msgid "Interface language"
+msgstr ""
+
+#. key: saved_faces_title
+#. it: Volti salvati
+#: lab.html:92
+#: lab.html:95
+#: lab.html:210
+msgid "Saved faces"
+msgstr ""
+
+#. key: close_button
+#. it: Chiudi
+#: lab.html:93
+#: lab.html:102
+#: lab.html:169
+#: lab.html:180
+#: lab.html:191
+#: lab.html:238
+#: lab.html:255
+msgid "Close"
+msgstr ""
+
+#. key: on_device_kicker
+#. it: Sul dispositivo
+#: lab.html:94
+#: lab.html:103
+#: lab.html:205
+msgid "On device"
+msgstr ""
+
+#. Glossary: baseline, match.
+#. key: saved_faces_description
+#. it: Baseline salvate su questo dispositivo. Il match viene misurato rispetto a quella attiva.
+#: lab.html:96
+msgid "Baselines stored on this device. The match is measured against the active one."
+msgstr ""
+
+#. key: settings_title
+#. it: Impostazioni
+#: lab.html:101
+#: lab.html:104
+#: lab.html:212
+msgid "Settings"
+msgstr ""
+
+#. Glossary: Web AR, face recognition, camouflage.
+#. key: lab_intro_note
+#. it: Laboratorio Web AR in tempo reale per sviluppare camouflage contro il riconoscimento facciale.
+#: lab.html:106
+msgid "Real-time Web AR lab for developing face-recognition camouflage."
+msgstr ""
+
+#. Glossary: Ghostyle.
+#. key: ghostyles_heading
+#. it: Ghostyle
+#: lab.html:109
+msgid "Ghostyles"
+msgstr ""
+
+#. key: camera_heading
+#. it: Camera
+#: lab.html:117
+msgid "Camera"
+msgstr ""
+
+#. key: front_back_hint
+#. it: Frontale / posteriore
+#: lab.html:118
+msgid "Front / back"
+msgstr ""
+
+#. key: fullscreen_label
+#. it: Schermo intero
+#: lab.html:120
+msgid "Fullscreen"
+msgstr ""
+
+#. key: fullscreen_help
+#. it: Riempi lo schermo
+#: lab.html:120
+msgid "Fill the screen"
+msgstr ""
+
+#. Glossary: ghostyles.json.
+#. key: ghostyles_defaults_note
+#. it: I predefiniti arrivano dalle prime due voci in ghostyles.json.
+#: lab.html:110
+msgid "Defaults come from the first two entries in ghostyles.json."
+msgstr ""
+
+#. Glossary: Ghostyle.
+#. key: reload_ghostyles_button
+#. it: Ricarica Ghostyle
+#: lab.html:113
+msgid "Reload Ghostyles"
+msgstr ""
+
+#. key: flip_camera_label
+#. it: Cambia fotocamera
+#: lab.html:118
+#: lab.html:119
+msgid "Flip camera"
+msgstr ""
+
+#. key: enter_fullscreen_button
+#. it: Entra in schermo intero
+#: lab.html:121
+#: scripts/lab-ui.js:118
+msgid "Enter fullscreen"
+msgstr ""
+
+#. key: exit_fullscreen_button
+#. it: Esci dallo schermo intero
+#: scripts/lab-ui.js:116
+msgid "Exit fullscreen"
+msgstr ""
+
+#. key: mirror_preview_label
+#. it: Anteprima speculare
+#: lab.html:122
+msgid "Mirror preview"
+msgstr ""
+
+#. key: mirror_preview_help
+#. it: Specchia l'immagine, non la camera
+#: lab.html:122
+msgid "Flip the image, not the camera"
+msgstr ""
+
+#. key: variables_heading
+#. it: Variabili
+#: lab.html:127
+msgid "Variables"
+msgstr ""
+
+#. Glossary: hardcoded.
+#. key: hardcoded_note
+#. it: (normalmente hardcoded)
+#: lab.html:127
+msgid "(normally hardcoded)"
+msgstr ""
+
+#. Glossary: match threshold.
+#. key: match_threshold_label
+#. it: Soglia di riconoscimento
+#: lab.html:128
+#: lab.html:154
+msgid "Match threshold"
+msgstr ""
+
+#. Glossary: distance, no match.
+#. key: match_threshold_help
+#. it: Distanza sopra cui è "nessuna corrispondenza"
+#: lab.html:128
+msgid "Distance above which it is \"no match\""
+msgstr ""
+
+#. key: analysis_frequency_label
+#. it: Frequenza di analisi
+#: lab.html:130
+msgid "Analysis frequency"
+msgstr ""
+
+#. Glossary: match.
+#. key: analysis_frequency_help
+#. it: Quanto spesso il match viene rimisurato
+#: lab.html:130
+msgid "How often the match is re-measured"
+msgstr ""
+
+#. key: fps_option_heavy
+#. it: 30 ms · pesante
+#: lab.html:134
+msgid "30 ms · heavy"
+msgstr ""
+
+#. key: fps_option_fast
+#. it: 60 ms · veloce
+#: lab.html:135
+msgid "60 ms · fast"
+msgstr ""
+
+#. key: fps_option_medium
+#. it: 90 ms · medio
+#: lab.html:136
+msgid "90 ms · medium"
+msgstr ""
+
+#. key: fps_option_battery
+#. it: 120 ms · leggero sulla batteria
+#: lab.html:137
+msgid "120 ms · easy on battery"
+msgstr ""
+
+#. key: estimated_opacity_label
+#. it: Opacità stimata
+#: lab.html:137
+msgid "Estimated opacity"
+msgstr ""
+
+#. Glossary: Ghostyle.
+#. key: estimated_opacity_help
+#. it: Forza predefinita del Ghostyle
+#: lab.html:137
+msgid "Default Ghostyle strength"
+msgstr ""
+
+#. key: faces_heading
+#. it: Volti
+#: lab.html:142
+#: lab.html:211
+msgid "Faces"
+msgstr ""
+
+#. key: delete_all_faces_label
+#. it: Cancella tutti i volti
+#: lab.html:143
+msgid "Delete all faces"
+msgstr ""
+
+#. Glossary: baseline.
+#. key: delete_all_faces_help
+#. it: Cancella ogni baseline salvata su questo dispositivo
+#: lab.html:143
+msgid "Wipes every saved baseline on this device"
+msgstr ""
+
+#. key: delete_all_button
+#. it: Cancella tutto
+#: lab.html:144
+msgid "Delete all"
+msgstr ""
+
+#. Glossary: frame.
+#. key: analyze_current_frame_label
+#. it: Analizza frame corrente
+#: lab.html:145
+msgid "Analyze current frame"
+msgstr ""
+
+#. key: analyze_current_frame_help
+#. it: Apri la diagnostica prima/dopo
+#: lab.html:145
+msgid "Open the before/after diagnostic"
+msgstr ""
+
+#. key: analyze_button
+#. it: Analizza
+#: lab.html:146
+msgid "Analyze"
+msgstr ""
+
+#. key: archive_mode_heading
+#. it: Archivio e modalità
+#: lab.html:152
+msgid "Archive & mode"
+msgstr ""
+
+#. key: saved_faces_metric
+#. it: Volti salvati
+#: lab.html:154
+msgid "Saved faces"
+msgstr ""
+
+#. key: next_id_metric
+#. it: Prossimo ID
+#: lab.html:155
+msgid "Next ID"
+msgstr ""
+
+#. key: active_effect_metric
+#. it: Effetto attivo
+#: lab.html:157
+msgid "Active effect"
+msgstr ""
+
+#. Glossary: tracking.
+#. key: tracking_metric
+#. it: Tracciamento
+#: lab.html:158
+msgid "Tracking"
+msgstr ""
+
+#. key: logs_heading
+#. it: Log
+#: lab.html:163
+msgid "Logs"
+msgstr ""
+
+#. key: waiting_webcam_log
+#. it: In attesa che la webcam si avvii…
+#: lab.html:162
+msgid "Waiting for the webcam to start…"
+msgstr ""
+
+#. key: online_kicker
+#. it: Online
+#: lab.html:170
+#: lab.html:181
+#: lab.html:192
+#: lab.html:218
+msgid "Online"
+msgstr ""
+
+#. key: upload_report_title
+#. it: Carica e segnala
+#: lab.html:168
+#: lab.html:171
+#: lab.html:220
+msgid "Upload & report"
+msgstr ""
+
+#. key: upload_report_description
+#. it: Invia una clip registrata o una prova di un sistema reale. Passa da internet: condividi solo ciò che per te è sicuro.
+#: lab.html:172
+msgid "Send a recorded clip or evidence of a real-world deployment. Goes over the internet — share only what is safe for you."
+msgstr ""
+
+#. key: share_clip_title
+#. it: Condividi una clip
+#: lab.html:174
+msgid "Share a clip"
+msgstr ""
+
+#. key: no_clips_recorded
+#. it: Nessuna clip registrata.
+#: lab.html:174
+#: scripts/lab-ui.js:142
+msgid "No clips recorded yet."
+msgstr ""
+
+#. key: clips_ready_to_send
+#. it: {count} clip pronte da inviare.
+#: scripts/lab-ui.js:142
+msgid "{count} clip(s) ready to send."
+msgstr ""
+
+#. Glossary: deployment.
+#. key: report_deployment_title
+#. it: Segnala un deployment
+#: lab.html:175
+msgid "Report a deployment"
+msgstr ""
+
+#. Glossary: face recognition.
+#. key: report_deployment_description
+#. it: Dove il riconoscimento facciale appare nello spazio pubblico, chi lo gestisce, che aspetto ha.
+#: lab.html:175
+msgid "Where face recognition appears in public space, who runs it, what it looks like."
+msgstr ""
+
+#. key: shared_gallery_title
+#. it: Galleria condivisa
+#: lab.html:179
+#: lab.html:182
+#: lab.html:223
+msgid "Shared gallery"
+msgstr ""
+
+#. key: shared_gallery_description
+#. it: Risultati e clip pubblicati dalla community. Caricati dal server.
+#: lab.html:183
+msgid "Results and clips the community has published. Loaded from the server."
+msgstr ""
+
+#. key: gallery_demo_broke
+#. it: 0.71 ✓ rotto
+#: lab.html:187
+msgid "0.71 ✓ broke"
+msgstr ""
+
+#. key: gallery_demo_clip
+#. it: clip 2s
+#: lab.html:188
+msgid "2s clip"
+msgstr ""
+
+#. key: info_title
+#. it: Info
+#: lab.html:190
+#: lab.html:225
+msgid "Info"
+msgstr ""
+
+#. Glossary: face recognition, pipeline.
+#. key: info_description
+#. it: Un laboratorio in tempo reale per testare il camouflage contro il riconoscimento facciale. Cambia l'aspetto del tuo volto, osserva come reagisce una pipeline locale di riconoscimento, e conserva ciò che funziona.
+#: lab.html:197
+msgid "A real-time lab for testing face-recognition camouflage. Change how your face looks, watch a local recognition pipeline react, and keep what works."
+msgstr ""
+
+#. key: info_not_invisible
+#. it: Non si tratta di diventare invisibili: si tratta di rendere il sistema abbastanza visibile da poterlo testare.
+#: lab.html:198
+msgid "Not about becoming invisible — about making the system visible enough to test."
+msgstr ""
+
+#. key: initiative_note
+#. it: Presentazione internazionale dell'iniziativa italiana Ghòstati!, nata nel contesto NINA.
+#: lab.html:199
+msgid "International presentation of the Italian initiative Ghòstati!, born in the NINA context."
+msgstr ""
+
+#. key: main_nav_label
+#. it: Principale
+#: lab.html:203
+msgid "Main"
+msgstr ""
+
+#. key: save_button
+#. it: Salva
+#: lab.html:207
+msgid "Save"
+msgstr ""
+
+#. key: upload_button
+#. it: Carica
+#: lab.html:221
+msgid "Upload"
+msgstr ""
+
+#. key: gallery_button
+#. it: Galleria
+#: lab.html:224
+msgid "Gallery"
+msgstr ""
+
+#. key: makeup_analysis_label
+#. it: Analisi del trucco
+#: lab.html:250
+msgid "Makeup analysis"
+msgstr ""
+
+#. key: copy_report_button
+#. it: Copia report
+#: lab.html:254
+msgid "Copy report"
+msgstr ""
+
+#. key: not_available_label
+#. it: N/D
+#: scripts/dom.js:123
+msgid "N/A"
+msgstr ""
+
+#. key: off_status
+#. it: off
+#: scripts/dom.js:124
+msgid "off"
+msgstr ""
+
+#. key: none_status
+#. it: nessuno
+#: lab.html:157
+msgid "none"
+msgstr ""
+
+#. key: active_style_missing_console
+#. it: Nessuno stile trovato per l'effetto attivo {effect}
+#: scripts/dom.js:172
+msgid "No style found for active effect {effect}"
+msgstr ""
+
+#. key: mirror_webcam_on_status
+#. it: Webcam speculare: ON
+#: scripts/main.js:42
+#: scripts/camera.js:71
+msgid "Mirror webcam: ON"
+msgstr ""
+
+#. key: mirror_webcam_button
+#. it: Webcam speculare
+#: scripts/main.js:42
+#: scripts/camera.js:71
+msgid "Mirror webcam"
+msgstr ""
+
+#. key: switching_camera_log
+#. it: Cambio fotocamera... ({mode})
+#: scripts/main.js:50
+msgid "Switching camera... ({mode})"
+msgstr ""
+
+#. key: camera_switch_error
+#. it: Errore nel cambio fotocamera.
+#: scripts/main.js:57
+msgid "Error while switching camera."
+msgstr ""
+
+#. key: loading_models_status
+#. it: caricamento modelli
+#: scripts/main.js:142
+msgid "loading models"
+msgstr ""
+
+#. key: error_status
+#. it: errore
+#: scripts/main.js:164
+msgid "error"
+msgstr ""
+
+#. key: loading_error_log
+#. it: Errore durante il caricamento: {message}
+#: scripts/main.js:560
+msgid "Error while loading: {message}"
+msgstr ""
+
+#. key: save_face_error
+#. it: Errore durante il salvataggio del volto.
+#: scripts/main.js:522
+msgid "Error while saving the face."
+msgstr ""
+
+#. key: makeup_analysis_error
+#. it: Errore durante l'analisi del trucco.
+#: scripts/main.js:534
+msgid "Error while analyzing the makeup."
+msgstr ""
+
+#. key: error_console_prefix
+#. it: Errore:
+#: scripts/main.js:162
+msgid "Error:"
+msgstr ""
+
+#. key: face_thumbnail_alt
+#. it: Miniatura volto ID {id}
+#: scripts/main.js:296
+msgid "Face thumbnail ID {id}"
+msgstr ""
+
+#. key: no_preview
+#. it: nessuna anteprima
+#: scripts/main.js:302
+#: scripts/analyze-panel.js:138
+msgid "no preview"
+msgstr ""
+
+#. key: delete_id_label
+#. it: Cancella ID {id}
+#: scripts/main.js:334
+#: scripts/main.js:346
+#: scripts/main.js:350
+msgid "Delete ID {id}"
+msgstr ""
+
+#. key: confirm_delete_id_label
+#. it: Conferma cancellazione ID {id}
+#: scripts/main.js:355
+#: scripts/main.js:356
+msgid "Confirm deletion of ID {id}"
+msgstr ""
+
+#. key: no_saved_faces_empty
+#. it: Nessun volto salvato.
+#: scripts/main.js:381
+msgid "No saved faces."
+msgstr ""
+
+#. key: confirm_question
+#. it: Conferma?
+#: scripts/main.js:542
+#: scripts/main.js:546
+#: scripts/main.js:548
+msgid "Confirm?"
+msgstr ""
+
+#. Glossary: face-api.js, face recognition.
+#. key: loading_face_system_log
+#. it: Caricamento sistema di riconoscimento facciale (face-api.js)...
+#: scripts/main.js:556
+msgid "Loading face-recognition system (face-api.js)..."
+msgstr ""
+
+#. Glossary: ImageEmbedder, 3D recognition engine.
+#. key: loading_embedder_log
+#. it: Caricamento ImageEmbedder per il motore di riconoscimento 3D...
+#: scripts/main.js:564
+msgid "Loading ImageEmbedder for the 3D recognition engine..."
+msgstr ""
+
+#. key: plugin_reload_started_log
+#. it: Ricarica plugin in corso...
+#: scripts/main.js:429
+msgid "Reloading plugins..."
+msgstr ""
+
+#. key: plugin_reload_done_log
+#. it: Reload completato: {count} plugin caricati.
+#: scripts/main.js:434
+msgid "Reload complete: {count} plugins loaded."
+msgstr ""
+
+#. key: plugin_reload_error_log
+#. it: Errore durante reload plugins: {message}
+#: scripts/main.js:436
+msgid "Error while reloading plugins: {message}"
+msgstr ""
+
+#. key: thumbnail_capture_failed_log
+#. it: Acquisizione miniatura fallita: {message}
+#: scripts/main.js:485
+msgid "Thumbnail capture failed: {message}"
+msgstr ""
+
+#. Glossary: ImageEmbedder, face-api.
+#. key: embedder_unavailable_log
+#. it: ImageEmbedder non disponibile: {message} — solo face-api attivo.
+#: scripts/main.js:568
+msgid "ImageEmbedder unavailable: {message} — only face-api is active."
+msgstr ""
+
+#. key: loading_makeup_plugins_log
+#. it: Caricamento plugin di makeup in corso...
+#: scripts/main.js:571
+msgid "Loading makeup plugins..."
+msgstr ""
+
+#. key: ghostyles_json_error_log
+#. it: Errore durante la lettura di ghostyles.json: {message}
+#: scripts/main.js:593
+msgid "Error while reading ghostyles.json: {message}"
+msgstr ""
+
+#. key: init_complete_webcam_log
+#. it: Inizializzazione completata. Avvio webcam in corso...
+#: scripts/main.js:596
+msgid "Initialization complete. Starting webcam..."
+msgstr ""
+
+#. key: webcam_permission_error
+#. it: Impossibile inizializzare webcam: verifica i permessi camera per {origin}
+#: scripts/main.js:600
+msgid "Could not start webcam: check camera permissions for {origin}"
+msgstr ""
+
+#. key: ready_start_log
+#. it: Tutto pronto! Inizia scansionando il tuo volto o attivando una guida makeup.
+#: scripts/main.js:621
+msgid "All set! Start by scanning your face or turning on a makeup guide."
+msgstr ""
+
+#. Glossary: face-api.
+#. key: face_api_models_not_loaded_log
+#. it: [ERROR] face-api modelli non caricati. Riprova tra pochi secondi.
+#: scripts/engine.js:27
+msgid "[ERROR] face-api models not loaded. Try again in a few seconds."
+msgstr ""
+
+#. key: no_face_webcam_log
+#. it: Nessun volto rilevato nella webcam.
+#: scripts/engine.js:38
+msgid "No face detected in the webcam."
+msgstr ""
+
+#. Glossary: face-api.
+#. key: face_api_error_log
+#. it: [ERRORE face-api] {message}
+#: scripts/engine.js:47
+msgid "[face-api ERROR] {message}"
+msgstr ""
+
+#. Glossary: biometric faceprint, detection score.
+#. key: face_saved_log
+#. it: Impronta biometrica salvata con ID {id}. Detection score: {score}.
+#: scripts/engine.js:330
+msgid "Biometric faceprint saved with ID {id}. Detection score: {score}."
+msgstr ""
+
+#. Glossary: Ghostyle, detector, diversity.
+#. key: match_2d_ghostyle_unclear_headline
+#. it: Il rilevatore con il Ghostyle vede il volto con ID {id} - diversita {diversity}%.
+#: scripts/landmark-analysis.js:134
+msgid "With the Ghostyle, the detector sees the face as ID {id} - diversity {diversity}%."
+msgstr ""
+
+#. Glossary: detector, Ghostyle, face-api, composite.
+#. key: match_2d_detector_failed_headline
+#. it: Rilevatore ingannato dal Ghostyle! face-api non trova un volto nel disegno composito.
+#: scripts/landmark-analysis.js:142
+msgid "Detector fooled by the Ghostyle! face-api does not find a face in the composite drawing."
+msgstr ""
+
+#. Glossary: detection confidence, Ghostyle, face-api.
+#. key: match_2d_weak_detection_headline
+#. it: Individuazione sul Ghostyle con bassa confidenza (face-api non vede chiaramente un volto).
+#: scripts/landmark-analysis.js:150
+msgid "Low-confidence detection on the Ghostyle (face-api does not clearly see a face)."
+msgstr ""
+
+#. Glossary: Ghostyle, diversity, threshold.
+#. key: match_2d_ghostyle_eluded_headline
+#. it: Ghostyle attivo: volto rilevato ma diversita {diversity}% sopra soglia {threshold}%.
+#: scripts/landmark-analysis.js:159
+msgid "Ghostyle active: face detected, but diversity {diversity}% is above threshold {threshold}%."
+msgstr ""
+
+#. Glossary: match, diversity, threshold.
+#. key: match_2d_live_matched_headline
+#. it: Corrispondenza trovata: ID {id} (diversita {diversity}% sotto soglia {threshold}%).
+#: scripts/landmark-analysis.js:169
+msgid "Match found: ID {id} (diversity {diversity}% below threshold {threshold}%)."
+msgstr ""
+
+#. Glossary: match, diversity, threshold.
+#. key: match_2d_live_eluded_headline
+#. it: Nessuna corrispondenza: diversita {diversity}% sopra soglia {threshold}%.
+#: scripts/landmark-analysis.js:178
+msgid "No match: diversity {diversity}% above threshold {threshold}%."
+msgstr ""
+
+#. key: webcam_unavailable_log
+#. it: Webcam non disponibile in questo contesto.{hint}
+#: scripts/camera.js:51
+msgid "Webcam unavailable in this context.{hint}"
+msgstr ""
+
+#. key: webcam_https_hint
+#. it:  La pagina deve essere servita via HTTPS o da localhost (su mobile l'IP locale non basta).
+#: scripts/camera.js:50
+msgid " The page must be served over HTTPS or from localhost (on mobile, a local IP is not enough)."
+msgstr ""
+
+#. key: webcam_live_status
+#. it: webcam attiva
+#: scripts/camera.js:79
+msgid "webcam active"
+msgstr ""
+
+#. key: webcam_active_log
+#. it: Webcam attiva. Premi l'icona bersaglio per la scansione o scegli un effetto.
+#: scripts/camera.js:80
+msgid "Webcam active. Press the target icon to scan or choose an effect."
+msgstr ""
+
+#. key: webcam_stream_inactive_log
+#. it: Errore: Webcam stream non attivo.
+#: scripts/camera.js:188
+msgid "Error: webcam stream is not active."
+msgstr ""
+
+#. key: recording_started_log
+#. it: Registrazione avviata...
+#: scripts/camera.js:198
+msgid "Recording started..."
+msgstr ""
+
+#. key: video_uploading_log
+#. it: Caricamento del video sul server in corso...
+#: scripts/camera.js:233
+msgid "Uploading video to the server..."
+msgstr ""
+
+#. key: video_upload_done_log
+#. it: Caricamento completato con successo sul server (HTTP {status}) - File: {filename}
+#: scripts/camera.js:245
+msgid "Upload completed successfully on the server (HTTP {status}) - File: {filename}"
+msgstr ""
+
+#. key: video_upload_http_error_log
+#. it: Errore durante il caricamento del video: Server HTTP {status} {statusText}
+#: scripts/camera.js:247
+msgid "Error while uploading video: server HTTP {status} {statusText}"
+msgstr ""
+
+#. key: video_upload_network_error_log
+#. it: Errore di rete durante il caricamento del video: {message}
+#: scripts/camera.js:250
+msgid "Network error while uploading video: {message}"
+msgstr ""
+
+#. key: recording_downloaded_log
+#. it: Registrazione completata e scaricata: {filename}
+#: scripts/camera.js:265
+msgid "Recording completed and downloaded: {filename}"
+msgstr ""
+
+#. key: media_recorder_error_log
+#. it: Errore durante l'inizializzazione di MediaRecorder: {message}
+#: scripts/camera.js:288
+msgid "Error while initializing MediaRecorder: {message}"
+msgstr ""
+
+#. key: local_archive_cleared_log
+#. it: Archivio locale cancellato. Il contatore ID riparte da 0.
+#: scripts/db.js:193
+msgid "Local archive cleared. The ID counter restarts from 0."
+msgstr ""
+
+#. Glossary: 3D database.
+#. key: incompatible_3d_db_log
+#. it: Database 3D incompatibile col nuovo modello, svuoto
+#: scripts/db.js:71
+msgid "3D database incompatible with the new model, clearing it"
+msgstr ""
+
+#. Glossary: ImageEmbedder.
+#. key: image_embedder_ready_log
+#. it: [3D] ImageEmbedder pronto.
+#: scripts/engine-3d.js:63
+msgid "[3D] ImageEmbedder ready."
+msgstr ""
+
+#. Glossary: ImageEmbedder.
+#. key: image_embedder_not_loaded_error
+#. it: [engine-3d] ImageEmbedder non caricato.
+#: scripts/engine-3d.js:105
+msgid "[engine-3d] ImageEmbedder not loaded."
+msgstr ""
+
+#. Glossary: embedding.
+#. key: no_embedding_returned_error
+#. it: Nessun embedding restituito dal modello.
+#: scripts/engine-3d.js:110
+msgid "No embedding returned by the model."
+msgstr ""
+
+#. Glossary: embedding.
+#. key: embedding_extraction_error
+#. it: Errore estrazione embedding: {message}
+#: scripts/engine-3d.js:115
+msgid "Embedding extraction error: {message}"
+msgstr ""
+
+#. Glossary: ImageEmbedder, embedding.
+#. key: image_embedder_not_ready_save_log
+#. it: [3D] ImageEmbedder non pronto — embedding 3D non salvato.
+#: scripts/engine-3d.js:152
+msgid "[3D] ImageEmbedder not ready — 3D embedding not saved."
+msgstr ""
+
+#. Glossary: 3D DB.
+#. key: db_3d_not_initialized_log
+#. it: [3D] DB 3D non inizializzato.
+#: scripts/engine-3d.js:156
+msgid "[3D] 3D DB not initialized."
+msgstr ""
+
+#. Glossary: embedding.
+#. key: embedding_extraction_log
+#. it: [3D] Errore estrazione embedding: {message}
+#: scripts/engine-3d.js:163
+msgid "[3D] Embedding extraction error: {message}"
+msgstr ""
+
+#. Glossary: ImageEmbedder, embedding.
+#. key: image_embedder_saved_log
+#. it: [3D] Embedding ImageEmbedder salvato con ID {id}.
+#: scripts/engine-3d.js:172
+msgid "[3D] ImageEmbedder embedding saved with ID {id}."
+msgstr ""
+
+#. Glossary: ImageEmbedder.
+#. key: image_embedder_not_ready_compare_log
+#. it: [3D] ImageEmbedder non pronto — confronto 3D saltato.
+#: scripts/engine-3d.js:267
+msgid "[3D] ImageEmbedder not ready — 3D comparison skipped."
+msgstr ""
+
+#. Glossary: live embedding.
+#. key: live_embedding_extraction_log
+#. it: [3D] Errore estrazione embedding live: {message}
+#: scripts/engine-3d.js:278
+msgid "[3D] Live embedding extraction error: {message}"
+msgstr ""
+
+#. Glossary: Ghostyle, ImageEmbedder, similarity.
+#. key: match_3d_ghostyle_matched_headline
+#. it: [3D] Ghostyle presente: ImageEmbedder abbina ID {id} (similarità {similarity} ≥ {threshold}).
+#: scripts/engine-3d.js:316
+msgid "[3D] Ghostyle present: ImageEmbedder matches ID {id} (similarity {similarity} ≥ {threshold})."
+msgstr ""
+
+#. Glossary: Ghostyle, ImageEmbedder, embedding, similarity.
+#. key: match_3d_ghostyle_eluded_headline
+#. it: [3D] Ghostyle presente: ImageEmbedder non abbina (similarità {similarity} < {threshold}). Embedding visivo spostato.
+#: scripts/engine-3d.js:321
+msgid "[3D] Ghostyle present: ImageEmbedder does not match (similarity {similarity} < {threshold}). Visual embedding shifted."
+msgstr ""
+
+#. Glossary: 3D DB, ImageEmbedder.
+#. key: match_3d_empty_db_headline
+#. it: [3D] DB 3D vuoto, nessun confronto ImageEmbedder.
+#: scripts/engine-3d.js:327
+msgid "[3D] 3D DB empty, no ImageEmbedder comparison."
+msgstr ""
+
+#. Glossary: ImageEmbedder, match, similarity.
+#. key: match_3d_live_matched_headline
+#. it: [3D] Corrispondenza ImageEmbedder: ID {id} (similarità {similarity} ≥ {threshold}).
+#: scripts/engine-3d.js:332
+msgid "[3D] ImageEmbedder match: ID {id} (similarity {similarity} ≥ {threshold})."
+msgstr ""
+
+#. Glossary: ImageEmbedder, match, similarity.
+#. key: match_3d_live_eluded_headline
+#. it: [3D] Nessuna corrispondenza ImageEmbedder (max similarità {similarity} < {threshold}).
+#: scripts/engine-3d.js:337
+msgid "[3D] No ImageEmbedder match (max similarity {similarity} < {threshold})."
+msgstr ""
+
+#. key: record_clip_first_toast
+#. it: Registra prima una clip
+#: scripts/lab-ui.js:102
+msgid "Record a clip first"
+msgstr ""
+
+#. key: fullscreen_not_available_toast
+#. it: Schermo intero non disponibile qui
+#: scripts/lab-ui.js:117
+msgid "Fullscreen not available here"
+msgstr ""
+
+#. Glossary: Ghostyle.
+#. key: ghostyle_not_loaded_toast
+#. it: Ghostyle "{id}" non caricato
+#: scripts/lab-ui.js:204
+msgid "Ghostyle \"{id}\" not loaded"
+msgstr ""
+
+#. Glossary: pinned, slot.
+#. key: pinned_to_slot_toast
+#. it: Fissato nello slot {slot} → {name}
+#: scripts/lab-ui.js:242
+msgid "Pinned to Slot {slot} → {name}"
+msgstr ""
+
+#. key: measuring_status
+#. it: Misurazione…
+#: scripts/lab-ui.js:302
+msgid "Measuring…"
+msgstr ""
+
+#. key: no_face_found_status
+#. it: Volto non trovato
+#: scripts/lab-ui.js:343
+msgid "No face found"
+msgstr ""
+
+#. Glossary: frame.
+#. key: no_face_in_frame_status
+#. it: Nessun volto nel frame
+#: scripts/lab-ui.js:356
+msgid "No face in frame"
+msgstr ""
+
+#. key: escaped_status
+#. it: Escapou
+#: scripts/lab-ui.js:344
+#: scripts/lab-ui.js:364
+msgid "Escaped"
+msgstr ""
+
+#. key: recognised_status
+#. it: Reconhecido
+#: scripts/lab-ui.js:345
+#: scripts/lab-ui.js:364
+msgid "Recognised"
+msgstr ""
+
+#. key: visual_comparison_title
+#. it: Confronto visivo
+#: scripts/analyze-panel.js:142
+msgid "Visual comparison"
+msgstr ""
+
+#. Glossary: baseline.
+#. key: visual_comparison_label
+#. it: Confronto visivo base vs attuale
+#: scripts/analyze-panel.js:143
+msgid "Baseline vs current visual comparison"
+msgstr ""
+
+#. Glossary: baseline thumbnail.
+#. key: baseline_thumbnail_alt
+#. it: Thumbnail volto base ID {id}
+#: scripts/analyze-panel.js:137
+msgid "Baseline face thumbnail ID {id}"
+msgstr ""
+
+#. key: current_thumbnail_alt
+#. it: Thumbnail volto attuale
+#: scripts/analyze-panel.js:150
+msgid "Current face thumbnail"
+msgstr ""
+
+#. key: current_you_label
+#. it: Tu ora
+#: scripts/analyze-panel.js:151
+msgid "You now"
+msgstr ""
+
+#. key: face_detected_title
+#. it: Volto rilevato
+#: scripts/analyze-panel.js:167
+#: scripts/analyze-panel.js:194
+msgid "Face detected"
+msgstr ""
+
+#. Glossary: snapshot.
+#. key: no_face_snapshot
+#. it: Nessun volto rilevato nello snapshot.
+#: scripts/analyze-panel.js:168
+#: scripts/analyze-panel.js:430
+msgid "No face detected in the snapshot."
+msgstr ""
+
+#. key: recognition_title
+#. it: Riconoscimento
+#: scripts/analyze-panel.js:171
+#: scripts/analyze-panel.js:206
+msgid "Recognition"
+msgstr ""
+
+#. key: no_recognition_data
+#. it: Nessun dato di riconoscimento disponibile.
+#: scripts/analyze-panel.js:172
+msgid "No recognition data available."
+msgstr ""
+
+#. key: no_id_found
+#. it: Nessun ID trovato
+#: scripts/analyze-panel.js:180
+msgid "No ID found"
+msgstr ""
+
+#. key: estimated_age_label
+#. it: Eta stimata:
+#: scripts/analyze-panel.js:195
+msgid "Estimated age:"
+msgstr ""
+
+#. key: predicted_gender_label
+#. it: Genere predetto:
+#: scripts/analyze-panel.js:197
+msgid "Predicted gender:"
+msgstr ""
+
+#. key: dominant_emotion_label
+#. it: Emozione dominante:
+#: scripts/analyze-panel.js:199
+msgid "Dominant emotion:"
+msgstr ""
+
+#. Glossary: detection confidence.
+#. key: detection_confidence_label
+#. it: Confidence detection:
+#: scripts/analyze-panel.js:201
+#: scripts/analyze-panel.js:422
+msgid "Detection confidence:"
+msgstr ""
+
+#. key: state_label
+#. it: Stato:
+#: scripts/analyze-panel.js:207
+msgid "Status:"
+msgstr ""
+
+#. Glossary: match.
+#. key: match_with_id_label
+#. it: Match con ID:
+#: scripts/analyze-panel.js:208
+#: scripts/analyze-panel.js:434
+msgid "Match with ID:"
+msgstr ""
+
+#. Glossary: diversity, baseline.
+#. key: diversity_from_baseline_label
+#. it: Diversita dal volto base:
+#: scripts/analyze-panel.js:209
+#: scripts/analyze-panel.js:436
+msgid "Diversity from baseline face:"
+msgstr ""
+
+#. Glossary: recognition threshold.
+#. key: recognition_threshold_label
+#. it: Soglia di riconoscimento:
+#: scripts/analyze-panel.js:211
+#: scripts/analyze-panel.js:438
+msgid "Recognition threshold:"
+msgstr ""
+
+#. key: interpretation_label
+#. it: Interpretazione:
+#: scripts/analyze-panel.js:213
+msgid "Interpretation:"
+msgstr ""
+
+#. Glossary: baseline, diversity.
+#. key: analysis_interpretation
+#. it: il tuo volto attuale e {diversity} diverso dal volto base {id}; sopra {threshold}% di diversita il sistema non ti riconosce.
+#: scripts/analyze-panel.js:213
+msgid "your current face is {diversity} different from the baseline face {id}; above {threshold}% diversity, the system does not recognise you."
+msgstr ""
+
+#. key: analysis_explainer_age
+#. it: Eta stimata dal modello - e solo una statistica, puo sbagliare di 5-10 anni.
+#: scripts/analyze-panel.js:17
+msgid "Age estimated by the model - it is only a statistic and can be wrong by 5-10 years."
+msgstr ""
+
+#. Glossary: dataset bias.
+#. key: analysis_explainer_gender
+#. it: Genere predetto dal modello - addestrato su dataset con bias noti.
+#: scripts/analyze-panel.js:18
+msgid "Gender predicted by the model - trained on datasets with known bias."
+msgstr ""
+
+#. key: analysis_explainer_emotion
+#. it: Emozione dominante tra quelle che il modello distingue: happy, sad, angry, fearful, disgusted, surprised, neutral.
+#: scripts/analyze-panel.js:19
+msgid "Dominant emotion among the ones the model can distinguish: happy, sad, angry, fearful, disgusted, surprised, neutral."
+msgstr ""
+
+#. Glossary: detector confidence, snapshot.
+#. key: analysis_explainer_confidence
+#. it: Quanto il rilevatore e sicuro di vedere un volto nello snapshot. Sotto 50% spesso non viene rilevato nulla.
+#: scripts/analyze-panel.js:20
+msgid "How sure the detector is that it sees a face in the snapshot. Below 50%, often nothing is detected."
+msgstr ""
+
+#. Glossary: baseline face.
+#. key: analysis_explainer_distance
+#. it: Quanto il tuo volto attuale e diverso dal volto base salvato con questo ID. Piu la percentuale e alta, meno il sistema riesce a riconoscerti.
+#: scripts/analyze-panel.js:21
+msgid "How different your current face is from the baseline face saved with this ID. The higher the percentage, the less the system can recognise you."
+msgstr ""
+
+#. Glossary: diversity threshold.
+#. key: analysis_explainer_threshold
+#. it: Sopra questa percentuale di diversita il sistema non ti riconosce piu. Sotto, si.
+#: scripts/analyze-panel.js:22
+msgid "Above this diversity percentage, the system no longer recognises you. Below it, it does."
+msgstr ""
+
+#. Glossary: cosine similarity.
+#. key: analysis_explainer_embedder
+#. it: Il motore 3D usa una scala diversa (cosine similarity, 0-1, piu alto = piu simile).
+#: scripts/analyze-panel.js:23
+msgid "The 3D engine uses a different scale (cosine similarity, 0-1, higher = more similar)."
+msgstr ""
+
+#. key: analyze_error_log
+#. it: [ERRORE analyze] {message}
+#: scripts/analyze-panel.js:269
+msgid "[analyze ERROR] {message}"
+msgstr ""
+
+#. key: report_copied_log
+#. it: Report copiato negli appunti
+#: scripts/analyze-panel.js:230
+msgid "Report copied to clipboard"
+msgstr ""
+
+#. key: report_copy_failed_log
+#. it: Impossibile copiare il report negli appunti
+#: scripts/analyze-panel.js:232
+msgid "Could not copy the report to clipboard"
+msgstr ""
+
+#. key: report_title_markdown
+#. it: ### Ghostmaxxing - Analisi del trucco
+#: scripts/analyze-panel.js:399
+#: scripts/analyze-panel.js:410
+msgid "### Ghostmaxxing - Makeup analysis"
+msgstr ""
+
+#. key: yes_value
+#. it: si
+#: scripts/analyze-panel.js:412
+msgid "yes"
+msgstr ""
+
+#. key: no_value
+#. it: no
+#: scripts/analyze-panel.js:401
+#: scripts/analyze-panel.js:412
+msgid "no"
+msgstr ""
+
+#. key: report_face_detected_line
+#. it: Volto rilevato: {value}
+#: scripts/analyze-panel.js:401
+#: scripts/analyze-panel.js:412
+msgid "Face detected: {value}"
+msgstr ""
+
+#. Glossary: face-api 2D.
+#. key: report_recognition_2d_heading
+#. it: Riconoscimento (face-api 2D)
+#: scripts/analyze-panel.js:403
+#: scripts/analyze-panel.js:426
+msgid "Recognition (face-api 2D)"
+msgstr ""
+
+#. key: no_data_available
+#. it: Nessun dato disponibile.
+#: scripts/analyze-panel.js:405
+msgid "No data available."
+msgstr ""
+
+#. key: report_estimated_age_line
+#. it: Eta stimata: {value}
+#: scripts/analyze-panel.js:416
+msgid "Estimated age: {value}"
+msgstr ""
+
+#. key: report_predicted_gender_line
+#. it: Genere predetto: {value}
+#: scripts/analyze-panel.js:418
+msgid "Predicted gender: {value}"
+msgstr ""
+
+#. key: report_dominant_emotion_line
+#. it: Emozione dominante: {value}
+#: scripts/analyze-panel.js:420
+msgid "Dominant emotion: {value}"
+msgstr ""
+
+#. Glossary: detection confidence.
+#. key: report_detection_confidence_line
+#. it: Confidence detection: {value}
+#: scripts/analyze-panel.js:422
+msgid "Detection confidence: {value}"
+msgstr ""
+
+#. Glossary: baseline face.
+#. key: no_baseline_face_database
+#. it: Nessun volto base nel database.
+#: scripts/analyze-panel.js:432
+msgid "No baseline face in the database."
+msgstr ""
+
+#. Glossary: match.
+#. key: report_match_with_id_line
+#. it: Match con ID: {value}
+#: scripts/analyze-panel.js:434
+msgid "Match with ID: {value}"
+msgstr ""
+
+#. Glossary: diversity, baseline.
+#. key: report_diversity_line
+#. it: Diversita dal volto base: {value}
+#: scripts/analyze-panel.js:436
+msgid "Diversity from baseline face: {value}"
+msgstr ""
+
+#. Glossary: recognition threshold.
+#. key: report_recognition_threshold_line
+#. it: Soglia di riconoscimento: {value}
+#: scripts/analyze-panel.js:438
+msgid "Recognition threshold: {value}"
+msgstr ""
+
+#. key: report_status_line
+#. it: Stato: {value}
+#: scripts/analyze-panel.js:440
+msgid "Status: {value}"
+msgstr ""
+
+#. Glossary: Embedder, MediaPipe.
+#. key: report_embedder_3d_heading
+#. it: Embedder 3D (MediaPipe)
+#: scripts/analyze-panel.js:444
+msgid "3D Embedder (MediaPipe)"
+msgstr ""
+
+#. Glossary: cosine similarity.
+#. key: report_cosine_similarity_line
+#. it: Cosine similarity con ID {id}: {value}
+#: scripts/analyze-panel.js:447
+#: scripts/analyze-panel.js:449
+msgid "Cosine similarity with ID {id}: {value}"
+msgstr ""
+
+#. Glossary: embedding.
+#. key: no_embedding_data_available
+#. it: Nessun dato embedding disponibile.
+#: scripts/analyze-panel.js:451
+msgid "No embedding data available."
+msgstr ""
+
+#. key: image_copied_log
+#. it: Immagine con referto diagnostico copiata negli appunti!
+#: scripts/export-makeup.js:49
+msgid "Image with diagnostic report copied to clipboard!"
+msgstr ""
+
+#. key: image_shared_log
+#. it: Immagine condivisa con successo!
+#: scripts/export-makeup.js:59
+msgid "Image shared successfully!"
+msgstr ""
+
+#. Glossary: Share API.
+#. key: image_copy_unavailable_log
+#. it: Impossibile copiare l'immagine (permessi mancanti o Share API non supportata).
+#: scripts/export-makeup.js:62
+msgid "Could not copy the image (missing permissions or Share API not supported)."
+msgstr ""
+
+#. key: image_copy_error_log
+#. it: Errore durante la copia. Forse manca il permesso nel browser?
+#: scripts/export-makeup.js:66
+msgid "Error while copying. Maybe the browser permission is missing?"
+msgstr ""
+
+#. Glossary: plugin header.
+#. key: plugin_missing_name_log
+#. it: Plugin {id} senza @name nell'header, uso fallback {fallback}
+#: scripts/ghostyles-manager.js:101
+msgid "Plugin {id} has no @name in the header, using fallback {fallback}"
+msgstr ""
+
+#. key: plugin_missing_version_log
+#. it: Plugin {id} senza @version
+#: scripts/ghostyles-manager.js:108
+msgid "Plugin {id} has no @version"
+msgstr ""
+
+#. Glossary: onDraw, paintUV.
+#. key: plugin_not_renderable_log
+#. it: Plugin {id} non esporta ne onDraw ne paintUV, ignorato
+#: scripts/ghostyles-manager.js:112
+msgid "Plugin {id} exports neither onDraw nor paintUV, ignored"
+msgstr ""
+
+#. key: plugin_invalid_release_date_log
+#. it: Plugin {id} ha @release_date non valida ({releaseDate}), ignorata
+#: scripts/ghostyles-manager.js:117
+msgid "Plugin {id} has invalid @release_date ({releaseDate}), ignored"
+msgstr ""
+
+#. Glossary: ghostyle.
+#. key: ghostyle_loaded_log
+#. it: Caricato con successo ghostyle {name} da {url}
+#: scripts/ghostyles-manager.js:143
+msgid "Successfully loaded ghostyle {name} from {url}"
+msgstr ""
+
+#. key: plugin_runtime_error_log
+#. it: Plugin {id} ha lanciato: {message} ({hook})
+#: scripts/ghostyles-manager.js:164
+#: scripts/plugins3d-loader.js:58
+msgid "Plugin {id} threw: {message} ({hook})"
+msgstr ""
+
+#. key: ghostyle_already_active_log
+#. it: Effetto {name} già attivo. Disattivazione in corso...
+#: scripts/ghostyles-manager.js:348
+msgid "Effect {name} already active. Deactivating..."
+msgstr ""
+
+#. key: ghostyle_switched_log
+#. it: Effetto {previous} disattivato, abiliato {name}. Sarà applicato al volto nella webcam.
+#: scripts/ghostyles-manager.js:367
+msgid "Effect {previous} deactivated, {name} enabled. It will be applied to the face in the webcam."
+msgstr ""
+
+#. key: ghostyle_activated_log
+#. it: Effetto {name} attivato. Sarà applicato al volto nella webcam.
+#: scripts/ghostyles-manager.js:369
+msgid "Effect {name} activated. It will be applied to the face in the webcam."
+msgstr ""
+
+#. key: updated_meta_label
+#. it: aggiornato {time}
+#: scripts/ghostyles-manager.js:258
+msgid "updated {time}"
+msgstr ""
+
+#. Glossary: pin, slot.
+#. key: pin_to_slot_title
+#. it: Fissa nello slot {slot}
+#: scripts/ghostyles-manager.js:279
+#: scripts/ghostyles-manager.js:286
+msgid "Pin to Slot {slot}"
+msgstr ""
+
+#. Glossary: pin, slot.
+#. key: pin_ghostyle_to_slot_label
+#. it: Fissa {name} nello slot {slot}
+#: scripts/ghostyles-manager.js:280
+#: scripts/ghostyles-manager.js:287
+msgid "Pin {name} to Slot {slot}"
+msgstr ""
+
+#. key: params_heading
+#. it: Parametri - {name}
+#: scripts/plugins3d-loader.js:373
+msgid "Parameters - {name}"
+msgstr ""
+
+#. key: capture_thumbnail_video_required_error
+#. it: captureThumbnail: elemento video richiesto.
+#: scripts/face-thumbnails.js:154
+msgid "captureThumbnail: video element is required."
+msgstr ""
+
+#. key: capture_thumbnail_invalid_box_error
+#. it: captureThumbnail: riquadro volto non valido.
+#: scripts/face-thumbnails.js:156
+msgid "captureThumbnail: invalid face box."
+msgstr ""
+
+#. key: capture_thumbnail_frame_not_ready_error
+#. it: captureThumbnail: frame video non pronto.
+#: scripts/face-thumbnails.js:162
+msgid "captureThumbnail: video frame not ready."
+msgstr ""
+
+#. key: capture_thumbnail_context_error
+#. it: captureThumbnail: contesto 2d non disponibile.
+#: scripts/face-thumbnails.js:181
+msgid "captureThumbnail: 2d context unavailable."
+msgstr ""
+
+#. key: uv_path_required_error
+#. it: [uv-renderer] uvPath obbligatorio
+#: scripts/ghostyle3d-uv-renderer.js:25
+msgid "[uv-renderer] uvPath is required"
+msgstr ""
+
+#. key: media_devices_unavailable_error
+#. it: mediaDevices unavailable (insecure context?)
+#: scripts/camera.js:53
+msgid "mediaDevices unavailable (insecure context?)"
+msgstr ""
+
+#. key: plugins3d_not_initialized_error
+#. it: [plugins3d] initPlugins3dLoader() non chiamato
+#: scripts/plugins3d-loader.js:92
+msgid "[plugins3d] initPlugins3dLoader() not called"
+msgstr ""
+
+#. key: plugins3d_missing_dom_error
+#. it: [plugins3d] elementi DOM mancanti
+#: scripts/plugins3d-loader.js:537
+msgid "[plugins3d] missing DOM elements"
+msgstr ""
+
+#. key: canvas_2d_context_error
+#. it: Impossibile creare il contesto canvas 2D.
+#: scripts/export-makeup.js:178
+msgid "Could not create 2D canvas context."
+msgstr ""
+
+#. key: console_get_face_embedding_error
+#. it: [getFaceEmbedding]
+#: scripts/engine-3d.js:115
+msgid "[getFaceEmbedding]"
+msgstr ""
+
+#. key: console_uv_load_error
+#. it: [uv-renderer] errore caricamento UV:
+#: scripts/ghostyle3d-uv-renderer.js:58
+msgid "[uv-renderer] UV loading error:"
+msgstr ""
+
+#. Glossary: UV map, landmarks, triangles.
+#. key: uv_map_loaded_log
+#. it: UV map caricata ({landmarks} landmark, {triangles} triangoli)
+#: scripts/ghostyle3d-uv-renderer.js:55
+msgid "UV map loaded ({landmarks} landmarks, {triangles} triangles)"
+msgstr ""
+
+#. Glossary: UV map.
+#. key: uv_map_load_error_log
+#. it: Errore caricamento UV map: {message}
+#: scripts/ghostyle3d-uv-renderer.js:59
+msgid "Error loading UV map: {message}"
+msgstr ""
+
+#. key: console_uv_paint_error
+#. it: [uv-renderer] paintUV errore:
+#: scripts/ghostyle3d-uv-renderer.js:368
+msgid "[uv-renderer] paintUV error:"
+msgstr ""
+
+#. key: console_detection_error
+#. it: [detectFaceInCam]
+#: scripts/engine.js:46
+msgid "[detectFaceInCam]"
+msgstr ""
+
+#. key: console_resized_detection_missing
+#. it: resized.detection non disponibile:
+#: scripts/engine.js:96
+msgid "resized.detection unavailable:"
+msgstr ""
+
+#. key: console_composite_detection_error
+#. it: [compositeAndDetect]
+#: scripts/engine.js:121
+msgid "[compositeAndDetect]"
+msgstr ""
+
+#. key: console_clipboard_fallback
+#. it: Clipboard write fallito, provo fallback
+#: scripts/export-makeup.js:53
+msgid "Clipboard write failed, trying fallback"
+msgstr ""
+
+#. key: console_share_failed
+#. it: Share failed
+#: scripts/export-makeup.js:62
+msgid "Share failed"
+msgstr ""
+
+#. key: console_bbox_overlay_missing
+#. it: [bbox-overlay] #bboxOverlay o #overlay mancante, init saltato
+#: scripts/bbox-overlay.js:121
+msgid "[bbox-overlay] missing #bboxOverlay or #overlay, skipping init"
+msgstr ""
+
+#. key: overlay_face_detected_label
+#. it: volto rilevato
+#: scripts/bbox-overlay.js:558
+msgid "face detected"
+msgstr ""
+
+#. key: overlay_estimated_age_label
+#. it: eta stimata: {age}
+#: scripts/bbox-overlay.js:559
+msgid "estimated age: {age}"
+msgstr ""
+
+#. key: overlay_estimated_gender_label
+#. it: genere stimato: {gender}
+#: scripts/bbox-overlay.js:560
+msgid "estimated gender: {gender}"
+msgstr ""
+
+#. key: console_mediapipe_events_missing
+#. it: [mediapipe-loop] gstmxx.events non trovato, skip init
+#: scripts/mediapipe-loop.js:68
+msgid "[mediapipe-loop] gstmxx.events not found, skipping init"
+msgstr ""
+
+#. key: console_mediapipe_video_missing
+#. it: [mediapipe-loop] #video non trovato, skip init
+#: scripts/mediapipe-loop.js:73
+msgid "[mediapipe-loop] #video not found, skipping init"
+msgstr ""
+
+#. key: console_mediapipe_init_error
+#. it: [mediapipe-loop] errore init:
+#: scripts/mediapipe-loop.js:88
+msgid "[mediapipe-loop] init error:"
+msgstr ""
+
+#. Glossary: MediaPipe.
+#. key: mediapipe_load_error_log
+#. it: Errore caricamento MediaPipe: {message}
+#: scripts/mediapipe-loop.js:90
+msgid "Error loading MediaPipe: {message}"
+msgstr ""
+
+#. Glossary: MediaPipe FaceLandmarker, 3D landmarks.
+#. key: mediapipe_ready_log
+#. it: MediaPipe FaceLandmarker pronto (478 landmark 3D)
+#: scripts/mediapipe-loop.js:99
+msgid "MediaPipe FaceLandmarker ready (478 3D landmarks)"
+msgstr ""
+
+#. key: console_mediapipe_tick_error
+#. it: [mediapipe-loop] errore tick:
+#: scripts/mediapipe-loop.js:138
+msgid "[mediapipe-loop] tick error:"
+msgstr ""
+
+#. key: console_lab_ui_bus_missing
+#. it: [lab-ui] state.gstmxxEvents non trovato — readout/effect mirroring disabilitati
+#: scripts/lab-ui.js:380
+msgid "[lab-ui] state.gstmxxEvents not found — readout/effect mirroring disabled"
+msgstr ""
+
+#. key: console_auto_find_tick_error
+#. it: [auto-find-loop] tick error:
+#: scripts/auto-find-loop.js:116
+msgid "[auto-find-loop] tick error:"
+msgstr ""
+
+#. key: homepage_wordmark_label
+#. it: Prototipo homepage Ghostmaxxing
+#: index.html:27
+msgid "Ghostmaxxing homepage prototype"
+msgstr ""
+
+#. Glossary: face recognition, camouflage.
+#. key: homepage_subtitle
+#. it: Un laboratorio pubblico per testare il camouflage contro il riconoscimento facciale
+#: index.html:32
+msgid "A public lab for testing face-recognition camouflage"
+msgstr ""
+
+#. key: prototype_navigation_label
+#. it: Navigazione del prototipo
+#: index.html:36
+msgid "Prototype navigation"
+msgstr ""
+
+#. key: research_references_link
+#. it: Riferimenti di ricerca
+#: index.html:37
+msgid "Research References"
+msgstr ""
+
+#. key: vision_about_link
+#. it: Visione e informazioni
+#: index.html:38
+msgid "Vision & About"
+msgstr ""
+
+#. Glossary: leak.
+#. key: leak_to_us_link_html
+#. it: Come fare <i>leak</i> a noi<span aria-hidden="true">↗</span>
+#: index.html:39
+msgid "How to <i>leak</i> to us<span aria-hidden=\"true\">↗</span>"
+msgstr ""
+
+#. key: hero_title_html
+#. it: Disturba<br>la lettura.
+#: index.html:46
+msgid "Disrupt<br>the read."
+msgstr ""
+
+#. Glossary: face recognition, camouflage, pipeline.
+#. key: homepage_lead
+#. it: Ghostmaxxing è una web app in tempo reale per testare il camouflage contro il riconoscimento facciale. Punta la fotocamera, cambia l'aspetto del tuo volto e osserva come reagisce una pipeline locale di riconoscimento — live. Tutto gira nel tuo browser, quindi i tuoi dati restano con te.
+#: index.html:47
+msgid "Ghostmaxxing is a real-time web app for testing face-recognition camouflage. Point your camera, change how your face looks, and watch a local recognition pipeline react — live. Everything runs in your browser, so your data stays with you."
+msgstr ""
+
+#. Glossary: workshops, match.
+#. key: homepage_small_html
+#. it: Pensato per <a href="workshops.html">workshop</a> pratici e auto-esperimenti: verifica di persona quando un look ferma un match, nelle tue condizioni — non è una promessa che funzionerà ovunque.
+#: index.html:50
+msgid "Built for hands-on <a href=\"workshops.html\">workshops</a> and self-experiments: see for yourself when a look stops a match, under your own conditions — not a promise that it will hold anywhere else."
+msgstr ""
+
+#. key: open_lab_link_html
+#. it: Apri il lab <span aria-hidden="true">↗</span>
+#: index.html:54
+msgid "Open the lab <span aria-hidden=\"true\">↗</span>"
+msgstr ""
+
+#. key: explore_further_label
+#. it: Esplora ancora
+#: index.html:56
+msgid "Explore further"
+msgstr ""
+
+#. Glossary: technical documentation.
+#. key: technical_documentation_link
+#. it: Documentazione tecnica
+#: index.html:57
+msgid "Technical documentation"
+msgstr ""
+
+#. key: code_link
+#. it: Codice
+#: index.html:58
+msgid "Code"
+msgstr ""
+
+#. Glossary: face recognition, overlay, adversarial camouflage.
+#. key: homepage_hero_alt
+#. it: Ritratto diviso tra overlay di riconoscimento facciale e camouflage avversario.
+#: index.html:65
+msgid "Portrait split between face-recognition overlay and adversarial camouflage."
+msgstr ""

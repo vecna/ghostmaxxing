@@ -25,6 +25,7 @@
  */
 
 import { state } from './state.js';
+import { t } from './i18n.js';
 import { avgPoint, drawClosedPath, drawOpenPath, roundRect, syncMirror, syncSize } from './utils.js';
 
 // ---------- Style constants ----------
@@ -118,7 +119,7 @@ export function init() {
    canvas = document.getElementById('bboxOverlay');
    overlayEl = document.getElementById('overlay');
    if (!canvas || !overlayEl) {
-      console.warn('[bbox-overlay] missing #bboxOverlay or #overlay, skipping init');
+      console.warn(t('console_bbox_overlay_missing'));
       return false;
    }
    ctx = canvas.getContext('2d');
@@ -554,9 +555,9 @@ function drawFaceapiScaffold2d() {
  * @see drawFaceapiScaffold2d - Calls this after drawing detailed landmarks.
  */
 function drawFaceapiScaffoldLabels(box, resized, scale) {
-   const lines = ['volto rilevato (live)'];
-   if (typeof resized.age === 'number') lines.push(`eta stimata: ${Math.round(resized.age)}`);
-   if (resized.gender) lines.push(`genere stimato: ${resized.gender}`);
+   const lines = [t('overlay_face_detected_label')];
+   if (typeof resized.age === 'number') lines.push(t('overlay_estimated_age_label', { age: Math.round(resized.age) }));
+   if (resized.gender) lines.push(t('overlay_estimated_gender_label', { gender: resized.gender }));
 
    const fontSize = 12 * scale;
    const pad = 5 * scale;

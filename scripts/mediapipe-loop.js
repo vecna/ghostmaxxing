@@ -13,6 +13,7 @@
 
 import { FaceLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35";
 import { MEDIAPIPE_WASM_URL, MEDIAPIPE_FACE_LANDMARKER_URL } from './config.js';
+import { t } from './i18n.js';
 
 let faceLandmarker = null;
 let lastVideoTime = -1;
@@ -65,12 +66,12 @@ async function waitForVideoReady(v) {
 async function init() {
    const events = window.gstmxx && window.gstmxx.events;
    if (!events) {
-      console.warn('[mediapipe-loop] gstmxx.events non trovato, skip init');
+      console.warn(t('console_mediapipe_events_missing'));
       return;
    }
    video = document.getElementById('video');
    if (!video) {
-      console.warn('[mediapipe-loop] #video non trovato, skip init');
+      console.warn(t('console_mediapipe_video_missing'));
       return;
    }
    fpsSelect = document.getElementById('fpsSelect');
@@ -85,16 +86,16 @@ async function init() {
       });
       window.gstmxx.FaceLandmarker = FaceLandmarker;
    } catch (err) {
-      console.error('[mediapipe-loop] errore init:', err);
+      console.error(t('console_mediapipe_init_error'), err);
       if (window.gstmxx && window.gstmxx.log) {
-         gstmxx.log('Errore caricamento MediaPipe: ' + err.message, 'mediapipe');
+         gstmxx.log(t('mediapipe_load_error_log', { message: err.message }), 'mediapipe');
       }
       return;
    }
 
    await waitForVideoReady(video);
    if (window.gstmxx && window.gstmxx.log) {
-      gstmxx.log('MediaPipe FaceLandmarker pronto (478 landmark 3D)', 'mediapipe');
+      gstmxx.log(t('mediapipe_ready_log'), 'mediapipe');
    }
    events.dispatchEvent(new CustomEvent('mediapipeReady', { detail: {} }));
 
@@ -135,7 +136,7 @@ function tick() {
          detail: { landmarks, results }
       }));
    } catch (err) {
-      console.error('[mediapipe-loop] errore tick:', err);
+      console.error(t('console_mediapipe_tick_error'), err);
    }
 }
 

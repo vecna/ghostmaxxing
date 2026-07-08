@@ -15,6 +15,7 @@
  * `<script type="module">` defer ordering has parsed them).
  */
 import { state } from './state.js';
+import { t } from './i18n.js';
 
 /**
  * Single source of truth for the DOM nodes touched by the app. Populated once
@@ -49,6 +50,7 @@ export const els = {
    clearDbBtn: document.getElementById('clearDbBtn'),
    reloadPluginsBtn: document.getElementById('reloadPluginsBtn'),
    ghostylesContainer: document.getElementById('ghostylesContainer'),
+   localeSelect: document.getElementById('localeSelect'),
    // Fallback toggle: kept for builds without auto-mirroring. Normally the
    // mirror state is driven by camera facingMode (see camera.js).
    mirrorToggle: document.getElementById('mirrorToggle'),
@@ -119,8 +121,8 @@ export function clearActiveEffect() {
       els.scanBtn.style.color = '';
    }
 
-   if (els.effectName) els.effectName.textContent = 'N/A';
-   if (els.effectTracking) els.effectTracking.textContent = 'off';
+   if (els.effectName) els.effectName.textContent = t('not_available_label');
+   if (els.effectTracking) els.effectTracking.textContent = t('off_status');
 
    state.activeEffect = null;
    state.lastKnownEffectResult = null;
@@ -168,8 +170,8 @@ export function effectSelected(button) {
       if (els.effectName) els.effectName.textContent = style.name;
       if (els.effectTracking) els.effectTracking.textContent = state.activeEffect;
    } else {
-      console.warn(`No style found for active when it should -- ${state.activeEffect}`);
-      if (els.effectName) els.effectName.textContent = 'N/A';
-      if (els.effectTracking) els.effectTracking.textContent = 'off';
+      console.warn(t('active_style_missing_console', { effect: state.activeEffect }));
+      if (els.effectName) els.effectName.textContent = t('not_available_label');
+      if (els.effectTracking) els.effectTracking.textContent = t('off_status');
    }
 }

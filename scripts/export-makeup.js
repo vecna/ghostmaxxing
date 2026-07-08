@@ -1,6 +1,7 @@
 import { state } from './state.js';
 import { els } from './dom.js';
 import { setLog } from './utils.js';
+import { t } from './i18n.js';
 
 const EXPORT_LAYOUT = {
    headerHeight: 44,
@@ -46,24 +47,24 @@ export async function exportMakeup() {
 
       try {
          await copyBlobToClipboard(blob);
-         setLog('Immagine con referto diagnostico copiata negli appunti!');
+         setLog(t('image_copied_log'));
          return;
       } catch (err) {
-         console.error('Clipboard write fallito, provo fallback', err);
+         console.error(t('console_clipboard_fallback'), err);
       }
 
       const file = makeImageFile(blob, EXPORT_COPY);
 
       try {
          await shareImageFile(file, EXPORT_COPY);
-         setLog('Immagine condivisa con successo!');
+         setLog(t('image_shared_log'));
       } catch (err) {
-         console.error('Share failed', err);
-         setLog('Impossibile copiare l\'immagine (permessi mancanti o Share API non supportata).');
+         console.error(t('console_share_failed'), err);
+         setLog(t('image_copy_unavailable_log'));
       }
    } catch (err) {
       console.error(err);
-      setLog('Errore durante la copia. Forse manca il permesso nel browser?');
+      setLog(t('image_copy_error_log'));
    }
 }
 
@@ -174,7 +175,7 @@ function renderExportCanvas(input, layout) {
 
    const ctx = canvas.getContext('2d');
    if (!ctx) {
-      throw new Error('Could not create 2D canvas context.');
+      throw new Error(t('canvas_2d_context_error'));
    }
 
    ctx.fillStyle = EXPORT_LAYOUT.backgroundColor;

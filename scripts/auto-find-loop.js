@@ -21,6 +21,7 @@
 import { compositeAndDetect, evaluateMatch, detectFaceInCam, hasActivePlugin, seekFaceInDb } from './engine.js';
 import { findFace3d, evaluateMatch3d } from './engine-3d.js';
 import { state } from './state.js';
+import { t } from './i18n.js';
 
 window.addEventListener('ghostatiReady', autoFindLoop, { once: true });
 
@@ -113,6 +114,6 @@ async function tick() {
          }
       }));
    } catch (err) {
-      console.error('[auto-find-loop] tick error:', err);
+      console.error(t('console_auto_find_tick_error'), err);
    }
 }

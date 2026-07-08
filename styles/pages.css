@@ -156,6 +156,38 @@ a {
   font-weight: 700;
 }
 
+.locale-control {
+  display: inline-grid;
+  place-items: center;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.locale-control__flag {
+  position: absolute;
+  pointer-events: none;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.locale-select {
+  width: 3.35rem;
+  min-width: 3.35rem;
+  min-height: 2.75rem;
+  border: 1.5px solid var(--gm-border-strong);
+  background: rgba(255, 231, 168, 0.16);
+  border-radius: 999px;
+  color: transparent;
+  cursor: pointer;
+  font: 700 0.95rem var(--sans);
+  text-shadow: none;
+}
+
+.locale-select option {
+  color: var(--gm-ink);
+  background: var(--gm-cream);
+}
+
 .editorial-homepage__hero {
   display: grid;
   grid-template-columns: minmax(280px, 1.06fr) minmax(340px, 0.94fr);

@@ -27,10 +27,10 @@
   <!-- ============================ STAGE ============================ -->
   <!-- #viewer holds the camera + every overlay canvas the engine draws to. -->
   <div class="viewer" id="viewer" data-view="off">
-    <div class="status-pill"><span id="statusDot" class="status-dot"></span><span id="statusText">initialising…</span></div>
-    <div id="placeholder">Loading models and requesting the webcam…</div>
+    <div class="status-pill"><span id="statusDot" class="status-dot"></span><span id="statusText" data-i18n="status_initialising">initialising…</span></div>
+    <div id="placeholder" data-i18n="placeholder_loading_webcam">Loading models and requesting the webcam…</div>
     <video id="video" autoplay muted playsinline></video>
-    <img id="previewImage" alt="diagnostic preview" />
+    <img id="previewImage" alt="diagnostic preview" data-i18n-alt="diagnostic_preview_alt" />
     <canvas id="overlay"></canvas>
     <canvas id="mesh3dOverlay"></canvas>
     <canvas id="bboxOverlay"></canvas>
@@ -43,8 +43,8 @@
   <!-- ==================== VIEW BAR + READOUT (shared top band) ==================== -->
   <!-- Readout is fed by the engine's `matchStateChanged` event (see lab-ui.js). -->
   <div class="viewbar">
-    <div class="selector" role="tablist" aria-label="What you see on the face">
-      <a class="seg seg--home" href="/" role="tab" aria-selected="false" data-view="home" aria-label="Home">
+    <div class="selector" role="tablist" aria-label="What you see on the face" data-i18n-aria-label="face_view_tablist_label">
+      <a class="seg seg--home" href="/" role="tab" aria-selected="false" data-view="home" aria-label="Home" data-i18n-aria-label="nav_home_label">
         <svg aria-hidden="true" viewBox="0 0 24 24">
           <path d="M3 10.5 12 3l9 7.5" />
           <path d="M5 9.5V21h14V9.5" />
@@ -52,15 +52,15 @@
         </svg>
         <!-- <span>Home</span> -->
       </a>
-      <button class="seg" role="tab" aria-selected="true" data-view="off">Camera</button>
-      <button class="seg" role="tab" aria-selected="false" data-view="2d">2D points</button>
-      <button class="seg" role="tab" aria-selected="false" data-view="3d">3D mesh</button>
+      <button class="seg" role="tab" aria-selected="true" data-view="off" data-i18n="view_camera">Camera</button>
+      <button class="seg" role="tab" aria-selected="false" data-view="2d" data-i18n="view_2d_points">2D points</button>
+      <button class="seg" role="tab" aria-selected="false" data-view="3d" data-i18n="view_3d_mesh">3D mesh</button>
     </div>
     <div class="readout inert" id="readout" aria-live="polite">
-      <span class="readout__label">MATCH</span>
+      <span class="readout__label" data-i18n="match_label">MATCH</span>
       <span class="readout__num" id="gm-num">—</span>
       <span class="readout__thr" id="gm-thr">/ 0.58</span>
-      <span class="readout__state" id="gm-state">Save your face</span>
+      <span class="readout__state" id="gm-state" data-i18n="save_your_face_status">Save your face</span>
       <svg class="readout__spark" id="gm-spark" viewBox="0 0 56 16" preserveAspectRatio="none"></svg>
     </div>
   </div>
@@ -68,162 +68,167 @@
   <!-- ============================ ACTION RAIL ============================ -->
   <div class="rail">
     <div class="railitem">
-      <button class="railbtn" id="copyMakeupBtn" title="Copy to clipboard">
+      <button class="railbtn" id="copyMakeupBtn" title="Copy to clipboard" data-i18n-title="copy_to_clipboard_title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-      </button><span class="railbtn__cap">Copy</span>
+      </button><span class="railbtn__cap" data-i18n="copy_button">Copy</span>
     </div>
     <div class="railitem">
-      <button class="railbtn" id="gm-slot1" title="Pinned Ghostyle 1"><span id="gm-slot1-ic"></span></button>
+      <button class="railbtn" id="gm-slot1" title="Pinned Ghostyle 1" data-i18n-title="pinned_ghostyle_1_title"><span id="gm-slot1-ic"></span></button>
       <span class="railbtn__cap" id="gm-slot1-cap">—</span>
     </div>
     <div class="railitem">
-      <button class="railbtn" id="gm-slot2" title="Pinned Ghostyle 2"><span id="gm-slot2-ic"></span></button>
+      <button class="railbtn" id="gm-slot2" title="Pinned Ghostyle 2" data-i18n-title="pinned_ghostyle_2_title"><span id="gm-slot2-ic"></span></button>
       <span class="railbtn__cap" id="gm-slot2-cap">—</span>
     </div>
     <div class="railitem">
-      <button class="railbtn" id="recordBtn" title="Record 2s">
+      <button class="railbtn" id="recordBtn" title="Record 2s" data-i18n-title="record_2s_title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-      </button><span class="railbtn__cap">Record</span>
+      </button><span class="railbtn__cap" data-i18n="record_button">Record</span>
     </div>
   </div>
 
   <!-- ============================ SCREENS ============================ -->
   <!-- Faces screen === engine's #historyDrawer (reused). Engine fills #historyEntries. -->
-  <section id="historyDrawer" class="screen device hidden" aria-label="Saved faces">
-    <button class="screen__close" data-close-screen title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-    <span class="screen__kicker">On device</span>
-    <h1>Saved faces</h1>
-    <p>Baselines stored on this device. The match is measured against the active one.</p>
+  <section id="historyDrawer" class="screen device hidden" aria-label="Saved faces" data-i18n-aria-label="saved_faces_title">
+    <button class="screen__close" data-close-screen title="Close" data-i18n-title="close_button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <span class="screen__kicker" data-i18n="on_device_kicker">On device</span>
+    <h1 data-i18n="saved_faces_title">Saved faces</h1>
+    <p data-i18n="saved_faces_description">Baselines stored on this device. The match is measured against the active one.</p>
     <div class="drawer-content"><div id="historyEntries" class="grid2"></div></div>
   </section>
 
   <!-- Settings screen === engine's #settingsDrawer (reused). -->
-  <section id="settingsDrawer" class="screen device hidden" aria-label="Settings">
-    <button class="screen__close" data-close-screen title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-    <span class="screen__kicker">On device</span>
-    <h1>Settings</h1>
+  <section id="settingsDrawer" class="screen device hidden" aria-label="Settings" data-i18n-aria-label="settings_title">
+    <button class="screen__close" data-close-screen title="Close" data-i18n-title="close_button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <span class="screen__kicker" data-i18n="on_device_kicker">On device</span>
+    <h1 data-i18n="settings_title">Settings</h1>
     <div class="drawer-content">
-      <p class="small-note">Real-time Web AR lab for developing face-recognition camouflage.</p>
+      <p class="small-note" data-i18n="lab_intro_note">Real-time Web AR lab for developing face-recognition camouflage.</p>
 
       <div class="setgroup">
-        <div class="setgroup__h">Ghostyles</div>
-        <p class="jsonnote">Defaults come from the first two entries in ghostyles.json.</p>
+        <div class="setgroup__h" data-i18n="ghostyles_heading">Ghostyles</div>
+        <p class="jsonnote" data-i18n="ghostyles_defaults_note">Defaults come from the first two entries in ghostyles.json.</p>
         <!-- Engine builds .preview-btn buttons for every ghostyle in here -->
         <div class="stack" id="ghostylesContainer"></div>
-        <button id="reloadPluginsBtn" class="secondary-btn">Reload Ghostyles</button>
+        <button id="reloadPluginsBtn" class="secondary-btn" data-i18n="reload_ghostyles_button">Reload Ghostyles</button>
       </div>
 
       <div class="setgroup">
-        <div class="setgroup__h">Camera</div>
-        <div class="setrow"><span>Flip camera<small>Front / back</small></span>
-          <button class="linkbtn" id="switchCameraBtn">Flip</button></div>
-        <div class="setrow"><span>Fullscreen<small>Fill the screen</small></span>
-          <button class="linkbtn" id="gm-fs">Enter fullscreen</button></div>
-        <div class="setrow"><span>Mirror preview<small>Flip the image, not the camera</small></span>
+        <div class="setgroup__h" data-i18n="camera_heading">Camera</div>
+        <div class="setrow"><span><span data-i18n="language_label">Language</span><small data-i18n="language_help">Interface language</small></span>
+          <span class="locale-control">
+            <span class="locale-control__flag" aria-hidden="true"></span>
+            <select id="localeSelect" aria-label="Language" data-i18n-aria-label="language_label"></select>
+          </span></div>
+        <div class="setrow"><span><span data-i18n="flip_camera_label">Flip camera</span><small data-i18n="front_back_hint">Front / back</small></span>
+          <button class="linkbtn" id="switchCameraBtn" data-i18n="flip_camera_label">Flip</button></div>
+        <div class="setrow"><span><span data-i18n="fullscreen_label">Fullscreen</span><small data-i18n="fullscreen_help">Fill the screen</small></span>
+          <button class="linkbtn" id="gm-fs" data-i18n="enter_fullscreen_button">Enter fullscreen</button></div>
+        <div class="setrow"><span><span data-i18n="mirror_preview_label">Mirror preview</span><small data-i18n="mirror_preview_help">Flip the image, not the camera</small></span>
           <button class="switch" id="mirrorToggle" role="switch" aria-checked="true" tabindex="0"></button></div>
       </div>
 
       <div class="setgroup">
-        <div class="setgroup__h">Variables <span style="text-transform:none;letter-spacing:0;color:var(--faint)">(normally hardcoded)</span></div>
-        <div class="setrow"><span>Match threshold<small>Distance above which it's "no match"</small></span>
+        <div class="setgroup__h"><span data-i18n="variables_heading">Variables</span> <span style="text-transform:none;letter-spacing:0;color:var(--faint)" data-i18n="hardcoded_note">(normally hardcoded)</span></div>
+        <div class="setrow"><span><span data-i18n="match_threshold_label">Match threshold</span><small data-i18n="match_threshold_help">Distance above which it's "no match"</small></span>
           <input type="number" id="gm-thr-input" min="0.30" max="0.90" step="0.01" value="0.58"></div>
-        <div class="setrow"><span>Analysis frequency<small>How often the match is re-measured</small></span>
+        <div class="setrow"><span><span data-i18n="analysis_frequency_label">Analysis frequency</span><small data-i18n="analysis_frequency_help">How often the match is re-measured</small></span>
           <select id="fpsSelect">
-            <option value="30">30 ms · heavy</option>
-            <option value="60">60 ms · fast</option>
-            <option value="90">90 ms · medium</option>
-            <option value="120" selected>120 ms · easy on battery</option>
+            <option value="30" data-i18n="fps_option_heavy">30 ms · heavy</option>
+            <option value="60" data-i18n="fps_option_fast">60 ms · fast</option>
+            <option value="90" data-i18n="fps_option_medium">90 ms · medium</option>
+            <option value="120" selected data-i18n="fps_option_battery">120 ms · easy on battery</option>
           </select></div>
-        <div class="setrow"><span>Estimated opacity<small>Default Ghostyle strength</small></span>
+        <div class="setrow"><span><span data-i18n="estimated_opacity_label">Estimated opacity</span><small data-i18n="estimated_opacity_help">Default Ghostyle strength</small></span>
           <input type="number" id="gm-op-input" min="0" max="1" step="0.05" value="0.45"></div>
       </div>
 
       <div class="setgroup">
-        <div class="setgroup__h">Faces</div>
-        <div class="setrow"><span>Delete all faces<small>Wipes every saved baseline on this device</small></span>
-          <button class="linkbtn warn" id="clearDbBtn">Delete all</button></div>
-        <div class="setrow"><span>Analyze current frame<small>Open the before/after diagnostic</small></span>
-          <button class="linkbtn" id="analyzeBtn">Analyze</button></div>
+        <div class="setgroup__h" data-i18n="faces_heading">Faces</div>
+        <div class="setrow"><span><span data-i18n="delete_all_faces_label">Delete all faces</span><small data-i18n="delete_all_faces_help">Wipes every saved baseline on this device</small></span>
+          <button class="linkbtn warn" id="clearDbBtn" data-i18n="delete_all_button">Delete all</button></div>
+        <div class="setrow"><span><span data-i18n="analyze_current_frame_label">Analyze current frame</span><small data-i18n="analyze_current_frame_help">Open the before/after diagnostic</small></span>
+          <button class="linkbtn" id="analyzeBtn" data-i18n="analyze_button">Analyze</button></div>
       </div>
 
       <div class="setgroup">
-        <div class="setgroup__h">Archive &amp; mode</div>
+        <div class="setgroup__h" data-i18n="archive_mode_heading">Archive &amp; mode</div>
         <div class="list-card">
-          <div class="metric"><span>Saved faces</span><strong id="dbCount">0</strong></div>
-          <div class="metric"><span>Next ID</span><strong id="nextId">0</strong></div>
-          <div class="metric"><span>Match threshold</span><strong id="thresholdLabel">0.58</strong></div>
-          <div class="metric"><span>Active effect</span><strong id="effectName">none</strong></div>
-          <div class="metric"><span>Tracking</span><strong id="effectTracking">off</strong></div>
+          <div class="metric"><span data-i18n="saved_faces_metric">Saved faces</span><strong id="dbCount">0</strong></div>
+          <div class="metric"><span data-i18n="next_id_metric">Next ID</span><strong id="nextId">0</strong></div>
+          <div class="metric"><span data-i18n="match_threshold_label">Match threshold</span><strong id="thresholdLabel">0.58</strong></div>
+          <div class="metric"><span data-i18n="active_effect_metric">Active effect</span><strong id="effectName" data-i18n="none_status">none</strong></div>
+          <div class="metric"><span data-i18n="tracking_metric">Tracking</span><strong id="effectTracking" data-i18n="off_status">off</strong></div>
         </div>
       </div>
 
       <div class="setgroup">
-        <div class="setgroup__h">Logs</div>
-        <div class="logbox" id="logBox"><div class="log-line">Waiting for the webcam to start…</div></div>
+        <div class="setgroup__h" data-i18n="logs_heading">Logs</div>
+      <div class="logbox" id="logBox"><div class="log-line" data-i18n="waiting_webcam_log">Waiting for the webcam to start…</div></div>
       </div>
     </div>
   </section>
 
   <!-- Online screens -->
-  <section id="gm-screen-upload" class="screen online hidden" aria-label="Upload and report">
-    <button class="screen__close" data-close-screen title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-    <span class="screen__kicker">Online</span>
-    <h1>Upload &amp; report</h1>
-    <p>Send a recorded clip or evidence of a real-world deployment. Goes over the internet — share only what's safe for you.</p>
+  <section id="gm-screen-upload" class="screen online hidden" aria-label="Upload and report" data-i18n-aria-label="upload_report_title">
+    <button class="screen__close" data-close-screen title="Close" data-i18n-title="close_button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <span class="screen__kicker" data-i18n="online_kicker">Online</span>
+    <h1 data-i18n="upload_report_title">Upload &amp; report</h1>
+    <p data-i18n="upload_report_description">Send a recorded clip or evidence of a real-world deployment. Goes over the internet — share only what's safe for you.</p>
     <div class="cardlist">
-      <div class="card"><h3>Share a clip</h3><p id="gm-upload-count">No clips recorded yet.</p></div>
-      <div class="card"><h3>Report a deployment</h3><p>Where face recognition appears in public space, who runs it, what it looks like.</p></div>
+      <div class="card"><h3 data-i18n="share_clip_title">Share a clip</h3><p id="gm-upload-count" data-i18n="no_clips_recorded">No clips recorded yet.</p></div>
+      <div class="card"><h3 data-i18n="report_deployment_title">Report a deployment</h3><p data-i18n="report_deployment_description">Where face recognition appears in public space, who runs it, what it looks like.</p></div>
     </div>
   </section>
 
-  <section id="gm-screen-gallery" class="screen online hidden" aria-label="Shared gallery">
-    <button class="screen__close" data-close-screen title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-    <span class="screen__kicker">Online</span>
-    <h1>Shared gallery</h1>
-    <p>Results and clips the community has published. Loaded from the server.</p>
+  <section id="gm-screen-gallery" class="screen online hidden" aria-label="Shared gallery" data-i18n-aria-label="shared_gallery_title">
+    <button class="screen__close" data-close-screen title="Close" data-i18n-title="close_button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <span class="screen__kicker" data-i18n="online_kicker">Online</span>
+    <h1 data-i18n="shared_gallery_title">Shared gallery</h1>
+    <p data-i18n="shared_gallery_description">Results and clips the community has published. Loaded from the server.</p>
     <div class="grid2">
-      <div class="thumb">0.71 ✓ broke</div><div class="thumb">stripes · 0.64</div>
-      <div class="thumb">brush · 0.69</div><div class="thumb">2s clip</div>
+      <div class="thumb" data-i18n="gallery_demo_broke">0.71 ✓ broke</div><div class="thumb">stripes · 0.64</div>
+      <div class="thumb">brush · 0.69</div><div class="thumb" data-i18n="gallery_demo_clip">2s clip</div>
     </div>
   </section>
 
-  <section id="gm-screen-info" class="screen online hidden" aria-label="Info">
-    <button class="screen__close" data-close-screen title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-    <span class="screen__kicker">Online</span>
+  <section id="gm-screen-info" class="screen online hidden" aria-label="Info" data-i18n-aria-label="info_title">
+    <button class="screen__close" data-close-screen title="Close" data-i18n-title="close_button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <span class="screen__kicker" data-i18n="online_kicker">Online</span>
     <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
       <span class="ghostmark"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a8 8 0 0 0-8 8v10.2c0 .9 1 1.4 1.7.8l1.6-1.2 1.7 1.3c.4.3.9.3 1.2 0l1.8-1.3 1.8 1.3c.3.3.8.3 1.2 0l1.7-1.3 1.6 1.2c.7.6 1.7.1 1.7-.8V10a8 8 0 0 0-8-8z"/><circle cx="9.2" cy="10.5" r="1.4" fill="#1a130b"/><circle cx="14.8" cy="10.5" r="1.4" fill="#1a130b"/></svg></span>
       <h1 style="margin:0">Ghostmaxxing</h1>
     </div>
-    <p>A real-time lab for testing face-recognition camouflage. Change how your face looks, watch a local recognition pipeline react, and keep what works.</p>
-    <p>Not about becoming invisible — about making the system visible enough to test.</p>
-    <p style="color:var(--faint);font-size:12px">International presentation of the Italian initiative <i>Ghòstati!</i>, born in the NINA context. <span style="color:var(--net)">[recycle icon — meaning to elaborate]</span></p>
+    <p data-i18n="info_description">A real-time lab for testing face-recognition camouflage. Change how your face looks, watch a local recognition pipeline react, and keep what works.</p>
+    <p data-i18n="info_not_invisible">Not about becoming invisible — about making the system visible enough to test.</p>
+    <p style="color:var(--faint);font-size:12px"><span data-i18n="initiative_note">International presentation of the Italian initiative <i>Ghòstati!</i>, born in the NINA context.</span> <span style="color:var(--net)">[recycle icon — meaning to elaborate]</span></p>
   </section>
 
   <!-- ============================ DOCK ============================ -->
-  <nav class="bottombar dock" id="gm-dock" aria-label="Main">
+  <nav class="bottombar dock" id="gm-dock" aria-label="Main" data-i18n-aria-label="main_nav_label">
     <div class="zone device">
-      <span class="zone__label">On device</span>
+      <span class="zone__label" data-i18n="on_device_kicker">On device</span>
       <div class="zone__row">
-        <button class="navbtn" id="saveBtn" data-action="save" title="Save your face">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Save
+        <button class="navbtn" id="saveBtn" data-action="save" title="Save your face" data-i18n-title="save_your_face_status">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="save_button">Save</span>
           <span class="badge" id="dbCountBadge" hidden>0</span></button>
-        <button class="navbtn" data-screen="faces" title="Saved faces">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3.4"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 6.5a3 3 0 0 1 0 5.5M18 20a6 6 0 0 0-3-5.2"/></svg>Faces</button>
-        <button class="navbtn" data-screen="settings" title="Settings &amp; Ghostyles">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</button>
+        <button class="navbtn" data-screen="faces" title="Saved faces" data-i18n-title="saved_faces_title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3.4"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 6.5a3 3 0 0 1 0 5.5M18 20a6 6 0 0 0-3-5.2"/></svg><span data-i18n="faces_heading">Faces</span></button>
+        <button class="navbtn" data-screen="settings" title="Settings &amp; Ghostyles" data-i18n-title="settings_title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span data-i18n="settings_title">Settings</span></button>
       </div>
     </div>
     <div class="dock__divider"></div>
     <div class="zone online">
-      <span class="zone__label">Online</span>
+      <span class="zone__label" data-i18n="online_kicker">Online</span>
       <div class="zone__row">
-        <button class="navbtn" data-screen="upload" id="gm-nav-upload" title="Upload &amp; report" aria-disabled="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/><path d="M4 20h16"/></svg>Upload
+        <button class="navbtn" data-screen="upload" id="gm-nav-upload" title="Upload &amp; report" aria-disabled="true" data-i18n-title="upload_report_title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/><path d="M4 20h16"/></svg><span data-i18n="upload_button">Upload</span>
           <span class="badge" id="gm-upload-badge" hidden>0</span></button>
-        <button class="navbtn" data-screen="gallery" title="Shared gallery">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="9" r="1.6"/><path d="M21 16l-5-5L5 21"/></svg>Gallery</button>
-        <button class="navbtn" data-screen="info" title="Info">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5 A7 7 0 0 1 18 8.5"/><path d="M18 8.5 l-2.4 .3 M18 8.5 l.3 -2.4"/><path d="M12 5 A7 7 0 0 1 18 8.5" transform="rotate(120 12 12)"/><path d="M18 8.5 l-2.4 .3 M18 8.5 l.3 -2.4" transform="rotate(120 12 12)"/><path d="M12 5 A7 7 0 0 1 18 8.5" transform="rotate(240 12 12)"/><path d="M18 8.5 l-2.4 .3 M18 8.5 l.3 -2.4" transform="rotate(240 12 12)"/></g></svg>Info</button>
+        <button class="navbtn" data-screen="gallery" title="Shared gallery" data-i18n-title="shared_gallery_title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="9" r="1.6"/><path d="M21 16l-5-5L5 21"/></svg><span data-i18n="gallery_button">Gallery</span></button>
+        <button class="navbtn" data-screen="info" title="Info" data-i18n-title="info_title">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5 A7 7 0 0 1 18 8.5"/><path d="M18 8.5 l-2.4 .3 M18 8.5 l.3 -2.4"/><path d="M12 5 A7 7 0 0 1 18 8.5" transform="rotate(120 12 12)"/><path d="M18 8.5 l-2.4 .3 M18 8.5 l.3 -2.4" transform="rotate(120 12 12)"/><path d="M12 5 A7 7 0 0 1 18 8.5" transform="rotate(240 12 12)"/><path d="M18 8.5 l-2.4 .3 M18 8.5 l.3 -2.4" transform="rotate(240 12 12)"/></g></svg><span data-i18n="info_title">Info</span></button>
       </div>
     </div>
   </nav>
@@ -235,7 +240,7 @@
   <div class="bottombar pluginbar" id="gm-pluginbar" aria-hidden="true">
     <div class="pluginbar__head">
       <h2 class="pluginbar__title" id="gm-pluginbar-title">Ghostyle</h2>
-      <button class="x" id="gm-pluginbar-close" aria-label="Close">
+      <button class="x" id="gm-pluginbar-close" aria-label="Close" data-i18n-aria-label="close_button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </div>
@@ -247,12 +252,12 @@
   <!-- ============================ ANALYZE MODAL ============================ -->
   <div id="analyzeModal" class="analyze-modal" hidden>
     <div id="analyzeBackdrop" class="analyze-backdrop">
-      <div id="analyzePanel" class="analyze-panel" role="dialog" aria-modal="true" aria-label="Makeup analysis">
+      <div id="analyzePanel" class="analyze-panel" role="dialog" aria-modal="true" aria-label="Makeup analysis" data-i18n-aria-label="makeup_analysis_label">
         <div class="analyze-visual-wrap"><canvas id="analyzeCanvas" class="analyze-canvas"></canvas></div>
         <div id="analyzeInfo" class="analyze-info"></div>
         <div class="analyze-actions">
-          <button id="analyzeCopyBtn" class="secondary-btn" type="button">Copy report</button>
-          <button id="analyzeCloseBtn" class="secondary-btn" type="button">Close</button>
+          <button id="analyzeCopyBtn" class="secondary-btn" type="button" data-i18n="copy_report_button">Copy report</button>
+          <button id="analyzeCloseBtn" class="secondary-btn" type="button" data-i18n="close_button">Close</button>
         </div>
       </div>
     </div>

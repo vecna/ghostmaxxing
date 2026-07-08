@@ -28,6 +28,7 @@ import { els } from './dom.js';
 import { setLog } from './utils.js';
 import { persistDb3d } from './db.js';
 import { MEDIAPIPE_IMAGE_EMBEDDER_URL, MEDIAPIPE_TASKS_VISION_URL, MEDIAPIPE_WASM_URL } from './config.js';
+import { t } from './i18n.js';
 
 // ─────────────────────────────────────────────
 // Model lifecycle
@@ -60,7 +61,7 @@ export async function loadMobileNet(embedderInstance = null) {
       },
       runningMode: 'VIDEO'
    });
-   setLog('[3D] ImageEmbedder pronto.', 'engine-3d');
+   setLog(t('image_embedder_ready_log'), 'engine-3d');
 }
 
 // ─────────────────────────────────────────────
@@ -102,17 +103,17 @@ export function cosineSimilarity(vecA, vecB) {
  * @returns {Promise<number[]>} Embedding vector serialisable to JSON.
  */
 export async function getFaceEmbedding(source) {
-   if (!state.imageEmbedder) throw new Error('[engine-3d] ImageEmbedder non caricato.');
+   if (!state.imageEmbedder) throw new Error(t('image_embedder_not_loaded_error'));
    try {
       const result = state.imageEmbedder.embedForVideo(source, performance.now());
       const embedding = result?.embeddings?.[0]?.floatEmbedding;
       if (!embedding) {
-         throw new Error('Nessun embedding restituito dal modello.');
+         throw new Error(t('no_embedding_returned_error'));
       }
       return Array.from(embedding);
    } catch (err) {
-      console.error('[getFaceEmbedding]', err);
-      throw new Error(`Errore estrazione embedding: ${err.message}`);
+      console.error(t('console_get_face_embedding_error'), err);
+      throw new Error(t('embedding_extraction_error', { message: err.message }));
    }
 }
 
@@ -149,18 +150,18 @@ export function seekFaceInDb3d(embedding) {
  */
 export async function saveFace3d(id) {
    if (!state.imageEmbedder) {
-      setLog('[3D] ImageEmbedder non pronto — embedding 3D non salvato.', 'engine-3d');
+      setLog(t('image_embedder_not_ready_save_log'), 'engine-3d');
       return null;
    }
    if (!state.db3d) {
-      setLog('[3D] DB 3D non inizializzato.', 'engine-3d');
+      setLog(t('db_3d_not_initialized_log'), 'engine-3d');
       return null;
    }
    let embedding;
    try {
       embedding = await getFaceEmbedding(els.video);
    } catch (err) {
-      setLog(`[3D] Errore estrazione embedding: ${err.message}`, 'engine-3d');
+      setLog(t('embedding_extraction_log', { message: err.message }), 'engine-3d');
       return null;
    }
    state.db3d.faces.push({
@@ -169,7 +170,7 @@ export async function saveFace3d(id) {
       savedAt: new Date().toISOString(),
    });
    persistDb3d();
-   setLog(`[3D] Embedding ImageEmbedder salvato con ID ${id}.`, 'engine-3d');
+   setLog(t('image_embedder_saved_log', { id }), 'engine-3d');
    // After saving, seek to get liveInfo (best match is the record we just saved: sim ≈ 1)
    const liveInfo3d = seekFaceInDb3d(embedding);
    return { id, liveInfo3d };
@@ -264,7 +265,7 @@ export async function compositeAndDetect3d(baseCanvas = null) {
  */
 export async function findFace3d(baseCanvas = null) {
    if (!state.imageEmbedder) {
-      setLog('[3D] ImageEmbedder non pronto — confronto 3D saltato.', 'engine-3d');
+      setLog(t('image_embedder_not_ready_compare_log'), 'engine-3d');
       return null;
    }
    if (!state.db3d || state.db3d.faces.length === 0) {
@@ -275,7 +276,7 @@ export async function findFace3d(baseCanvas = null) {
    try {
       liveEmbedding = await getFaceEmbedding(els.video);
    } catch (err) {
-      setLog(`[3D] Errore estrazione embedding live: ${err.message}`, 'engine-3d');
+      setLog(t('live_embedding_extraction_log', { message: err.message }), 'engine-3d');
       return null;
    }
 
@@ -313,28 +314,28 @@ export function decideMatchState3d({ liveMaxSim, liveMaxId, obfMaxSim, obfMaxId 
       if (typeof obfMaxId === 'number' && obfMaxSim >= thr) {
          return {
             detectionState: 'matched',
-            headline: `[3D] Ghostyle presente: ImageEmbedder abbina ID ${obfMaxId} (similarità ${obfMaxSim.toFixed(3)} ≥ ${thr.toFixed(2)}).`,
+            headline: t('match_3d_ghostyle_matched_headline', { id: obfMaxId, similarity: obfMaxSim.toFixed(3), threshold: thr.toFixed(2) }),
          };
       }
       return {
          detectionState: 'eluded',
-         headline: `[3D] Ghostyle presente: ImageEmbedder non abbina (similarità ${(obfMaxSim ?? 0).toFixed(3)} < ${thr.toFixed(2)}). Embedding visivo spostato.`,
+         headline: t('match_3d_ghostyle_eluded_headline', { similarity: (obfMaxSim ?? 0).toFixed(3), threshold: thr.toFixed(2) }),
       };
    }
 
    // No ghostyle: judge on live embedding
    if (liveMaxSim == null) {
-      return { detectionState: 'unknown', headline: '[3D] DB 3D vuoto, nessun confronto ImageEmbedder.' };
+      return { detectionState: 'unknown', headline: t('match_3d_empty_db_headline') };
    }
    if (liveMaxSim >= thr) {
       return {
          detectionState: 'matched',
-         headline: `[3D] Corrispondenza ImageEmbedder: ID ${liveMaxId} (similarità ${liveMaxSim.toFixed(3)} ≥ ${thr.toFixed(2)}).`,
+         headline: t('match_3d_live_matched_headline', { id: liveMaxId, similarity: liveMaxSim.toFixed(3), threshold: thr.toFixed(2) }),
       };
    }
    return {
       detectionState: 'eluded',
-      headline: `[3D] Nessuna corrispondenza ImageEmbedder (max similarità ${liveMaxSim.toFixed(3)} < ${thr.toFixed(2)}).`,
+      headline: t('match_3d_live_eluded_headline', { similarity: liveMaxSim.toFixed(3), threshold: thr.toFixed(2) }),
    };
 }
 
