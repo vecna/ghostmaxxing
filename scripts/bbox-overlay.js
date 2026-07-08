@@ -99,16 +99,20 @@ let suppressUntil = 0;
 
 // ---------- Bootstrap ----------
 
-// `main.js` dispatches `ghostatiReady` on `window` when state, DOM elements and
-// `window.gstmxx` are all ready. Same convention as `auto-find-loop.js`.
 window.addEventListener('ghostatiReady', init, { once: true });
 
 /**
- * Resolve canvas references and wire bus listeners. Idempotent enough to be
- * called from a test harness with a stub canvas already injected into the DOM.
+ * Resolves the bbox canvas and overlay references after `main.js` has finished
+ * preparing state, DOM elements, and `window.gstmxx`, then wires the shared
+ * event bus that drives all bbox, mesh, and 2D scaffold repainting. The setup is
+ * deliberately light enough for tests to call with stub canvases in the DOM.
  *
- * @returns {boolean} `true` on successful init, `false` if required DOM nodes
- *   are missing (a console warning is emitted in that case).
+ * @returns {boolean} True when required DOM nodes are present and listeners are attached.
+ * @see main - Dispatches `ghostatiReady` when the lab environment is ready.
+ * @see onDetection - Receives live face-api detection events.
+ * @see onLandmarks3d - Receives MediaPipe mesh events.
+ * @see onMatchStateChanged - Receives scan/save/find/auto match-state events.
+ * @see onDbChanged - Receives database changes that may reset overlay state.
  */
 export function init() {
    canvas = document.getElementById('bboxOverlay');
@@ -132,10 +136,15 @@ export function init() {
 // ---------- Bus listeners ----------
 
 /**
- * Handle a `detection` event by repainting the bbox and labels (or clearing
- * the canvas, when suppressed or when no face was detected).
+ * Caches the latest face-api detection result and repaints the bbox layer. In
+ * Ghostmaxxing this is the bridge from the recognition engine's live camera
+ * result to the visual box, metrics label, or 2D landmark scaffold.
  *
- * @param {CustomEvent<{ result: object }>} e
+ * @param {CustomEvent} e - `detection` event carrying the latest face-api result in `detail.result`.
+ * @returns {void}
+ * @see init - Registers this on `state.gstmxxEvents`.
+ * @see detectFaceInCam - Dispatches detection events from the 2D engine.
+ * @see renderOverlay - Repaints after the cached detection changes.
  */
 export function onDetection(e) {
    const result = e.detail && e.detail.result;
@@ -144,10 +153,15 @@ export function onDetection(e) {
 }
 
 /**
- * Handle a `landmarks3d` event by caching the latest 478-point MediaPipe mesh
- * and repainting according to the current overlay mode.
+ * Caches the latest 478-point MediaPipe mesh and repaints the bbox layer when
+ * the selected overlay mode includes the 3D mesh. This lets the overlay update
+ * from MediaPipe frames without asking the 2D engine to redraw.
  *
- * @param {CustomEvent<{ landmarks: Array|null }>} e
+ * @param {CustomEvent} e - `landmarks3d` event carrying normalized mesh points in `detail.landmarks`.
+ * @returns {void}
+ * @see init - Registers this on `state.gstmxxEvents`.
+ * @see tick - Dispatches `landmarks3d` from `mediapipe-loop.js`.
+ * @see renderOverlay - Repaints after cached mesh landmarks change.
  */
 export function onLandmarks3d(e) {
    const landmarks = e.detail && e.detail.landmarks;
@@ -156,16 +170,17 @@ export function onLandmarks3d(e) {
 }
 
 /**
- * Apply the incoming match state to `view` and arm overlay suppression on
- * non-`auto` sources. `scan`/`save` events don't carry distance fields, so
- * each numeric field is only copied when present in the payload.
+ * Applies a unified `matchStateChanged` payload to the overlay view and starts
+ * temporary suppression for explicit user-action sources. Auto-find events keep
+ * drawing continuously, while scan/save/find/efficacy overlays get a short
+ * quiet window so the bbox does not compete with the result visualization.
  *
- * @param {CustomEvent<{
- *   detectionState: ?string,
- *   liveMinDist: ?number, obfMinDist: ?number,
- *   liveMinId: ?number,   obfMinId: ?number,
- *   source: ?('scan'|'save'|'find'|'efficacy'|'auto')
- * }>} e
+ * @param {CustomEvent} e - Match-state event whose `detail` may include top-level or nested face-api metrics.
+ * @returns {void}
+ * @see init - Registers this on `state.gstmxxEvents`.
+ * @see tick - Dispatches auto match-state updates from `auto-find-loop.js`.
+ * @see main - Dispatches scan/save match-state updates during user workflows.
+ * @see renderOverlay - Repaints after match colors and labels are updated.
  */
 export function onMatchStateChanged(e) {
    const d = e.detail;
@@ -177,18 +192,20 @@ export function onMatchStateChanged(e) {
       if (k in d) view[k] = d[k];
       else if (faceapiSection && k in faceapiSection) view[k] = faceapiSection[k];
    }
-   // Any non-auto source has just painted an overlay onto the video; mute the
-   // bbox for OVERLAY_SUPPRESS_MS to keep the two visuals from fighting.
    if (d.source && d.source !== 'auto') suppressUntil = performance.now() + OVERLAY_SUPPRESS_MS;
 
    renderOverlay();
 }
 
 /**
- * Reset the view when the DB has been cleared. Other DB events (additions,
- * stat updates) are ignored — they don't invalidate the current match.
+ * Resets match metrics when the local face archive is cleared, while preserving
+ * the current overlay mode and cached camera data. Database additions and stat
+ * updates do not invalidate the current visual match state, so they are ignored.
  *
- * @param {CustomEvent<{ count: number }>} e
+ * @param {CustomEvent} e - Database event whose `detail.count` is zero after archive clearing.
+ * @returns {void}
+ * @see init - Registers this on `state.gstmxxEvents`.
+ * @see clearDb - Dispatches the zero-count database event after wiping the archive.
  */
 export function onDbChanged(e) {
    if (e.detail?.count === 0) Object.assign(view, {
@@ -200,10 +217,16 @@ export function onDbChanged(e) {
 }
 
 /**
- * Change the overlay mode, persist it and repaint immediately.
+ * Changes which landmark visualization is painted on `#bboxOverlay`, persists
+ * the user's choice, and repaints immediately. The lab uses this to switch
+ * between bbox metrics, 3D mesh dots, both layers, and the detailed 2D scaffold.
  *
- * @param {'bbox'|'mesh'|'entrambi'|'2d'} mode
- * @returns {'bbox'|'mesh'|'entrambi'|'2d'}
+ * @param {'bbox'|'mesh'|'entrambi'|'2d'} mode - Requested overlay mode.
+ * @returns {'bbox'|'mesh'|'entrambi'|'2d'} Active overlay mode after validation.
+ * @see init - Applies the persisted mode on startup.
+ * @see main - Calls this from the overlay mode button.
+ * @see applyView - Calls this when the lab UI switches camera/points/mesh views.
+ * @see renderOverlay - Repaints the chosen mode.
  */
 export function setOverlayMode(mode) {
    if (!Object.keys(OVERLAY_MODES).includes(mode)) return view.overlayMode;
@@ -215,12 +238,29 @@ export function setOverlayMode(mode) {
 
 // ---------- Geometry / rendering helpers ----------
 
-/** Clear the entire bbox canvas. */
+/**
+ * Clears the dedicated bbox canvas before each repaint, preventing stale boxes,
+ * labels, or mesh dots from lingering when the current mode or detection changes.
+ *
+ * @returns {void}
+ * @see renderOverlay - Clears before drawing the active overlay mode.
+ */
 function clearBbox() {
    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-/** Repaint the shared overlay canvas from the latest cached streams. */
+/**
+ * Repaints `#bboxOverlay` from the cached detection, match, and MediaPipe mesh
+ * streams. It mirrors and sizes the canvas to the main overlay, honors temporary
+ * suppression after explicit user actions, then draws the selected bbox, mesh,
+ * combined, or detailed 2D scaffold view.
+ *
+ * @returns {void}
+ * @see onDetection - Calls this after face-api detection updates.
+ * @see onLandmarks3d - Calls this after MediaPipe mesh updates.
+ * @see onMatchStateChanged - Calls this after match-state updates.
+ * @see setOverlayMode - Calls this after a mode change.
+ */
 function renderOverlay() {
    if (!canvas || !overlayEl || !ctx) return;
    syncSize(canvas, overlayEl);
@@ -241,18 +281,49 @@ function renderOverlay() {
    if (includesMesh()) drawMesh478();
 }
 
+/**
+ * Reports whether the current overlay mode should draw the face bounding box
+ * and metric label block.
+ *
+ * @returns {boolean} True for bbox-only and combined modes.
+ * @see renderOverlay - Uses this to decide whether to call `drawBox` and `drawLabels`.
+ */
 function includesBbox() {
    return view.overlayMode === 'bbox' || view.overlayMode === 'entrambi';
 }
 
+/**
+ * Reports whether the current overlay mode should draw the cached 478-point
+ * MediaPipe mesh.
+ *
+ * @returns {boolean} True for mesh-only and combined modes.
+ * @see renderOverlay - Uses this to decide whether to call `drawMesh478`.
+ */
 function includesMesh() {
    return view.overlayMode === 'mesh' || view.overlayMode === 'entrambi';
 }
 
+/**
+ * Tells the 2D engine whether it should request detailed face-api landmarks for
+ * the current overlay mode. The detailed scaffold mode needs landmark chains,
+ * while bbox and mesh modes can use cheaper detection data.
+ *
+ * @param {'bbox'|'mesh'|'entrambi'|'2d'} [mode=view.overlayMode] - Overlay mode to inspect.
+ * @returns {boolean} True when detailed face-api landmarks are required.
+ * @see runEffectPass - Uses this to choose the face-api detection pipeline.
+ */
 export function overlayModeNeedsDetailedFaceapi(mode = view.overlayMode) {
    return mode === '2d';
 }
 
+/**
+ * Resizes the latest face-api detection to the bbox canvas coordinate space and
+ * extracts the current bounding rectangle for drawing.
+ *
+ * @returns {{x:number, y:number, width:number, height:number}|null} Current box in canvas pixels.
+ * @see renderOverlay - Uses this before drawing bbox metrics.
+ * @see extractBox - Handles the two face-api result shapes.
+ */
 function getLastBox() {
    if (!view.lastDetection) return null;
    const resized = faceapi.resizeResults(view.lastDetection, {
@@ -262,6 +333,13 @@ function getLastBox() {
    return extractBox(resized) || null;
 }
 
+/**
+ * Reads the persisted overlay mode from localStorage and validates it against
+ * the known Ghostmaxxing overlay modes.
+ *
+ * @returns {'bbox'|'mesh'|'entrambi'|'2d'|null} Persisted mode, or null when unavailable.
+ * @see init - Applies the persisted mode during overlay startup.
+ */
 function readPersistedOverlayMode() {
    try {
       const raw = localStorage.getItem(OVERLAY_MODE_STORAGE_KEY);
@@ -271,33 +349,44 @@ function readPersistedOverlayMode() {
    }
 }
 
+/**
+ * Stores the user's overlay mode preference. Storage failures are ignored
+ * because overlay rendering should keep working even when localStorage is
+ * unavailable or blocked.
+ *
+ * @param {'bbox'|'mesh'|'entrambi'|'2d'} mode - Overlay mode to persist.
+ * @returns {void}
+ * @see setOverlayMode - Persists each accepted mode change.
+ */
 function persistOverlayMode(mode) {
    try {
       localStorage.setItem(OVERLAY_MODE_STORAGE_KEY, mode);
    } catch {
-      // Persistence is optional; rendering still works without storage access.
    }
 }
 
 /**
- * Pull the bounding box out of a face-api result, handling both shapes.
+ * Pulls the bounding box out of a face-api result, handling both shapes used in
+ * the project: plain detections expose `result.box`, while detailed landmark
+ * detections expose `result.detection.box`.
  *
- *   detectSingleFace()                        → result.box
- *   detectSingleFace().withFaceLandmarks()    → result.detection.box
- *
- * @param {object} resized A face-api result already passed through `resizeResults`.
- * @returns {{x:number, y:number, width:number, height:number}|undefined}
+ * @param {object} resized - face-api result already passed through `resizeResults`.
+ * @returns {{x:number, y:number, width:number, height:number}|undefined} Extracted bounding box.
+ * @see getLastBox - Extracts the cached live detection box.
+ * @see drawFaceapiScaffold2d - Extracts the detailed scaffold box.
  */
 export function extractBox(resized) {
    return (resized.detection && resized.detection.box) || resized.box;
 }
 
 /**
- * Pull the detection confidence score out of a face-api result. Same dual
- * shape as {@link extractBox}.
+ * Pulls the detection confidence score out of a face-api result, matching the
+ * same plain versus detailed result shapes handled by `extractBox`.
  *
- * @param {object} result
- * @returns {number|null}
+ * @param {object} result - face-api result to inspect.
+ * @returns {number|null} Detection score, or null when no numeric score exists.
+ * @see renderOverlay - Passes this score into bbox metric labels.
+ * @see drawFaceapiScaffold2d - Uses this score when falling back to bbox labels.
  */
 export function extractScore(result) {
    if (result.detection && typeof result.detection.score === 'number') return result.detection.score;
@@ -306,40 +395,58 @@ export function extractScore(result) {
 }
 
 /**
- * Format a number for display, or `'—'` when not a finite number.
+ * Formats numeric bbox metrics for the overlay label block, using an em dash
+ * placeholder when a metric is missing, invalid, or not yet computed.
  *
- * @param {*} value
- * @param {number} digits
- * @returns {string}
+ * @param {*} value - Metric value to display.
+ * @param {number} digits - Decimal places for finite numbers.
+ * @returns {string} Formatted metric or placeholder.
+ * @see drawLabels - Formats detection score, distance, and face id values.
  */
 export function fmt(value, digits) {
    return (typeof value === 'number' && Number.isFinite(value)) ? value.toFixed(digits) : '—';
 }
 
 /**
- * Pick the stroke / label color from {@link COLORS} matching the current
- * `view.matchState`, with a fallback to the `unknown` grey.
+ * Picks the stroke and label color for the latest match state, mapping
+ * identified, eluded, unclear, partial-elusion, and unknown outcomes to the
+ * overlay color convention documented by this module.
  *
- * @returns {string}
+ * @returns {string} CSS color for the current match state.
+ * @see drawBox - Uses this for the bbox stroke.
+ * @see drawMesh478 - Uses this for mesh dots.
+ * @see drawFaceapiScaffold2d - Uses this for scaffold strokes.
+ * @see drawLabels - Uses this for metric text.
  */
 export function currentColor() {
    return COLORS[view.matchState] || COLORS.unknown;
 }
 
-/** Ratio between intrinsic canvas pixels and CSS pixels at the current layout. */
+/**
+ * Computes the intrinsic-canvas to CSS-pixel scale so strokes, dots, and text
+ * stay visually stable on mobile, high-resolution canvases, and the lab's
+ * digital zoom. The bounding rect is used because it includes CSS transforms.
+ *
+ * @returns {number} Canvas-pixels per CSS pixel.
+ * @see drawBox - Scales bbox stroke width.
+ * @see drawMesh478 - Scales mesh dot radius.
+ * @see drawFaceapiScaffold2d - Scales scaffold strokes and anchors.
+ * @see drawLabels - Scales the metric label block.
+ */
 function cssScale() {
-   // getBoundingClientRect() is transform-aware, so a CSS zoom on an ancestor
-   // (the lab's #viewer digital zoom) is reflected here. Using it instead of
-   // clientWidth keeps overlay strokes, dots and the info box a constant
-   // on-screen size at any zoom level, and consistent on small monitors.
    const rect = canvas.getBoundingClientRect();
    const cssW = rect.width || canvas.clientWidth || canvas.width;
    return canvas.width / cssW;
 }
 
 /**
- * Stroke the bounding rectangle at the current color and scaled line width.
- * @param {{x:number, y:number, width:number, height:number}} box
+ * Strokes the live face bounding rectangle using the current match-state color
+ * and scaled line width, making the box readable across the responsive canvas.
+ *
+ * @param {{x:number, y:number, width:number, height:number}} box - Bounding box in canvas pixels.
+ * @returns {void}
+ * @see renderOverlay - Draws the standard bbox mode.
+ * @see drawFaceapiScaffold2d - Draws the fallback box for detailed 2D mode.
  */
 function drawBox(box) {
    const scale = cssScale();
@@ -350,6 +457,15 @@ function drawBox(box) {
    ctx.restore();
 }
 
+/**
+ * Draws the cached MediaPipe 478-point face mesh as colored dots on the bbox
+ * canvas. It only renders complete meshes so partial or malformed landmark
+ * payloads do not leave misleading points on the video.
+ *
+ * @returns {void}
+ * @see renderOverlay - Calls this for mesh and combined overlay modes.
+ * @see onLandmarks3d - Supplies the cached mesh data this function reads.
+ */
 function drawMesh478() {
    if (!Array.isArray(view.lastLandmarks3d) || view.lastLandmarks3d.length !== 478) return;
 
@@ -365,6 +481,17 @@ function drawMesh478() {
    ctx.restore();
 }
 
+/**
+ * Draws the detailed 2D face-api scaffold for the `2d` overlay mode: bounding
+ * box, eye axis, eye contours, jaw, nose, mouth, anchor dots, and a small live
+ * detection label. If detailed landmarks are not present, it falls back to the
+ * standard bbox and metrics label.
+ *
+ * @returns {void}
+ * @see renderOverlay - Calls this when `view.overlayMode` is `2d`.
+ * @see overlayModeNeedsDetailedFaceapi - Requests the detailed landmark data needed here.
+ * @see drawFaceapiScaffoldLabels - Draws the live-scope scaffold label.
+ */
 function drawFaceapiScaffold2d() {
    const resized = getResizedDetection();
    const box = resized && extractBox(resized);
@@ -414,8 +541,20 @@ function drawFaceapiScaffold2d() {
    ctx.restore();
 }
 
+/**
+ * Draws the label for the detailed 2D scaffold, explicitly marking it as the
+ * live camera view. This matters because the top readout may describe the
+ * Ghostyle-composited matcher result, so "live face detected" and "matcher sees
+ * no face" can both be true without contradicting each other.
+ *
+ * @param {{x:number, y:number, width:number, height:number}} box - Detection box in canvas pixels.
+ * @param {object} resized - Detailed face-api result already resized to canvas coordinates.
+ * @param {number} scale - Canvas-pixels per CSS pixel.
+ * @returns {void}
+ * @see drawFaceapiScaffold2d - Calls this after drawing detailed landmarks.
+ */
 function drawFaceapiScaffoldLabels(box, resized, scale) {
-   const lines = ['volto rilevato'];
+   const lines = ['volto rilevato (live)'];
    if (typeof resized.age === 'number') lines.push(`eta stimata: ${Math.round(resized.age)}`);
    if (resized.gender) lines.push(`genere stimato: ${resized.gender}`);
 
@@ -449,6 +588,15 @@ function drawFaceapiScaffoldLabels(box, resized, scale) {
    });
 }
 
+/**
+ * Resizes the cached face-api detection to the current bbox canvas dimensions,
+ * preserving alignment after camera resize, device-pixel-ratio changes, or
+ * overlay canvas resync.
+ *
+ * @returns {object|null} Resized face-api result, or null when no detection is cached.
+ * @see drawFaceapiScaffold2d - Uses this for detailed 2D drawing.
+ * @see getLastBox - Uses the same resize behavior for bbox extraction.
+ */
 function getResizedDetection() {
    if (!view.lastDetection) return null;
    return faceapi.resizeResults(view.lastDetection, {
@@ -458,12 +606,17 @@ function getResizedDetection() {
 }
 
 /**
- * Draw the metric labels next to the bounding box. The label block is
- * un-mirrored (the CSS mirror applies to the whole canvas) so the text reads
- * left-to-right even when the webcam is in mirror mode.
+ * Draws the metric label block next to the bounding box, showing live detection
+ * confidence, current face-api distance, live face id, and obfuscated id drift
+ * when a Ghostyle changes the nearest saved identity. The text is un-mirrored
+ * when the webcam canvas is mirrored so it remains readable.
  *
- * @param {{x:number, y:number, width:number, height:number}} box
- * @param {number|null} score Live detection score from face-api.
+ * @param {{x:number, y:number, width:number, height:number}} box - Bounding box in canvas pixels.
+ * @param {number|null} score - Live detection score from face-api.
+ * @returns {void}
+ * @see renderOverlay - Calls this for standard bbox metrics.
+ * @see drawFaceapiScaffold2d - Calls this when detailed landmarks are unavailable.
+ * @see fmt - Formats each numeric metric shown in the label block.
  */
 function drawLabels(box, score) {
    const lines = [
@@ -472,15 +625,10 @@ function drawLabels(box, score) {
       `faceId    ${fmt(view.liveMinId, 0)}`,
    ];
 
-   // If the Ghostyle has shifted the closest match onto a different ID than
-   // the live detector picks, surface it: it makes the embedding drift under
-   // makeup readable at a glance.
    if (Number.isFinite(view.obfMinId) && view.obfMinId !== view.liveMinId) {
       lines.push(`ObfFaceId! ${fmt(view.obfMinId, 0)}`);
    }
 
-   // Canvas→CSS scale: multiply every CSS-px dimension to get canvas-px values
-   // that match the on-screen rendering size.
    const scale = cssScale();
    const fontSize   = LABEL_FONT_SIZE_CSS   * scale;
    const lineHeight = LABEL_LINE_HEIGHT_CSS * scale;
@@ -501,8 +649,6 @@ function drawLabels(box, score) {
    if (left + blockW > canvas.width) left = canvas.width - blockW;
    if (left < 0) left = 0;
 
-   // Un-mirror just the label block if the canvas is mirrored, so the text is
-   // legible regardless of camera orientation.
    const mirrored = (canvas.style.transform || '').includes('scaleX(-1)');
    if (mirrored) {
       ctx.translate(canvas.width, 0);

@@ -63,7 +63,9 @@ export function triggerOverlayFadeout() {
 }
 
 /**
- * Build a canvas with video compositing, 2D ghostly overlay, and optional 3D plugin (via event).
+ * Build a canvas with video compositing and the active 2D/3D Ghostyle overlay.
+ * Calls the active 2D Ghostyle's onDraw() hook to render the overlay.
+ * Executes face-api detection on the composited frame.
  * Executes a Face API detection with landmarks and descriptor on the composite.
  * Returns an object containing the canvas, obfuscatedResult, and weakDetection flag.
  * If detection with the normal threshold (`scoreThreshold: 0.5`) fails, it retries with a relaxed threshold (0.1) to still extract numeric metrics from the composite —
