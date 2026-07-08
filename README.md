@@ -1,19 +1,12 @@
-# ghòstati
-![Unit Test Coverage](https://img.shields.io/badge/coverage-62.97%25-lightgrey)
-```text
-        _          _        _   _
-   __ _| |__   ___| |_ __ _| |_(_)
-  / _` | '_ \ / _ \ __/ _` | __| |
- | (_| | | | | (_) | || (_| | |_| |
-  \__, |_| |_|\___/ \__\__,_|\__|_|
-  |___/     Web AR face-recognition test lab
-```
+# Ghostmaxxing
+<!-- coverage-badge:start -->
+[![Unit Test Coverage](https://img.shields.io/badge/coverage-73.12%25-yellow)](coverage/)
+<!-- coverage-badge:end -->
 
-[![Unit Test Coverage](https://img.shields.io/badge/coverage-53.45%25-lightgrey)](coverage/)
 [![Docs](https://img.shields.io/badge/docs-JSDoc-blue)](docs/)
 [![Source](https://img.shields.io/badge/source-GitHub-black)](https://github.com/vecna/ghostati)
 
-**ghòstati** is a static, browser-side Web AR laboratory for designing and testing face-obfuscation overlays against face-detection and face-recognition pipelines.
+**Ghostmaxxing** is a static, browser-side Web AR laboratory for designing and testing face-obfuscation overlays against face-detection and face-recognition pipelines.
 
 The project combines webcam capture, [`face-api.js`](https://github.com/vladmandic/face-api), [MediaPipe Tasks Vision](https://developers.google.com/mediapipe/solutions/vision/face_landmarker), canvas rendering, local descriptor storage, and a plugin system for custom **Ghostyles**: 2D or 3D face overlays that can be tested against recognition behavior in real time.
 
@@ -333,7 +326,19 @@ Please keep claims narrow and technical: say which model, browser, lighting, cam
 
 
 
-**Last commit:** `3b32d40` – deleted some dead code and improved UT
+
+
+
+
+**Last commit:** `85f9100` – internationalization added, three languages
+
+
+
+
+
+
+
+
 
 
 
@@ -344,8 +349,8 @@ Please keep claims narrow and technical: say which model, browser, lighting, cam
 
 
 ## Recent changes
+- `85f9100` internationalization added, three languages
+- `697c972` JSdoc improvements
+- `1a49dea` added condition for face not found during composite analysis
 - `3b32d40` deleted some dead code and improved UT
 - `b09f30a` removal of duplicated code
-- `4a063a2` completed visual direction tasks
-- `53cc5ef` trimmed logo, docs, internal material, and favicon
-- `d20d4a8` fixed e2e test for the new UX

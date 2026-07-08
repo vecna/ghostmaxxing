@@ -20,11 +20,14 @@ const COVERAGE_BADGE_URL = (() => {
   const cov = getCoverage();
   if (cov != null) {
     const pct = Number(cov).toFixed(2);
-    return `https://img.shields.io/badge/coverage-${pct}%25-lightgrey`;
+    const color = cov >= 80 ? 'green' : cov >= 50 ? 'yellow' : 'red';
+    return `https://img.shields.io/badge/coverage-${pct}%25-${color}`;
   }
   return 'https://img.shields.io/badge/coverage-UNKNOWN-lightgrey';
 })();
 const CHANGELOG_COMMITS = 5; // how many recent commits to list
+const COVERAGE_BADGE_START = '<!-- coverage-badge:start -->';
+const COVERAGE_BADGE_END = '<!-- coverage-badge:end -->';
 
 // ---------------------------
 // Helper to compute coverage percentage from the JSON report produced by Vitest.
@@ -87,17 +90,30 @@ let readme = fs.readFileSync(README_PATH, 'utf8');
 // ------------------------------------------------------------------
 // 3️⃣  Replace/Insert the badge line (just after the title)
 // ------------------------------------------------------------------
-const coverageBadgeLine = `![Unit Test Coverage](${COVERAGE_BADGE_URL})`;
+const coverageBadgeBlock = [
+  COVERAGE_BADGE_START,
+  `[![Unit Test Coverage](${COVERAGE_BADGE_URL})](coverage/)`,
+  COVERAGE_BADGE_END,
+].join('\n');
 
-// Ensure there is exactly one coverage badge line by removing all old ones first.
-readme = readme.replace(/^\s*!\[Unit Test Coverage\]\([^)]+\)\s*\n?/gm, '');
+// Ensure there is exactly one coverage badge block by removing any old block
+// or legacy standalone badges first.
+readme = readme.replace(
+  /<!-- coverage-badge:start -->[\s\S]*?<!-- coverage-badge:end -->\n?/m,
+  ''
+);
+readme = readme.replace(/^\s*\[!\[Unit Test Coverage\]\([^)]+\)\]\(coverage\/\)\s*\n?/gm, '');
+readme = readme.replace(/^\s*\!\[Unit Test Coverage\]\([^)]+\)\s*\n?/gm, '');
 
 // Re-insert a single badge right after the first heading.
 if (/^#{1,6}\s+.*$/m.test(readme)) {
-  readme = readme.replace(/^#{1,6}\s+.*$/m, (heading) => `${heading}\n${coverageBadgeLine}`);
+  readme = readme.replace(
+    /^#{1,6}\s+.*$/m,
+    (heading) => `${heading}\n${coverageBadgeBlock}`
+  );
 } else {
   // Fallback for malformed README files without headings.
-  readme = `${coverageBadgeLine}\n\n${readme}`;
+  readme = `${coverageBadgeBlock}\n\n${readme}`;
 }
 
 // ------------------------------------------------------------------
