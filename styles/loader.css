@@ -1,0 +1,346 @@
+.loader-page {
+  min-height: 100svh;
+  overflow: auto;
+}
+
+.loader-shell {
+  width: min(100%, 1440px);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 1.25rem;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1.1fr) auto minmax(13rem, 0.8fr);
+  gap: 0.9rem;
+}
+
+.loader-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--gm-border);
+}
+
+.loader-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.6rem;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--gm-border-strong);
+  background: rgba(255, 231, 168, 0.18);
+  color: var(--gm-ink);
+  font: 700 0.82rem var(--sans);
+  text-transform: uppercase;
+}
+
+.status-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--gm-muted);
+}
+
+.status-dot.live {
+  background: var(--gm-green);
+}
+
+.status-dot.error {
+  background: #9a1616;
+}
+
+.loader-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(2.2rem, 4vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+  color: var(--gm-ink);
+}
+
+.loader-band {
+  min-width: 0;
+  border: 1.5px solid var(--gm-border-strong);
+  background: rgba(255, 231, 168, 0.2);
+  box-shadow: var(--gm-shadow-block);
+}
+
+.loader-band--stage {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 24rem;
+}
+
+.loader-viewer {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: #050505;
+}
+
+#video,
+#previewImage,
+#overlay,
+#mesh3dOverlay,
+#bboxOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#video {
+  z-index: 1;
+  background: #050505;
+}
+
+#previewImage {
+  display: none;
+}
+
+#overlay {
+  z-index: 2;
+  pointer-events: none;
+}
+
+#mesh3dOverlay {
+  z-index: 3;
+  pointer-events: none;
+}
+
+#bboxOverlay {
+  z-index: 4;
+  pointer-events: none;
+}
+
+.loader-placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  color: var(--gm-cream);
+  background: linear-gradient(135deg, rgba(5, 5, 5, 0.92), rgba(6, 63, 50, 0.72));
+  font: 700 1rem var(--sans);
+  text-align: center;
+}
+
+.loader-controls,
+.loader-band--actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.8rem;
+}
+
+.file-control,
+.loader-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  padding: 0.75rem 1.15rem;
+  border: 1.5px solid var(--gm-border-strong);
+  background: var(--gm-cream);
+  color: var(--gm-ink);
+  font: 800 0.95rem var(--sans);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.file-control input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader-action {
+  background: var(--gm-green);
+  color: var(--gm-cream);
+}
+
+.loader-action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.file-control:focus-within,
+.loader-action:focus-visible,
+#videoSeek:focus-visible {
+  outline: var(--gm-focus-ring);
+  outline-offset: 0.15rem;
+}
+
+.timeline {
+  flex: 1;
+  min-width: 16rem;
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr) 6.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  font: 700 0.82rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--gm-ink);
+}
+
+#videoSeek {
+  width: 100%;
+  accent-color: var(--gm-green);
+}
+
+.loader-band--actions {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.loader-readout {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  color: var(--gm-text);
+  font: 700 0.8rem var(--sans);
+}
+
+.loader-readout strong {
+  min-width: 2.5rem;
+  padding: 0.35rem 0.45rem;
+  background: rgba(255, 231, 168, 0.45);
+  border: 1px solid var(--gm-border);
+  color: var(--gm-ink);
+  text-align: center;
+}
+
+.loader-band--log {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.loader-log-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0.95rem;
+  border-bottom: 1px solid var(--gm-border);
+}
+
+.loader-log-head h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.55rem;
+  color: var(--gm-ink);
+}
+
+.loader-log-head p {
+  margin: 0;
+  color: var(--gm-muted);
+  font-size: 0.9rem;
+}
+
+.loader-log {
+  overflow: auto;
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.8rem;
+  align-content: start;
+}
+
+.loader-entry {
+  display: grid;
+  grid-template-columns: minmax(13rem, 18rem) minmax(0, 1fr);
+  gap: 0.85rem;
+  padding: 0.8rem;
+  border: 1px solid var(--gm-border);
+  background: rgba(255, 231, 168, 0.24);
+}
+
+.loader-entry canvas {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #050505;
+  border: 1px solid var(--gm-border-strong);
+  object-fit: contain;
+}
+
+.loader-entry__body {
+  min-width: 0;
+}
+
+.loader-entry__body h3 {
+  margin: 0 0 0.35rem;
+  color: var(--gm-ink);
+  font-size: 1rem;
+}
+
+.loader-entry__meta,
+.loader-entry__metrics {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  margin: 0.35rem 0;
+}
+
+.loader-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.7rem;
+  padding: 0.25rem 0.45rem;
+  background: rgba(255, 231, 168, 0.5);
+  border: 1px solid var(--gm-border);
+  color: var(--gm-ink);
+  font: 700 0.76rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.loader-entry pre {
+  max-height: 11rem;
+  overflow: auto;
+  margin: 0.55rem 0 0;
+  padding: 0.65rem;
+  background: rgba(5, 5, 5, 0.86);
+  color: var(--gm-cream);
+  font: 0.74rem/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: pre-wrap;
+}
+
+.u-hidden {
+  display: none !important;
+}
+
+@media (max-width: 780px) {
+  .loader-shell {
+    grid-template-rows: auto auto auto auto minmax(14rem, 1fr);
+    padding: 0.8rem;
+  }
+
+  .loader-header,
+  .loader-controls,
+  .loader-band--actions,
+  .loader-log-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .loader-band--stage {
+    min-height: 20rem;
+  }
+
+  .timeline {
+    min-width: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .loader-readout {
+    margin-left: 0;
+  }
+
+  .loader-entry {
+    grid-template-columns: 1fr;
+  }
+}

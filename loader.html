@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ghostmaxxing | Video Loader</title>
+  <meta name="description" content="Internal Ghostmaxxing tool for testing local MP4 makeup videos against the 2D and 3D face engines." />
+  <link rel="icon" type="image/svg+xml" href="/images/ghostmaxxing-favicon.svg">
+  <link rel="stylesheet" href="styles/pages.css" />
+  <link rel="stylesheet" href="styles/loader.css" />
+</head>
+
+<body class="loader-page">
+  <main class="loader-shell" aria-labelledby="loader-title">
+    <header class="loader-header">
+      <a class="wordmark" href="/" aria-label="Ghostmaxxing homepage">
+        <span class="wordmark__main">
+          <img class="wordmark__mark" src="images/ghostmaxxing-mark.svg" alt="" aria-hidden="true" />
+          <span class="wordmark__title">Ghostmaxxing</span>
+        </span>
+        <span class="wordmark__subtitle">Internal video loader</span>
+      </a>
+      <div class="loader-status" aria-live="polite">
+        <span id="statusDot" class="status-dot"></span>
+        <span id="statusText">loading models</span>
+      </div>
+    </header>
+
+    <h1 id="loader-title" class="loader-title">Makeup Video Test Loader</h1>
+
+    <section class="loader-band loader-band--stage" aria-label="Load and play video">
+      <div id="viewer" class="loader-viewer" data-view="camera">
+        <div id="placeholder" class="loader-placeholder">Select a local MP4 video to begin.</div>
+        <video id="video" controls playsinline preload="metadata"></video>
+        <img id="previewImage" alt="diagnostic preview" />
+        <canvas id="overlay"></canvas>
+        <canvas id="mesh3dOverlay"></canvas>
+        <canvas id="bboxOverlay"></canvas>
+      </div>
+      <div class="loader-controls">
+        <label class="file-control">
+          <span>Load MP4</span>
+          <input id="videoFile" type="file" accept="video/mp4,video/*" />
+        </label>
+        <div class="timeline" aria-label="Video progress">
+          <span id="currentTimeLabel">00:00.000</span>
+          <input id="videoSeek" type="range" min="0" max="0" step="0.001" value="0" disabled />
+          <span id="durationLabel">00:00.000</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="loader-band loader-band--actions" aria-label="Face actions">
+      <button id="recordFaceBtn" class="loader-action" type="button" disabled>Record face</button>
+      <button id="seekFaceBtn" class="loader-action" type="button" disabled>Seek face</button>
+      <div class="loader-readout">
+        <span>Faces in memory</span>
+        <strong id="dbCount">0</strong>
+        <span>Next ID</span>
+        <strong id="nextId">0</strong>
+        <span>2D threshold</span>
+        <strong id="thresholdLabel">0.58</strong>
+        <span id="dbCountBadge" hidden>0</span>
+      </div>
+    </section>
+
+    <section class="loader-band loader-band--log" aria-label="Button activity log">
+      <div class="loader-log-head">
+        <h2>Activity log</h2>
+        <p>Each entry is captured at the exact video timestamp where the button was pressed.</p>
+      </div>
+      <div id="loaderLog" class="loader-log" aria-live="polite"></div>
+      <div id="logBox" class="u-hidden" aria-hidden="true"></div>
+    </section>
+  </main>
+
+  <select id="fpsSelect" class="u-hidden" aria-hidden="true" tabindex="-1">
+    <option value="120" selected>120 ms</option>
+  </select>
+  <button id="saveBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
+  <button id="scanBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
+  <button id="copyMakeupBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
+  <button id="analyzeBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
+  <button id="toggleSettingsBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
+  <button id="overlayModeBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
+  <button id="clearDbBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
+  <button id="recordBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
+  <div id="ghostylesContainer" class="u-hidden" aria-hidden="true"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+  <script type="module" src="scripts/bbox-overlay.js"></script>
+  <script type="module" src="scripts/mediapipe-loop.js"></script>
+  <script type="module" src="scripts/loader.js"></script>
+</body>
+
+</html>
