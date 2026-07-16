@@ -45,7 +45,7 @@ export const COLORS = {
 
 const LINE_WIDTH_CSS = 2.6;
 
-// Same font as the UI logger (see .log-line in styles/ghostati.css). Values are
+// Same font as the UI logger. Values are
 // in CSS pixels and get multiplied by the canvas/CSS scale in `drawLabels` so
 // the visual size stays consistent across resolutions (on mobile the canvas is
 // 1920×1080 but rendered at ~350px wide: 12 canvas-pixels would be unreadable
