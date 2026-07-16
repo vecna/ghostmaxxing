@@ -12,8 +12,8 @@ test.describe('Ghostmaxxing Face Matching E2E', () => {
 
     await page.goto('/lab.html');
 
-    await expect(page.locator('#logBox')).toContainText('MediaPipe FaceLandmarker pronto', { timeout: 45000 });
-    await expect(page.locator('#logBox')).toContainText('Webcam attiva', { timeout: 45000 });
+    await expect(page.locator('#logBox')).toContainText('MediaPipe FaceLandmarker ready', { timeout: 45000 });
+    await expect(page.locator('#logBox')).toContainText('Webcam active', { timeout: 45000 });
 
     await expect(page.locator('#dbCount')).toHaveText('0');
     await expect(page.locator('#gm-num')).toHaveText('—');
@@ -23,7 +23,7 @@ test.describe('Ghostmaxxing Face Matching E2E', () => {
 
     await expect(page.locator('#dbCount')).toHaveText('1', { timeout: 45000 });
     await expect(page.locator('#nextId')).toHaveText('1');
-    await expect(page.locator('#logBox')).toContainText('Impronta biometrica salvata con ID 0', { timeout: 45000 });
+    await expect(page.locator('#logBox')).toContainText('Biometric faceprint saved with ID 0', { timeout: 45000 });
     await expect(page.locator('#gm-num')).toHaveText('0.00');
     await expect(page.locator('#gm-state')).toHaveText(/Recognised\s+·\s+#0/);
 

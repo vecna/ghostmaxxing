@@ -48,8 +48,8 @@ test.describe('Ghostmaxxing Overlay Mode E2E', () => {
 
     await page.goto('/lab.html');
 
-    await expect(page.locator('#logBox')).toContainText('MediaPipe FaceLandmarker pronto', { timeout: 45000 });
-    await expect(page.locator('#logBox')).toContainText('Webcam attiva', { timeout: 45000 });
+    await expect(page.locator('#logBox')).toContainText('MediaPipe FaceLandmarker ready', { timeout: 45000 });
+    await expect(page.locator('#logBox')).toContainText('Webcam active', { timeout: 45000 });
 
     const viewer = page.locator('#viewer');
     const bboxOverlay = page.locator('#bboxOverlay');
