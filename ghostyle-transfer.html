@@ -1,558 +1,176 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ghostmaxxing — Ghostyle Transfer (lab)</title>
-<meta name="generator" content="Hand-coded with rage against the algorithm">
-<!--
-  GHOSTYLE TRANSFER — step-3 prototype
-  ====================================
-  Extract *only the paint* from a workshop before/after pair, then warp it onto
-  any target face (a photo, or a public-domain painting like the Mona Lisa).
-
-  How it maps to the pipeline we discussed:
-    · You give: BEFORE (bare face), AFTER (painted face), TARGET (receiver).
-    · You mark the face on each with a box (drag on the image).
-    · Extraction: the paint = where AFTER differs from BEFORE inside the box,
-      turned into an RGBA matte in a normalized 512x512 "face frame".
-      (No BEFORE? It falls back to deviation-from-median-skin — rougher.)
-    · Transfer: the matte is placed onto the TARGET box.
-        - BOX mode  (always works, incl. on stylized paintings)
-        - MESH mode (auto-upgrade): if @vladmandic/face-api — the same library
-          the lab loads — detects 68 landmarks in both faces, the matte is
-          warped per-triangle so it follows the target's eyes/nose/mouth.
-    · Everything runs locally in your browser. Nothing is uploaded.
-
-  This is a visualization/education tool. Placing a Ghostyle on a face is not a
-  claim that it evades any recognition system.
--->
-<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
-<style>
-  :root{
-    --gm-bg:#fd5503; --gm-bg-deep:#df5512;
-    --gm-ink:#050505; --gm-text:#071a33; --gm-muted:#253a54;
-    --gm-green:#063f32; --gm-green-soft:#1e6b4f;
-    --gm-yellow:#f3c747; --gm-cream:#ffe7a8;
-    --gm-border:rgba(5,5,5,.22); --gm-border-strong:rgba(5,5,5,.55);
-    --gm-panel:rgba(255,231,168,.16); --gm-panel-strong:rgba(255,231,168,.4);
-    --gm-shadow-block:4px 4px 0 rgba(5,5,5,.13);
-    --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
-    --sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
-  body{
-    font-family:var(--sans); color:var(--gm-text);
-    background:
-      radial-gradient(circle at top right, rgba(255,220,150,.08), transparent 34%),
-      linear-gradient(180deg,var(--gm-bg) 0%,var(--gm-bg) 70%,var(--gm-bg-deep) 100%);
-    min-height:100svh;
-  }
-  .shell{max-width:1180px; margin:0 auto; padding:1.4rem 1.4rem 4rem}
-
-  header{border-bottom:1px solid var(--gm-border); padding-bottom:1rem; margin-bottom:1.6rem}
-  .kicker{font-family:var(--mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gm-green); margin:0 0 .4rem}
-  h1{font-family:var(--serif); font-weight:700; color:var(--gm-ink); font-size:clamp(2rem,4vw,3rem); line-height:.98; margin:0 0 .5rem}
-  .sub{max-width:64ch; margin:0; color:var(--gm-text); font-size:.98rem}
-  .badge{
-    display:inline-flex; align-items:center; gap:.4rem; margin-top:.8rem;
-    font-family:var(--mono); font-size:.72rem; letter-spacing:.05em; text-transform:uppercase;
-    padding:.3rem .6rem; border:1px solid var(--gm-border-strong); background:var(--gm-panel);
-  }
-  .badge .dot{width:.55rem; height:.55rem; border-radius:50%; background:var(--gm-muted)}
-  .badge.on .dot{background:var(--gm-green-soft)}
-
-  /* input row */
-  .inputs{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1.4rem}
-  .slot{background:var(--gm-panel); border:1px solid var(--gm-border-strong); box-shadow:var(--gm-shadow-block); padding:.7rem}
-  .slot__h{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:.5rem}
-  .slot__title{font-family:var(--serif); font-weight:700; color:var(--gm-ink); font-size:1.05rem}
-  .slot__tag{font-family:var(--mono); font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:var(--gm-muted)}
-  .stage{position:relative; width:100%; aspect-ratio:1/1; background:rgba(5,5,5,.14); overflow:hidden; display:grid; place-items:center}
-  .stage canvas{position:absolute; inset:0; width:100%; height:100%; touch-action:none}
-  .stage .hint{font-family:var(--mono); font-size:.72rem; color:var(--gm-cream); text-align:center; padding:1rem; line-height:1.5}
-  .slot__note{font-family:var(--mono); font-size:.66rem; color:var(--gm-muted); margin:.45rem 0 0; min-height:1.1em}
-  .filebtn{display:block; margin-top:.5rem}
-  .filebtn input{display:none}
-  .filebtn span{
-    display:block; text-align:center; cursor:pointer; font-family:var(--sans); font-weight:600; font-size:.85rem;
-    padding:.5rem; border:1px solid var(--gm-border-strong); background:var(--gm-cream); color:var(--gm-ink);
-  }
-  .filebtn span:hover{background:var(--gm-yellow)}
-
-  /* controls */
-  .controls{
-    display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1rem 1.4rem;
-    background:var(--gm-panel); border:1px solid var(--gm-border-strong); box-shadow:var(--gm-shadow-block);
-    padding:1rem 1.1rem; margin-bottom:1.4rem; align-items:end;
-  }
-  .ctl label{display:block; font-family:var(--mono); font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--gm-muted); margin-bottom:.35rem}
-  .ctl output{font-family:var(--mono); color:var(--gm-ink)}
-  .ctl input[type=range]{width:100%; accent-color:var(--gm-green)}
-  .ctl select{width:100%; font-family:var(--sans); padding:.35rem; border:1px solid var(--gm-border-strong); background:#fff}
-  .ctl.check{display:flex; align-items:center; gap:.5rem}
-  .ctl.check input{width:1.1rem; height:1.1rem; accent-color:var(--gm-green)}
-  .ctl.check label{margin:0; text-transform:none; letter-spacing:0; font-family:var(--sans); font-size:.85rem; color:var(--gm-text)}
-
-  .actions{display:flex; flex-wrap:wrap; gap:.8rem; align-items:center; margin-bottom:1.6rem}
-  .btn{font-family:var(--sans); font-weight:600; font-size:.95rem; padding:.7rem 1.3rem; cursor:pointer; border:2px solid var(--gm-ink); background:var(--gm-ink); color:var(--gm-cream)}
-  .btn:hover{background:transparent; color:var(--gm-ink)}
-  .btn[disabled]{opacity:.4; cursor:not-allowed}
-  .btn--ghost{background:transparent; color:var(--gm-ink)}
-  .btn--ghost:hover{background:var(--gm-ink); color:var(--gm-cream)}
-  .msg{font-family:var(--mono); font-size:.78rem; color:var(--gm-text)}
-
-  /* output */
-  .out{display:grid; grid-template-columns:1fr 300px; gap:1.2rem; align-items:start}
-  .result{background:rgba(5,5,5,.14); border:1px solid var(--gm-border-strong); box-shadow:var(--gm-shadow-block); min-height:280px; display:grid; place-items:center; overflow:hidden}
-  .result canvas{max-width:100%; height:auto; display:block}
-  .result .empty{font-family:var(--mono); font-size:.8rem; color:var(--gm-cream); padding:2rem; text-align:center}
-  .aside .panel{background:var(--gm-panel); border:1px solid var(--gm-border-strong); padding:.8rem; margin-bottom:1rem}
-  .aside h3{font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--gm-muted); margin:0 0 .5rem}
-  .aside canvas{width:100%; height:auto; background:conic-gradient(#0002 25%,#0000 0 50%,#0002 0 75%,#0000 0) 0/16px 16px; border:1px solid var(--gm-border)}
-  .aside p{font-size:.8rem; line-height:1.5; color:var(--gm-text); margin:.5rem 0 0}
-
-  footer{margin-top:2.4rem; border-top:1px solid var(--gm-border); padding-top:1rem}
-  footer p{font-size:.82rem; color:var(--gm-muted); max-width:70ch; line-height:1.55}
-  code{font-family:var(--mono); font-size:.85em; background:rgba(5,5,5,.1); padding:.05em .35em}
-
-  @media(max-width:820px){ .inputs{grid-template-columns:1fr} .out{grid-template-columns:1fr} }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Ghostyle Transfer — Ghostmaxxing</title>
+  <meta name="generator" content="Hand-coded with rage against the algorithm" />
+  <meta name="description"
+    content="Extract a Ghostyle from a before/after workshop pair and transfer it to another face locally in the browser." />
+  <meta property="og:title" content="Ghostyle Transfer - Ghostmaxxing" />
+  <meta property="og:description" content="Transfer adversarial makeup patterns between faces in a local browser lab." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/images/social-card.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ghostyle Transfer - Ghostmaxxing" />
+  <meta name="twitter:description" content="Transfer adversarial makeup patterns between faces in a local browser lab." />
+  <meta name="twitter:image" content="/images/social-card.svg" />
+  <link rel="icon" type="image/svg+xml" href="/images/ghostmaxxing-favicon.svg" />
+  <link rel="stylesheet" href="styles/pages.css" />
+  <link rel="stylesheet" href="styles/content-pages.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 </head>
+
 <body>
-<div class="shell">
-  <header>
-    <p class="kicker">Ghostmaxxing · lab · ghostyle transfer</p>
-    <h1>Lift a Ghostyle off one face, wear it on another.</h1>
-    <p class="sub">
-      Extract the paint from a workshop <em>before / after</em> pair and place it
-      on a target face — a photo, or a public-domain painting. Mark the face on
-      each image with a box. It runs entirely on this device.
-    </p>
-    <span class="badge" id="engineBadge"><span class="dot"></span><span id="engineText">Mesh engine: loading…</span></span>
-  </header>
+  <main class="editorial-homepage content-page editorial-homepage--svg-footer-band">
+    <div class="editorial-homepage__shell">
+      <header class="editorial-homepage__header">
+        <a class="wordmark" href="index.html" aria-label="Ghostmaxxing homepage" data-i18n-aria-label="homepage_wordmark_label">
+          <span class="wordmark__main">
+            <img class="wordmark__mark" src="images/ghostmaxxing-mark.svg" alt="" aria-hidden="true" />
+            <span class="wordmark__title">Ghostmaxxing</span>
+          </span>
+          <span class="wordmark__subtitle" data-i18n="homepage_subtitle">
+            A public lab for testing face-recognition camouflage
+          </span>
+        </a>
 
-  <div class="inputs">
-    <!-- BEFORE -->
-    <div class="slot">
-      <div class="slot__h"><span class="slot__title">Before</span><span class="slot__tag">bare face · optional</span></div>
-      <div class="stage" id="stage-before"><span class="hint" id="hint-before">Drop or choose the bare workshop face</span></div>
-      <p class="slot__note" id="note-before"></p>
-      <label class="filebtn"><input type="file" accept="image/*" data-slot="before"><span>Choose image</span></label>
+        <nav class="editorial-homepage__nav" aria-label="Project navigation" data-i18n-aria-label="prototype_navigation_label">
+          <a class="navlink" href="/references/" rel="noopener noreferrer" data-i18n="research_references_link">Research References</a>
+          <a class="navlink" href="about.html" data-i18n="vision_about_link">Vision &amp; About</a>
+          <a class="cta-inline" href="lab.html" data-i18n-html="open_lab_link_html">Open the lab <span aria-hidden="true">↗</span></a>
+          <span class="locale-control">
+            <span class="locale-control__flag" aria-hidden="true"></span>
+            <select id="localeSelect" class="locale-select" aria-label="Language" data-i18n-aria-label="language_label"></select>
+          </span>
+        </nav>
+      </header>
+
+      <section class="content-page__header-area" aria-labelledby="transfer-title">
+        <span class="content-page__kicker" data-i18n="transfer_kicker">Lab · Ghostyle transfer</span>
+        <h1 id="transfer-title" data-i18n="transfer_title">Lift a Ghostyle off one face, wear it on another.</h1>
+        <p class="content-page__lead" data-i18n="transfer_lead">
+          Extract the paint from a workshop before / after pair and place it on a target face.
+        </p>
+        <p class="content-page__deck" data-i18n="transfer_deck">
+          Mark the face on each image with a box. The transfer runs entirely on this device, with mesh alignment when the local face engine can detect matching landmarks.
+        </p>
+        <span class="tool-status" id="engineBadge">
+          <span class="tool-status__dot" aria-hidden="true"></span>
+          <span id="engineText" data-i18n="transfer_engine_loading">Mesh engine: loading…</span>
+        </span>
+      </section>
+
+      <section class="tool-workbench" aria-label="Ghostyle transfer workbench" data-i18n-aria-label="transfer_workbench_label">
+        <div class="tool-grid">
+          <article class="tool-card">
+            <div class="tool-card__header">
+              <span class="tool-card__title" data-i18n="transfer_before_title">Before</span>
+              <span class="tool-card__tag" data-i18n="transfer_before_tag">bare face · optional</span>
+            </div>
+            <div class="tool-stage" id="stage-before">
+              <span class="tool-stage__hint" id="hint-before" data-i18n="transfer_before_hint">Drop or choose the bare workshop face</span>
+            </div>
+            <p class="tool-note" id="note-before"></p>
+            <label class="file-picker">
+              <input type="file" accept="image/*" data-slot="before" />
+              <span data-i18n="transfer_choose_image">Choose image</span>
+            </label>
+          </article>
+
+          <article class="tool-card">
+            <div class="tool-card__header">
+              <span class="tool-card__title" data-i18n="transfer_after_title">After</span>
+              <span class="tool-card__tag" data-i18n="transfer_after_tag">painted face</span>
+            </div>
+            <div class="tool-stage" id="stage-after">
+              <span class="tool-stage__hint" id="hint-after" data-i18n="transfer_after_hint">Drop or choose the painted workshop face</span>
+            </div>
+            <p class="tool-note" id="note-after"></p>
+            <label class="file-picker">
+              <input type="file" accept="image/*" data-slot="after" />
+              <span data-i18n="transfer_choose_image">Choose image</span>
+            </label>
+          </article>
+
+          <article class="tool-card">
+            <div class="tool-card__header">
+              <span class="tool-card__title" data-i18n="transfer_target_title">Target</span>
+              <span class="tool-card__tag" data-i18n="transfer_target_tag">receives the paint</span>
+            </div>
+            <div class="tool-stage" id="stage-target">
+              <span class="tool-stage__hint" id="hint-target" data-i18n="transfer_target_hint">Drop or choose the target face / painting</span>
+            </div>
+            <p class="tool-note" id="note-target"></p>
+            <label class="file-picker">
+              <input type="file" accept="image/*" data-slot="target" />
+              <span data-i18n="transfer_choose_image">Choose image</span>
+            </label>
+          </article>
+        </div>
+
+        <div class="tool-controls">
+          <div class="tool-field">
+            <label class="tool-label" for="thr"><span data-i18n="transfer_sensitivity_label">Paint sensitivity</span> <output id="v-thr">28</output></label>
+            <input type="range" id="thr" min="6" max="90" value="28" />
+          </div>
+          <div class="tool-field">
+            <label class="tool-label" for="fth"><span data-i18n="transfer_feather_label">Edge feather</span> <output id="v-fth">3</output></label>
+            <input type="range" id="fth" min="0" max="12" value="3" />
+          </div>
+          <div class="tool-field">
+            <label class="tool-label" for="op"><span data-i18n="transfer_opacity_label">Opacity</span> <output id="v-op">92</output>%</label>
+            <input type="range" id="op" min="20" max="100" value="92" />
+          </div>
+          <div class="tool-field">
+            <label class="tool-label" for="blend" data-i18n="transfer_blend_label">Blend</label>
+            <select id="blend">
+              <option value="multiply" selected data-i18n="transfer_blend_multiply">Multiply (paints onto)</option>
+              <option value="source-over" data-i18n="transfer_blend_normal">Normal</option>
+              <option value="soft-light" data-i18n="transfer_blend_soft_light">Soft light</option>
+            </select>
+          </div>
+          <div class="tool-field tool-field--check">
+            <input type="checkbox" id="useMesh" checked />
+            <label for="useMesh" data-i18n="transfer_use_mesh_label">Follow features (mesh)</label>
+          </div>
+        </div>
+
+        <div class="tool-actions">
+          <button class="btn-primary" id="run" disabled data-i18n="transfer_run_button">Transfer Ghostyle</button>
+          <button class="link-secondary" id="download" disabled data-i18n="transfer_download_button">Download result</button>
+          <button class="link-secondary" id="reset" data-i18n="transfer_reset_button">Reset</button>
+          <span class="tool-message" id="msg" data-i18n="transfer_msg_load_after_target">Load an after and a target, then draw a box on each face.</span>
+        </div>
+
+        <div class="tool-output">
+          <div class="tool-result" id="result">
+            <span class="tool-result__empty" data-i18n="transfer_result_empty">The transferred result will appear here.</span>
+          </div>
+          <aside class="tool-aside">
+            <section class="tool-panel">
+              <h2 data-i18n="transfer_matte_title">Extracted paint</h2>
+              <canvas id="matte" width="180" height="180"></canvas>
+              <p id="matteNote" data-i18n="transfer_matte_note">The isolated Ghostyle, in a normalized face frame.</p>
+            </section>
+            <section class="tool-panel">
+              <h2 data-i18n="transfer_mode_title">Mode</h2>
+              <p id="modeNote" data-i18n="transfer_mode_not_run">Not run yet.</p>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <footer class="tool-disclaimer">
+        <p data-i18n="transfer_disclaimer">
+          Ghostmaxxing is a research and education tool. Transferring a Ghostyle onto a face is a visualization; it is not evidence that the pattern affects any recognition system. Face detectors are unreliable on stylized artwork. If the mesh cannot find a target face, the tool uses the box you drew.
+        </p>
+      </footer>
     </div>
-    <!-- AFTER -->
-    <div class="slot">
-      <div class="slot__h"><span class="slot__title">After</span><span class="slot__tag">painted face</span></div>
-      <div class="stage" id="stage-after"><span class="hint" id="hint-after">Drop or choose the painted workshop face</span></div>
-      <p class="slot__note" id="note-after"></p>
-      <label class="filebtn"><input type="file" accept="image/*" data-slot="after"><span>Choose image</span></label>
-    </div>
-    <!-- TARGET -->
-    <div class="slot">
-      <div class="slot__h"><span class="slot__title">Target</span><span class="slot__tag">receives the paint</span></div>
-      <div class="stage" id="stage-target"><span class="hint" id="hint-target">Drop or choose the target face / painting</span></div>
-      <p class="slot__note" id="note-target"></p>
-      <label class="filebtn"><input type="file" accept="image/*" data-slot="target"><span>Choose image</span></label>
-    </div>
-  </div>
+  </main>
 
-  <div class="controls">
-    <div class="ctl"><label>Paint sensitivity <output id="v-thr">28</output></label>
-      <input type="range" id="thr" min="6" max="90" value="28"></div>
-    <div class="ctl"><label>Edge feather <output id="v-fth">3</output></label>
-      <input type="range" id="fth" min="0" max="12" value="3"></div>
-    <div class="ctl"><label>Opacity <output id="v-op">92</output>%</label>
-      <input type="range" id="op" min="20" max="100" value="92"></div>
-    <div class="ctl"><label>Blend</label>
-      <select id="blend">
-        <option value="multiply" selected>Multiply (paints onto)</option>
-        <option value="source-over">Normal</option>
-        <option value="soft-light">Soft light</option>
-      </select></div>
-    <div class="ctl check"><input type="checkbox" id="useMesh" checked><label for="useMesh">Follow features (mesh)</label></div>
-  </div>
-
-  <div class="actions">
-    <button class="btn" id="run" disabled>Transfer Ghostyle</button>
-    <button class="btn btn--ghost" id="download" disabled>Download result</button>
-    <button class="btn btn--ghost" id="reset">Reset</button>
-    <span class="msg" id="msg">Load an <b>after</b> and a <b>target</b>, then draw a box on each face.</span>
-  </div>
-
-  <div class="out">
-    <div class="result" id="result"><span class="empty">The transferred result will appear here.</span></div>
-    <div class="aside">
-      <div class="panel">
-        <h3>Extracted paint</h3>
-        <canvas id="matte" width="180" height="180"></canvas>
-        <p id="matteNote">The isolated Ghostyle, in a normalized face frame.</p>
-      </div>
-      <div class="panel">
-        <h3>Mode</h3>
-        <p id="modeNote">Not run yet.</p>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    <p>
-      Ghostmaxxing is a research and education tool. Transferring a Ghostyle onto
-      a face is a visualization; it is not evidence that the pattern affects any
-      recognition system. Face detectors are unreliable on stylized artwork — if
-      the mesh can’t find a target face, the tool uses the box you drew. Source
-      public-domain paintings from Wikimedia Commons or museum open-access
-      (Met CC0, Rijksstudio, Art Institute of Chicago, Getty Open Content).
-    </p>
-  </footer>
-</div>
-
-<script>
-"use strict";
-(function(){
-  const CANON = 512;                 // normalized face-frame size
-  const RESULT_MAX = 900;            // cap result long edge for perf/crispness
-  const slots = {
-    before:{img:null, box:null, scale:1, dispW:0, dispH:0},
-    after :{img:null, box:null, scale:1, dispW:0, dispH:0},
-    target:{img:null, box:null, scale:1, dispW:0, dispH:0}
-  };
-  let faceapiReady = false;
-  let lastResultCanvas = null;
-  const $ = id => document.getElementById(id);
-
-  /* ---------- face-api (best-effort) ---------- */
-  async function initFaceapi(){
-    const badge = $('engineBadge'), text = $('engineText');
-    if(typeof faceapi === 'undefined'){ text.textContent = 'Mesh engine: unavailable — box mode only'; return; }
-    try{
-      const M = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
-      await faceapi.nets.tinyFaceDetector.loadFromUri(M);
-      await faceapi.nets.faceLandmark68Net.loadFromUri(M);
-      faceapiReady = true;
-      badge.classList.add('on'); text.textContent = 'Mesh engine: ready (face-api 68pt)';
-    }catch(e){
-      text.textContent = 'Mesh engine: models failed — box mode only';
-      console.warn('face-api load failed:', e);
-    }
-  }
-
-  /* ---------- slot rendering + box drawing ---------- */
-  function fitPreview(name){
-    const s = slots[name], stage = $('stage-'+name);
-    stage.querySelectorAll('canvas').forEach(c=>c.remove());
-    const hint = $('hint-'+name); if(hint) hint.style.display = s.img ? 'none' : '';
-    if(!s.img) return;
-    const rect = stage.getBoundingClientRect();
-    const W = rect.width, H = rect.height;                       // square stage
-    const ar = s.img.width / s.img.height;
-    let dw = W, dh = W/ar; if(dh>H){ dh=H; dw=H*ar; }
-    s.dispW=dw; s.dispH=dh; s.scale = s.img.width/dw;            // img px per disp px
-    const cv = document.createElement('canvas');
-    cv.width = Math.round(dw); cv.height = Math.round(dh);
-    cv.style.width = dw+'px'; cv.style.height = dh+'px';
-    cv.style.left = ((W-dw)/2)+'px'; cv.style.top = ((H-dh)/2)+'px'; cv.style.inset='auto';
-    stage.appendChild(cv);
-    redrawSlot(name, cv);
-    attachBoxDrawing(name, cv);
-  }
-  function redrawSlot(name, cv){
-    const s = slots[name]; const ctx = cv.getContext('2d');
-    ctx.clearRect(0,0,cv.width,cv.height);
-    ctx.drawImage(s.img, 0,0, cv.width, cv.height);
-    if(s.box){
-      const b=s.box, sc=1/s.scale;
-      ctx.lineWidth=2; ctx.strokeStyle='#f3c747';
-      ctx.strokeRect(b.x*sc, b.y*sc, b.w*sc, b.h*sc);
-      // corner ticks
-      ctx.strokeStyle='#ffe7a8'; ctx.lineWidth=3;
-      const t=10, X=b.x*sc, Y=b.y*sc, Wd=b.w*sc, Hd=b.h*sc;
-      ctx.beginPath();
-      ctx.moveTo(X,Y+t); ctx.lineTo(X,Y); ctx.lineTo(X+t,Y);
-      ctx.moveTo(X+Wd-t,Y); ctx.lineTo(X+Wd,Y); ctx.lineTo(X+Wd,Y+t);
-      ctx.moveTo(X,Y+Hd-t); ctx.lineTo(X,Y+Hd); ctx.lineTo(X+t,Y+Hd);
-      ctx.moveTo(X+Wd-t,Y+Hd); ctx.lineTo(X+Wd,Y+Hd); ctx.lineTo(X+Wd,Y+Hd-t);
-      ctx.stroke();
-    }
-  }
-  function attachBoxDrawing(name, cv){
-    const s = slots[name];
-    let drawing=false, sx=0, sy=0;
-    const toImg = (e)=>{ const r=cv.getBoundingClientRect();
-      return {x:(e.clientX-r.left)*s.scale, y:(e.clientY-r.top)*s.scale}; };
-    cv.addEventListener('pointerdown', e=>{ drawing=true; cv.setPointerCapture(e.pointerId);
-      const p=toImg(e); sx=p.x; sy=p.y; s.box={x:sx,y:sy,w:0,h:0}; });
-    cv.addEventListener('pointermove', e=>{ if(!drawing) return; const p=toImg(e);
-      s.box={ x:Math.min(sx,p.x), y:Math.min(sy,p.y), w:Math.abs(p.x-sx), h:Math.abs(p.y-sy) };
-      redrawSlot(name, cv); });
-    const end = ()=>{ if(!drawing) return; drawing=false;
-      if(s.box && (s.box.w<8||s.box.h<8)) s.box=null;               // ignore taps
-      redrawSlot(name, cv); refreshState(name); };
-    cv.addEventListener('pointerup', end);
-    cv.addEventListener('pointercancel', end);
-  }
-  function refreshState(changed){
-    if(changed){ const s=slots[changed];
-      $('note-'+changed).textContent = s.box ? 'face box set ✓' : (s.img ? 'draw a box over the face' : ''); }
-    const ready = slots.after.img && slots.after.box && slots.target.img && slots.target.box;
-    $('run').disabled = !ready;
-    $('msg').innerHTML = ready ? 'Ready. Press <b>Transfer Ghostyle</b>.'
-      : 'Load an <b>after</b> and a <b>target</b>, then draw a box on each face.';
-  }
-
-  /* ---------- image loading ---------- */
-  function loadFile(name, file){
-    const url = URL.createObjectURL(file);
-    return loadURL(name, url);
-  }
-  function loadURL(name, url){
-    return new Promise((res,rej)=>{
-      const im = new Image(); im.crossOrigin='anonymous';
-      im.onload=()=>{ slots[name].img=im; slots[name].box=null; fitPreview(name); refreshState(name); res(im); };
-      im.onerror=rej; im.src=url;
-    });
-  }
-
-  /* ---------- paint extraction ---------- */
-  function boxToCanon(name){
-    // draw the slot's face box into a CANON x CANON canvas
-    const s=slots[name], b=s.box;
-    const c=document.createElement('canvas'); c.width=CANON; c.height=CANON;
-    c.getContext('2d').drawImage(s.img, b.x,b.y,b.w,b.h, 0,0,CANON,CANON);
-    return c;
-  }
-  function extractMatte(threshold, feather){
-    const afterCanon = boxToCanon('after');
-    const aCtx = afterCanon.getContext('2d');
-    const aData = aCtx.getImageData(0,0,CANON,CANON);
-    let refData=null;
-    if(slots.before.img && slots.before.box){
-      refData = boxToCanon('before').getContext('2d').getImageData(0,0,CANON,CANON);
-    }
-    const median = refData ? null : medianColor(aData);         // fallback reference
-    const N = CANON*CANON;
-    const out = new ImageData(CANON,CANON);
-    const alpha = new Float32Array(N);
-    for(let i=0;i<N;i++){
-      const p=i*4;
-      const ar=aData.data[p], ag=aData.data[p+1], ab=aData.data[p+2];
-      let rr,rg,rb;
-      if(refData){ rr=refData.data[p]; rg=refData.data[p+1]; rb=refData.data[p+2]; }
-      else { rr=median[0]; rg=median[1]; rb=median[2]; }
-      const d = Math.sqrt((ar-rr)**2+(ag-rg)**2+(ab-rb)**2);     // simple RGB distance
-      let a = (d-threshold)/threshold;                           // ramp above threshold
-      a = a<0?0:(a>1?1:a);
-      alpha[i]=a;
-      out.data[p]=ar; out.data[p+1]=ag; out.data[p+2]=ab;        // keep after's colors
-    }
-    if(feather>0) boxBlur(alpha, CANON, CANON, feather);
-    for(let i=0;i<N;i++) out.data[i*4+3]=Math.round(alpha[i]*255);
-    const mc=document.createElement('canvas'); mc.width=CANON; mc.height=CANON;
-    mc.getContext('2d').putImageData(out,0,0);
-    return mc;
-  }
-  function medianColor(imgData){
-    // coarse average of the frame as a stand-in skin reference
-    let r=0,g=0,b=0,n=0; const d=imgData.data;
-    for(let i=0;i<d.length;i+=4*29){ r+=d[i]; g+=d[i+1]; b+=d[i+2]; n++; }
-    return [r/n,g/n,b/n];
-  }
-  function boxBlur(a, w, h, radius){
-    radius=Math.round(radius);
-    const tmp=new Float32Array(a.length);
-    for(let pass=0;pass<2;pass++){
-      // horizontal
-      for(let y=0;y<h;y++){ let sum=0; const row=y*w;
-        for(let x=-radius;x<=radius;x++) sum+=a[row+clamp(x,0,w-1)];
-        for(let x=0;x<w;x++){ tmp[row+x]=sum/(2*radius+1);
-          sum+=a[row+clamp(x+radius+1,0,w-1)]-a[row+clamp(x-radius,0,w-1)]; } }
-      // vertical
-      for(let x=0;x<w;x++){ let sum=0;
-        for(let y=-radius;y<=radius;y++) sum+=tmp[clamp(y,0,h-1)*w+x];
-        for(let y=0;y<h;y++){ a[y*w+x]=sum/(2*radius+1);
-          sum+=tmp[clamp(y+radius+1,0,h-1)*w+x]-tmp[clamp(y-radius,0,h-1)*w+x]; } }
-    }
-  }
-  const clamp=(v,lo,hi)=>v<lo?lo:(v>hi?hi:v);
-
-  /* ---------- landmark detection ---------- */
-  async function detectLandmarks(name){
-    if(!faceapiReady) return null;
-    const s=slots[name], b=s.box;
-    // crop to the box (+margin) so detection works on tight faces / paintings
-    const m=0.25, cx=b.x-b.w*m, cy=b.y-b.h*m, cw=b.w*(1+2*m), ch=b.h*(1+2*m);
-    const crop=document.createElement('canvas'); crop.width=Math.round(cw); crop.height=Math.round(ch);
-    crop.getContext('2d').drawImage(s.img, cx,cy,cw,ch, 0,0,crop.width,crop.height);
-    const det = await faceapi
-      .detectSingleFace(crop, new faceapi.TinyFaceDetectorOptions({inputSize:416, scoreThreshold:0.2}))
-      .withFaceLandmarks();
-    if(!det) return null;
-    return det.landmarks.positions.map(pt=>({ x:cx+pt.x, y:cy+pt.y }));  // back to image coords
-  }
-  function landmarksToCanon(pts, box){
-    return pts.map(p=>({ x:(p.x-box.x)/box.w*CANON, y:(p.y-box.y)/box.h*CANON }));
-  }
-
-  /* ---------- Delaunay (Bowyer–Watson) ---------- */
-  function triangulate(pts){
-    const n=pts.length; if(n<3) return [];
-    let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
-    for(const p of pts){ minX=Math.min(minX,p.x); minY=Math.min(minY,p.y); maxX=Math.max(maxX,p.x); maxY=Math.max(maxY,p.y); }
-    const dx=maxX-minX||1, dy=maxY-minY||1, dmax=Math.max(dx,dy), mx=(minX+maxX)/2, my=(minY+maxY)/2;
-    const P=pts.map(p=>({x:p.x,y:p.y}));
-    P.push({x:mx-20*dmax,y:my-dmax}); P.push({x:mx,y:my+20*dmax}); P.push({x:mx+20*dmax,y:my-dmax});
-    const s0=n, s1=n+1, s2=n+2;
-    let tris=[[s0,s1,s2]];
-    function circum(a,b,c){
-      const ax=P[a].x,ay=P[a].y,bx=P[b].x,by=P[b].y,cx=P[c].x,cy=P[c].y;
-      const d=2*(ax*(by-cy)+bx*(cy-ay)+cx*(ay-by));
-      if(Math.abs(d)<1e-9) return null;
-      const ux=((ax*ax+ay*ay)*(by-cy)+(bx*bx+by*by)*(cy-ay)+(cx*cx+cy*cy)*(ay-by))/d;
-      const uy=((ax*ax+ay*ay)*(cx-bx)+(bx*bx+by*by)*(ax-cx)+(cx*cx+cy*cy)*(bx-ax))/d;
-      const r2=(ax-ux)**2+(ay-uy)**2; return {x:ux,y:uy,r2};
-    }
-    for(let i=0;i<n;i++){
-      const bad=[];
-      for(const t of tris){ const c=circum(t[0],t[1],t[2]);
-        if(c && ((P[i].x-c.x)**2+(P[i].y-c.y)**2)<=c.r2*(1+1e-9)) bad.push(t); }
-      const edges=[];
-      for(const t of bad){ const e=[[t[0],t[1]],[t[1],t[2]],[t[2],t[0]]];
-        for(const ed of e){ let shared=false;
-          for(const t2 of bad){ if(t2===t) continue;
-            const has=(a,b)=>[[t2[0],t2[1]],[t2[1],t2[2]],[t2[2],t2[0]]].some(f=>(f[0]===a&&f[1]===b)||(f[0]===b&&f[1]===a));
-            if(has(ed[0],ed[1])){shared=true;break;} }
-          if(!shared) edges.push(ed); } }
-      tris=tris.filter(t=>!bad.includes(t));
-      for(const ed of edges) tris.push([ed[0],ed[1],i]);
-    }
-    return tris.filter(t=>t[0]<n&&t[1]<n&&t[2]<n);
-  }
-
-  /* ---------- per-triangle affine warp ---------- */
-  function warpTriangle(ctx, src, s0,s1,s2, d0,d1,d2){
-    ctx.save();
-    ctx.beginPath(); ctx.moveTo(d0.x,d0.y); ctx.lineTo(d1.x,d1.y); ctx.lineTo(d2.x,d2.y); ctx.closePath();
-    ctx.clip();
-    // affine mapping src triangle -> dst triangle
-    const denom=(s1.x-s0.x)*(s2.y-s0.y)-(s2.x-s0.x)*(s1.y-s0.y);
-    if(Math.abs(denom)<1e-6){ ctx.restore(); return; }
-    const a=((d1.x-d0.x)*(s2.y-s0.y)-(d2.x-d0.x)*(s1.y-s0.y))/denom;
-    const b=((d2.x-d0.x)*(s1.x-s0.x)-(d1.x-d0.x)*(s2.x-s0.x))/denom;
-    const c=((d1.y-d0.y)*(s2.y-s0.y)-(d2.y-d0.y)*(s1.y-s0.y))/denom;
-    const d=((d2.y-d0.y)*(s1.x-s0.x)-(d1.y-d0.y)*(s2.x-s0.x))/denom;
-    const e=d0.x-a*s0.x-b*s0.y;
-    const f=d0.y-c*s0.x-d*s0.y;
-    ctx.setTransform(a,c,b,d,e,f);
-    ctx.drawImage(src,0,0);
-    ctx.restore();
-  }
-
-  /* ---------- main transfer ---------- */
-  async function transfer(){
-    const P = readParams();
-    setMsg('Extracting paint…');
-    const matte = extractMatte(P.threshold, P.feather);
-    drawMattePreview(matte);
-
-    // result = target, capped
-    const t=slots.target;
-    let rw=t.img.width, rh=t.img.height; const long=Math.max(rw,rh);
-    if(long>RESULT_MAX){ const k=RESULT_MAX/long; rw=Math.round(rw*k); rh=Math.round(rh*k); }
-    const result=document.createElement('canvas'); result.width=rw; result.height=rh;
-    const rctx=result.getContext('2d');
-    rctx.drawImage(t.img,0,0,rw,rh);
-    const kx=rw/t.img.width, ky=rh/t.img.height;
-
-    let mode='box';
-    if(P.useMesh && faceapiReady){
-      setMsg('Detecting landmarks…');
-      const [la, lt] = await Promise.all([detectLandmarks('after'), detectLandmarks('target')]);
-      if(la && lt){
-        const srcPts = landmarksToCanon(la, slots.after.box);           // in CANON space
-        const dstPts = lt.map(p=>({x:p.x*kx, y:p.y*ky}));               // in result space
-        const tris = triangulate(srcPts);
-        rctx.globalCompositeOperation = P.blend;
-        rctx.globalAlpha = P.opacity;
-        for(const tr of tris){
-          warpTriangle(rctx, matte, srcPts[tr[0]],srcPts[tr[1]],srcPts[tr[2]],
-                                    dstPts[tr[0]],dstPts[tr[1]],dstPts[tr[2]]);
-        }
-        rctx.setTransform(1,0,0,1,0,0); rctx.globalAlpha=1; rctx.globalCompositeOperation='source-over';
-        mode='mesh ('+tris.length+' triangles)';
-      }
-    }
-    if(mode==='box'){
-      const b=slots.target.box;
-      rctx.globalCompositeOperation=P.blend; rctx.globalAlpha=P.opacity;
-      rctx.drawImage(matte, b.x*kx, b.y*ky, b.w*kx, b.h*ky);
-      rctx.globalAlpha=1; rctx.globalCompositeOperation='source-over';
-      if(P.useMesh && faceapiReady) mode='box (no face detected — drew into box)';
-      else if(P.useMesh) mode='box (mesh engine unavailable)';
-    }
-
-    // show
-    const holder=$('result'); holder.innerHTML=''; holder.appendChild(result);
-    lastResultCanvas=result; $('download').disabled=false;
-    $('modeNote').textContent='Placed using: '+mode;
-    setMsg('Done.');
-    return mode;
-  }
-
-  function readParams(){
-    return {
-      threshold:+$('thr').value, feather:+$('fth').value,
-      opacity:+$('op').value/100, blend:$('blend').value, useMesh:$('useMesh').checked
-    };
-  }
-  function drawMattePreview(mc){
-    const pv=$('matte'); pv.width=180; pv.height=180;
-    const x=pv.getContext('2d'); x.clearRect(0,0,180,180); x.drawImage(mc,0,0,180,180);
-  }
-  function setMsg(t){ $('msg').textContent=t; }
-
-  /* ---------- wiring ---------- */
-  document.querySelectorAll('input[type=file]').forEach(inp=>{
-    inp.addEventListener('change', e=>{ const f=e.target.files[0]; if(f) loadFile(inp.dataset.slot, f); });
-  });
-  ['before','after','target'].forEach(name=>{
-    const st=$('stage-'+name);
-    st.addEventListener('dragover', e=>{ e.preventDefault(); });
-    st.addEventListener('drop', e=>{ e.preventDefault(); const f=e.dataTransfer.files[0]; if(f) loadFile(name,f); });
-  });
-  $('thr').addEventListener('input', e=>$('v-thr').textContent=e.target.value);
-  $('fth').addEventListener('input', e=>$('v-fth').textContent=e.target.value);
-  $('op').addEventListener('input', e=>$('v-op').textContent=e.target.value);
-  $('run').addEventListener('click', ()=>{ $('run').disabled=true; transfer().catch(err=>{console.error(err); setMsg('Error: '+err.message);}).finally(()=>refreshState()); });
-  $('download').addEventListener('click', ()=>{
-    if(!lastResultCanvas) return;
-    lastResultCanvas.toBlob(b=>{ const a=document.createElement('a');
-      a.href=URL.createObjectURL(b); a.download='ghostyle-transfer.png'; a.click(); });
-  });
-  $('reset').addEventListener('click', ()=>{
-    for(const k in slots){ slots[k].img=null; slots[k].box=null; fitPreview(k); $('note-'+k).textContent=''; }
-    $('result').innerHTML='<span class="empty">The transferred result will appear here.</span>';
-    $('matte').getContext('2d').clearRect(0,0,180,180); $('modeNote').textContent='Not run yet.';
-    lastResultCanvas=null; $('download').disabled=true; refreshState();
-  });
-  window.addEventListener('resize', ()=>['before','after','target'].forEach(fitPreview));
-
-  initFaceapi();
-
-  /* ---------- test API (used only by automated checks) ---------- */
-  window.GT = {
-    load:(name,url)=>loadURL(name,url),
-    setBox:(name,box)=>{ slots[name].box=box; fitPreview(name); refreshState(name); },
-    setParams:(o)=>{ if(o.threshold!=null){$('thr').value=o.threshold;$('v-thr').textContent=o.threshold;}
-      if(o.feather!=null){$('fth').value=o.feather;$('v-fth').textContent=o.feather;}
-      if(o.opacity!=null){$('op').value=o.opacity;$('v-op').textContent=o.opacity;}
-      if(o.blend!=null)$('blend').value=o.blend;
-      if(o.useMesh!=null)$('useMesh').checked=o.useMesh; },
-    transfer:()=>transfer(),
-    resultDataURL:()=>lastResultCanvas?lastResultCanvas.toDataURL():null,
-    _internal:{triangulate, warpTriangle, extractMatte, slots}
-  };
-})();
-</script>
+  <script type="module" src="scripts/transfer.js"></script>
 </body>
+
 </html>
