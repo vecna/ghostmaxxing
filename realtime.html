@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ghostmaxxing | Latent Space Visualizer</title>
+  <meta
+    name="description"
+    content="Real-time visual debugger for face descriptor drift, equalizer deltas, and biometric distance thresholds."
+  />
+  <link rel="icon" type="image/svg+xml" href="/images/ghostmaxxing-favicon.svg" />
+  <link rel="stylesheet" href="styles/realtime.css" />
+</head>
+
+<body>
+  <main id="ui-layer" aria-label="Latent space visualizer">
+    <section id="graph-container" aria-label="Global descriptor distance graph">
+      <header class="panel-header">
+        <p class="panel-title">Distance</p>
+        <p class="panel-value"><span id="distance-value">0.000</span></p>
+      </header>
+      <canvas id="distance-graph" width="220" height="760" aria-label="Distance history"></canvas>
+      <p class="panel-note">Threshold: 0.6</p>
+    </section>
+
+    <section id="center-view" aria-label="Webcam and calibration controls">
+      <video id="webcam" autoplay muted playsinline></video>
+      <div class="video-scrim"></div>
+      <div id="status-pill" aria-live="polite">Loading models...</div>
+      <div id="calibration-ui">
+        <div id="countdown-circle" aria-live="assertive">3</div>
+        <button id="btn-reset" type="button">Set Baseline</button>
+      </div>
+    </section>
+
+    <section id="embedding-panel" aria-label="128-dimensional descriptor equalizer">
+      <header class="panel-header">
+        <p class="panel-title">Descriptor Delta</p>
+        <p class="panel-value"><span id="tracking-state">CALIBRATING</span></p>
+      </header>
+      <div id="embedding-bar" aria-label="128 descriptor rows"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+  <script type="module" src="scripts/realtime.js"></script>
+</body>
+
+</html>
