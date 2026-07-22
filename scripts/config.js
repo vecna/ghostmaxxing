@@ -110,18 +110,22 @@ export const DETECTOR_OPTIONS = new faceapi.TinyFaceDetectorOptions({
  * @see scripts/camera.js – `recordOneSecond()` reads `mode`, `uploadEndpoint`, `durationMs`.
  */
 export const RECORDING_CONFIG = {
-   // Mode of operation: 'download' (triggers direct browser download) or
-   // 'upload' (POSTs to uploadEndpoint).
-   mode: 'download',
+   // Mode of operation: 'queue' keeps the recorded Blob in the browser so the
+   // upload/consent flow can decide whether it ever leaves the device.
+   mode: 'queue',
 
-   // Endpoint used in 'upload' mode.
+   // Endpoint used by the consented submit action.
    // Expected backend contract:
    //   - Method:        POST
    //   - Content-Type:  multipart/form-data
    //   - Payload field: 'video' (the recording blob)
-   //   - Response:      any 2xx status counts as success; anything else is an error.
-   uploadEndpoint: 'http://localhost:3000/upload',
+   //   - Required field: 'consent_version'
+   //   - Response:      { ok, uploadId, deleteToken }
+   uploadEndpoint: '/api/uploads',
 
    // Duration of the recording in milliseconds (default: 2 seconds).
    durationMs: 2000
 };
+
+export const UPLOAD_CONSENT_VERSION = '2026-07-v1';
+export const APP_VERSION = '0.1.0';

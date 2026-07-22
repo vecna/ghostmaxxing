@@ -175,7 +175,34 @@
     <h1 data-i18n="upload_report_title">Upload &amp; report</h1>
     <p data-i18n="upload_report_description">Send a recorded clip or evidence of a real-world deployment. Goes over the internet — share only what's safe for you.</p>
     <div class="cardlist">
-      <div class="card"><h3 data-i18n="share_clip_title">Share a clip</h3><p id="gm-upload-count" data-i18n="no_clips_recorded">No clips recorded yet.</p></div>
+      <div class="card upload-card">
+        <h3 data-i18n="share_clip_title">Share a clip</h3>
+        <p id="gm-upload-count" data-i18n="no_clips_recorded">No clips recorded yet.</p>
+        <p id="gm-upload-empty" class="upload-empty" data-i18n="upload_record_first_help">Record a short painted-face clip from the rail, then review it here before consenting to upload.</p>
+        <div id="gm-upload-current" hidden>
+          <video id="gm-upload-preview" class="upload-preview" controls playsinline preload="metadata"></video>
+          <div id="gm-upload-clip-meta" class="upload-meta"></div>
+          <div id="gm-upload-clip-list" class="upload-chiplist" aria-label="Recorded clips" data-i18n-aria-label="upload_clip_list_label"></div>
+          <label class="upload-field">
+            <span data-i18n="upload_note_label">Note for moderators</span>
+            <textarea id="gm-upload-note" rows="3" maxlength="500" data-i18n-placeholder="upload_note_placeholder" placeholder="What is this clip showing?"></textarea>
+          </label>
+          <label class="consent-check">
+            <input id="gm-upload-consent" type="checkbox" />
+            <span data-i18n="upload_consent_copy">I consent to send this painted-face clip to the Ghostmaxxing server for storage, human moderation, possible public web/feed/ActivityPub publication after approval, and deletion by private receipt token.</span>
+          </label>
+          <div class="upload-actions">
+            <button id="gm-upload-submit" class="secondary-btn" type="button" disabled data-i18n="upload_submit_button">Submit to moderation</button>
+            <button id="gm-upload-discard" class="secondary-btn" type="button" data-i18n="upload_discard_button">Discard clip</button>
+          </div>
+        </div>
+        <p id="gm-upload-status" class="upload-status" aria-live="polite"></p>
+      </div>
+      <div class="card">
+        <h3 data-i18n="receipt_log_title">Receipt log</h3>
+        <p data-i18n="receipt_log_description">Private receipts from this browser. Keep them to reach the future public URL and revoke the upload with the delete token.</p>
+        <div id="gm-receipt-log" class="receipt-log"></div>
+      </div>
       <div class="card"><h3 data-i18n="report_deployment_title">Report a deployment</h3><p data-i18n="report_deployment_description">Where face recognition appears in public space, who runs it, what it looks like.</p></div>
     </div>
   </section>

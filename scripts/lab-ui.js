@@ -23,6 +23,7 @@ import { state } from './state.js';
 // INTEGRATION: export name confirmed in bbox-overlay.js (setOverlayMode).
 import { setOverlayMode } from './bbox-overlay.js';
 import { applyI18n, t } from './i18n.js';
+import { initUploadConsentFlow } from './upload-consent.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -131,17 +132,21 @@ on($('#gm-thr-input'), 'input', e => {
 });
 
 /* ---- Record -> upload gating -------------------------------------------- */
-// INTEGRATION: we optimistically count a recording per #recordBtn click. If the
-// engine emits an event when a clip is actually saved, listen for that instead.
 on($('#recordBtn'), 'click', () => {
   if (els.recdot) { els.recdot.classList.add('on'); setTimeout(() => els.recdot.classList.remove('on'), reduce ? 200 : 1600); }
-  setTimeout(() => { ui.recordings++; refreshUploadGate(); }, reduce ? 250 : 1700);
 });
+if (bus) {
+  bus.addEventListener('uploadQueueChanged', (event) => {
+    ui.recordings = Number(event.detail && event.detail.count) || 0;
+    refreshUploadGate();
+  });
+}
 function refreshUploadGate() {
   if (els.uploadBadge) { els.uploadBadge.hidden = ui.recordings === 0; els.uploadBadge.textContent = ui.recordings; }
   if (els.uploadNav) els.uploadNav.setAttribute('aria-disabled', ui.recordings === 0 ? 'true' : 'false');
   if (els.uploadCount) els.uploadCount.textContent = ui.recordings ? t('clips_ready_to_send', { count: ui.recordings }) : t('no_clips_recorded');
 }
+initUploadConsentFlow();
 
 /* ---- Pinned Ghostyles on the rail --------------------------------------- */
 async function resolvePins() {
