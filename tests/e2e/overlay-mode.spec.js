@@ -12,7 +12,57 @@ test.describe('Ghostmaxxing Overlay Mode E2E', () => {
   test('switches the lab view tabs, stores overlay mode, renders 2D/3D overlays, and suppresses after save', async ({ page }) => {
     test.setTimeout(90000);
 
+    // Stub face-api.js CDN so models load instantly without a real network request.
+    // The script sets window.faceapi before any module scripts run (it is a blocking
+    // <script>, so the modules that reference `faceapi` at eval time find it ready).
+    await page.route('https://cdn.jsdelivr.net/npm/@vladmandic/**', route => route.fulfill({
+      status: 200,
+      contentType: 'text/javascript',
+      body: `
+        window.faceapi = {
+          nets: {
+            tinyFaceDetector:  { loadFromUri: () => Promise.resolve() },
+            faceLandmark68Net:  { loadFromUri: () => Promise.resolve() },
+            faceRecognitionNet: { loadFromUri: () => Promise.resolve() },
+            ageGenderNet:       { loadFromUri: () => Promise.resolve() },
+            faceExpressionNet:  { loadFromUri: () => Promise.resolve() },
+          },
+          resizeResults: (result, _dims) => result,
+          TinyFaceDetectorOptions: class { constructor(o) { Object.assign(this, o || {}); } },
+        };
+      `,
+    }));
+
+    // Stub the MediaPipe CDN.  mediapipe-loop.js has a static import from this URL,
+    // which would otherwise block ALL ES-module evaluation until the CDN responds
+    // (~40-80 s in CI), consuming nearly the entire 90 s test budget before the
+    // first tab click.  The stub exports the two symbols that are imported; both
+    // createFromOptions() calls throw, which the callers catch and handle gracefully.
+    await page.route('https://cdn.jsdelivr.net/npm/@mediapipe/**', route => route.fulfill({
+      status: 200,
+      contentType: 'text/javascript',
+      body: `
+        export class FilesetResolver {
+          static async forVisionTasks() { return {}; }
+        }
+        export class FaceLandmarker {
+          static FACE_LANDMARKS_TESSELATION = null;
+          static FACE_LANDMARKS_RIGHT_EYE   = null;
+          static FACE_LANDMARKS_LEFT_EYE    = null;
+          static FACE_LANDMARKS_FACE_OVAL   = null;
+          static async createFromOptions() { throw new Error('MediaPipe not available in CI'); }
+        }
+        export class ImageEmbedder {
+          static async createFromOptions() { throw new Error('ImageEmbedder not available in CI'); }
+        }
+      `,
+    }));
+
     await page.addInitScript(() => {
+      // Flag set when the engine fires ghostatiReady (after models + camera init).
+      window.__ghostatiReadyFired = false;
+      window.addEventListener('ghostatiReady', () => { window.__ghostatiReadyFired = true; });
+
       window.__captureBboxOverlay = false;
       window.__bboxOverlayCounters = { strokeRect: 0, arc: 0, clearRect: 0, fillText: 0 };
       window.__resetBboxOverlayCounters = () => {
@@ -48,8 +98,11 @@ test.describe('Ghostmaxxing Overlay Mode E2E', () => {
 
     await page.goto('/lab.html');
 
-    await expect(page.locator('#logBox')).toContainText('MediaPipe FaceLandmarker ready', { timeout: 45000 });
-    await expect(page.locator('#logBox')).toContainText('Webcam active', { timeout: 45000 });
+    // Wait for the engine to finish initialising (ghostatiReady fires after the
+    // stub model-loads and fake-camera start complete — typically < 5 s with stubs).
+    await page.waitForFunction(() => window.__ghostatiReadyFired, { timeout: 15000 });
+    // Confirm the view-bar boot() has applied the default Camera view.
+    await expect(page.locator('#bboxOverlay')).toHaveClass(/gm-canvas-hidden/, { timeout: 5000 });
 
     const viewer = page.locator('#viewer');
     const bboxOverlay = page.locator('#bboxOverlay');
