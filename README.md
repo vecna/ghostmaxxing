@@ -1,7 +1,8 @@
 # Ghostmaxxing
 <!-- coverage-badge:start -->
-[![Unit Test Coverage](https://img.shields.io/badge/coverage-73.12%25-yellow)](coverage/)
+[![Unit Test Coverage](https://img.shields.io/badge/coverage-66.96%25-yellow)](coverage/)
 <!-- coverage-badge:end -->
+[![CI](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml/badge.svg)](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml)
 
 [![Docs](https://img.shields.io/badge/docs-JSDoc-blue)](docs/)
 [![Source](https://img.shields.io/badge/source-GitHub-black)](https://github.com/vecna/ghostati)
@@ -316,36 +317,6 @@ Current reference links:
 
 ```text
  small patch
- clear test
- stable plugin API
- documented behavior
-```
-
-Good contributions include:
-
-- new Ghostyles with clear metadata and reproducible test notes;
-- tighter unit coverage around renamed/refactored functions;
-- e2e scenarios for detection, baseline saving, overlay switching, and match-state transitions;
-- CDN self-hosting options;
-- clearer model-loading failure states;
-- accessibility and mobile UI improvements;
-- better documentation for `faceapi` vs `mediapipe` Ghostyle engines;
-- additions to [`REFERENCES.json`](REFERENCES.json) following [`PROMPT-REFERENCES-UPDATE.txt`](PROMPT-REFERENCES-UPDATE.txt).
-
-Please keep claims narrow and technical: say which model, browser, lighting, camera, and threshold produced which result.
-
-
-
-
-
-
-
-
-
-**Last commit:** `85f9100` – internationalization added, three languages
-
-
-
 
 
 

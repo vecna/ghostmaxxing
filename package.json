@@ -40,7 +40,7 @@
     "validate:ghostyle": "node scripts-dev/validate-plugin.js",
     "validate-plugin": "npm run validate:ghostyle --",
     "validate:ghostyles": "node -e \"const fs=require('node:fs'); const cp=require('node:child_process'); const files=fs.readdirSync('ghostyles').filter((f)=>f.endsWith('.js')).sort(); for (const f of files) cp.execFileSync(process.execPath, ['scripts-dev/validate-plugin.js', 'ghostyles/'+f], { stdio: 'inherit' });\"",
-    "update:readme": "node scripts-dev/update-readme.js",
+    "update:coverage-badge": "node scripts-dev/update-coverage-badge.js",
     "update:references": "node references/build-references-page.js",
     "i18n:extract": "node scripts-dev/extract-i18n-pot.cjs",
     "check": "npm run validate:ghostyles && npm run test:unit",
