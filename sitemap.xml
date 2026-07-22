@@ -67,4 +67,19 @@
       <changefreq>weekly</changefreq>
       <priority>0.9</priority>
    </url>
+   <!-- Internal diagnostic tools -->
+   <url>
+      <!-- Video Loader: Diagnostic tool for loading local MP4 videos to test against 2D & 3D face engines -->
+      <loc>https://sindacato.nina.watch/ghostati/loader.html</loc>
+      <lastmod>2026-07-22</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.50</priority>
+   </url>
+   <url>
+      <!-- Ghostyle Transfer: Tool to extract paint from a face and attach/align it to a target face -->
+      <loc>https://sindacato.nina.watch/ghostati/ghostyle-transfer.html</loc>
+      <lastmod>2026-07-22</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.50</priority>
+   </url>
 </urlset>

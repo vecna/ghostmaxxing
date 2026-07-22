@@ -2275,6 +2275,24 @@ export const messages = {
       en: 'Code',
       pt: 'Código',
    },
+   internal_tools_label: {
+      context: 'index.html',
+      it: 'Strumenti interni',
+      en: 'Internal tools',
+      pt: 'Ferramentas internas',
+   },
+   video_loader_link: {
+      context: 'index.html',
+      it: 'Video Loader',
+      en: 'Video Loader',
+      pt: 'Video Loader',
+   },
+   ghostyle_transfer_link: {
+      context: 'index.html',
+      it: 'Ghostyle Transfer',
+      en: 'Ghostyle Transfer',
+      pt: 'Ghostyle Transfer',
+   },
    homepage_hero_alt: {
       context: 'index.html:65',
       it: 'Ritratto diviso tra overlay di riconoscimento facciale e camouflage avversario.',
