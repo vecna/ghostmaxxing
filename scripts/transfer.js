@@ -1,11 +1,44 @@
 /**
  * @module transfer
  * @description
- * Browser-only Ghostyle transfer lab. It extracts the visual paint delta from
- * an optional before image plus a painted after image, normalizes that paint
- * into a canonical face frame, and composites it onto a target face. When
- * face-api landmarks are available, it upgrades from box placement to
- * triangle-based mesh warping.
+ * # Ghostyle Transfer Lab
+ *
+ * ## Project Objective
+ *
+ * The goal of this browser-only experiment is to let a user capture a painted
+ * visual style from one face and preview it on another face without sending
+ * images to a server. Instead of treating the transfer as a black box, the page
+ * exposes the practical stages of the process: choosing source and target
+ * images, marking face regions, extracting a transparent paint matte, previewing
+ * that matte, and compositing the result with adjustable blend controls.
+ *
+ * ## Technical Stack
+ *
+ * The module is written in JavaScript and uses the DOM for the control surface,
+ * the Canvas 2D API for pixel extraction, matte generation, preview drawing,
+ * affine triangle warping, and final compositing, and `@vladmandic/face-api`
+ * for optional 68-point landmark detection. All image processing happens in the
+ * browser runtime.
+ *
+ * ## Interface Model
+ *
+ * The UI is organized around three upload slots: an optional before image, a
+ * required painted after image, and a required target image. Each slot renders a
+ * fitted preview canvas where the user draws a face box in image coordinates.
+ * A side matte preview shows the extracted paint layer, while the result panel
+ * displays the final target composite and enables download once a transfer has
+ * completed.
+ *
+ * ## Functional Workflow
+ *
+ * The transfer starts in a setup state until the after and target slots both
+ * have images and face boxes. Running the transfer normalizes the after face
+ * crop into a canonical square, subtracts either the matching before crop or a
+ * sampled reference color, feathers the resulting alpha plane, and then places
+ * the matte onto the target. When landmarks are available and mesh mode is
+ * enabled, corresponding face points are triangulated and the matte is warped
+ * triangle by triangle; otherwise the system falls back to direct box placement
+ * with a status note that explains which mode was used.
  */
 import { applyI18n, initI18n, setupLocaleSelect, t } from './i18n.js';
 
@@ -14,9 +47,32 @@ const RESULT_MAX = 900;
 const MODEL_ROOT = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
 
 /**
- * @typedef {{x:number, y:number}} Point
- * @typedef {{x:number, y:number, w:number, h:number}} Box
- * @typedef {{img:HTMLImageElement|null, box:Box|null, scale:number, dispW:number, dispH:number}} TransferSlot
+ * Two-dimensional point in image or canvas coordinates.
+ *
+ * @typedef {Object} Point
+ * @property {number} x - Horizontal coordinate.
+ * @property {number} y - Vertical coordinate.
+ *
+ * Rectangular face selection in original image coordinates.
+ *
+ * @typedef {Object} Box
+ * @property {number} x - Left edge.
+ * @property {number} y - Top edge.
+ * @property {number} w - Width.
+ * @property {number} h - Height.
+ *
+ * State tracked for one upload slot and its preview canvas.
+ *
+ * @typedef {Object} TransferSlot
+ * @property {?HTMLImageElement} img - Loaded source image, or null before load.
+ * @property {?Box} box - User-selected face box, or null until selected.
+ * @property {number} scale - Ratio from preview pixels to original image pixels.
+ * @property {number} dispW - Preview image width in CSS pixels.
+ * @property {number} dispH - Preview image height in CSS pixels.
+ *
+ * Three-channel average color stored as red, green, and blue values.
+ *
+ * @typedef {Array.<number>} RgbTuple
  */
 
 /** @type {Record<'before'|'after'|'target', TransferSlot>} */
@@ -448,7 +504,7 @@ function extractMatte(threshold, feather) {
  * Approximate the dominant skin/reference color by sparse sampling.
  *
  * @param {ImageData} imageData - Canonical source image data.
- * @returns {[number, number, number]} Average RGB tuple.
+ * @returns {RgbTuple} Average RGB tuple.
  */
 function medianColor(imageData) {
    let r = 0;

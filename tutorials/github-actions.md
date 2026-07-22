@@ -88,38 +88,7 @@ You will usually also push the README change that adds the CI badge:
 README.md
 ```
 
-### B. Enable Actions permissions
-
-In the GitHub repository:
-
-1. Open `Settings`.
-2. Open `Actions` then `General`.
-3. Make sure Actions are allowed for the repository.
-4. Under workflow permissions, allow:
-   `Read and write permissions`
-
-That write permission is required because the badge-update job commits the refreshed README back to `main`.
-
-### C. Protect `main`
-
-In the GitHub repository:
-
-1. Open `Settings`.
-2. Open `Branches`.
-3. Add a branch protection rule for `main`.
-4. Enable `Require a pull request before merging`.
-5. Enable `Require status checks to pass before merging`.
-6. Select the CI test check once it appears after the first workflow run.
-
-Depending on GitHub's UI, the check name will normally appear as the workflow/job combination, typically similar to:
-
-```text
-CI / Test
-```
-
-After that, GitHub will not allow merging a pull request into `main` until the tests pass.
-
-## Local equivalents
+### B. Local equivalents
 
 These are the same commands the workflow uses:
 
