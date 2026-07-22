@@ -166,9 +166,8 @@ export function stopEffectLoop() {
 }
 
 /**
- * Capture a short video clip from the live webcam stream and either trigger
- * a browser download or POST it to the configured upload endpoint
- * (`RECORDING_CONFIG.mode`). Honours `state.isRecording` and
+ * Capture a short video clip from the live webcam stream and emit it as a
+ * browser-managed Blob for the upload/consent panel. Honours `state.isRecording` and
  * `state.isSystemBusy` to refuse overlapping captures, and updates the
  * record button visual state for the duration of the recording.
  *
@@ -228,43 +227,25 @@ export async function recordOneSecond() {
 
       recorder.onstop = async () => {
          const blob = new Blob(chunks, { type: mimeType });
-         const isUploadMode = RECORDING_CONFIG.mode === 'upload';
+         const filename = `ghostati-recording-${Date.now()}.${extension}`;
+         const clipId = globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function'
+            ? globalThis.crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-         if (isUploadMode) {
-            setLog(t('video_uploading_log'));
-            try {
-               const formData = new FormData();
-               const filename = `ghostati-recording-${Date.now()}.${extension}`;
-               formData.append('video', blob, filename);
+         const detail = {
+            id: clipId,
+            blob,
+            filename,
+            mimeType,
+            extension,
+            size: blob.size,
+            durationMs: RECORDING_CONFIG.durationMs,
+            recordedAt: new Date().toISOString(),
+            ghostyleId: state.activeEffect || null
+         };
 
-               const response = await fetch(RECORDING_CONFIG.uploadEndpoint, {
-                  method: 'POST',
-                  body: formData
-               });
-
-               if (response.ok) {
-                  setLog(t('video_upload_done_log', { status: response.status, filename }));
-               } else {
-                  setLog(t('video_upload_http_error_log', { status: response.status, statusText: response.statusText }));
-               }
-            } catch (err) {
-               setLog(t('video_upload_network_error_log', { message: err.message }));
-            }
-         } else {
-            // Direct download mode
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = `ghostati-recording-${Date.now()}.${extension}`;
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-               document.body.removeChild(a);
-               URL.revokeObjectURL(url);
-            }, 100);
-            setLog(t('recording_downloaded_log', { filename: a.download }));
-         }
+         state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', { detail }));
+         setLog(t('recording_queued_log', { filename }));
 
          // Reset visual styles and state
          state.isRecording = false;

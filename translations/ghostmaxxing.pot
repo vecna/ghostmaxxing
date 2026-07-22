@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Ghostmaxxing 0.1.0\n"
-"POT-Creation-Date: 2026-07-08\n"
+"POT-Creation-Date: 2026-07-22\n"
 "Language-Team: NotYetExisting <translators at vecna dot eu>\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 
@@ -1702,6 +1702,219 @@ msgstr ""
 #. it: [auto-find-loop] tick error:
 #: scripts/auto-find-loop.js:116
 msgid "[auto-find-loop] tick error:"
+msgstr ""
+
+#. key: loader_page_title
+#. it: Ghostmaxxing | Loader video
+#: loader.html:7
+msgid "Ghostmaxxing | Video Loader"
+msgstr ""
+
+#. Glossary: MP4, face engines, 2D, 3D.
+#. key: loader_meta_description
+#. it: Strumento interno Ghostmaxxing per testare video MP4 locali di makeup contro i motori facciali 2D e 3D.
+#: loader.html:8
+msgid "Internal Ghostmaxxing tool for testing local MP4 makeup videos against the 2D and 3D face engines."
+msgstr ""
+
+#. key: loader_wordmark_label
+#. it: Homepage Ghostmaxxing
+#: loader.html:19
+msgid "Ghostmaxxing homepage"
+msgstr ""
+
+#. key: loader_subtitle
+#. it: Loader video interno
+#: loader.html:24
+msgid "Internal video loader"
+msgstr ""
+
+#. key: loader_loading_models_status
+#. it: caricamento modelli
+#: loader.html:32
+msgid "loading models"
+msgstr ""
+
+#. key: loader_title
+#. it: Loader di test video makeup
+#: loader.html:37
+msgid "Makeup Video Test Loader"
+msgstr ""
+
+#. key: loader_stage_label
+#. it: Carica e riproduci video
+#: loader.html:39
+msgid "Load and play video"
+msgstr ""
+
+#. Glossary: MP4.
+#. key: loader_placeholder
+#. it: Seleziona un video MP4 locale per iniziare.
+#: loader.html:41
+msgid "Select a local MP4 video to begin."
+msgstr ""
+
+#. Glossary: MP4.
+#. key: loader_load_mp4
+#. it: Carica MP4
+#: loader.html:50
+msgid "Load MP4"
+msgstr ""
+
+#. key: loader_timeline_label
+#. it: Avanzamento video
+#: loader.html:53
+msgid "Video progress"
+msgstr ""
+
+#. key: loader_actions_label
+#. it: Azioni volto
+#: loader.html:63
+msgid "Face actions"
+msgstr ""
+
+#. key: loader_record_face_button
+#. it: Registra volto
+#: loader.html:64
+#: scripts/loader.js:250
+msgid "Record face"
+msgstr ""
+
+#. key: loader_seek_face_button
+#. it: Cerca volto
+#: loader.html:65
+#: scripts/loader.js:303
+msgid "Seek face"
+msgstr ""
+
+#. key: loader_faces_in_memory
+#. it: Volti in memoria
+#: loader.html:67
+msgid "Faces in memory"
+msgstr ""
+
+#. Glossary: threshold, 2D.
+#. key: loader_2d_threshold
+#. it: Soglia 2D
+#: loader.html:71
+msgid "2D threshold"
+msgstr ""
+
+#. key: loader_log_label
+#. it: Registro attività pulsanti
+#: loader.html:78
+msgid "Button activity log"
+msgstr ""
+
+#. key: loader_activity_log_title
+#. it: Registro attività
+#: loader.html:80
+msgid "Activity log"
+msgstr ""
+
+#. Glossary: timestamp.
+#. key: loader_activity_log_description
+#. it: Ogni voce viene catturata al timestamp video esatto in cui è stato premuto il pulsante.
+#: loader.html:81
+msgid "Each entry is captured at the exact video timestamp where the button was pressed."
+msgstr ""
+
+#. key: loader_status_action_failed
+#. it: azione fallita
+#: scripts/loader.js:222
+msgid "action failed"
+msgstr ""
+
+#. Glossary: face-api.
+#. key: loader_status_loading_faceapi
+#. it: caricamento face-api
+#: scripts/loader.js:396
+msgid "loading face-api"
+msgstr ""
+
+#. Glossary: 3D embedder.
+#. key: loader_status_loading_3d_embedder
+#. it: caricamento embedder 3D
+#: scripts/loader.js:404
+msgid "loading 3D embedder"
+msgstr ""
+
+#. key: loader_status_ready
+#. it: pronto
+#: scripts/loader.js:474
+msgid "ready"
+msgstr ""
+
+#. key: loader_status_model_load_failed
+#. it: caricamento modelli fallito
+#: scripts/loader.js:480
+msgid "model load failed"
+msgstr ""
+
+#. key: loader_log_loaded_local_video
+#. it: Video locale caricato: {name}
+#: scripts/loader.js:428
+msgid "Loaded local video: {name}"
+msgstr ""
+
+#. Glossary: MP4.
+#. key: loader_ready_log
+#. it: Loader pronto. Seleziona un MP4 e premi Registra volto o Cerca volto.
+#: scripts/loader.js:475
+msgid "Loader ready. Select an MP4 and press Record face or Seek face."
+msgstr ""
+
+#. key: loader_model_error_log
+#. it: Errore modelli loader: {message}
+#: scripts/loader.js:481
+msgid "Loader model error: {message}"
+msgstr ""
+
+#. key: loader_action_error
+#. it: errore
+#: scripts/loader.js:223
+msgid "error"
+msgstr ""
+
+#. key: loader_action_record_face
+#. it: registra volto
+#: scripts/loader.js:231
+#: scripts/loader.js:250
+msgid "record face"
+msgstr ""
+
+#. key: loader_action_seek_face
+#. it: cerca volto
+#: scripts/loader.js:286
+#: scripts/loader.js:303
+msgid "seek face"
+msgstr ""
+
+#. key: loader_chip_pressed
+#. it: premuto
+#: scripts/loader.js:146
+msgid "pressed"
+msgstr ""
+
+#. key: loader_chip_video
+#. it: video
+#: scripts/loader.js:147
+msgid "video"
+msgstr ""
+
+#. key: loader_no_face_result
+#. it: nessun volto rilevato
+#: scripts/loader.js:233
+#: scripts/loader.js:288
+msgid "no face detected"
+msgstr ""
+
+#. Glossary: 2D, face-api, frame.
+#. key: loader_no_2d_face_message
+#. it: Nessuna rilevazione 2D face-api era disponibile in questo frame.
+#: scripts/loader.js:234
+#: scripts/loader.js:289
+msgid "No 2D face-api detection was available at this frame."
 msgstr ""
 
 #. key: homepage_wordmark_label

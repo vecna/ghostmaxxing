@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Ghostyle Transfer — Ghostmaxxing</title>
+  <meta name="generator" content="Hand-coded with rage against the algorithm" />
+  <meta name="description"
+    content="Extract a Ghostyle from a before/after workshop pair and transfer it to another face locally in the browser." />
+  <meta property="og:title" content="Ghostyle Transfer - Ghostmaxxing" />
+  <meta property="og:description" content="Transfer adversarial makeup patterns between faces in a local browser lab." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/images/social-card.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ghostyle Transfer - Ghostmaxxing" />
+  <meta name="twitter:description" content="Transfer adversarial makeup patterns between faces in a local browser lab." />
+  <meta name="twitter:image" content="/images/social-card.svg" />
+  <link rel="icon" type="image/svg+xml" href="/images/ghostmaxxing-favicon.svg" />
+  <link rel="stylesheet" href="styles/pages.css" />
+  <link rel="stylesheet" href="styles/content-pages.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+</head>
+
+<body>
+  <main class="editorial-homepage content-page editorial-homepage--svg-footer-band">
+    <div class="editorial-homepage__shell">
+      <header class="editorial-homepage__header">
+        <a class="wordmark" href="index.html" aria-label="Ghostmaxxing homepage" data-i18n-aria-label="homepage_wordmark_label">
+          <span class="wordmark__main">
+            <img class="wordmark__mark" src="images/ghostmaxxing-mark.svg" alt="" aria-hidden="true" />
+            <span class="wordmark__title">Ghostmaxxing</span>
+          </span>
+          <span class="wordmark__subtitle" data-i18n="homepage_subtitle">
+            A public lab for testing face-recognition camouflage
+          </span>
+        </a>
+
+        <nav class="editorial-homepage__nav" aria-label="Project navigation" data-i18n-aria-label="prototype_navigation_label">
+          <a class="navlink" href="/references/" rel="noopener noreferrer" data-i18n="research_references_link">Research References</a>
+          <a class="navlink" href="about.html" data-i18n="vision_about_link">Vision &amp; About</a>
+          <a class="cta-inline" href="lab.html" data-i18n-html="open_lab_link_html">Open the lab <span aria-hidden="true">↗</span></a>
+          <span class="locale-control">
+            <span class="locale-control__flag" aria-hidden="true"></span>
+            <select id="localeSelect" class="locale-select" aria-label="Language" data-i18n-aria-label="language_label"></select>
+          </span>
+        </nav>
+      </header>
+
+      <section class="content-page__header-area" aria-labelledby="transfer-title">
+        <span class="content-page__kicker" data-i18n="transfer_kicker">Lab · Ghostyle transfer</span>
+        <h1 id="transfer-title" data-i18n="transfer_title">Lift a Ghostyle off one face, wear it on another.</h1>
+        <p class="content-page__lead" data-i18n="transfer_lead">
+          Extract the paint from a workshop before / after pair and place it on a target face.
+        </p>
+        <p class="content-page__deck" data-i18n="transfer_deck">
+          Mark the face on each image with a box. The transfer runs entirely on this device, with mesh alignment when the local face engine can detect matching landmarks.
+        </p>
+        <span class="tool-status" id="engineBadge">
+          <span class="tool-status__dot" aria-hidden="true"></span>
+          <span id="engineText" data-i18n="transfer_engine_loading">Mesh engine: loading…</span>
+        </span>
+      </section>
+
+      <section class="tool-workbench" aria-label="Ghostyle transfer workbench" data-i18n-aria-label="transfer_workbench_label">
+        <div class="tool-grid">
+          <article class="tool-card">
+            <div class="tool-card__header">
+              <span class="tool-card__title" data-i18n="transfer_before_title">Before</span>
+              <span class="tool-card__tag" data-i18n="transfer_before_tag">bare face · optional</span>
+            </div>
+            <div class="tool-stage" id="stage-before">
+              <span class="tool-stage__hint" id="hint-before" data-i18n="transfer_before_hint">Drop or choose the bare workshop face</span>
+            </div>
+            <p class="tool-note" id="note-before"></p>
+            <label class="file-picker">
+              <input type="file" accept="image/*" data-slot="before" />
+              <span data-i18n="transfer_choose_image">Choose image</span>
+            </label>
+          </article>
+
+          <article class="tool-card">
+            <div class="tool-card__header">
+              <span class="tool-card__title" data-i18n="transfer_after_title">After</span>
+              <span class="tool-card__tag" data-i18n="transfer_after_tag">painted face</span>
+            </div>
+            <div class="tool-stage" id="stage-after">
+              <span class="tool-stage__hint" id="hint-after" data-i18n="transfer_after_hint">Drop or choose the painted workshop face</span>
+            </div>
+            <p class="tool-note" id="note-after"></p>
+            <label class="file-picker">
+              <input type="file" accept="image/*" data-slot="after" />
+              <span data-i18n="transfer_choose_image">Choose image</span>
+            </label>
+          </article>
+
+          <article class="tool-card">
+            <div class="tool-card__header">
+              <span class="tool-card__title" data-i18n="transfer_target_title">Target</span>
+              <span class="tool-card__tag" data-i18n="transfer_target_tag">receives the paint</span>
+            </div>
+            <div class="tool-stage" id="stage-target">
+              <span class="tool-stage__hint" id="hint-target" data-i18n="transfer_target_hint">Drop or choose the target face / painting</span>
+            </div>
+            <p class="tool-note" id="note-target"></p>
+            <label class="file-picker">
+              <input type="file" accept="image/*" data-slot="target" />
+              <span data-i18n="transfer_choose_image">Choose image</span>
+            </label>
+          </article>
+        </div>
+
+        <div class="tool-controls">
+          <div class="tool-field">
+            <label class="tool-label" for="thr"><span data-i18n="transfer_sensitivity_label">Paint sensitivity</span> <output id="v-thr">28</output></label>
+            <input type="range" id="thr" min="6" max="90" value="28" />
+          </div>
+          <div class="tool-field">
+            <label class="tool-label" for="fth"><span data-i18n="transfer_feather_label">Edge feather</span> <output id="v-fth">3</output></label>
+            <input type="range" id="fth" min="0" max="12" value="3" />
+          </div>
+          <div class="tool-field">
+            <label class="tool-label" for="op"><span data-i18n="transfer_opacity_label">Opacity</span> <output id="v-op">92</output>%</label>
+            <input type="range" id="op" min="20" max="100" value="92" />
+          </div>
+          <div class="tool-field">
+            <label class="tool-label" for="blend" data-i18n="transfer_blend_label">Blend</label>
+            <select id="blend">
+              <option value="multiply" selected data-i18n="transfer_blend_multiply">Multiply (paints onto)</option>
+              <option value="source-over" data-i18n="transfer_blend_normal">Normal</option>
+              <option value="soft-light" data-i18n="transfer_blend_soft_light">Soft light</option>
+            </select>
+          </div>
+          <div class="tool-field tool-field--check">
+            <input type="checkbox" id="useMesh" checked />
+            <label for="useMesh" data-i18n="transfer_use_mesh_label">Follow features (mesh)</label>
+          </div>
+        </div>
+
+        <div class="tool-actions">
+          <button class="btn-primary" id="run" disabled data-i18n="transfer_run_button">Transfer Ghostyle</button>
+          <button class="link-secondary" id="download" disabled data-i18n="transfer_download_button">Download result</button>
+          <button class="link-secondary" id="reset" data-i18n="transfer_reset_button">Reset</button>
+          <span class="tool-message" id="msg" data-i18n="transfer_msg_load_after_target">Load an after and a target, then draw a box on each face.</span>
+        </div>
+
+        <div class="tool-output">
+          <div class="tool-result" id="result">
+            <span class="tool-result__empty" data-i18n="transfer_result_empty">The transferred result will appear here.</span>
+          </div>
+          <aside class="tool-aside">
+            <section class="tool-panel">
+              <h2 data-i18n="transfer_matte_title">Extracted paint</h2>
+              <canvas id="matte" width="180" height="180"></canvas>
+              <p id="matteNote" data-i18n="transfer_matte_note">The isolated Ghostyle, in a normalized face frame.</p>
+            </section>
+            <section class="tool-panel">
+              <h2 data-i18n="transfer_mode_title">Mode</h2>
+              <p id="modeNote" data-i18n="transfer_mode_not_run">Not run yet.</p>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <footer class="tool-disclaimer">
+        <p data-i18n="transfer_disclaimer">
+          Ghostmaxxing is a research and education tool. Transferring a Ghostyle onto a face is a visualization; it is not evidence that the pattern affects any recognition system. Face detectors are unreliable on stylized artwork. If the mesh cannot find a target face, the tool uses the box you drew.
+        </p>
+      </footer>
+    </div>
+  </main>
+
+  <script type="module" src="scripts/transfer.js"></script>
+</body>
+
+</html>
