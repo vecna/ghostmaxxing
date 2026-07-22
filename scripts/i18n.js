@@ -1668,6 +1668,213 @@ export const messages = {
       en: '[auto-find-loop] tick error:',
       pt: '[auto-find-loop] erro de tick:',
    },
+   loader_page_title: {
+      context: 'loader.html:7',
+      it: 'Ghostmaxxing | Loader video',
+      en: 'Ghostmaxxing | Video Loader',
+      pt: 'Ghostmaxxing | Carregador de vídeo',
+   },
+   loader_meta_description: {
+      context: 'loader.html:8',
+      it: 'Strumento interno Ghostmaxxing per testare video MP4 locali di makeup contro i motori facciali 2D e 3D.',
+      en: 'Internal Ghostmaxxing tool for testing local MP4 makeup videos against the 2D and 3D face engines.',
+      pt: 'Ferramenta interna do Ghostmaxxing para testar vídeos MP4 locais de maquiagem contra os motores faciais 2D e 3D.',
+      notes: 'Glossary: MP4, face engines, 2D, 3D.',
+   },
+   loader_wordmark_label: {
+      context: 'loader.html:19',
+      it: 'Homepage Ghostmaxxing',
+      en: 'Ghostmaxxing homepage',
+      pt: 'Página inicial Ghostmaxxing',
+   },
+   loader_subtitle: {
+      context: 'loader.html:24',
+      it: 'Loader video interno',
+      en: 'Internal video loader',
+      pt: 'Carregador interno de vídeo',
+   },
+   loader_loading_models_status: {
+      context: 'loader.html:32',
+      it: 'caricamento modelli',
+      en: 'loading models',
+      pt: 'carregando modelos',
+   },
+   loader_title: {
+      context: 'loader.html:37',
+      it: 'Loader di test video makeup',
+      en: 'Makeup Video Test Loader',
+      pt: 'Carregador de teste de vídeo de maquiagem',
+   },
+   loader_stage_label: {
+      context: 'loader.html:39',
+      it: 'Carica e riproduci video',
+      en: 'Load and play video',
+      pt: 'Carregar e reproduzir vídeo',
+   },
+   loader_placeholder: {
+      context: 'loader.html:41',
+      it: 'Seleziona un video MP4 locale per iniziare.',
+      en: 'Select a local MP4 video to begin.',
+      pt: 'Selecione um vídeo MP4 local para começar.',
+      notes: 'Glossary: MP4.',
+   },
+   loader_load_mp4: {
+      context: 'loader.html:50',
+      it: 'Carica MP4',
+      en: 'Load MP4',
+      pt: 'Carregar MP4',
+      notes: 'Glossary: MP4.',
+   },
+   loader_timeline_label: {
+      context: 'loader.html:53',
+      it: 'Avanzamento video',
+      en: 'Video progress',
+      pt: 'Progresso do vídeo',
+   },
+   loader_actions_label: {
+      context: 'loader.html:63',
+      it: 'Azioni volto',
+      en: 'Face actions',
+      pt: 'Ações de rosto',
+   },
+   loader_record_face_button: {
+      context: 'loader.html:64; scripts/loader.js:250',
+      it: 'Registra volto',
+      en: 'Record face',
+      pt: 'Gravar rosto',
+   },
+   loader_seek_face_button: {
+      context: 'loader.html:65; scripts/loader.js:303',
+      it: 'Cerca volto',
+      en: 'Seek face',
+      pt: 'Buscar rosto',
+   },
+   loader_faces_in_memory: {
+      context: 'loader.html:67',
+      it: 'Volti in memoria',
+      en: 'Faces in memory',
+      pt: 'Rostos na memória',
+   },
+   loader_2d_threshold: {
+      context: 'loader.html:71',
+      it: 'Soglia 2D',
+      en: '2D threshold',
+      pt: 'Limiar 2D',
+      notes: 'Glossary: threshold, 2D.',
+   },
+   loader_log_label: {
+      context: 'loader.html:78',
+      it: 'Registro attività pulsanti',
+      en: 'Button activity log',
+      pt: 'Registro de atividade dos botões',
+   },
+   loader_activity_log_title: {
+      context: 'loader.html:80',
+      it: 'Registro attività',
+      en: 'Activity log',
+      pt: 'Registro de atividade',
+   },
+   loader_activity_log_description: {
+      context: 'loader.html:81',
+      it: 'Ogni voce viene catturata al timestamp video esatto in cui è stato premuto il pulsante.',
+      en: 'Each entry is captured at the exact video timestamp where the button was pressed.',
+      pt: 'Cada entrada é capturada no timestamp exato do vídeo em que o botão foi pressionado.',
+      notes: 'Glossary: timestamp.',
+   },
+   loader_status_action_failed: {
+      context: 'scripts/loader.js:222',
+      it: 'azione fallita',
+      en: 'action failed',
+      pt: 'ação falhou',
+   },
+   loader_status_loading_faceapi: {
+      context: 'scripts/loader.js:396',
+      it: 'caricamento face-api',
+      en: 'loading face-api',
+      pt: 'carregando face-api',
+      notes: 'Glossary: face-api.',
+   },
+   loader_status_loading_3d_embedder: {
+      context: 'scripts/loader.js:404',
+      it: 'caricamento embedder 3D',
+      en: 'loading 3D embedder',
+      pt: 'carregando embedder 3D',
+      notes: 'Glossary: 3D embedder.',
+   },
+   loader_status_ready: {
+      context: 'scripts/loader.js:474',
+      it: 'pronto',
+      en: 'ready',
+      pt: 'pronto',
+   },
+   loader_status_model_load_failed: {
+      context: 'scripts/loader.js:480',
+      it: 'caricamento modelli fallito',
+      en: 'model load failed',
+      pt: 'falha ao carregar modelos',
+   },
+   loader_log_loaded_local_video: {
+      context: 'scripts/loader.js:428',
+      it: 'Video locale caricato: {name}',
+      en: 'Loaded local video: {name}',
+      pt: 'Vídeo local carregado: {name}',
+   },
+   loader_ready_log: {
+      context: 'scripts/loader.js:475',
+      it: 'Loader pronto. Seleziona un MP4 e premi Registra volto o Cerca volto.',
+      en: 'Loader ready. Select an MP4 and press Record face or Seek face.',
+      pt: 'Carregador pronto. Selecione um MP4 e pressione Gravar rosto ou Buscar rosto.',
+      notes: 'Glossary: MP4.',
+   },
+   loader_model_error_log: {
+      context: 'scripts/loader.js:481',
+      it: 'Errore modelli loader: {message}',
+      en: 'Loader model error: {message}',
+      pt: 'Erro de modelo do carregador: {message}',
+   },
+   loader_action_error: {
+      context: 'scripts/loader.js:223',
+      it: 'errore',
+      en: 'error',
+      pt: 'erro',
+   },
+   loader_action_record_face: {
+      context: 'scripts/loader.js:231; scripts/loader.js:250',
+      it: 'registra volto',
+      en: 'record face',
+      pt: 'gravar rosto',
+   },
+   loader_action_seek_face: {
+      context: 'scripts/loader.js:286; scripts/loader.js:303',
+      it: 'cerca volto',
+      en: 'seek face',
+      pt: 'buscar rosto',
+   },
+   loader_chip_pressed: {
+      context: 'scripts/loader.js:146',
+      it: 'premuto',
+      en: 'pressed',
+      pt: 'pressionado',
+   },
+   loader_chip_video: {
+      context: 'scripts/loader.js:147',
+      it: 'video',
+      en: 'video',
+      pt: 'vídeo',
+   },
+   loader_no_face_result: {
+      context: 'scripts/loader.js:233; scripts/loader.js:288',
+      it: 'nessun volto rilevato',
+      en: 'no face detected',
+      pt: 'nenhum rosto detectado',
+   },
+   loader_no_2d_face_message: {
+      context: 'scripts/loader.js:234; scripts/loader.js:289',
+      it: 'Nessuna rilevazione 2D face-api era disponibile in questo frame.',
+      en: 'No 2D face-api detection was available at this frame.',
+      pt: 'Nenhuma detecção 2D do face-api estava disponível neste frame.',
+      notes: 'Glossary: 2D, face-api, frame.',
+   },
    homepage_wordmark_label: {
       context: 'index.html:27',
       it: 'Prototipo homepage Ghostmaxxing',
@@ -1843,6 +2050,9 @@ export function applyI18n(root = document) {
    });
    root.querySelectorAll('[data-i18n-alt]').forEach((el) => {
       el.alt = t(el.dataset.i18nAlt);
+   });
+   root.querySelectorAll('[data-i18n-content]').forEach((el) => {
+      el.setAttribute('content', t(el.dataset.i18nContent));
    });
    document.documentElement.lang = currentLocale;
 }

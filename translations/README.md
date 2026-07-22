@@ -25,7 +25,7 @@ Keys must stay lowercase with underscores, for example `face_saved_status`.
 3. Add Italian and Portuguese translations in the same entry.
 4. Add `context` with the best source reference, for example `scripts/main.js:120`.
 5. Add `notes` if the string contains a technical term, product term, or ambiguous wording.
-6. Replace the hardcoded UI/log/console string with `t('your_key')` in JavaScript, or add `data-i18n="your_key"` / `data-i18n-title="your_key"` / `data-i18n-aria-label="your_key"` / `data-i18n-alt="your_key"` in HTML.
+6. Replace the hardcoded UI/log/console string with `t('your_key')` in JavaScript, or add `data-i18n="your_key"` / `data-i18n-title="your_key"` / `data-i18n-aria-label="your_key"` / `data-i18n-alt="your_key"` / `data-i18n-content="your_key"` in HTML.
 7. Run:
 
    ```sh
@@ -51,24 +51,25 @@ Keys must stay lowercase with underscores, for example `face_saved_status`.
 
 8. Upload the refreshed `translations/ghostmaxxing.pot` to Crowdin.
 9. Export/import completed Crowdin translations back into `scripts/i18n.js` or the future build pipeline.
-10. Test the language selector in both `index.html` and `lab.html`.
+10. Test the language selector in `index.html`, `lab.html`, and `loader.html`.
 
 ## Language Selection Persistence
 
-The language selector is shared by the homepage and the lab.
+The language selector is shared by the homepage, the lab, and the video loader.
 
 1. `index.html` loads `scripts/home.js`.
 2. `lab.html` loads the main lab JavaScript, which also initializes i18n.
-3. Both pages call `setupLocaleSelect()` from `scripts/i18n.js`.
-4. When a user selects a language, `setLocale()` saves the selected locale in browser `localStorage`.
-5. The storage key is `ghostmaxxing-locale`, exported as `LOCALE_STORAGE_KEY` in `scripts/i18n.js`.
-6. When `lab.html` opens later, `scripts/i18n.js` reads `ghostmaxxing-locale` and applies the same language.
-7. If no saved language exists, Ghostmaxxing tries the browser language.
-8. If the browser language is unsupported, Ghostmaxxing falls back to English.
+3. `loader.html` loads `scripts/loader.js`, which initializes i18n for the video-loader interface.
+4. All three pages call `setupLocaleSelect()` from `scripts/i18n.js`.
+5. When a user selects a language, `setLocale()` saves the selected locale in browser `localStorage`.
+6. The storage key is `ghostmaxxing-locale`, exported as `LOCALE_STORAGE_KEY` in `scripts/i18n.js`.
+7. When `lab.html` or `loader.html` opens later, `scripts/i18n.js` reads `ghostmaxxing-locale` and applies the same language.
+8. If no saved language exists, Ghostmaxxing tries the browser language.
+9. If the browser language is unsupported, Ghostmaxxing falls back to English.
 
-This means a user can choose `Italiano` on `index.html`, click into the lab, and
-`lab.html` will open in Italian because both pages share the same origin-level
-`localStorage` value.
+This means a user can choose `Italiano` on `index.html`, click into the lab or
+open the video loader, and the destination page will open in Italian because
+all translated pages share the same origin-level `localStorage` value.
 
 ## Extraction Workflow
 

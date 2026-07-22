@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ghostmaxxing | Video Loader</title>
-  <meta name="description" content="Internal Ghostmaxxing tool for testing local MP4 makeup videos against the 2D and 3D face engines." />
+  <title data-i18n="loader_page_title">Ghostmaxxing | Video Loader</title>
+  <meta name="description" content="Internal Ghostmaxxing tool for testing local MP4 makeup videos against the 2D and 3D face engines." data-i18n-content="loader_meta_description" />
   <link rel="icon" type="image/svg+xml" href="/images/ghostmaxxing-favicon.svg">
   <link rel="stylesheet" href="styles/pages.css" />
   <link rel="stylesheet" href="styles/loader.css" />
@@ -14,36 +14,42 @@
 <body class="loader-page">
   <main class="loader-shell" aria-labelledby="loader-title">
     <header class="loader-header">
-      <a class="wordmark" href="/" aria-label="Ghostmaxxing homepage">
+      <a class="wordmark" href="/" aria-label="Ghostmaxxing homepage" data-i18n-aria-label="loader_wordmark_label">
         <span class="wordmark__main">
           <img class="wordmark__mark" src="images/ghostmaxxing-mark.svg" alt="" aria-hidden="true" />
           <span class="wordmark__title">Ghostmaxxing</span>
         </span>
-        <span class="wordmark__subtitle">Internal video loader</span>
+        <span class="wordmark__subtitle" data-i18n="loader_subtitle">Internal video loader</span>
       </a>
-      <div class="loader-status" aria-live="polite">
-        <span id="statusDot" class="status-dot"></span>
-        <span id="statusText">loading models</span>
+      <div class="loader-header__tools">
+        <span class="locale-control" aria-hidden="false">
+          <span class="locale-control__flag" aria-hidden="true"></span>
+          <select id="localeSelect" class="locale-select" aria-label="Language" data-i18n-aria-label="language_label"></select>
+        </span>
+        <div class="loader-status" aria-live="polite">
+          <span id="statusDot" class="status-dot"></span>
+          <span id="statusText" data-i18n="loader_loading_models_status">loading models</span>
+        </div>
       </div>
     </header>
 
-    <h1 id="loader-title" class="loader-title">Makeup Video Test Loader</h1>
+    <h1 id="loader-title" class="loader-title" data-i18n="loader_title">Makeup Video Test Loader</h1>
 
-    <section class="loader-band loader-band--stage" aria-label="Load and play video">
+    <section class="loader-band loader-band--stage" aria-label="Load and play video" data-i18n-aria-label="loader_stage_label">
       <div id="viewer" class="loader-viewer" data-view="camera">
-        <div id="placeholder" class="loader-placeholder">Select a local MP4 video to begin.</div>
+        <div id="placeholder" class="loader-placeholder" data-i18n="loader_placeholder">Select a local MP4 video to begin.</div>
         <video id="video" controls playsinline preload="metadata"></video>
-        <img id="previewImage" alt="diagnostic preview" />
+        <img id="previewImage" alt="diagnostic preview" data-i18n-alt="diagnostic_preview_alt" />
         <canvas id="overlay"></canvas>
         <canvas id="mesh3dOverlay"></canvas>
         <canvas id="bboxOverlay"></canvas>
       </div>
       <div class="loader-controls">
         <label class="file-control">
-          <span>Load MP4</span>
+          <span data-i18n="loader_load_mp4">Load MP4</span>
           <input id="videoFile" type="file" accept="video/mp4,video/*" />
         </label>
-        <div class="timeline" aria-label="Video progress">
+        <div class="timeline" aria-label="Video progress" data-i18n-aria-label="loader_timeline_label">
           <span id="currentTimeLabel">00:00.000</span>
           <input id="videoSeek" type="range" min="0" max="0" step="0.001" value="0" disabled />
           <span id="durationLabel">00:00.000</span>
@@ -51,24 +57,24 @@
       </div>
     </section>
 
-    <section class="loader-band loader-band--actions" aria-label="Face actions">
-      <button id="recordFaceBtn" class="loader-action" type="button" disabled>Record face</button>
-      <button id="seekFaceBtn" class="loader-action" type="button" disabled>Seek face</button>
+    <section class="loader-band loader-band--actions" aria-label="Face actions" data-i18n-aria-label="loader_actions_label">
+      <button id="recordFaceBtn" class="loader-action" type="button" disabled data-i18n="loader_record_face_button">Record face</button>
+      <button id="seekFaceBtn" class="loader-action" type="button" disabled data-i18n="loader_seek_face_button">Seek face</button>
       <div class="loader-readout">
-        <span>Faces in memory</span>
+        <span data-i18n="loader_faces_in_memory">Faces in memory</span>
         <strong id="dbCount">0</strong>
-        <span>Next ID</span>
+        <span data-i18n="next_id_metric">Next ID</span>
         <strong id="nextId">0</strong>
-        <span>2D threshold</span>
+        <span data-i18n="loader_2d_threshold">2D threshold</span>
         <strong id="thresholdLabel">0.58</strong>
         <span id="dbCountBadge" hidden>0</span>
       </div>
     </section>
 
-    <section class="loader-band loader-band--log" aria-label="Button activity log">
+    <section class="loader-band loader-band--log" aria-label="Button activity log" data-i18n-aria-label="loader_log_label">
       <div class="loader-log-head">
-        <h2>Activity log</h2>
-        <p>Each entry is captured at the exact video timestamp where the button was pressed.</p>
+        <h2 data-i18n="loader_activity_log_title">Activity log</h2>
+        <p data-i18n="loader_activity_log_description">Each entry is captured at the exact video timestamp where the button was pressed.</p>
       </div>
       <div id="loaderLog" class="loader-log" aria-live="polite"></div>
       <div id="logBox" class="u-hidden" aria-hidden="true"></div>

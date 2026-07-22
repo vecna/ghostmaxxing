@@ -22,6 +22,14 @@
   border-bottom: 1px solid var(--gm-border);
 }
 
+.loader-header__tools {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .loader-status {
   display: inline-flex;
   align-items: center;
@@ -334,6 +342,10 @@
   .timeline {
     min-width: 0;
     grid-template-columns: 1fr;
+  }
+
+  .loader-header__tools {
+    justify-content: flex-start;
   }
 
   .loader-readout {

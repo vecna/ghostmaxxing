@@ -77,10 +77,22 @@ The project is a static web app: there is no production build step required to o
 Important local entry points:
 
 - [`index.html`](index.html) — public landing page with links to code, docs, coverage, Ghostyles, project context, and the reporting node.
-- [`ghostati.html`](ghostati.html) — main webcam/AR application.
+- [`lab.html`](lab.html) — translated main webcam/AR application.
+- [`loader.html`](loader.html) — translated internal MP4 loader for repeatable 2D/3D video tests.
+- [`ghostati.html`](ghostati.html) — legacy main webcam/AR application entry point.
 - [`ghostyles.json`](ghostyles.json) — Ghostyle manifest.
 - [`JSDOC_README.md`](JSDOC_README.md) — concise generated-docs overview.
 - [`REFERENCES.json`](REFERENCES.json) — curated technical/cultural reference set.
+
+# Localization coverage
+
+Ghostmaxxing currently ships runtime translations for English, Italian, and Portuguese through [`scripts/i18n.js`](scripts/i18n.js). The translated browser pages are:
+
+- [`index.html`](index.html) — homepage and public navigation.
+- [`lab.html`](lab.html) — main camera lab, settings, drawers, controls, status labels, and runtime logs.
+- [`loader.html`](loader.html) — internal MP4 video loader, language switcher, static interface labels, model status, and loader activity logs.
+
+Other static pages such as [`about.html`](about.html), [`report.html`](report.html), workshop/tutorial pages, generated docs, coverage, and reference pages are still English-baseline unless they add `data-i18n*` bindings and catalog keys.
 
 Runtime external dependencies visible from the HTML/config layer:
 
