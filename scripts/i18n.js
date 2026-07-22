@@ -2293,6 +2293,12 @@ export const messages = {
       en: 'Ghostyle Transfer',
       pt: 'Ghostyle Transfer',
    },
+   realtime_visualizer_link: {
+      context: 'index.html',
+      it: 'Visualizzatore spazio latente',
+      en: 'Latent Space Visualizer',
+      pt: 'Visualizador de espaço latente',
+   },
    homepage_hero_alt: {
       context: 'index.html:65',
       it: 'Ritratto diviso tra overlay di riconoscimento facciale e camouflage avversario.',

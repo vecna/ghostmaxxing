@@ -10,11 +10,24 @@
     content="Real-time visual debugger for face descriptor drift, equalizer deltas, and biometric distance thresholds."
   />
   <link rel="icon" type="image/svg+xml" href="/images/ghostmaxxing-favicon.svg" />
+  <link rel="stylesheet" href="styles/lab.css" />
   <link rel="stylesheet" href="styles/realtime.css" />
 </head>
 
 <body>
   <main id="ui-layer" aria-label="Latent space visualizer">
+    <a
+      class="seg seg--home realtime-home-link"
+      href="/"
+      aria-label="Home"
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M3 10.5 12 3l9 7.5" />
+        <path d="M5 9.5V21h14V9.5" />
+        <path d="M9.5 21v-6h5v6" />
+      </svg>
+    </a>
+
     <section id="graph-container" aria-label="Global descriptor distance graph">
       <header class="panel-header">
         <p class="panel-title">Distance</p>

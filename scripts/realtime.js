@@ -40,6 +40,19 @@ const els = {
 const graphCtx = els.graph ? els.graph.getContext('2d') : null;
 
 /**
+ * Reads graph colors from shared style tokens with sane fallbacks.
+ *
+ * @returns {{background: string, signal: string, threshold: string}} Graph color palette.
+ */
+function getGraphPalette() {
+  const styles = getComputedStyle(document.documentElement);
+  const background = styles.getPropertyValue('--panel-2').trim() || '#2c2318';
+  const signal = styles.getPropertyValue('--dev').trim() || '#7fe3b0';
+  const threshold = styles.getPropertyValue('--net').trim() || '#ff8a4c';
+  return { background, signal, threshold };
+}
+
+/**
  * Runtime bridge for diagnostics and Playwright checks.
  *
  * @type {object}
@@ -128,27 +141,30 @@ function initEqualizer() {
 }
 
 /**
- * Draws the smoothed distance history in the left canvas panel.
+ * Draws the smoothed distance history with time on the vertical axis.
+ * Old samples are at the top and newest samples at the bottom.
  *
  * @returns {void}
  */
 function drawGraphCanvas() {
   if (!graphCtx || !els.graph) return;
 
+  const palette = getGraphPalette();
+
   const width = els.graph.width;
   const height = els.graph.height;
 
   graphCtx.clearRect(0, 0, width, height);
 
-  graphCtx.fillStyle = '#070b10';
+  graphCtx.fillStyle = palette.background;
   graphCtx.fillRect(0, 0, width, height);
 
-  const thresholdY = height - Math.min((THRESHOLD / 1.0) * height, height);
-  graphCtx.strokeStyle = 'rgba(255, 81, 56, 0.8)';
+  const thresholdX = Math.min((THRESHOLD / 1.0) * width, width);
+  graphCtx.strokeStyle = palette.threshold;
   graphCtx.lineWidth = 2;
   graphCtx.beginPath();
-  graphCtx.moveTo(0, thresholdY);
-  graphCtx.lineTo(width, thresholdY);
+  graphCtx.moveTo(thresholdX, 0);
+  graphCtx.lineTo(thresholdX, height);
   graphCtx.stroke();
 
   if (!runtime.graphHistory.length) return;
@@ -158,15 +174,15 @@ function drawGraphCanvas() {
   const start = points.length - maxVisible;
   const span = Math.max(maxVisible - 1, 1);
 
-  graphCtx.strokeStyle = '#8be0ff';
+  graphCtx.strokeStyle = palette.signal;
   graphCtx.lineWidth = 2;
   graphCtx.beginPath();
 
   for (let i = 0; i < maxVisible; i += 1) {
     const value = points[start + i];
     const normalized = Math.max(0, Math.min(1, value / 1.0));
-    const x = (i / span) * width;
-    const y = height - (normalized * height);
+    const x = normalized * width;
+    const y = (i / span) * height;
 
     if (i === 0) graphCtx.moveTo(x, y);
     else graphCtx.lineTo(x, y);

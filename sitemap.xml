@@ -82,4 +82,11 @@
       <changefreq>monthly</changefreq>
       <priority>0.50</priority>
    </url>
+   <url>
+      <!-- Latent Space Visualizer: Debugger for tracking face descriptor drift and delta values in real time -->
+      <loc>https://sindacato.nina.watch/ghostati/realtime.html</loc>
+      <lastmod>2026-07-22</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.50</priority>
+   </url>
 </urlset>
