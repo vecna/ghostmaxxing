@@ -43,6 +43,7 @@
     "update:coverage-badge": "node scripts-dev/update-coverage-badge.js",
     "update:references": "node references/build-references-page.js",
     "i18n:extract": "node scripts-dev/extract-i18n-pot.cjs",
+    "install": "npm update:references; npm run docs:rebuild; node scripts-dev/install-client-interface.cjs",
     "check": "npm run validate:ghostyles && npm run test:unit",
     "prepare:e2e": "playwright install chromium"
   },
