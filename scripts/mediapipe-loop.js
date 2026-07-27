@@ -11,7 +11,7 @@
  * changing the 2D recognition engine.
  */
 
-import { FaceLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35";
+import { FaceLandmarker, FilesetResolver } from './vendor/tasks-vision@0.10.35.js';
 import { MEDIAPIPE_WASM_URL, MEDIAPIPE_FACE_LANDMARKER_URL } from './config.js';
 import { t } from './i18n.js';
 

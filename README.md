@@ -97,8 +97,7 @@ Other static pages such as [`about.html`](about.html), [`report.html`](report.ht
 
 Runtime external dependencies visible from the HTML/config layer:
 
-- [Google Fonts](https://fonts.googleapis.com) / [Google Fonts static assets](https://fonts.gstatic.com)
-- [Landing-page Google Fonts CSS](https://fonts.googleapis.com/css2?family=League+Script&family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap)
+- Local vendored Google Fonts CSS/assets in `styles/vendor/` (`Inter`, `JetBrains Mono`, `League Script`, `Outfit`)
 - [jsDelivr CDN](https://cdn.jsdelivr.net)
 - [`@vladmandic/face-api`](https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js)
 - [face-api.js model weights](https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js-models@master/)

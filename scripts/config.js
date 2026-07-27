@@ -11,20 +11,21 @@
  * file so the upgrade path to npm + bundler is mechanical.
  */
 
+const VENDOR_ROOT_URL = new URL('./vendor/', import.meta.url).href;
+
 /**
- * Public CDN URLs for the face-api.js model shards (TinyFaceDetector + the
- * landmarks / recognition / age-gender heads). These point at the canonical
- * `face-api.js-models` mirror, which serves the same weights for both the
- * unmaintained original library and the @vladmandic fork in use here.
+ * Local URLs for vendored face-api model shards (TinyFaceDetector + landmarks /
+ * recognition / age-gender / expressions). Every network fetch stays inside
+ * `/scripts/vendor` so pages can run without third-party CDNs.
  *
  * @see scripts/main.js – `loadModels()` reads these and calls `faceapi.nets.*.loadFromUri()`.
  */
 export const MODEL_URLS = {
-   tiny:        'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js-models@master/tiny_face_detector',
-   landmarks:   'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js-models@master/face_landmark_68',
-   recognition: 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js-models@master/face_recognition',
-   ageGender:   'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js-models@master/age_gender_model',
-   expressions: 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js-models@master/face_expression'
+   tiny: VENDOR_ROOT_URL,
+   landmarks: VENDOR_ROOT_URL,
+   recognition: VENDOR_ROOT_URL,
+   ageGender: VENDOR_ROOT_URL,
+   expressions: VENDOR_ROOT_URL
 };
 
 export const ANALYZE_PANEL_MAX_WIDTH_DESKTOP = 900;
@@ -53,39 +54,35 @@ export const THUMBNAIL_OUTPUT_SIZE = 160;
 export const THUMBNAIL_JPEG_QUALITY = 0.8;
 
 /**
- * Root CDN URL for the @mediapipe/tasks-vision package. Used as a base for
- * dynamic ES-module imports of `FaceLandmarker` and `ImageEmbedder`.
+ * Vendored tasks-vision ES module path used for dynamic imports.
  *
  * @see scripts/engine-3d.js – `loadMobileNet()` does `await import(MEDIAPIPE_TASKS_VISION_URL)`.
  * @see scripts/mediapipe-loop.js – uses the same package for face landmarks.
  */
-export const MEDIAPIPE_TASKS_VISION_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35';
+export const MEDIAPIPE_TASKS_VISION_URL = new URL('./vendor/tasks-vision@0.10.35.js', import.meta.url).href;
 
 /**
- * URL of the MediaPipe WASM blob loaded by `FilesetResolver.forVisionTasks()`.
- * The path must match the package version of `MEDIAPIPE_TASKS_VISION_URL` to
- * avoid runtime version mismatch errors.
+ * Local URL of the MediaPipe WASM directory loaded by `FilesetResolver.forVisionTasks()`.
  *
  * @see scripts/engine-3d.js
  * @see scripts/mediapipe-loop.js
  */
-export const MEDIAPIPE_WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm';
+export const MEDIAPIPE_WASM_URL = new URL('./vendor/wasm', import.meta.url).href;
 
 /**
- * URL of the MediaPipe FaceLandmarker `.task` bundle (float16, 478 landmarks).
- * Hosted by Google's `mediapipe-models` storage.
+ * Local URL of the MediaPipe FaceLandmarker `.task` bundle (float16, 478 landmarks).
  *
  * @see scripts/mediapipe-loop.js – passed to `FaceLandmarker.createFromOptions()`.
  */
-export const MEDIAPIPE_FACE_LANDMARKER_URL = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+export const MEDIAPIPE_FACE_LANDMARKER_URL = new URL('./vendor/face_landmarker.task', import.meta.url).href;
 
 /**
- * URL of the MediaPipe ImageEmbedder model bundle (MobileNetV3 Small, float32).
+ * Local URL of the MediaPipe ImageEmbedder model bundle (MobileNetV3 Small, float32).
  * Produces the embedding vector consumed by the 3D recognition pipeline.
  *
  * @see scripts/engine-3d.js – passed to `ImageEmbedder.createFromOptions()`.
  */
-export const MEDIAPIPE_IMAGE_EMBEDDER_URL = 'https://storage.googleapis.com/mediapipe-models/image_embedder/mobilenet_v3_small/float32/1/mobilenet_v3_small.tflite';
+export const MEDIAPIPE_IMAGE_EMBEDDER_URL = new URL('./vendor/mobilenet_v3_small.tflite', import.meta.url).href;
 
 /**
  * Pre-built TinyFaceDetector options reused across every face-api detection
