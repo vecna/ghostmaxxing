@@ -47,7 +47,7 @@ function copyEntry(relPath) {
   const to = path.join(TARGET, relPath);
 
   if (!fs.existsSync(from)) {
-    console.warn(`[instl] skip missing: ${relPath}`);
+    console.warn(`[install] skip missing: ${relPath}`);
     return;
   }
 
@@ -55,13 +55,13 @@ function copyEntry(relPath) {
   if (stat.isDirectory()) {
     fs.mkdirSync(path.dirname(to), { recursive: true });
     fs.cpSync(from, to, { recursive: true });
-    console.log(`[instl] copied dir: ${relPath}`);
+    console.log(`[install] copied dir: ${relPath}`);
     return;
   }
 
   fs.mkdirSync(path.dirname(to), { recursive: true });
   fs.copyFileSync(from, to);
-  console.log(`[instl] copied file: ${relPath}`);
+  console.log(`[install] copied file: ${relPath}`);
 }
 
 function copyTopLevelHtmlFiles() {
@@ -77,14 +77,14 @@ function copyTopLevelHtmlFiles() {
 
 function main() {
   cleanTargetDir(TARGET);
-  console.log(`[instl] target cleaned and initialized: ${TARGET}`);
+  console.log(`[install] target cleaned and initialized: ${TARGET}`);
 
   copyTopLevelHtmlFiles();
 
   for (const relPath of COPY_FILES) copyEntry(relPath);
   for (const relPath of COPY_DIRS) copyEntry(relPath);
 
-  console.log('[instl] completed.');
+  console.log('[install] completed.');
 }
 
 main();
