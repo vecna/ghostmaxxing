@@ -59,7 +59,7 @@ async function waitForVideoReady(v) {
  * `gstmxx.events`, missing `#video`, or MediaPipe load failure during startup.
  *
  * @returns {Promise<void>} Resolves after setup starts the loop, or exits early when prerequisites fail.
- * @see main - Dispatches `ghostatiReady` once `window.gstmxx`, state, and DOM handles are ready.
+ * @see main - Dispatches `gstmxxReady` once `window.gstmxx`, state, and DOM handles are ready.
  * @see tick - Started after MediaPipe and the video stream are ready.
  * @see initPlugins3dLoader - Receives `FaceLandmarker` through `window.gstmxx.FaceLandmarker`.
  */
@@ -140,4 +140,4 @@ function tick() {
    }
 }
 
-window.addEventListener('ghostatiReady', init, { once: true });
+window.addEventListener('gstmxxReady', init, { once: true });

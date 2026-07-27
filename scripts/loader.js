@@ -620,7 +620,7 @@ async function init() {
       setLoaderStatus('live', 'loader_status_ready');
       setLog(t('loader_ready_log'), 'loader');
       state.gstmxxEvents.dispatchEvent(new CustomEvent('ready', { detail: {} }));
-      window.dispatchEvent(new CustomEvent('ghostatiReady'));
+      window.dispatchEvent(new CustomEvent('gstmxxReady'));
       setActionButtonsEnabled(true);
    } catch (err) {
       setLoaderStatus('error', 'loader_status_model_load_failed');

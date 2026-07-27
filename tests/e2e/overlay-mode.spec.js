@@ -59,9 +59,9 @@ test.describe('Ghostmaxxing Overlay Mode E2E', () => {
     }));
 
     await page.addInitScript(() => {
-      // Flag set when the engine fires ghostatiReady (after models + camera init).
-      window.__ghostatiReadyFired = false;
-      window.addEventListener('ghostatiReady', () => { window.__ghostatiReadyFired = true; });
+      // Flag set when the engine fires gstmxxReady (after models + camera init).
+      window.__gstmxxReadyFired = false;
+      window.addEventListener('gstmxxReady', () => { window.__gstmxxReadyFired = true; });
 
       window.__captureBboxOverlay = false;
       window.__bboxOverlayCounters = { strokeRect: 0, arc: 0, clearRect: 0, fillText: 0 };
@@ -98,9 +98,9 @@ test.describe('Ghostmaxxing Overlay Mode E2E', () => {
 
     await page.goto('/lab.html');
 
-    // Wait for the engine to finish initialising (ghostatiReady fires after the
+    // Wait for the engine to finish initialising (gstmxxReady fires after the
     // stub model-loads and fake-camera start complete — typically < 5 s with stubs).
-    await page.waitForFunction(() => window.__ghostatiReadyFired, { timeout: 15000 });
+    await page.waitForFunction(() => window.__gstmxxReadyFired, { timeout: 15000 });
     // Confirm the view-bar boot() has applied the default Camera view.
     await expect(page.locator('#bboxOverlay')).toHaveClass(/gm-canvas-hidden/, { timeout: 5000 });
 

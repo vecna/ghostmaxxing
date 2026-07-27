@@ -470,8 +470,8 @@ window.addEventListener('i18n:localeChanged', () => {
   renderReadout(null);
 });
 // The engine builds ghostyle buttons during its async init and fires
-// `ghostatiReady` on window when state/els/window.gstmxx are ready.
+// `gstmxxReady` on window when state/els/window.gstmxx are ready.
 if (window.gstmxx) { wireBus(); boot(); }
-else window.addEventListener('ghostatiReady', () => { wireBus(); boot(); }, { once: true });
+else window.addEventListener('gstmxxReady', () => { wireBus(); boot(); }, { once: true });
 // If ghostyles load a beat after ready, re-resolve pins shortly after.
 setTimeout(() => { if (!ui.pins.filter(Boolean).length) boot(); }, 1500);

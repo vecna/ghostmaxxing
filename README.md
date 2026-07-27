@@ -53,7 +53,7 @@ Core capabilities:
 - dynamic Ghostyle loading through [`scripts/ghostyles-manager.js`](scripts/ghostyles-manager.js);
 - 3D plugin loading through [`scripts/plugins3d-loader.js`](scripts/plugins3d-loader.js);
 - IndexedDB-backed local state through [`scripts/db.js`](scripts/db.js);
-- DOM and UI bindings through [`scripts/dom.js`](scripts/dom.js), [`scripts/main.js`](scripts/main.js), and [`scripts/ghostati-mobile-ui.js`](scripts/ghostati-mobile-ui.js);
+- DOM and UI bindings through [`scripts/dom.js`](scripts/dom.js), [`scripts/main.js`](scripts/main.js), and [`scripts/mobile-ui.js`](scripts/mobile-ui.js);
 - image/makeup export helpers through [`scripts/export-makeup.js`](scripts/export-makeup.js);
 - landing-page animation through [`scripts/index-effect.js`](scripts/index-effect.js).
 

@@ -636,7 +636,7 @@ async function init() {
 
    // Questo evento segnala ai file con i loop, che l'ambiente è pronto, e troveranno
    // state, els, e window.gstmxx pronti.
-   window.dispatchEvent(new CustomEvent('ghostatiReady'));
+   window.dispatchEvent(new CustomEvent('gstmxxReady'));
 }
 
 if (typeof process === 'undefined' || !process.env.VITEST) {
