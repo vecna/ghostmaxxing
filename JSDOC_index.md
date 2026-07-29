@@ -27,7 +27,7 @@ The codebase is organized into several modules within the `scripts/` and `ghosty
 - **`db.js`**: IndexedDB management wrapper for persisting local state, images, and user preferences.
 - **`dom.js`**: UI manipulation and DOM interaction utilities, binding event listeners and handling interface state.
 - **`engine.js`**: Core orchestration layer that connects the rendering loops, models, and UI events.
-- **`ghostati-mobile-ui.js`**: Specific user interface interactions tailored for mobile layouts and touch events.
+- **`mobile-ui.js`**: Specific user interface interactions tailored for mobile layouts and touch events.
 - **`ghostyle3d-uv-renderer.js`**: Specialized logic for 3D model processing, UV mapping, and 3D rendering.
 - **`ghostyles-manager.js`**: Handles the loading, switching, and parsing of "Ghostyles" (camouflage styles).
 - **`main.js`**: Application entry point; initializes all subsystems and triggers the main application flow.

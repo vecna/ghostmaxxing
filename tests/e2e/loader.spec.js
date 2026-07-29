@@ -10,7 +10,7 @@ test.describe('MP4 loader tool', () => {
       localStorage.removeItem('ghostmaxxing-locale');
     });
 
-    await page.route('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js', (route) => {
+    await page.route(/(cdn\.jsdelivr\.net\/npm\/@vladmandic\/face-api\/dist\/face-api\.js|\/scripts\/vendor\/face-api\.js)$/, (route) => {
       route.fulfill({
         contentType: 'application/javascript',
         body: `
@@ -29,7 +29,7 @@ test.describe('MP4 loader tool', () => {
       });
     });
 
-    await page.route('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35', (route) => {
+    await page.route(/(cdn\.jsdelivr\.net\/npm\/@mediapipe\/tasks-vision@0\.10\.35|\/scripts\/vendor\/tasks-vision@0\.10\.35\.js)$/, (route) => {
       route.fulfill({
         contentType: 'application/javascript',
         body: `
@@ -81,7 +81,7 @@ test.describe('MP4 loader tool', () => {
       CanvasRenderingContext2D.prototype.drawImage = function() {};
     });
 
-    await page.route('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js', (route) => {
+    await page.route(/(cdn\.jsdelivr\.net\/npm\/@vladmandic\/face-api\/dist\/face-api\.js|\/scripts\/vendor\/face-api\.js)$/, (route) => {
       route.fulfill({
         contentType: 'application/javascript',
         body: `
@@ -124,7 +124,7 @@ test.describe('MP4 loader tool', () => {
       });
     });
 
-    await page.route('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35', (route) => {
+    await page.route(/(cdn\.jsdelivr\.net\/npm\/@mediapipe\/tasks-vision@0\.10\.35|\/scripts\/vendor\/tasks-vision@0\.10\.35\.js)$/, (route) => {
       route.fulfill({
         contentType: 'application/javascript',
         body: `

@@ -23,7 +23,7 @@ import { findFace3d, evaluateMatch3d } from './engine-3d.js';
 import { state } from './state.js';
 import { t } from './i18n.js';
 
-window.addEventListener('ghostatiReady', autoFindLoop, { once: true });
+window.addEventListener('gstmxxReady', autoFindLoop, { once: true });
 
 /**
  * Starts the silent polling loop after the main app has initialized `state`,
@@ -32,7 +32,7 @@ window.addEventListener('ghostatiReady', autoFindLoop, { once: true });
  * window before auto metrics begin updating the overlay.
  *
  * @returns {void}
- * @see main - Dispatches `ghostatiReady` once the lab environment is ready.
+ * @see main - Dispatches `gstmxxReady` once the lab environment is ready.
  * @see tick - Performs each silent 2D/3D matching pass.
  * @see renderReadout - Receives the auto `matchStateChanged` payload through the event bus.
  * @see onMatchStateChanged - Updates the bbox overlay from auto match-state events.

@@ -10,7 +10,7 @@
  * renders as a properties table.
  *
  * Note on events: the in-app event bus is `state.gstmxxEvents`. The
- * `ghostatiReady` lifecycle event is the one exception — it is dispatched on
+ * `gstmxxReady` lifecycle event is the one exception — it is dispatched on
  * `window`, NOT on this bus.
  */
 
@@ -170,7 +170,7 @@
  *   In-app event bus. All cross-module events are dispatched here and exposed to
  *   plugins as `window.gstmxx.events`. Events on this bus: `ready`, `detection`,
  *   `effectChanged`, `effectChanged3d`, `landmarks3d`, `matchStateChanged`,
- *   `beforeEfficacyComposite`, `dbChanged`, `mediapipeReady`. (NB: `ghostatiReady`
+ *   `beforeEfficacyComposite`, `dbChanged`, `mediapipeReady`. (NB: `gstmxxReady`
  *   is dispatched on `window`, not here.)
  *   **Range:** a single EventTarget instance (never reassigned).
  *   **Used in:** engine.js, ghostyles-manager.js, db.js, main.js (and all add-on

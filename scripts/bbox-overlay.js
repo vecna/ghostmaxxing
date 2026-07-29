@@ -100,7 +100,7 @@ let suppressUntil = 0;
 
 // ---------- Bootstrap ----------
 
-window.addEventListener('ghostatiReady', init, { once: true });
+window.addEventListener('gstmxxReady', init, { once: true });
 
 /**
  * Resolves the bbox canvas and overlay references after `main.js` has finished
@@ -109,7 +109,7 @@ window.addEventListener('ghostatiReady', init, { once: true });
  * deliberately light enough for tests to call with stub canvases in the DOM.
  *
  * @returns {boolean} True when required DOM nodes are present and listeners are attached.
- * @see main - Dispatches `ghostatiReady` when the lab environment is ready.
+ * @see main - Dispatches `gstmxxReady` when the lab environment is ready.
  * @see onDetection - Receives live face-api detection events.
  * @see onLandmarks3d - Receives MediaPipe mesh events.
  * @see onMatchStateChanged - Receives scan/save/find/auto match-state events.

@@ -44,7 +44,7 @@ import { applyI18n, initI18n, setupLocaleSelect, t } from './i18n.js';
 
 const CANON = 512;
 const RESULT_MAX = 900;
-const MODEL_ROOT = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+const MODEL_ROOT = new URL('./vendor/', import.meta.url).href;
 
 /**
  * Two-dimensional point in image or canvas coordinates.

@@ -13,26 +13,25 @@ The project combines webcam capture, [`face-api.js`](https://github.com/vladmand
 
 Primary links:
 
-- Live project root: [https://sindacato.nina.watch/ghostati/](https://sindacato.nina.watch/ghostati/)
-- Browser app: [ghostati.html](https://sindacato.nina.watch/ghostati/ghostati.html)
-- Source code: [github.com/vecna/ghostati](https://github.com/vecna/ghostati)
-- Ghostyle gallery / distribution site: [ghostyles.vecna.eu](https://ghostyles.vecna.eu)
-- Generated API docs: [docs/](https://sindacato.nina.watch/ghostati/docs/)
-- Legacy docs page: [ghostati-docs.html](https://sindacato.nina.watch/ghostati/ghostati-docs.html)
-- Test coverage: [coverage/](https://sindacato.nina.watch/ghostati/coverage/)
-- Project context page: [sindacato.nina.watch/it/iniziative/ghostati](https://sindacato.nina.watch/it/iniziative/ghostati/)
+- first inception and italian workshop organization area: [https://sindacato.nina.watch/ghostati/](https://sindacato.nina.watch/ghostati/)
+- Browser app: [lab.html](https://ghostmaxxing.vecna.eu/lab.html)
+- Source code: [github.com/vecna/ghostmaxxing](https://github.com/vecna/ghostmaxxing)
+- Ghostyle gallery [ghosmaxxing.vecna.eu/@ghostlyles](https://ghostmaxxing.vecna.eu/@ghostyles), it's on acivitypub, follow it via mastodon!
+- Technical docs: [docs/](https://ghostmaxxing.vecna.eu/docs/)
+- Test coverage: [coverage/](https://ghstmaxxing.vecna.eu/coverage/)
 - Sitemap: [sitemap.xml](https://sindacato.nina.watch/ghostati/sitemap.xml)
-- Reference dataset: [REFERENCES.json](REFERENCES.json)
-- Reference-update prompt: [PROMPT-REFERENCES-UPDATE.txt](PROMPT-REFERENCES-UPDATE.txt)
+- Reference dataset: [references/REFERENCES.json](references/REFERENCES.json)
+- Live pages: [lab.html](lab.html), [realtime.html](realtime.html), and [ghostyle-transfer.html](ghostyle-transfer.html)
 
 **Central field-reporting resource:** if you know of a place where facial recognition is being deployed, tested, procured, or hidden in public-space infrastructure, use the NINA submission node: [Raccontacelo](https://raccontaci.nina.watch/#/submission?context=10c78596-3ea0-4867-b2fb-21fdb8e3f40c). Reports about supplier, technology, data access, deployment context, limits, and abuses are project inputs, not side notes.
 
 # What the app does
 
 ```text
- webcam ──► detector ──► landmarks ──► overlay renderer
-    │                         │                │
-    └──── baseline face DB ◄──┴──── compare ◄──┘
+ webcam ──► landmarks ──► save your face ──► overlay renderer
+                                         ──► or do actual makeup
+                             │                │
+       ─ share the sucess ◄──┴──── compare ◄──┘
 ```
 
 The app is designed around a simple experimental loop:
@@ -40,37 +39,36 @@ The app is designed around a simple experimental loop:
 1. Start the webcam in a modern browser.
 2. Load face-detection and landmark models.
 3. Save a local baseline descriptor for a consenting test face.
-4. Apply a Ghostyle overlay to the live video/canvas layer.
+4. Apply a Ghostyle overlay, or, paint your own (it's the default!) to the live video/canvas layer.
 5. Re-run detection and recognition against the saved descriptor.
 6. Observe whether the pipeline still detects the face, extracts landmarks, and matches the baseline.
 
-Core capabilities:
+Key runtime files and responsibilities:
 
-- live webcam setup and teardown through [`scripts/camera.js`](scripts/camera.js);
+- webcam setup and teardown through [`scripts/camera.js`](scripts/camera.js);
 - face detection, landmarks, descriptors, and match orchestration through [`scripts/engine.js`](scripts/engine.js);
 - 3D/MediaPipe loop support through [`scripts/mediapipe-loop.js`](scripts/mediapipe-loop.js) and [`scripts/engine-3d.js`](scripts/engine-3d.js);
 - bounding-box overlays through [`scripts/bbox-overlay.js`](scripts/bbox-overlay.js);
 - dynamic Ghostyle loading through [`scripts/ghostyles-manager.js`](scripts/ghostyles-manager.js);
 - 3D plugin loading through [`scripts/plugins3d-loader.js`](scripts/plugins3d-loader.js);
 - IndexedDB-backed local state through [`scripts/db.js`](scripts/db.js);
-- DOM and UI bindings through [`scripts/dom.js`](scripts/dom.js), [`scripts/main.js`](scripts/main.js), and [`scripts/ghostati-mobile-ui.js`](scripts/ghostati-mobile-ui.js);
+- DOM and UI bindings through [`scripts/dom.js`](scripts/dom.js), [`scripts/main.js`](scripts/main.js), and [`scripts/mobile-ui.js`](scripts/mobile-ui.js);
 - image/makeup export helpers through [`scripts/export-makeup.js`](scripts/export-makeup.js);
-- landing-page animation through [`scripts/index-effect.js`](scripts/index-effect.js).
+- homepage interaction through [`scripts/home.js`](scripts/home.js).
 
 # Runtime architecture
 
 ```text
- ghostati.html
-   ├─ @vladmandic/face-api
-   ├─ @mediapipe/tasks-vision
-   ├─ scripts/main.js
-   │   ├─ camera.js
-   │   ├─ engine.js
-   │   ├─ db.js
-   │   ├─ dom.js
-   │   └─ ghostyles-manager.js
-   ├─ ghostyles.json
-   └─ ghostyles/*.js
+lab.html
+  ├─ face-api.js / MediaPipe Tasks Vision
+  ├─ scripts/main.js
+  │   ├─ camera.js            — webcam stream lifecycle
+  │   ├─ engine.js            — detection, landmarks, descriptors, matching
+  │   ├─ db.js                — local IndexedDB state
+  │   ├─ dom.js               — DOM wiring and UI state
+  │   └─ ghostyles-manager.js — Ghostyle discovery and dynamic loading
+  ├─ ghostyles.json          — manifest of available Ghostyles
+  └─ ghostyles/*.js          — overlay modules rendered on top of the canvas/video layer
 ```
 
 The project is a static web app: there is no production build step required to open the interface locally. The browser loads HTML, CSS, JavaScript modules, model assets, and plugin manifests.
@@ -80,10 +78,12 @@ Important local entry points:
 - [`index.html`](index.html) — public landing page with links to code, docs, coverage, Ghostyles, project context, and the reporting node.
 - [`lab.html`](lab.html) — translated main webcam/AR application.
 - [`loader.html`](loader.html) — translated internal MP4 loader for repeatable 2D/3D video tests.
-- [`ghostati.html`](ghostati.html) — legacy main webcam/AR application entry point.
+- [`realtime.html`](realtime.html) — realtime interface entry point.
+- [`ghostyle-transfer.html`](ghostyle-transfer.html) — transfer-oriented interface entry point.
+- [`ghostati.html`](ghostati.html) — legacy webcam/AR application entry point.
 - [`ghostyles.json`](ghostyles.json) — Ghostyle manifest.
-- [`JSDOC_README.md`](JSDOC_README.md) — concise generated-docs overview.
-- [`REFERENCES.json`](REFERENCES.json) — curated technical/cultural reference set.
+- [`JSDOC_index.md`](JSDOC_index.md) — concise generated-docs overview.
+- [`references/REFERENCES.json`](references/REFERENCES.json) — curated technical/cultural reference set.
 
 # Localization coverage
 
@@ -97,8 +97,7 @@ Other static pages such as [`about.html`](about.html), [`report.html`](report.ht
 
 Runtime external dependencies visible from the HTML/config layer:
 
-- [Google Fonts](https://fonts.googleapis.com) / [Google Fonts static assets](https://fonts.gstatic.com)
-- [Landing-page Google Fonts CSS](https://fonts.googleapis.com/css2?family=League+Script&family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap)
+- Local vendored Google Fonts CSS/assets in `styles/vendor/` (`Inter`, `JetBrains Mono`, `League Script`, `Outfit`)
 - [jsDelivr CDN](https://cdn.jsdelivr.net)
 - [`@vladmandic/face-api`](https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js)
 - [face-api.js model weights](https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js-models@master/)
@@ -117,8 +116,8 @@ For workshops or higher-risk demos, prefer self-hosting model and library assets
 Clone the repository:
 
 ```bash
-git clone https://github.com/vecna/ghostati.git
-cd ghostati
+git clone https://github.com/vecna/ghostmaxxing.git
+cd ghostmaxxing
 ```
 
 Install development dependencies:
@@ -135,10 +134,10 @@ npx http-server .
 python3 -m http.server 8000
 ```
 
-Open the app:
+Open the main lab app:
 
 ```text
-http://localhost:8000/ghostati.html
+http://localhost:8000/lab.html
 ```
 
 Open the landing page:
@@ -161,15 +160,15 @@ http://localhost:8000/
 
 A **Ghostyle** is a JavaScript module that draws an overlay anchored to a detected face. It can be local or loaded through a manifest.
 
-Start from [`ghostyles/00-template.js`](ghostyles/00-template.js), then add the file to [`ghostylist.json`](ghostylist.json). Existing 2D examples include:
+Start from [`ghostyles/00-template.js`](ghostyles/00-template.js), then add the file to [`ghostyles.json`](ghostyles.json). Existing examples include:
 
-- [`ghostyles/graphic-liner.js`](ghostyles/graphic-liner.js)
+- [`ghostyles/beauty-2d.js`](ghostyles/beauty-2d.js)
+- [`ghostyles/brush.js`](ghostyles/brush.js)
+- [`ghostyles/cv-dazzle-1.js`](ghostyles/cv-dazzle-1.js)
+- [`ghostyles/maximalism.js`](ghostyles/maximalism.js)
 - [`ghostyles/smokey-eyes.js`](ghostyles/smokey-eyes.js)
-- [`ghostyles/blush-lift.js`](ghostyles/blush-lift.js)
-- [`ghostyles/lip-tint.js`](ghostyles/lip-tint.js)
 - [`ghostyles/soft-contour.js`](ghostyles/soft-contour.js)
-- [`ghostyles/stage-mask.js`](ghostyles/stage-mask.js)
-- [`ghostyles/splash.js`](ghostyles/splash.js)
+- [`ghostyles/uv-stripes.js`](ghostyles/uv-stripes.js)
 
 A minimal 2D plugin shape:
 
@@ -193,12 +192,7 @@ export function onClear(ctx) {
 }
 ```
 
-3D/MediaPipe-oriented examples live in:
-
-- [`ghostyles3d/prove-stripes.js`](ghostyles3d/prove-stripes.js)
-- [`ghostyles3d/uv-stripes.js`](ghostyles3d/uv-stripes.js)
-
-Register them in [`ghostylist3d.json`](ghostylist3d.json).
+Plugins that expose MediaPipe/UV hooks are loaded through the same manifest. The current UV-capable example is [`ghostyles/uv-stripes.js`](ghostyles/uv-stripes.js).
 
 # Testing and generated docs
 
@@ -312,28 +306,3 @@ Current reference links:
 - [HyperFace](https://adam.harvey.studio/hyperface/) — Adam Harvey, 2016 · `artistic` · closeness `92`
 - [Adversarial Manipulation of Deep Representations](https://arxiv.org/abs/1511.05122) — Sara Sabour, Yanshuai Cao, Fartash Faghri et al., 2015 · `research` · closeness `45`
 - [CV Dazzle](https://adam.harvey.studio/cvdazzle/) — Adam Harvey, 2010 · `artistic` · closeness `100`
-
-# Contributing
-
-```text
- small patch
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Recent changes
-- `85f9100` internationalization added, three languages
-- `697c972` JSdoc improvements
-- `1a49dea` added condition for face not found during composite analysis
-- `3b32d40` deleted some dead code and improved UT
-- `b09f30a` removal of duplicated code

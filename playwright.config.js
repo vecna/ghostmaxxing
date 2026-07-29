@@ -1,4 +1,16 @@
 import { defineConfig, devices } from '@playwright/test';
+import { existsSync } from 'node:fs';
+
+const isLinux = process.platform === 'linux';
+const linuxChromeCandidates = [
+  '/usr/bin/google-chrome',
+  '/usr/bin/google-chrome-stable',
+  '/usr/bin/chromium',
+  '/usr/bin/chromium-browser',
+];
+const systemChromePath = isLinux
+  ? linuxChromeCandidates.find((candidate) => existsSync(candidate))
+  : undefined;
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -18,6 +30,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         launchOptions: {
+          executablePath: systemChromePath,
           args: [
             '--use-fake-ui-for-media-stream',
             '--use-fake-device-for-media-stream',
