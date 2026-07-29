@@ -1,7 +1,7 @@
 # Ghostyle Authoring Guide
 
 **Project:** Ghostmaxxing  
-**Recommended path in repository:** `docs/GHOSTYLE_AUTHORING.md`  
+**Where this lives:** `tutorials/ghostyle-authoring.md`, rendered as the first tutorial in the docs sidebar at `/docs/jsdoc/tutorial-ghostyle-authoring.html`  
 **Audience:** people and AI agents creating, reviewing, or maintaining Ghostyles  
 **Status:** first practical authoring guide, aligned with the July 2026 Ghostmaxxing MVP direction
 
@@ -184,28 +184,37 @@ Each Ghostyle should start with a structured header:
  */
 ```
 
-Current required tags:
+Header metadata is documentation, never a runtime switch — capability is detected
+from which functions you export (`onDraw` / `paintUV`). The tiers below are the
+finalized project policy (Roadmap v1.6 §5.3):
 
-| Tag | Required | Meaning |
-|---|---:|---|
-| `@name` | yes | Human-readable display name. |
-| `@description` | yes | One-sentence explanation. |
-| `@release_date` | recommended | ISO date, useful for generated manifests. |
-| `@version` | recommended | Semver-style plugin version. |
-| `@author` | recommended | Person, collective, or project name. |
-
-Proposed future tags, not yet enforced:
-
-| Tag | Possible values | Why it matters |
+| Tag | Tier | Why |
 |---|---|---|
-| `@capability` | `2d`, `uv`, `hybrid` | Can be generated from exports, but explicit metadata helps review. |
-| `@technique` | free text | Example: `cv-dazzle`, `orbit-disruption`, `contour`, `texture-stripes`. |
-| `@surface` | free text | Example: `eyes`, `brows`, `cheeks`, `full-face`, `uv-skin`. |
-| `@intensity` | `low`, `medium`, `high` | Helps users choose between subtle and expressive patterns. |
-| `@review_status` | `experimental`, `workshop-tested`, `reference` | Helps decide what appears prominently in the gallery. |
-| `@license` | SPDX string | Useful if third-party authors submit plugins. |
+| `@name` | **required** | Human-readable display name (UI + card text). |
+| `@description` | **required** | One-sentence explanation shown on the card. |
+| `@slug` | **required** | Stable id, independent of filename. |
+| `@version` | **required** | Semver-style version — provenance for baked Ghostyles that circulate outside git. |
+| `@author` | **required** | Person, collective, or project — attribution travels with copyable files. |
+| `@license` | **required** | SPDX string — the license must travel with an individually copyable module. |
+| `@technique` | recommended | e.g. `cv-dazzle`, `contour`, `texture-stripes`. Future archive filter vocabulary. |
+| `@supports` | recommended | e.g. `2d`, `uv`, `hybrid`. Documents capability for reviewers. |
+| `@regions` | recommended | e.g. `eyes`, `brows`, `cheeks`, `full-face`, `uv-skin`. |
+| `@evidence` | recommended | `demo` / `experimental` / `workshop-tested` / `validated`. |
+| `@release_date` | optional | ISO date; useful for archive cards. Duplicates git for in-repo files and goes stale on edits. Format-checked when present. |
+| `@references` `@workshop` | optional | Ties a Ghostyle to the references dataset / a workshop-tested result. |
 
-The manifest generator can eventually read these tags and update `ghostyles.json` automatically.
+> **What the validator enforces today (July 2026):** `@name` and `@description`
+> are hard-required; `@release_date` is optional and only format-checked. The
+> stricter required tier (`@slug`, `@version`, `@author`, `@license`) is project
+> policy but is not yet enforced as an error, because most shipped Ghostyles do
+> not carry `@slug`/`@license` and `npm run validate:ghostyles` must stay green.
+> Backfill those tags across `ghostyles/` before tightening the validator, or do
+> it when the archive track (Roadmap §9) begins. Until then: write the full
+> required set into every new Ghostyle even though the tool won't fail you for
+> omitting it.
+
+The manifest generator can eventually read these tags and update `ghostyles.json`
+automatically; it stays demoted with the archive track until then.
 
 ---
 

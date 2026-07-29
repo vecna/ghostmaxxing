@@ -3,16 +3,17 @@
   "source": {
     "include": ["scripts", "ghostyles"],
     "includePattern": ".+\\.js(doc|x)?$",
-    "excludePattern": "(^|\\/|\\\\)_"
+    "excludePattern": "(^|\\/|\\\\)_",
+    "exclude": ["scripts/transfer.js", "scripts/realtime.js"]
   },
   "opts": {
     "template": "node_modules/clean-jsdoc-theme/dist",
     "tutorials": "./tutorials",
-    "basePath": "/docs/",
+    "basePath": "/docs/jsdoc/",
     "theme_opts": {
-      "footer": "<div style='text-align: center; padding: 1rem 0;'>Ghostmaxxing v0.1.0 | Last updated: July 6, 2026</div>"
+      "footer": "<div style='text-align: center; padding: 1rem 0;'>Ghostmaxxing v0.1.0 | Last updated: July 2026</div>"
     },
-    "destination": "./docs",
+    "destination": "./docs/jsdoc",
     "recurse": true,
     "readme": "./JSDOC_index.md"
   },

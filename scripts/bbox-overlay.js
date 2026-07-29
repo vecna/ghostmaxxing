@@ -10,6 +10,14 @@
  *
  * Reacts to events on `state.gstmxxEvents`. Does not mutate the engine.
  *
+ * Architectural note (intentional, do not "fix"): the live scaffold and the
+ * composite readout deliberately use different images and different detectors —
+ * the scaffold tracks the raw webcam frame for responsive per-frame feedback,
+ * while the composite readout re-runs detection on the overlay-applied image on
+ * the slower auto-find tick. Pointing the scaffold at the composite would make
+ * the overlay feel laggy and conflate "is a face visible" with "does the
+ * modified face still match". Keep them separate.
+ *
  * Color convention:
  *   red    = identified  (matched)
  *   green  = eluded

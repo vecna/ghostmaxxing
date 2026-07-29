@@ -13,12 +13,12 @@ const EXPORT_LAYOUT = {
 };
 
 const EXPORT_COPY = {
-   filename: 'ghostati-makeup.png',
+   filename: 'ghostmaxxing-makeup.png',
    mimeType: 'image/png',
    shareTitle: 'Ghostmaxxing Makeup',
    shareText: 'Learn some adversarial makeup techniques!',
-   headerPrefix: 'https://github.com/vecna/ghostati',
-   reportUrl: 'https://vecna.eu/ghostmaxxing//'
+   headerPrefix: 'https://github.com/vecna/ghostmaxxing',
+   reportUrl: 'https://ghostmaxxing.vecna.eu/'
 };
 
 /**

@@ -227,7 +227,7 @@ export async function recordOneSecond() {
 
       recorder.onstop = async () => {
          const blob = new Blob(chunks, { type: mimeType });
-         const filename = `ghostati-recording-${Date.now()}.${extension}`;
+         const filename = `ghostmaxxing-recording-${Date.now()}.${extension}`;
          const clipId = globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function'
             ? globalThis.crypto.randomUUID()
             : `${Date.now()}-${Math.random().toString(36).slice(2)}`;

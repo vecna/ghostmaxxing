@@ -80,11 +80,6 @@ Commit and push these files:
 .github/workflows/ci.yml
 scripts-dev/update-coverage-badge.js
 tutorials/github-actions.md
-```
-
-You will usually also push the README change that adds the CI badge:
-
-```text
 README.md
 ```
 
