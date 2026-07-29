@@ -1,6 +1,6 @@
 Vendor asset inventory for third-party runtime files.
 
-Use `scripts/vendor/foca.sh` to refresh the assets it manages.
+Use `scripts/vendor/fetch-sources.sh` to refresh the assets it manages.
 
 ## Library bundles
 
@@ -9,7 +9,7 @@ Use `scripts/vendor/foca.sh` to refresh the assets it manages.
 | `face-api.js` | `https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js` | floating (no `@x.y.z` in URL) | Main `faceapi` browser bundle used by pages and transfer tool. |
 | `tasks-vision@0.10.35.js` | `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35` | `0.10.35` | ESM bundle imported by 3D/embedder paths. |
 
-## URLs synced by `foca.sh`
+## URLs synced by `fetch-sources.sh`
 
 ### face-api.js model assets
 
@@ -44,4 +44,4 @@ Source reference for this block is currently `justadudewhohacks/face-api.js-mode
 
 ## Update rule
 
-When any source URL or version segment above changes, re-run `scripts/vendor/foca.sh` and verify runtime no longer requests third-party hosts.
+When any source URL or version segment above changes, re-run `scripts/vendor/fetch-sources.sh` and verify runtime no longer requests third-party hosts.
