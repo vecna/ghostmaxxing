@@ -6,7 +6,7 @@ const mediapipeMocks = vi.hoisted(() => ({
   detectForVideo: vi.fn(),
 }));
 
-vi.mock('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35', () => ({
+vi.mock('../../scripts/vendor/tasks-vision@0.10.35.js', () => ({
   FilesetResolver: {
     forVisionTasks: mediapipeMocks.forVisionTasks,
   },
@@ -73,7 +73,7 @@ describe('mediapipe loop', () => {
   it('warns and skips startup when the gstmxx event bus is missing', async () => {
     await import('../../scripts/mediapipe-loop.js');
 
-    window.dispatchEvent(new CustomEvent('ghostatiReady'));
+    window.dispatchEvent(new CustomEvent('gstmxxReady'));
     await flushPromises();
 
     expect(consoleWarnSpy).toHaveBeenCalledWith('console_mediapipe_events_missing');
@@ -90,7 +90,7 @@ describe('mediapipe loop', () => {
     window.gstmxx = { events, log: vi.fn() };
 
     await import('../../scripts/mediapipe-loop.js');
-    window.dispatchEvent(new CustomEvent('ghostatiReady'));
+    window.dispatchEvent(new CustomEvent('gstmxxReady'));
     await flushPromises();
 
     expect(mediapipeMocks.forVisionTasks).toHaveBeenCalledWith('https://cdn.example.test/mediapipe/wasm');
@@ -119,7 +119,7 @@ describe('mediapipe loop', () => {
     window.gstmxx = { events: new EventTarget(), log: vi.fn() };
 
     await import('../../scripts/mediapipe-loop.js');
-    window.dispatchEvent(new CustomEvent('ghostatiReady'));
+    window.dispatchEvent(new CustomEvent('gstmxxReady'));
     await flushPromises();
 
     expect(consoleErrorSpy).toHaveBeenCalledWith('console_mediapipe_init_error', loadError);
