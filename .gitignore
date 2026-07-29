@@ -1,7 +1,8 @@
 .DS_Store
+CODE2PROMPT*.txt
 node_modules
-playwright-report
-test-results/
-coverage
-docs
+playwright-report/*
+test-results/*
+coverage/*
+docs/*
 references/.venv

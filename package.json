@@ -45,7 +45,8 @@
     "i18n:extract": "node scripts-dev/extract-i18n-pot.cjs",
     "install": "npm update:references; npm run docs:rebuild; node scripts-dev/install-client-interface.cjs",
     "check": "npm run validate:ghostyles && npm run test:unit",
-    "prepare:e2e": "playwright install chromium"
+    "prepare:e2e": "playwright install chromium",
+    "c2p": "code2prompt . --no-ignore --include '*.html,*.css,*.js,*.cjs,*.json,*.md,*.d.ts,*.xml,**/*.html,**/*.css,**/*.js,**/*.cjs,**/*.json,**/*.md,**/*.d.ts,**/*.xml' --exclude 'node_modules/**,package-lock.json,CODE2PROMPT*.txt,.DS_Store,**/.DS_Store,tests/**/*.js,tests/**/*.jpg,tests/**/*.mjpeg,scripts/i18n.js,scripts-dev/extract-i18n-pot.cjs,scripts/vendor/README.md,scripts/vendor/**/*.js,scripts/vendor/**/*.json,scripts/vendor/**/*.wasm,scripts/vendor/**/*.task,scripts/vendor/**/*.tflite,scripts/vendor/**/*-shard*,scripts/vendor/foca.sh,styles/vendor/README.md,styles/vendor/**/*.css,styles/vendor/**/*.woff2,docs/**/*.html,docs/**/*.js,docs/**/*.css,docs/**/*.json,docs/**/*.mjs,docs/**/*.pagefind,docs/**/*.pf_meta,docs/index.md,docs/source/**/*.md,docs/module/**/*.md,docs/global/**/*.md,docs/tutorials/**/*.md,coverage/**/*.html,coverage/**/*.js,coverage/**/*.css,coverage/**/*.json,coverage/**/*.info,coverage/**/*.png,playwright-report/**/*.html,test-results/**/*.json,images/**/*.svg,images/**/*.png,images/**/*.webp,data/**/*.json,translations/README.md,translations/**/*.pot,translations/**/*.csv,references/index.html,references/*.js,references/*.txt' --sort name_asc --output-format markdown -O \"CODE2PROMPT-$(date +%Y-%m-%d).txt\""
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
