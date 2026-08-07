@@ -3,6 +3,9 @@
 
 <head>
   <meta charset="utf-8" />
+  <link rel="canonical" href="https://ghostmaxxing.vecna.eu/" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#14100c" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/svg+xml" href="/images/ghostmaxxing-favicon.svg">
   <title>Ghostmaxxing</title>
@@ -17,6 +20,53 @@
   <meta name="twitter:description" content="A public lab for testing face-recognition camouflage." />
   <meta name="twitter:image" content="/images/social-card.svg" />
   <link rel="stylesheet" href="styles/pages.css" />
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://ghostmaxxing.vecna.eu/#website",
+      "url": "https://ghostmaxxing.vecna.eu/",
+      "name": "Ghostmaxxing",
+      "description": "A public lab for testing face-recognition camouflage.",
+      "inLanguage": "en",
+      "publisher": { "@id": "https://ghostmaxxing.vecna.eu/#publisher" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://ghostmaxxing.vecna.eu/#publisher",
+      "name": "Ghostmaxxing",
+      "url": "https://ghostmaxxing.vecna.eu/",
+      "logo": "https://ghostmaxxing.vecna.eu/images/ghostmaxxing-mark.svg",
+      "sameAs": ["https://github.com/vecna/ghostmaxxing"]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://ghostmaxxing.vecna.eu/#app",
+      "name": "Ghostmaxxing",
+      "url": "https://ghostmaxxing.vecna.eu/lab.html",
+      "applicationCategory": "EducationalApplication",
+      "applicationSubCategory": "Research instrument",
+      "operatingSystem": "Any browser with camera access",
+      "browserRequirements": "Requires WebGL, WebAssembly and getUserMedia",
+      "description": "A static, browser-side lab for testing face-recognition camouflage. A local recognition pipeline runs against the webcam feed; a b
+aseline face is enrolled, altered with painted overlays or Ghostyle plugins, and re-tested in real time. All processing is client-side and no face data 
+leaves the device.",
+      "license": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+      "codeRepository": "https://github.com/vecna/ghostmaxxing",
+      "programmingLanguage": "JavaScript",
+      "author": { "@id": "https://ghostmaxxing.vecna.eu/#publisher" },
+      "keywords": "facial recognition, adversarial makeup, anti-biometric, computer vision, CV Dazzle, web AR",
+      "softwareHelp": "https://ghostmaxxing.vecna.eu/docs/"
+    }
+  ]
+}
+  </script>
+
 </head>
 
 <body>

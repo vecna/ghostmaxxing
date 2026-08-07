@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+title: "Ghostmaxxing: a browser-side lab for testing face-recognition camouflage"
+message: "If you use this software or reference it in research, please cite it."
+type: software
+authors:
+  - name: "Claudio Agosti (me.vecna.eu)"
+repository-code: "https://github.com/vecna/ghostmaxxing"
+url: "https://ghostmaxxing.vecna.eu/"
+abstract: >-
+  Ghostmaxxing is a static, client-side web application for testing
+  face-recognition camouflage. A local recognition pipeline runs against a
+  webcam feed in the browser; users enrol a baseline face, alter their
+  appearance through painted overlays or plugin "Ghostyles", and observe the
+  match response in real time. Results are local and conditional and are not
+  claims of protection against any deployed system.
+keywords:
+  - facial recognition
+  - adversarial makeup
+  - anti-biometric
+  - computer vision
+  - CV Dazzle
+  - web AR
+license: AGPL-3.0-or-later

@@ -1,0 +1,6 @@
+# Ghostmaxxing security contact
+Contact: mailto:vecna@hermescenter.org
+Expires: 2027-08-07T00:00:00.000Z
+Preferred-Languages: en, it
+Canonical: https://ghostmaxxing.vecna.eu/.well-known/security.txt
+Policy: https://github.com/vecna/ghostmaxxing/blob/main/SECURITY.md

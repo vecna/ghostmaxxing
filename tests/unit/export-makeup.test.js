@@ -98,7 +98,7 @@ describe('export-makeup helpers', () => {
     it('creates header text with plugin name', () => {
       const text = buildHeaderText('MyPlugin');
       expect(text).toContain('MyPlugin');
-      expect(text).toContain('github.com/vecna/ghostati');
+      expect(text).toContain('github.com/vecna/ghostmaxxing');
     });
   });
 

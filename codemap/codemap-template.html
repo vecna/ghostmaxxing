@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ghostmaxxing — Code Map</title>
+  <style>
+    :root {
+      --ink: #14100c;
+      --ink-deep: #0c0906;
+      --panel: #211a12;
+      --panel-2: #2c2318;
+      --line: rgba(255, 231, 168, 0.14);
+      --line-soft: rgba(255, 231, 168, 0.07);
+      --fg: #f6ece0;
+      --muted: #b9a892;
+      --faint: #8a7b6a;
+      --orange: #fd5503;
+      --yellow: #f3c747;
+      --cream: #ffe7a8;
+      --dev: #7fe3b0;
+      --alert: #ff5b5b;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--ink-deep);
+      color: var(--fg);
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    body {
+      display: grid;
+      grid-template-columns: 236px 1fr;
+      grid-template-rows: auto 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ---------- masthead ---------- */
+    header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      padding: 14px 20px 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--ink);
+    }
+
+    header h1 {
+      font-family: var(--serif);
+      font-size: 21px;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
+
+    header h1 em {
+      color: var(--orange);
+      font-style: normal;
+    }
+
+    .meta {
+      color: var(--faint);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .meta b { color: var(--muted); font-weight: 400; }
+
+    #search {
+      margin-left: auto;
+      background: var(--ink-deep);
+      border: 1px solid var(--line);
+      color: var(--fg);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 6px 10px;
+      width: 190px;
+    }
+
+    #search:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
+
+    /* ---------- rail ---------- */
+    aside {
+      border-right: 1px solid var(--line);
+      background: var(--ink);
+      overflow-y: auto;
+      padding: 16px 0 40px;
+    }
+
+    .group { padding: 0 16px 20px; }
+
+    .group > h2 {
+      font-size: 10px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--faint);
+      font-weight: 400;
+      margin: 0 0 9px;
+      border-bottom: 1px solid var(--line-soft);
+      padding-bottom: 5px;
+    }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      background: none;
+      border: 1px solid transparent;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      text-align: left;
+      padding: 4px 6px;
+      cursor: pointer;
+    }
+
+    .chip:hover { color: var(--fg); background: var(--panel); }
+    .chip:focus-visible { outline: 2px solid var(--orange); outline-offset: -1px; }
+    .chip[aria-pressed="true"] { color: var(--cream); border-color: var(--line); background: var(--panel); }
+
+    .chip .dot {
+      width: 7px; height: 7px; flex: none;
+      border: 1px solid currentColor;
+    }
+
+    .chip[aria-pressed="true"] .dot { background: currentColor; }
+    .chip .n { margin-left: auto; color: var(--faint); font-size: 10px; }
+
+    .evrow {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+      width: 100%;
+      background: none;
+      border: 0;
+      border-left: 2px solid transparent;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11.5px;
+      text-align: left;
+      padding: 3px 6px;
+      cursor: pointer;
+    }
+
+    .evrow:hover, .evrow.on { color: var(--orange); border-left-color: var(--orange); background: var(--panel); }
+    .evrow:focus-visible { outline: 2px solid var(--orange); outline-offset: -1px; }
+    .evrow .fan { color: var(--faint); font-size: 10px; }
+    .evrow.dead { color: var(--faint); }
+    .evrow.dead::after { content: "!"; color: var(--alert); }
+
+    /* ---------- stage ---------- */
+    main { position: relative; overflow: hidden; background: var(--ink-deep); }
+
+    svg { display: block; width: 100%; height: 100%; cursor: grab; }
+    svg.dragging { cursor: grabbing; }
+
+    .grid-line { stroke: var(--line-soft); stroke-width: 1; }
+
+    .edge { fill: none; stroke: var(--yellow); stroke-opacity: 0.2; stroke-width: 1; }
+    .edge.ev { stroke: var(--orange); stroke-opacity: 0.34; stroke-width: 1.4; }
+    .edge.hot { stroke-opacity: 1; stroke-width: 2; }
+    .edge.dim { stroke-opacity: 0.05; }
+
+    .node { cursor: pointer; }
+    .node rect.hit { fill: transparent; }
+    .bracket { stroke: var(--muted); stroke-width: 1.4; fill: none; }
+    .node.entry .bracket { stroke: var(--dev); }
+    .node.sel .bracket, .node:hover .bracket { stroke: var(--orange); stroke-width: 2; }
+    .node.dim { opacity: 0.16; }
+    .node text.label {
+      font-family: var(--mono); font-size: 11px; fill: var(--cream);
+      text-anchor: middle; dominant-baseline: middle; pointer-events: none;
+    }
+    .node text.tele {
+      font-family: var(--mono); font-size: 8.5px; fill: var(--faint);
+      text-anchor: middle; letter-spacing: 0.08em; pointer-events: none;
+    }
+    .node.sel text.tele, .node:hover text.tele { fill: var(--orange); }
+    .crosshair { stroke: var(--orange); stroke-width: 0.7; stroke-dasharray: 3 4; opacity: 0; }
+    .node.sel .crosshair { opacity: 0.65; }
+
+    /* ---------- inspector ---------- */
+    #inspector {
+      position: absolute; top: 0; right: 0; bottom: 0; width: 330px;
+      background: var(--ink); border-left: 1px solid var(--line);
+      padding: 16px 18px 40px; overflow-y: auto;
+      transform: translateX(100%); transition: transform 180ms ease;
+    }
+
+    #inspector.open { transform: none; }
+
+    #inspector h3 {
+      font-family: var(--mono); font-size: 14px; color: var(--cream);
+      margin: 0 0 2px; word-break: break-all;
+    }
+
+    #inspector .sub { color: var(--faint); font-size: 11px; margin-bottom: 16px; }
+
+    #inspector section { margin-bottom: 16px; }
+
+    #inspector section h4 {
+      font-size: 10px; letter-spacing: 0.13em; text-transform: uppercase;
+      color: var(--faint); font-weight: 400; margin: 0 0 6px;
+      border-bottom: 1px solid var(--line-soft); padding-bottom: 4px;
+    }
+
+    #inspector li { list-style: none; font-size: 11.5px; color: var(--muted); padding: 1.5px 0; }
+    #inspector ul { margin: 0; padding: 0; }
+    #inspector .ln { color: var(--faint); font-size: 10px; }
+    #inspector .em { color: var(--orange); }
+    #inspector .rx { color: var(--yellow); }
+    #close {
+      position: absolute; top: 12px; right: 14px; background: none; border: 0;
+      color: var(--faint); font-family: var(--mono); font-size: 16px; cursor: pointer;
+    }
+    #close:hover { color: var(--orange); }
+
+    .legend {
+      position: absolute; left: 16px; bottom: 14px;
+      display: flex; gap: 16px; font-size: 10.5px; color: var(--faint);
+      letter-spacing: 0.05em; pointer-events: none;
+    }
+
+    .legend i { display: inline-block; width: 16px; height: 0; vertical-align: middle;
+      border-top: 1.5px solid currentColor; margin-right: 5px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      #inspector { transition: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Ghost<em>maxxing</em> code map</h1>
+    <span class="meta"><b id="mCount">0</b> modules &middot; <b id="eCount">0</b> events &middot; <b id="pCount">0</b> pages</span>
+    <input id="search" type="search" placeholder="filter modules…" aria-label="Filter modules" />
+  </header>
+
+  <aside>
+    <div class="group">
+      <h2>Edges</h2>
+      <button class="chip" id="tImports" aria-pressed="true"><span class="dot" style="color:var(--yellow)"></span>imports<span class="n" id="nImports"></span></button>
+      <button class="chip" id="tEvents" aria-pressed="true"><span class="dot" style="color:var(--orange)"></span>event bus<span class="n" id="nEvents"></span></button>
+    </div>
+
+    <div class="group">
+      <h2>Entry page</h2>
+      <div id="pages"></div>
+    </div>
+
+    <div class="group">
+      <h2>Events</h2>
+      <div id="events"></div>
+    </div>
+  </aside>
+
+  <main>
+    <svg id="stage" role="img" aria-label="Module and event graph"></svg>
+    <div class="legend">
+      <span><i style="color:var(--yellow)"></i>import</span>
+      <span><i style="color:var(--orange)"></i>event</span>
+      <span><i style="color:var(--dev)"></i>entry point</span>
+    </div>
+    <div id="inspector" aria-live="polite">
+      <button id="close" aria-label="Close inspector">&times;</button>
+      <h3 id="iName"></h3>
+      <div class="sub" id="iSub"></div>
+      <div id="iBody"></div>
+    </div>
+  </main>
+
+  <script>
+    const CODEMAP = /*__CODEMAP__*/ null;
+
+    const svg = document.getElementById('stage');
+    const NS = 'http://www.w3.org/2000/svg';
+    const el = (t, a = {}) => { const n = document.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); return n; };
+
+    const modules = CODEMAP.modules;
+    const byId = new Map(modules.map((m) => [m.id, m]));
+    const pages = CODEMAP.entries.filter((e) => e.scripts.length);
+    const entryIds = new Set(pages.flatMap((p) => p.scripts.map((s) => s.id)));
+
+    // ---- edges -------------------------------------------------------------
+    const importEdges = [];
+    for (const m of modules) {
+      for (const im of m.imports) {
+        if (byId.has(im.target)) importEdges.push({ s: m.id, t: im.target, kind: 'im', symbols: im.symbols });
+      }
+    }
+    const eventEdges = [];
+    for (const ev of CODEMAP.events) {
+      for (const e of ev.emitters) {
+        for (const l of ev.listeners) {
+          if (e.module !== l.module) eventEdges.push({ s: e.module, t: l.module, kind: 'ev', event: ev.name });
+        }
+      }
+    }
+    document.getElementById('nImports').textContent = importEdges.length;
+    document.getElementById('nEvents').textContent = eventEdges.length;
+    document.getElementById('mCount').textContent = modules.length;
+    document.getElementById('eCount').textContent = CODEMAP.events.length;
+    document.getElementById('pCount').textContent = pages.length;
+
+    // ---- layout ------------------------------------------------------------
+    const W = () => svg.clientWidth, H = () => svg.clientHeight;
+    const nodes = modules.map((m, i) => {
+      const a = (i / modules.length) * Math.PI * 2;
+      return { id: m.id, m, x: 0.5 + Math.cos(a) * 0.3, y: 0.5 + Math.sin(a) * 0.3, vx: 0, vy: 0, fixed: false };
+    });
+    const nodeById = new Map(nodes.map((n) => [n.id, n]));
+    const w = (n) => Math.max(84, n.id.length * 7 + 22), h = () => 30;
+
+    function tick() {
+      const cw = W(), ch = H();
+      for (const n of nodes) {
+        n.vx += (0.5 - n.x) * 0.0035;
+        n.vy += (0.5 - n.y) * 0.0035;
+      }
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i], b = nodes[j];
+          let dx = (b.x - a.x) * cw, dy = (b.y - a.y) * ch;
+          let d2 = dx * dx + dy * dy || 1;
+          const f = 5200 / d2;
+          const d = Math.sqrt(d2);
+          const ux = dx / d, uy = dy / d;
+          a.vx -= (ux * f) / cw; a.vy -= (uy * f) / ch;
+          b.vx += (ux * f) / cw; b.vy += (uy * f) / ch;
+        }
+      }
+      for (const e of allEdges) {
+        const a = nodeById.get(e.s), b = nodeById.get(e.t);
+        if (!a || !b) continue;
+        const k = e.kind === 'ev' ? 0.0022 : 0.0045;
+        const dx = b.x - a.x, dy = b.y - a.y;
+        a.vx += dx * k; a.vy += dy * k;
+        b.vx -= dx * k; b.vy -= dy * k;
+      }
+      for (const n of nodes) {
+        if (n.fixed) { n.vx = n.vy = 0; continue; }
+        n.vx *= 0.86; n.vy *= 0.86;
+        n.x = Math.min(0.97, Math.max(0.03, n.x + n.vx));
+        n.y = Math.min(0.94, Math.max(0.06, n.y + n.vy));
+      }
+    }
+
+    const allEdges = importEdges.concat(eventEdges);
+
+    // ---- render ------------------------------------------------------------
+    const gGrid = el('g'), gEdges = el('g'), gNodes = el('g');
+    svg.append(gGrid, gEdges, gNodes);
+
+    const edgeEls = allEdges.map((e) => {
+      const p = el('path', { class: 'edge ' + (e.kind === 'ev' ? 'ev' : '') });
+      gEdges.append(p);
+      return p;
+    });
+
+    const nodeEls = nodes.map((n) => {
+      const g = el('g', { class: 'node' + (entryIds.has(n.id) ? ' entry' : ''), tabindex: '0', role: 'button' });
+      const ww = w(n), hh = h(), c = 9;
+      g.append(
+        el('rect', { class: 'hit', x: -ww / 2, y: -hh / 2, width: ww, height: hh }),
+        el('path', { class: 'bracket', d: `M${-ww / 2 + c} ${-hh / 2} H${-ww / 2} V${-hh / 2 + c}` }),
+        el('path', { class: 'bracket', d: `M${ww / 2 - c} ${-hh / 2} H${ww / 2} V${-hh / 2 + c}` }),
+        el('path', { class: 'bracket', d: `M${-ww / 2 + c} ${hh / 2} H${-ww / 2} V${hh / 2 - c}` }),
+        el('path', { class: 'bracket', d: `M${ww / 2 - c} ${hh / 2} H${ww / 2} V${hh / 2 - c}` }),
+        el('line', { class: 'crosshair', x1: -ww, y1: 0, x2: ww, y2: 0 }),
+        el('line', { class: 'crosshair', x1: 0, y1: -hh * 1.9, x2: 0, y2: hh * 1.9 })
+      );
+      const tele = el('text', { class: 'tele', y: -hh / 2 - 6 });
+      tele.textContent = `${n.m.loc}L ${n.m.exports.length}x`;
+      const lab = el('text', { class: 'label' });
+      lab.textContent = n.id.replace(/\.js$/, '');
+      g.append(tele, lab);
+      g.addEventListener('click', () => select(n.id));
+      g.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); select(n.id); } });
+      g.addEventListener('pointerdown', (ev) => startDrag(ev, n));
+      gNodes.append(g);
+      return g;
+    });
+
+    function draw() {
+      const cw = W(), ch = H();
+      allEdges.forEach((e, i) => {
+        const a = nodeById.get(e.s), b = nodeById.get(e.t);
+        if (!a || !b) return;
+        const x1 = a.x * cw, y1 = a.y * ch, x2 = b.x * cw, y2 = b.y * ch;
+        if (e.kind === 'ev') {
+          const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+          const nx = -(y2 - y1) * 0.16, ny = (x2 - x1) * 0.16;
+          edgeEls[i].setAttribute('d', `M${x1} ${y1} Q${mx + nx} ${my + ny} ${x2} ${y2}`);
+        } else {
+          edgeEls[i].setAttribute('d', `M${x1} ${y1} L${x2} ${y2}`);
+        }
+      });
+      nodes.forEach((n, i) => nodeEls[i].setAttribute('transform', `translate(${n.x * cw} ${n.y * ch})`));
+    }
+
+    let frames = 0;
+    (function loop() {
+      if (frames < 900) { tick(); frames++; }
+      draw();
+      requestAnimationFrame(loop);
+    })();
+
+    // ---- drag --------------------------------------------------------------
+    function startDrag(ev, n) {
+      ev.preventDefault();
+      svg.classList.add('dragging');
+      n.fixed = true;
+      const move = (e) => {
+        const r = svg.getBoundingClientRect();
+        n.x = (e.clientX - r.left) / r.width;
+        n.y = (e.clientY - r.top) / r.height;
+        frames = Math.min(frames, 700);
+      };
+      const up = () => {
+        svg.classList.remove('dragging');
+        window.removeEventListener('pointermove', move);
+        window.removeEventListener('pointerup', up);
+      };
+      window.addEventListener('pointermove', move);
+      window.addEventListener('pointerup', up);
+    }
+
+    // ---- filters -----------------------------------------------------------
+    const state = { imports: true, events: true, page: null, event: null, q: '', sel: null };
+
+    function visibleModules() {
+      let ids = new Set(modules.map((m) => m.id));
+      if (state.page) {
+        const p = pages.find((x) => x.page === state.page);
+        ids = new Set(p.reachable);
+      }
+      if (state.q) {
+        const q = state.q.toLowerCase();
+        ids = new Set([...ids].filter((i) => i.toLowerCase().includes(q)));
+      }
+      return ids;
+    }
+
+    function apply() {
+      const vis = visibleModules();
+      const evFocus = state.event;
+      const hotNodes = new Set();
+      if (evFocus) {
+        const ev = CODEMAP.events.find((e) => e.name === evFocus);
+        ev.emitters.forEach((e) => hotNodes.add(e.module));
+        ev.listeners.forEach((e) => hotNodes.add(e.module));
+      }
+
+      nodes.forEach((n, i) => {
+        const on = vis.has(n.id) && (!evFocus || hotNodes.has(n.id));
+        nodeEls[i].classList.toggle('dim', !on);
+        nodeEls[i].classList.toggle('sel', state.sel === n.id);
+      });
+
+      allEdges.forEach((e, i) => {
+        const kindOn = e.kind === 'ev' ? state.events : state.imports;
+        const inView = vis.has(e.s) && vis.has(e.t);
+        const evOn = !evFocus || e.event === evFocus;
+        const show = kindOn && inView && evOn;
+        edgeEls[i].style.display = show ? '' : 'none';
+        const touchesSel = state.sel && (e.s === state.sel || e.t === state.sel);
+        edgeEls[i].classList.toggle('hot', !!touchesSel || (!!evFocus && e.event === evFocus));
+        edgeEls[i].classList.toggle('dim', !!state.sel && !touchesSel);
+      });
+
+      document.querySelectorAll('.evrow').forEach((r) => r.classList.toggle('on', r.dataset.ev === evFocus));
+      document.querySelectorAll('#pages .chip').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.page === state.page)));
+      document.getElementById('tImports').setAttribute('aria-pressed', String(state.imports));
+      document.getElementById('tEvents').setAttribute('aria-pressed', String(state.events));
+    }
+
+    // rail: pages
+    const pagesBox = document.getElementById('pages');
+    for (const p of pages) {
+      const b = document.createElement('button');
+      b.className = 'chip';
+      b.dataset.page = p.page;
+      b.setAttribute('aria-pressed', 'false');
+      b.innerHTML = `<span class="dot" style="color:var(--dev)"></span>${p.page}<span class="n">${p.reachable.length}</span>`;
+      b.onclick = () => { state.page = state.page === p.page ? null : p.page; apply(); };
+      pagesBox.append(b);
+    }
+
+    // rail: events
+    const eventsBox = document.getElementById('events');
+    for (const ev of CODEMAP.events) {
+      const dead = !ev.emitters.length || !ev.listeners.length;
+      const b = document.createElement('button');
+      b.className = 'evrow' + (dead ? ' dead' : '');
+      b.dataset.ev = ev.name;
+      b.innerHTML = `<span>${ev.name}</span><span class="fan">${ev.emitters.length}&rarr;${ev.listeners.length}</span>`;
+      b.title = dead ? 'No counterpart found in scripts/ — external or unused' : '';
+      b.onclick = () => { state.event = state.event === ev.name ? null : ev.name; apply(); };
+      eventsBox.append(b);
+    }
+
+    document.getElementById('tImports').onclick = () => { state.imports = !state.imports; apply(); };
+    document.getElementById('tEvents').onclick = () => { state.events = !state.events; apply(); };
+    document.getElementById('search').oninput = (e) => { state.q = e.target.value.trim(); apply(); };
+
+    // ---- inspector ---------------------------------------------------------
+    const insp = document.getElementById('inspector');
+    document.getElementById('close').onclick = () => { insp.classList.remove('open'); state.sel = null; apply(); };
+
+    function list(items, cls = '') {
+      if (!items.length) return '<li style="color:var(--faint)">—</li>';
+      return items.map((i) => `<li class="${cls}">${i}</li>`).join('');
+    }
+
+    function select(id) {
+      const m = byId.get(id);
+      state.sel = state.sel === id ? null : id;
+      if (!state.sel) { insp.classList.remove('open'); apply(); return; }
+      document.getElementById('iName').textContent = 'scripts/' + m.id;
+      const pagesOf = m.pages.length ? m.pages.join(', ') : 'not reachable from any page';
+      document.getElementById('iSub').textContent = `${m.loc} lines · ${pagesOf}`;
+
+      const importedBy = modules.filter((x) => x.imports.some((i) => i.target === id)).map((x) => x.id);
+      document.getElementById('iBody').innerHTML = `
+        <section><h4>Emits</h4><ul>${list(m.dispatches.map((d) => `<span class="em">${d.event}</span> <span class="ln">:${d.line}</span>`))}</ul></section>
+        <section><h4>Listens for</h4><ul>${list(m.listens.map((l) => `<span class="rx">${l.event}</span> <span class="ln">${l.receiver}:${l.line}</span>`))}</ul></section>
+        <section><h4>Imports</h4><ul>${list(m.imports.map((i) => `${i.target} <span class="ln">${i.symbols.join(', ')}</span>`))}</ul></section>
+        <section><h4>Imported by</h4><ul>${list(importedBy)}</ul></section>
+        <section><h4>Exports (${m.exports.length})</h4><ul>${list(m.exports.map((e) => `${e.name} <span class="ln">${e.kind} :${e.line}</span>`))}</ul></section>
+        <section><h4>DOM listeners (${m.domListeners.length})</h4><ul>${list(m.domListeners.map((d) => `${d.receiver} <span class="ln">${d.event} :${d.line}</span>`))}</ul></section>
+        <section><h4>Window globals</h4><ul>${list(m.globals.map((g) => `window.${g.name} <span class="ln">:${g.line}</span>`))}</ul></section>`;
+      insp.classList.add('open');
+      apply();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { insp.classList.remove('open'); state.sel = null; state.event = null; apply(); }
+    });
+
+    window.addEventListener('resize', draw);
+    apply();
+  </script>
+</body>
+
+</html>

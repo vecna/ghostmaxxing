@@ -1,0 +1,20 @@
+# Ghostmaxxing — https://ghostmaxxing.vecna.eu/
+
+User-agent: *
+Allow: /
+
+# Generated output and test artifacts: no value in the index, and they
+# churn on every CI run.
+Disallow: /coverage/
+Disallow: /playwright-report/
+Disallow: /test-results/
+Disallow: /scripts/vendor/
+Disallow: /styles/vendor/
+Disallow: /codemap/
+
+# Unreleased tools. Remove these two lines when the pages ship
+# (see the RELEASE markers in index.html and sitemap.xml).
+Disallow: /ghostyle-transfer.html
+Disallow: /realtime.html
+
+Sitemap: https://ghostmaxxing.vecna.eu/sitemap.xml
