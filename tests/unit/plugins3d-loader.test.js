@@ -268,7 +268,6 @@ describe('plugins3d-loader', () => {
 
     const seen = [];
     state.gstmxxEvents.addEventListener('effectChanged', (event) => seen.push(['effectChanged', event.detail]));
-    state.gstmxxEvents.addEventListener('effectChanged3d', (event) => seen.push(['effectChanged3d', event.detail]));
 
     loader.initPlugins3dLoader();
     state.gstmxxEvents.dispatchEvent(new CustomEvent('landmarks3d', {
@@ -281,6 +280,5 @@ describe('plugins3d-loader', () => {
     expect(dom.clearActiveEffect).toHaveBeenCalled();
     expect(loader.getActiveEffect3d()).toBeNull();
     expect(seen).toContainEqual(['effectChanged', { activeEffect: null, previous: 'uv-style' }]);
-    expect(seen).toContainEqual(['effectChanged3d', { active: null, previous: 'uv-style' }]);
   });
 });

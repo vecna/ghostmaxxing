@@ -69,9 +69,6 @@ function deactivateBroken3dPlugin(entry, err) {
       runtime.events.dispatchEvent(new CustomEvent('effectChanged', {
          detail: { activeEffect: null, previous }
       }));
-      runtime.events.dispatchEvent(new CustomEvent('effectChanged3d', {
-         detail: { active: null, previous }
-      }));
    }
 }
 
@@ -404,8 +401,7 @@ function getActivePaintEntry() {
 
 /**
  * Synchronizes loader state after a ghostyle effect change by selecting the
- * active `paintUV` entry, preparing its parameters, refreshing controls, and
- * notifying listeners through `effectChanged3d`.
+ * active `paintUV` entry, preparing its parameters, refreshing controls.
  *
  * @returns {void}
  * @see initPlugins3dLoader - Called during initialization and by the `effectChanged` event listener.
@@ -421,12 +417,6 @@ function syncActiveEntry() {
    } else {
       hideParamsPanel();
       clearCanvas();
-   }
-
-   if (prev !== runtime.activePluginId) {
-      runtime.events.dispatchEvent(new CustomEvent('effectChanged3d', {
-         detail: { active: runtime.activePluginId, previous: prev }
-      }));
    }
 }
 

@@ -169,7 +169,7 @@
  * @property {EventTarget} gstmxxEvents
  *   In-app event bus. All cross-module events are dispatched here and exposed to
  *   plugins as `window.gstmxx.events`. Events on this bus: `ready`, `detection`,
- *   `effectChanged`, `effectChanged3d`, `landmarks3d`, `matchStateChanged`,
+ *   `effectChanged`, `landmarks3d`, `matchStateChanged`,
  *   `beforeEfficacyComposite`, `dbChanged`, `mediapipeReady`. (NB: `gstmxxReady`
  *   is dispatched on `window`, not here.)
  *   **Range:** a single EventTarget instance (never reassigned).
