@@ -8,30 +8,23 @@
   "display": "standalone",
   "background_color": "#14100c",
   "theme_color": "#14100c",
-  "categories": ["education", "photo", "utilities"],
+  "categories": [
+    "education",
+    "photo",
+    "utilities"
+  ],
   "icons": [
     {
-      "src": "/images/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/images/icon-512.png",
+      "src": "/images/logo/favicon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/images/icon-maskable-512.png",
+      "src": "/images/logo/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    },
-    {
-      "src": "/images/ghostmaxxing-mark.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
     }
   ],
   "shortcuts": [

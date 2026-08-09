@@ -37,6 +37,7 @@ const COPY_WEB_FILES = [
   'manifest.webmanifest',
   'robots.txt',
   'sitemap.xml',
+  'apple-touch-icon.png',
 ];
 
 function cleanTargetDir(targetDir) {

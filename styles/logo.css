@@ -1,0 +1,115 @@
+/* Ghostmaxxing logo component.
+ *
+ * The logo is a LENS with a shard on it. The lens never moves; only the shard
+ * rotates. That is the whole rule, and it is why this file exists separately
+ * from ghostutter.css — the ghostutter mark is a bare shard designed to sit on
+ * top of a camera icon, with no lens of its own. Related object, different job.
+ *
+ * Three ways to place the logo, in order of preference:
+ *
+ *   1. <img src="images/logo/mark-ondark.svg">            still
+ *   2. <img src="images/logo/mark-animated-ondark.svg">   moving, self-contained
+ *   3. inline <svg> + .gm-logo .gm-logo--animated         moving, controllable
+ *
+ * Only reach for (3) when the size, colour or duration must respond to the
+ * page at runtime. Otherwise (1) or (2) is one HTTP request and no CSS.
+ */
+
+:root {
+  /* Overridable per instance. The shard geometry is measured from the 32,32
+     pivot in a 64-unit box, so every offset is proportional and the mark needs
+     no re-tuning at any size. */
+  --gm-logo-size: 3rem;
+  --gm-logo-duration: 2.2s;
+}
+
+.gm-logo {
+  display: inline-block;
+  inline-size: var(--gm-logo-size);
+  block-size: var(--gm-logo-size);
+  line-height: 0;
+  flex: none;
+}
+
+.gm-logo > svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* ---- motion ------------------------------------------------------------
+ * Five uneven steps: two long holds, a burst, then round. `steps(1, end)`
+ * makes each keyframe a hard cut rather than a tween — the mark must never
+ * appear to sweep. Sweeping reads as progress, and this is not progress.
+ */
+@keyframes gm-logo-stutter {
+  0%, 26% { transform: rotate(0deg); }
+  30%, 56% { transform: rotate(58deg); }
+  60%, 72% { transform: rotate(131deg); }
+  76%, 84% { transform: rotate(198deg); }
+  88%, 94% { transform: rotate(291deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes gm-logo-smooth {
+  to { transform: rotate(360deg); }
+}
+
+/* transform-origin in user units, matching the SVG pivot exactly. Using a
+   percentage here would resolve against the element box and drift as soon as
+   the viewBox is not square. */
+.gm-logo-shard {
+  transform-origin: 32px 32px;
+}
+
+.gm-logo--animated .gm-logo-shard {
+  animation: gm-logo-stutter var(--gm-logo-duration) infinite steps(1, end);
+}
+
+/* Deliberately available, deliberately wrong for the logo. Kept so the
+   specimen page can show the difference, and for the rare case where the mark
+   is standing in as a loading indicator — at which point it is not the logo. */
+.gm-logo--smooth .gm-logo-shard {
+  animation: gm-logo-smooth var(--gm-logo-duration) infinite linear;
+}
+
+/* The mark stops but stays put. It carries information; hiding it or resetting
+   its rotation would remove information. */
+@media (prefers-reduced-motion: reduce) {
+  .gm-logo--animated .gm-logo-shard,
+  .gm-logo--smooth .gm-logo-shard {
+    animation: none;
+  }
+}
+
+/* ---- header lockup ------------------------------------------------------
+ * Mark plus wordmark as live HTML, for the site header where the wordmark
+ * should stay selectable text rather than baked into an SVG.
+ */
+.gm-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  text-decoration: none;
+  color: inherit;
+}
+
+.gm-lockup__word {
+  font-family: var(--serif, Georgia, serif);
+  font-size: var(--gm-logo-size);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.gm-lockup--stacked {
+  flex-direction: column;
+  gap: 0.35em;
+  text-align: center;
+}
+
+/* Clear space: one lens radius on every side, expressed against the mark's own
+   size so it holds at any scale. */
+.gm-logo--framed {
+  padding: calc(var(--gm-logo-size) * 0.46);
+}

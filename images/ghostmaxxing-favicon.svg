@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60" role="img" aria-labelledby="title desc">
-<title id="title">Ghostmaxxing favicon mark</title>
-<desc id="desc">Cropped eye-only version of the Ghostmaxxing mark for use at 16-32px.</desc>
-<g transform="translate(30 30) rotate(-8)">
-  <circle cx="0" cy="0" r="24" fill="#071a33"/>
-  <circle cx="0" cy="0" r="17" fill="#020a10" stroke="#f7dc77" stroke-width="3"/>
-  <path d="M-12 -12 L12 12 M12 -12 L-12 12" stroke="#f7dc77" stroke-width="5" stroke-linecap="round"/>
-</g>
-</svg>
