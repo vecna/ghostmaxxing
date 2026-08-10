@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ghostmaxxing — design system specimen</title>
+<link rel="icon" type="image/svg+xml" href="images/logo/mark-small-onlight.svg" />
+<link rel="stylesheet" href="styles/tokens.css" />
+<link rel="stylesheet" href="styles/vendor/newsreader.css" />
+<link rel="stylesheet" href="styles/vendor/atkinson.css" />
+<link rel="stylesheet" href="styles/ghostutter.css" />
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #f5f1e8;
+    color: var(--gm-text, #071a33);
+    font-family: var(--sans);
+    font-size: var(--t-body);
+    line-height: var(--lh-body);
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+  h1, h2, h3 { font-family: var(--serif); color: var(--gm-ink); margin: 0; }
+  h1 { font-size: var(--t-h1); line-height: var(--lh-heading); letter-spacing: -0.02em; }
+  h2 { font-size: var(--t-h2); line-height: var(--lh-heading); }
+  h3 { font-size: var(--t-h3); line-height: var(--lh-heading); }
+  section { margin-top: 3.5rem; border-top: 2px solid rgba(5,5,5,0.18); padding-top: 1.5rem; }
+  .kicker {
+    font-family: var(--mono); font-size: var(--t-meta);
+    letter-spacing: var(--ls-meta); text-transform: uppercase; color: #6b6357;
+    margin: 0 0 0.5rem;
+  }
+  .note { max-width: 74ch; color: #46403a; }
+  code { font-family: var(--mono); font-size: 0.85em; background: rgba(5,5,5,0.06); padding: 0.1em 0.35em; }
+
+  .grid { display: grid; gap: 1rem; margin-top: 1.5rem; }
+  .swatches { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); }
+  .swatch { border: 1px solid rgba(5,5,5,0.14); }
+  .swatch__chip { height: 74px; }
+  .swatch__body { padding: 0.6rem 0.7rem; background: #fff; }
+  .swatch__name { font-family: var(--mono); font-size: var(--t-meta); display: block; }
+  .swatch__hex { font-family: var(--mono); font-size: var(--t-meta); color: #6b6357; }
+
+  .field { background: linear-gradient(180deg, var(--gm-bg), var(--gm-bg-deep)); padding: 2rem; }
+  .field--green { background: var(--gm-green); }
+
+  .row { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-end; }
+  .tile { text-align: center; }
+  .tile img { display: block; }
+  .tile span {
+    display: block; margin-top: 0.5rem;
+    font-family: var(--mono); font-size: var(--t-meta); letter-spacing: 0.06em; color: #6b6357;
+  }
+
+  .scale-row {
+    display: grid; grid-template-columns: 200px 1fr; gap: 0 1.5rem;
+    align-items: baseline; border-bottom: 1px solid rgba(5,5,5,0.1); padding: 0.9rem 0;
+  }
+  .scale-row p { margin: 0; }
+  .scale-tok { font-family: var(--mono); font-size: var(--t-meta); color: #6b6357; }
+
+  .lens { position: relative; display: inline-block; }
+  .lens .ghostutter { position: absolute; }
+
+  /* Section 07 furniture. */
+  .gu-bench {
+    display: flex; flex-wrap: wrap; gap: 2.5rem; align-items: flex-end;
+    padding: 2rem; background: var(--gm-green);
+  }
+  .gu-bench .tile span { color: var(--gm-cream); opacity: 0.8; }
+  .gu-swatch {
+    display: grid; place-items: center;
+    width: 108px; height: 108px; border: 1px dashed rgba(255,231,168,0.32);
+  }
+  pre {
+    margin: 1rem 0 0; padding: 1rem 1.1rem; overflow-x: auto;
+    background: var(--gm-soil); color: var(--gm-cream);
+    font-family: var(--mono); font-size: var(--t-small); line-height: 1.5;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; color: inherit; }
+  .gu-table { width: 100%; border-collapse: collapse; margin-top: 1.25rem; }
+  .gu-table th, .gu-table td {
+    text-align: left; padding: 0.55rem 0.8rem 0.55rem 0;
+    border-bottom: 1px solid rgba(5,5,5,0.12); vertical-align: top;
+    font-size: var(--t-small);
+  }
+  .gu-table th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--ls-meta); text-transform: uppercase; color: #6b6357; }
+  .gu-table td:first-child { font-family: var(--mono); white-space: nowrap; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    padding: 1rem 1.35rem; background: var(--gm-text); color: var(--gm-cream);
+    font-size: var(--t-lead); font-weight: 700; text-decoration: none;
+  }
+  .btn--ghost { background: transparent; color: var(--gm-ink); border: 1.5px solid var(--gm-border-strong); }
+  .meta { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--ls-meta); color: var(--gm-green); }
+
+  .warn { border-left: 3px solid var(--gm-pink); padding-left: 1rem; }
+
+  /* Motif demo: plant and camera layers, same box, same transform. */
+  .hs-layer {
+    position: absolute; right: 6%; bottom: 0;
+    width: 520px; height: 800px;
+    transform: scale(0.34); transform-origin: bottom right;
+  }
+  .hs-node { position: absolute; width: 120px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">Ghostmaxxing · design system</p>
+  <h1>Specimen</h1>
+  <p class="note" style="margin-top:.75rem;">Every part of the system rendered from the real token file. If something
+    here looks wrong, the system is wrong — not the page. Read <code>brand-manual.md</code> for the rules and
+    <code>ASSETS.md</code> for the file index — both live in the full design-system export, not in this package.</p>
+  <p class="note" style="margin-top:.75rem;"><strong>This copy is the ghostutter build.</strong> The spinner/dazzler has
+    been renamed and rebuilt: <a href="#ghostutter">section 07</a> documents it in full, and sections 04 and 06 now
+    render the new mark. <code>gm-spin.css</code> and <code>gm-dazzle.css</code> are both retired into
+    <code>styles/ghostutter.css</code>. No React, no build step — the only script on this page is 6kB of vanilla
+    <code>scripts/ghostutter.js</code> plus the ten lines below it that drive the idle-cursor demo.</p>
+  <p class="note warn" style="margin-top:1rem;"><strong>Fonts:</strong> no CDN — this page links
+    <code>vendor/newsreader.css</code> and <code>vendor/atkinson.css</code> directly, so it shows the real faces as soon
+    as the ten <code>.woff2</code> files are in <code>styles/vendor/</code>. Until then the metric-matched fallbacks
+    stand in (Georgia for display, Verdana for text): the layout is already correct, the letterforms are not. Open
+    devtools &rarr; Network to confirm nothing leaves your machine.</p>
+
+  <section>
+    <p class="kicker">01</p>
+    <h2>Colour</h2>
+    <p class="note">Max two background colours per surface. Pink is reserved — see below.</p>
+    <div class="grid swatches">
+      <div class="swatch"><div class="swatch__chip" style="background:var(--gm-bg)"></div><div class="swatch__body"><span class="swatch__name">--gm-bg</span><span class="swatch__hex">#fd5503</span></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:var(--gm-bg-deep)"></div><div class="swatch__body"><span class="swatch__name">--gm-bg-deep</span><span class="swatch__hex">#df5512</span></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:var(--gm-ink)"></div><div class="swatch__body"><span class="swatch__name">--gm-ink</span><span class="swatch__hex">#050505</span></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:var(--gm-text)"></div><div class="swatch__body"><span class="swatch__name">--gm-text</span><span class="swatch__hex">#071a33</span></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:var(--gm-muted)"></div><div class="swatch__body"><span class="swatch__name">--gm-muted</span><span class="swatch__hex">#253a54</span></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:var(--gm-green)"></div><div class="swatch__body"><span class="swatch__name">--gm-green</span><span class="swatch__hex">#063f32</span></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:var(--gm-green-soft)"></div><div class="swatch__body"><span class="swatch__name">--gm-green-soft</span><span class="swatch__hex">#1e6b4f</span></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:var(--gm-yellow)"></div><div class="swatch__body"><span class="swatch__name">--gm-yellow</span><span class="swatch__hex">#f3c747</span></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:var(--gm-cream)"></div><div class="swatch__body"><span class="swatch__name">--gm-cream</span><span class="swatch__hex">#ffe7a8</span></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:var(--gm-soil)"></div><div class="swatch__body"><span class="swatch__name">--gm-soil</span><span class="swatch__hex">#031d1a</span></div></div>
+      <div class="swatch"><div class="swatch__chip" style="background:var(--gm-pink)"></div><div class="swatch__body"><span class="swatch__name">--gm-pink</span><span class="swatch__hex">#ff2f7a · RESERVED</span></div></div>
+    </div>
+    <div class="field" style="margin-top:1.5rem; display:flex; gap:2rem; flex-wrap:wrap; align-items:center;">
+      <p style="margin:0; font-family:var(--serif); font-size:var(--t-h3); color:var(--gm-pink);">Pink text on orange — 1.09:1. Never do this.</p>
+      <p style="margin:0; font-family:var(--serif); font-size:var(--t-h3); color:var(--gm-ink);">Ink on orange — correct.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">02</p>
+    <h2>Type scale</h2>
+    <p class="note">Eight tokens. No component may hand-roll a <code>font-size</code>. Resize the window: the four fluid
+      steps interpolate across the same 400→1440px range.</p>
+    <div style="margin-top:1.5rem;">
+      <div class="scale-row"><p class="scale-tok">--t-display<br />serif 700</p><p style="font-family:var(--serif); font-size:var(--t-display); font-weight:700; line-height:var(--lh-display); letter-spacing:var(--ls-display); color:var(--gm-ink);">Disrupt the read.</p></div>
+      <div class="scale-row"><p class="scale-tok">--t-h1<br />serif 700</p><p style="font-family:var(--serif); font-size:var(--t-h1); font-weight:700; line-height:var(--lh-heading); color:var(--gm-ink);">The genealogy of the read</p></div>
+      <div class="scale-row"><p class="scale-tok">--t-h2<br />serif 700</p><p style="font-family:var(--serif); font-size:var(--t-h2); font-weight:700; line-height:var(--lh-heading); color:var(--gm-ink);">CNN face embeddings</p></div>
+      <div class="scale-row"><p class="scale-tok">--t-h3<br />serif italic</p><p style="font-family:var(--serif); font-size:var(--t-h3); font-style:italic; line-height:var(--lh-heading); color:var(--gm-ink);">Adversarial eyeglass frames — Sharif et al.</p></div>
+      <div class="scale-row"><p class="scale-tok">--t-lead<br />sans 400</p><p style="font-size:var(--t-lead); line-height:var(--lh-lead);">A real-time lab for face-recognition camouflage. Nothing leaves your browser.</p></div>
+      <div class="scale-row"><p class="scale-tok">--t-body<br />sans 400</p><p style="font-size:var(--t-body);">Dates mark first public demonstration, not deployment. Every era is a documented result under stated conditions.</p></div>
+      <div class="scale-row"><p class="scale-tok">--t-small<br />sans 400</p><p style="font-size:var(--t-small); color:var(--gm-muted);">Limits: optimised against named models; retraining closes most of the gap.</p></div>
+      <div class="scale-row"><p class="scale-tok">--t-meta<br />mono 400</p><p class="meta">2001 · CONTRAST · DEFEATED 2010</p></div>
+    </div>
+    <p class="note warn" style="margin-top:1.25rem;"><strong>Atkinson has two weights, 400 and 700.</strong> Never request
+      500, 600 or 650 — the browser fakes it.</p>
+  </section>
+
+  <section>
+    <p class="kicker">03</p>
+    <h2>Identity mark</h2>
+    <div class="row" style="margin-top:1.5rem;">
+      <div class="tile"><img src="images/logo/mark-onlight.svg" width="120" height="120" alt="Ghostmaxxing mark" /><span>full · 120px</span></div>
+      <div class="tile"><img src="images/logo/mark-onlight.svg" width="48" height="48" alt="" /><span>full · 48px</span></div>
+      <div class="tile"><img src="images/logo/mark-small-onlight.svg" width="32" height="32" alt="" /><span>small cut · 32</span></div>
+      <div class="tile"><img src="images/logo/mark-small-onlight.svg" width="16" height="16" alt="" /><span>small cut · 16</span></div>
+      <div class="tile"><img src="images/logo/lockup/horizontal-onlight.svg" width="285" height="48" alt="Ghostmaxxing" /><span>lockup · horizontal</span></div>
+    </div>
+    <div class="row" style="margin-top:1.25rem;">
+      <div class="field" style="padding:1.25rem;"><img src="images/logo/mark-mono-cream.svg" width="72" height="72" alt="" /></div>
+      <div class="field field--green" style="padding:1.25rem;"><img src="images/logo/mark-ondark.svg" width="72" height="72" alt="" /></div>
+      <div class="field field--green" style="padding:1.25rem;"><img src="images/logo/lockup/stacked-ondark.svg" width="150" height="90" alt="" /></div>
+      <p class="note" style="max-width:34ch; align-self:center;">On orange the pink vanishes, so the orange field always
+        takes <code>mark-mono-cream</code> — the spiral is a knockout, not a stroke.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">04</p>
+    <h2>Camera icons &amp; the two lens states</h2>
+    <p class="note">Hover a dazzled lens to shake its ghostutter. One system, top-mounted, 100×100. The mark is
+      <strong>visible while still</strong> — a dazzled lens is dazzled whether or not you are pointing at it. Motion is
+      the reward for attention, not the state itself. Full documentation of the mark is in section 07.</p>
+    <div class="field" style="margin-top:1.5rem;">
+      <div class="row" style="align-items:flex-end;">
+        <div class="tile" data-ghostutter="hover" tabindex="0"><span class="lens"><img src="images/icons/cam-bullet.svg" width="92" height="92" alt="Bullet CCTV, dazzled" /><span class="ghostutter" style="left:42px; top:33px; --ghostutter-size:27px;"></span></span><span style="color:var(--gm-green)">2001 · dazzled</span></div>
+        <div class="tile" data-ghostutter="hover" tabindex="0"><span class="lens"><img src="images/icons/cam-dome.svg" width="100" height="100" alt="Dome, dazzled" /><span class="ghostutter" style="left:34px; top:28px; --ghostutter-size:32px;"></span></span><span style="color:var(--gm-green)">2010 · dazzled</span></div>
+        <div class="tile" data-ghostutter="hover" tabindex="0"><span class="lens"><img src="images/icons/cam-cube.svg" width="92" height="92" alt="IoT cube, dazzled" /><span class="ghostutter" style="left:30px; top:30px; --ghostutter-size:33px;"></span></span><span style="color:var(--gm-green)">2014 · dazzled</span></div>
+        <div class="tile" data-ghostutter="hover" tabindex="0"><span class="lens"><img src="images/icons/cam-pill.svg" width="112" height="112" alt="Depth array, dazzled" /><span class="ghostutter" style="left:20px; top:42px; --ghostutter-size:28px;"></span></span><span style="color:var(--gm-green)">2017 · dazzled</span></div>
+        <div class="tile"><img src="images/icons/cam-glasses-alive.svg" width="100" height="100" alt="Smart glasses, open lens" /><span style="color:var(--gm-green)">2021 → open</span></div>
+        <div class="tile"><img src="images/icons/cam-street-alive.svg" width="100" height="100" alt="Street pole, open lens" /><span style="color:var(--gm-green)">2021 → open</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">05</p>
+    <h2>Components</h2>
+    <div class="field" style="margin-top:1.5rem;">
+      <nav style="display:flex; gap:1.4rem; flex-wrap:wrap; border-bottom:1px solid var(--gm-border); padding-bottom:1rem;">
+        <a href="#" style="color:var(--gm-text); font-weight:700; text-decoration:none;">The Genealogy</a>
+        <a href="#" style="color:var(--gm-text); font-weight:700; text-decoration:none;">Research References</a>
+        <a href="#" style="color:var(--gm-text); font-weight:700; text-decoration:none;">Vision &amp; About</a>
+      </nav>
+      <p style="font-family:var(--serif); font-size:var(--t-h1); font-weight:700; line-height:var(--lh-heading); letter-spacing:-0.02em; color:var(--gm-ink); margin:1.5rem 0 0;">Disrupt the read.</p>
+      <p style="font-size:var(--t-lead); line-height:var(--lh-lead); max-width:32rem; margin:1rem 0 0;">A real-time lab for
+        face-recognition camouflage. Point your camera, change how your face looks, and watch a local pipeline react.</p>
+      <div style="display:flex; gap:0.85rem; margin-top:1.5rem; flex-wrap:wrap; align-items:center;">
+        <a class="btn" href="#">Open the lab <span aria-hidden="true">↗</span></a>
+        <a class="btn btn--ghost" href="#">The genealogy <span aria-hidden="true">↗</span></a>
+        <span class="meta">2001 · CONTRAST<br />DEFEATED 2010</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">06</p>
+    <h2>Motifs</h2>
+    <p class="note">The band and anything growing out of it must be bottom-anchored to the <strong>same</strong>
+      containing block, or the plant floats. Field in front of the trunk, cameras in front of the field.</p>
+    <div style="position:relative; margin-top:1.5rem; height:300px; overflow:hidden; background:linear-gradient(180deg,var(--gm-bg),var(--gm-bg-deep));">
+      <!-- Three siblings, NOT nested. Wrapping the plant and the nodes together
+           would create a stacking context and the band could no longer sit
+           between them - that is the trap this demo exists to show. Both 520x800
+           layers carry the SAME transform, so the cables still meet the mounts. -->
+      <img src="images/motifs/hero-sprout.svg" alt="" width="520" height="800" class="hs-layer" style="z-index:0;" />
+
+      <!-- With no-repeat, "auto 100%" makes painted WIDTH a function of height alone
+           (height x 2800/460), so a short band can never span a wide box no matter how
+           wide the element is. Give the element the artwork's own aspect ratio instead
+           and fill it exactly: element aspect == SVG aspect, so 100% 100% distorts
+           nothing, and it stays full-bleed at any container width. -->
+      <div aria-hidden="true" style="position:absolute; left:0; right:0; bottom:0;
+        width:100%; aspect-ratio:2800 / 460; height:auto; z-index:2;
+        background-image:url('images/motifs/camera-band.svg'); background-repeat:no-repeat;
+        background-position:center bottom; background-size:100% 100%;"></div>
+
+      <div class="hs-layer" style="z-index:3;">
+        <div class="hs-node" style="left:119px; top:190px;">
+          <span class="lens" style="display:block; width:104px; height:104px;">
+            <img src="images/icons/cam-street-alive.svg" width="104" height="104" alt="Street pole, lens open" />
+          </span>
+        </div>
+        <div class="hs-node" data-ghostutter="hover" tabindex="0" style="left:402px; top:296px;">
+          <span class="lens" style="display:block; width:100px; height:100px;">
+            <img src="images/icons/cam-dome.svg" width="100" height="100" alt="Dome camera, lens dazzled" />
+            <span class="ghostutter" style="left:34px; top:28px; --ghostutter-size:32px;"></span>
+          </span>
+        </div>
+        <div class="hs-node" data-ghostutter="hover" tabindex="0" style="left:79px; top:390px;">
+          <span class="lens" style="display:block; width:92px; height:92px;">
+            <img src="images/icons/cam-bullet.svg" width="92" height="92" alt="Bullet CCTV, lens dazzled" />
+            <span class="ghostutter" style="left:42px; top:33px; --ghostutter-size:27px;"></span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:0.75rem; font-size:var(--t-small);">All three layers share one baseline
+      (<code>bottom: 0</code> on the same box) and one <code>transform</code>. Hover a dazzled lens. Labels are omitted
+      here on purpose — at this scale they would be unreadable; the hang points are tabulated in <code>ASSETS.md</code>.</p>
+    <div class="row" style="margin-top:1.5rem;">
+      <div class="tile"><img src="images/motifs/genealogy-tree.svg" width="120" height="310" alt="Genealogy tree" style="background:var(--gm-bg);" /><span>genealogy-tree · 1200×3100</span></div>
+      <div class="tile"><img src="images/social/header-1500x500.png" width="420" height="140" alt="Social header" /><span>social header · 1500×500</span></div>
+    </div>
+  </section>
+
+  <section id="ghostutter">
+    <p class="kicker">07</p>
+    <h2>Ghostutter</h2>
+    <p class="note">The spinner, and the thing sitting in every dazzled lens — one object with one name.
+      <strong>Ghost + stutter</strong>, built the way <em>ghostyle</em> is built out of ghost + style. It replaces the
+      old <code>gm-spin</code> spiral and the <code>gm-dazzle</code> shudder, which were two files describing the same
+      mark doing two jobs.</p>
+    <p class="note" style="margin-top:0.9rem;">Six irregular wedges radiating from one pivot: dazzle geometry, the
+      hard-edged wedges painted on WWI ships. Irregular on purpose — no even spokes, no clock hands — so it never
+      settles into reading as an interface glyph. It rotates in hard steps, never eased, and every step throws the mark
+      a couple of percent off its own pivot. The centre never holds. That is the difference between a shudder and a
+      turntable, and it is the whole point: this is a machine failing to complete a read, not a machine working.</p>
+
+    <h3 style="margin-top:2rem;">Scale</h3>
+    <p class="note">One SVG, no size variants. The shudder offsets are percentages of the mark's own box, so motion
+      scales with <code>--ghostutter-size</code> and never needs re-tuning. Below 20px switch to the
+      <code>--panic</code> profile: the stutter's long holds just read as broken at that size.</p>
+    <div class="gu-bench" style="margin-top:1.25rem;" data-ghostutter="hover" tabindex="0">
+      <div class="tile"><div class="gu-swatch"><span class="ghostutter ghostutter--always" style="--ghostutter-size:96px;"></span></div><span>96px</span></div>
+      <div class="tile"><div class="gu-swatch"><span class="ghostutter ghostutter--always" style="--ghostutter-size:48px;"></span></div><span>48px</span></div>
+      <div class="tile"><div class="gu-swatch"><span class="ghostutter ghostutter--always" style="--ghostutter-size:24px;"></span></div><span>24px</span></div>
+      <div class="tile"><div class="gu-swatch"><span class="ghostutter ghostutter--always ghostutter--panic" style="--ghostutter-size:16px;"></span></div><span>16px · panic</span></div>
+      <div class="tile"><div class="gu-swatch" style="background:var(--gm-cream);"><span class="ghostutter ghostutter--always" style="--ghostutter-size:48px; --ghostutter-colour:var(--gm-soil);"></span></div><span>recoloured</span></div>
+    </div>
+    <p class="note" style="margin-top:0.75rem; font-size:var(--t-small);">The mark ships as a CSS mask, not an
+      <code>&lt;img&gt;</code> — which is why the last swatch can be soil-coloured from a custom property alone. On any
+      orange or green surface it stays <code>--gm-pink</code>: pink is reserved, and a lens is the one place it is
+      allowed.</p>
+
+    <h3 style="margin-top:2rem;">Profiles</h3>
+    <div class="gu-bench" style="margin-top:1.25rem;">
+      <div class="tile"><div class="gu-swatch"><span class="ghostutter ghostutter--always" style="--ghostutter-size:56px;"></span></div><span>default · stutter</span></div>
+      <div class="tile"><div class="gu-swatch"><span class="ghostutter ghostutter--always ghostutter--panic" style="--ghostutter-size:56px;"></span></div><span>--panic</span></div>
+      <div class="tile"><div class="gu-swatch"><span class="ghostutter ghostutter--always ghostutter--smooth" style="--ghostutter-size:56px;"></span></div><span>--smooth</span></div>
+      <div class="tile"><div class="gu-swatch"><span class="ghostutter ghostutter--always ghostutter--slow" style="--ghostutter-size:56px;"></span></div><span>--slow</span></div>
+      <div class="tile"><div class="gu-swatch"><span class="ghostutter ghostutter--always ghostutter--fast" style="--ghostutter-size:56px;"></span></div><span>--fast</span></div>
+    </div>
+    <p class="note" style="margin-top:0.75rem; font-size:var(--t-small);"><strong>stutter</strong> — uneven dwell, two
+      long holds and a burst, like a machine retrying. The default, and the only one for a lens.
+      <strong>panic</strong> — evenly spaced steps, busier, no dwell; for marks under ~24px.
+      <strong>smooth</strong> — continuous rotation. This is the old <code>gm-spin</code>, kept for the footer camera
+      band and anywhere the mark should read as machinery rather than failure. Speed modifiers combine with any of them.</p>
+
+    <h3 style="margin-top:2rem;">The four triggers</h3>
+    <table class="gu-table">
+      <thead><tr><th>Trigger</th><th>Written as</th><th>Use for</th></tr></thead>
+      <tbody>
+        <tr><td>hover / focus</td><td><code>data-ghostutter="hover"</code> on an <strong>ancestor</strong></td><td>Lenses in a genealogy row, cards, buttons. The ancestor form makes the whole row the hit area rather than the 27px mark. Give it <code>tabindex="0"</code> or keyboard users never see it.</td></tr>
+        <tr><td>always</td><td><code>.ghostutter--always</code></td><td>Loading states, the footer camera band, anything already in motion.</td></tr>
+        <tr><td>script</td><td><code>Ghostutter.start(el)</code></td><td>Tie the mark to real work — a fetch, a model warming up. Adds <code>.is-ghostuttering</code>.</td></tr>
+        <tr><td>idle cursor</td><td><code>--ghostutter-idle</code></td><td>Ambient. See below.</td></tr>
+      </tbody>
+    </table>
+    <p class="note" style="margin-top:1rem;">Hover, focus and always need <strong>no JavaScript at all</strong> —
+      <code>styles/ghostutter.css</code> on its own is enough. <code>scripts/ghostutter.js</code> is only required for the
+      last two rows.</p>
+    <pre><code>&lt;!-- as a spinner --&gt;
+&lt;span class="ghostutter ghostutter--always"&gt;&lt;/span&gt;
+
+&lt;!-- over a lens, hover to shake --&gt;
+&lt;span class="ghostutter-lens" data-ghostutter="hover" tabindex="0"&gt;
+  &lt;img src="images/icons/cam-dome.svg" width="100" height="100" alt="Dome camera, dazzled"&gt;
+  &lt;span class="ghostutter" style="left:34px; top:28px; --ghostutter-size:32px"&gt;&lt;/span&gt;
+&lt;/span&gt;
+
+&lt;!-- tied to real work --&gt;
+const mark = Ghostutter.mark({ size: '32px' });
+button.append(mark);
+Ghostutter.start(mark);
+await fetch(url);
+Ghostutter.stop(mark);</code></pre>
+
+    <h3 style="margin-top:2rem;">The idle-cursor directive</h3>
+    <p class="note">Optional, and off by default. When the pointer holds still for longer than a stated interval, a
+      ghostutter is left behind where it stopped; the next movement takes it away again. You stopped moving, so the read
+      had time to land — the mark is what got left in the frame.</p>
+    <p class="note" style="margin-top:0.9rem;">The switch is <strong>CSS, not JavaScript config</strong>. The runtime
+      reads one custom property off <code>:root</code> and binds no listeners at all unless it holds a positive time.
+      Anything else — <code>off</code>, <code>0</code>, an empty value, a typo — reads as disabled, which is what makes
+      it a real switch rather than a hint. It is ignored on coarse pointers, because there is no resting cursor on a
+      touchscreen, and under <code>prefers-reduced-motion</code>.</p>
+    <pre><code>:root { --ghostutter-idle: 2s; }      /* on, after two seconds */
+:root { --ghostutter-idle: 900ms; }  /* on, brisker            */
+:root { --ghostutter-idle: off; }    /* off — the default      */</code></pre>
+    <p class="note" style="margin-top:1rem;">Try it on this page: the button writes the property on
+      <code>&lt;html&gt;</code> and calls <code>Ghostutter.idle.refresh()</code>. Then stop moving the mouse.</p>
+    <div style="display:flex; gap:0.85rem; margin-top:1rem; flex-wrap:wrap; align-items:center;">
+      <button class="btn btn--ghost" type="button" id="gu-idle-toggle" style="cursor:pointer; font-family:inherit;">Turn the idle cursor on</button>
+      <span class="meta" id="gu-idle-state">--ghostutter-idle: off</span>
+    </div>
+
+    <h3 style="margin-top:2rem;">Tokens</h3>
+    <table class="gu-table">
+      <thead><tr><th>Property</th><th>Default</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>--ghostutter-colour</td><td><code>var(--gm-pink)</code></td><td>Reserved. Inside a lens only, or as the logo spiral.</td></tr>
+        <tr><td>--ghostutter-size</td><td><code>2.75rem</code></td><td>Set per instance. Motion scales with it.</td></tr>
+        <tr><td>--ghostutter-duration</td><td><code>2.2s</code></td><td>One full revolution, holds included.</td></tr>
+        <tr><td>--ghostutter-idle</td><td><code>off</code></td><td>The directive above. A CSS time turns it on.</td></tr>
+        <tr><td>--ghostutter-idle-size</td><td><code>3.25rem</code></td><td>The cursor mark only.</td></tr>
+        <tr><td>--ghostutter-idle-colour</td><td><code>var(--gm-ink)</code></td><td>Deliberately <strong>not</strong> pink. The cursor mark floats over whatever the page happens to be, and pink on <code>--gm-bg</code> is 1.09:1. Set it to <code>var(--gm-cream)</code> on a soil or green page.</td></tr>
+        <tr><td>--ghostutter-idle-fade</td><td><code>260ms</code></td><td>Opacity only — the mark never fades its motion.</td></tr>
+      </tbody>
+    </table>
+    <p class="note" style="margin-top:1rem;">Set any of these on <code>:root</code>, or on any ancestor to scope them to
+      one region. Nothing else in the file needs editing.</p>
+
+    <h3 style="margin-top:2rem;">Migrating from gm-spin / gm-dazzle</h3>
+    <table class="gu-table">
+      <thead><tr><th>Old</th><th>New</th></tr></thead>
+      <tbody>
+        <tr><td>.gm-spin</td><td><code>.ghostutter .ghostutter--smooth</code></td></tr>
+        <tr><td>.gm-spin--slow</td><td><code>.ghostutter--slow</code></td></tr>
+        <tr><td>.gm-spin--always</td><td><code>.ghostutter--always</code></td></tr>
+        <tr><td>.gm-dazzle</td><td><code>.ghostutter</code></td></tr>
+        <tr><td>.gm-dazzle--always</td><td><code>.ghostutter--always</code></td></tr>
+        <tr><td>[data-spin-on-hover]</td><td><code>data-ghostutter="hover"</code></td></tr>
+        <tr><td>dazzle-spiral.svg</td><td><code>images/ghostutter/shard.svg</code> · kept as <code>legacy-spiral.svg</code></td></tr>
+      </tbody>
+    </table>
+    <p class="note warn" style="margin-top:1rem;"><strong>The old class names still work.</strong>
+      <code>ghostutter.css</code> ends with an alias block so existing markup keeps running while you migrate — delete
+      that block once nothing references it. The logo spiral is <em>not</em> affected: that is the identity mark, and it
+      stays a spiral.</p>
+  </section>
+
+</div>
+
+<script src="scripts/ghostutter.js"></script>
+<script>
+  /* Specimen-only: the live switch for the idle-cursor directive. */
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('gu-idle-toggle');
+    var state = document.getElementById('gu-idle-state');
+    var on = false;
+
+    btn.addEventListener('click', function () {
+      on = !on;
+      root.style.setProperty('--ghostutter-idle', on ? '1.5s' : 'off');
+      var live = Ghostutter.idle.refresh();
+      btn.textContent = on ? 'Turn the idle cursor off' : 'Turn the idle cursor on';
+      state.textContent = '--ghostutter-idle: ' + (on ? '1.5s' : 'off') +
+        (on && !live ? ' · refused (reduced motion or coarse pointer)' : '');
+    });
+  })();
+</script>
+</body>
+</html>

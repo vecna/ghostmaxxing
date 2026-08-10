@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The genealogy of the read — Ghostmaxxing</title>
+<link rel="icon" type="image/svg+xml" href="images/logo/mark-small-onlight.svg">
+
+<!-- Fonts are mirrored locally: nothing is fetched from fonts.googleapis.com or
+     fonts.gstatic.com. Open devtools -> Network to confirm. -->
+<link rel="stylesheet" href="styles/fonts/google-fonts.css">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/ghostutter.css">
+
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fd5503; }
+  a { color: #050505; }
+  a:hover { color: #04302a; }
+
+  /* Circular-stamp label, bottom arc only. Laid out by JS (setStampLabels), but
+     every knob is CSS — set them on the .gm-stamp, not in script.
+
+     --arc-radius     distance from circle centre to the middle of each letter (px).
+                      auto = half the icon height + 16.
+     --arc-centre-y   circle centre, in px relative to the <p>'s own top edge.
+                      Negative = up inside the icon. auto = centre of the icon above.
+     --arc-spread     letter spacing along the arc. 1 = natural text spacing,
+                      1.4 = airier, 0.8 = tighter. Never distorts glyphs.
+     --arc-flip       0 = readable (letter tops point at the centre, stamp bottom).
+                      1 = letter tops point outward. */
+  .gm-stamp {
+    --arc-radius: auto;
+    --arc-centre-y: auto;
+    --arc-spread: 1;
+    --arc-flip: 0;
+  }
+  .gm-stamp > p {
+    position: relative;
+    margin: 8px 0 0;
+    height: 60px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .gm-stamp > p .arc-char {
+    position: absolute;
+    left: 0;
+    top: 0;
+    line-height: 1;
+    display: block;
+    transform-origin: 50% 50%;
+    will-change: transform;
+  }
+
+  /* Era rows are the hover target for their own ghostutter — the whole 1200px
+     band, not the 50px mark. */
+  .era { display: block; text-decoration: none; color: inherit; position: absolute; left: 0; }
+  .era:focus-visible { outline: 2px solid rgba(5,5,5,0.55); outline-offset: -6px; }
+  .era .ghostutter { position: absolute; }
+
+  @media print { .gm-noprint { display: none; } }
+</style>
+</head>
+<body>
+
+<div style="background: linear-gradient(180deg,#fd5503 0%,#fd5503 74%,#df5512 100%); color: #071a33; font-family: Inter, system-ui, sans-serif; min-height: 100vh; overflow-x: hidden;">
+
+  <div style="max-width: 1440px; margin: 0 auto; padding: 32px 40px 0;">
+    <header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; border-bottom: 1px solid rgba(5,5,5,0.22); padding-bottom: 18px;">
+      <a href="index.html" style="text-decoration: none; display: grid; gap: 4px;">
+        <span style="font-family: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-size: 40px; font-weight: 700; line-height: 1; color: #050505;">Ghostmaxxing</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #071a33; opacity: 0.78;">A public lab for testing face-recognition camouflage</span>
+      </a>
+      <nav style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; font-size: 14px; font-weight: 500;">
+        <a href="/references/" style="color: #071a33; text-decoration: none; border-bottom: 1px solid rgba(5,5,5,0.35);">Research references</a>
+        <a href="about.html" style="color: #071a33; text-decoration: none; border-bottom: 1px solid rgba(5,5,5,0.35);">Vision &amp; about</a>
+        <a href="lab.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border: 1.5px solid rgba(5,5,5,0.55); color: #050505; font-weight: 700; text-decoration: none;">Open the lab <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+
+    <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 48px; align-items: end; padding: 60px 0 30px;">
+      <div>
+        <p style="margin: 0 0 18px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #04302a;">Infographic · 1960s → present</p>
+        <h1 style="margin: 0; font-family: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-weight: 700; color: #050505; font-size: clamp(48px, 6vw, 92px); line-height: 0.92; letter-spacing: -0.02em; text-wrap: balance;">The genealogy of<br />the read.</h1>
+        <p style="margin: 26px 0 0; max-width: 34em; font-size: 19px; line-height: 1.45; color: #071a33;">Every way a machine has learned to read a face has, sooner or later, been read back. The tree grows bottom-up: oldest at the roots, each era carrying the camera that enforced it and the intervention that defeated it.</p>
+      </div>
+      <div style="display: grid; gap: 12px; border-top: 1.5px solid rgba(5,5,5,0.3); padding-top: 20px;">
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #04302a;">How to read the lenses</p>
+        <div style="display: grid; grid-template-columns: 52px 1fr; gap: 12px 16px; align-items: center; font-size: 15px; line-height: 1.35; color: #071a33;">
+          <img src="images/icons/cam-cube-alive.svg" alt="" width="52" height="52" style="display: block;" />
+          <span><strong>Open lens.</strong> Still reading. Not defeated.</span>
+          <span class="ghostutter-lens" data-ghostutter="hover" tabindex="0" style="width: 52px; height: 52px;">
+            <img src="images/icons/cam-cube.svg" alt="" width="52" height="52" style="display: block;" />
+            <span class="ghostutter" style="left: 16px; top: 16px; --ghostutter-size: 20px;"></span>
+          </span>
+          <span><strong>Dazzled lens.</strong> A documented intervention exists. Hover an era to shake it.</span>
+        </div>
+        <p style="margin: 2px 0 0; font-size: 14px; line-height: 1.5; color: #253a54;">“Defeated” means <em>demonstrated against, under stated conditions</em> — not a claim that the technique works against any deployed system today.</p>
+      </div>
+    </section>
+  </div>
+
+  <div style="position: relative;">
+   <div style="display: flex; justify-content: center; padding: 0;">
+    <!-- The tree is authored at a fixed 1200x3100 so the era rows can be pinned
+         to the branches by hand. The script scales this one box down to fit
+         narrow windows; nothing inside it is responsive on its own. -->
+    <div id="gm-stage" style="width: 1200px; flex: 0 0 auto; transform-origin: top center;">
+      <div style="position: relative; width: 1200px; height: 3100px;">
+
+        <img src="images/motifs/genealogy-tree.svg" alt="" width="1200" height="3100" style="position: absolute; inset: 0; display: block; width: 1200px; height: 3100px;" />
+
+        <div style="position: absolute; left: 40px; top: 144px; padding: 2px 10px; background: #fd5503; font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.16em; color: #04302a;">Modern ERA · 2021 →</div>
+        <div style="position: absolute; left: 150px; top: 196px; width: 900px; text-align: center;">
+          <p style="margin: 0; font-family: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-size: 52px; font-weight: 700; line-height: 1.02; color: #050505; text-wrap: balance;">play with Ghostmaxxing.</p>
+          <p style="margin: 14px 0 0; font-size: 20px; line-height: 1.35; color: #071a33;">prosthetic, 3d-printed, makeup, glitter, clothing. the quest to find the most effective deceiver. <a href="lab.html" style="font-weight: 700;">Open the lab ↗</a></p>
+        </div>
+
+        <div class="gm-stamp" style="position: absolute; left: 155px; top: 450px; width: 190px;">
+          <img src="images/icons/cam-street-alive.svg" alt="Street surveillance pole, lens open" width="190" height="190" style="display: block;" />
+          <p style="margin: 8px 0 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; color: #04302a;">Street pole surveillance</p>
+        </div>
+        <div class="gm-stamp" style="position: absolute; left: 345px; top: 660px; width: 170px;">
+          <img src="images/icons/cam-glasses-alive.svg" alt="Smart glasses with an outward camera, lens open" width="170" height="170" style="display: block;" />
+          <p style="margin: 8px 0 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; color: #04302a;">perv glasses</p>
+        </div>
+        <div class="gm-stamp" style="position: absolute; left: 875px; top: 430px; width: 150px;">
+          <img src="images/icons/cam-cube-alive.svg" alt="Edge AI camera, lens open" width="150" height="150" style="display: block;" />
+          <p style="margin: 8px 0 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; color: #04302a;">edge AI camera</p>
+        </div>
+
+        <a class="era" href="#era-depth" data-era="depth" data-ghostutter="hover" style="top: 1020px; width: 1200px; height: 460px;">
+          <span style="position: absolute; left: 40px; top: -26px; padding: 2px 10px; background: #fd5503; font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.16em; color: #04302a;">ERA OF DEPTH · 2017 — 2020</span>
+          <img src="images/icons/cam-pill.svg" alt="Depth sensor array, lens dazzled" width="200" height="200" style="position: absolute; left: 215px; top: 100px; display: block;" />
+          <span class="ghostutter" style="left: 250px; top: 175px; --ghostutter-size: 51px;"></span>
+          <span style="position: absolute; left: 175px; top: 308px; width: 280px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; color: #04302a;">DEPTH SENSOR ARRAY</span>
+          <span style="position: absolute; left: 700px; top: 200px; width: 450px; transform: translateY(-50%); display: block;">
+            <span style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.16em; color: #050505;">2017 — 2020</span>
+            <span style="display: block; margin-top: 6px; font-family: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-size: 44px; font-weight: 700; line-height: 1.02; color: #050505;">Depth &amp; near-infrared</span>
+            <span style="display: block; margin-top: 12px; font-size: 16px; line-height: 1.42; color: #071a33;">Dot projectors and infrared sensors read the face as 3D geometry — in the dark, and with a liveness check a photograph cannot pass.</span>
+            <span style="display: block; margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #04302a;">DEFEATED IN 2021</span>
+            <span style="display: block; margin-top: 4px; font-family: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-style: italic; font-size: 26px; line-height: 1.2; color: #050505;">Adv-Makeup · NIR-LED illumination attacks</span>
+            <span style="display: block; margin-top: 12px; font-size: 14px; line-height: 1.45; color: #253a54;">Limits: reported against the authors' own models and lighting.</span>
+          </span>
+        </a>
+
+        <a class="era" href="#era-learning" data-era="learning" data-ghostutter="hover" style="top: 1480px; width: 1200px; height: 460px;">
+          <span style="position: absolute; left: 40px; top: -26px; padding: 2px 10px; background: #fd5503; font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.16em; color: #04302a;">ERA OF LEARNING · 2014 — 2016</span>
+          <img src="images/icons/cam-cube.svg" alt="IoT home camera, lens dazzled" width="160" height="160" style="position: absolute; left: 885px; top: 108px; display: block;" />
+          <span class="ghostutter" style="left: 936px; top: 159px; --ghostutter-size: 58px;"></span>
+          <span style="position: absolute; left: 825px; top: 276px; width: 280px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; color: #04302a;">IOT HOME CAMERA</span>
+          <span style="position: absolute; left: 50px; top: 188px; width: 450px; transform: translateY(-50%); display: block; text-align: right;">
+            <span style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.16em; color: #050505;">2014 — 2016</span>
+            <span style="display: block; margin-top: 6px; font-family: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-size: 44px; font-weight: 700; line-height: 1.02; color: #050505;">CNN face embeddings</span>
+            <span style="display: block; margin-top: 12px; font-size: 16px; line-height: 1.42; color: #071a33;">DeepFace and FaceNet stop measuring features and start learning them: every face becomes a vector in a space nobody designed by hand.</span>
+            <span style="display: block; margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #04302a;">DEFEATED IN 2016</span>
+            <span style="display: block; margin-top: 4px; font-family: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-style: italic; font-size: 26px; line-height: 1.2; color: #050505;">Adversarial eyeglass frames — Sharif et al.</span>
+            <span style="display: block; margin-top: 12px; font-size: 14px; line-height: 1.45; color: #253a54;">Limits: optimised against named models; retraining closes most of the gap.</span>
+          </span>
+        </a>
+
+        <a class="era" href="#era-measurement" data-era="measurement" data-ghostutter="hover" style="top: 1940px; width: 1200px; height: 460px;">
+          <span style="position: absolute; left: 40px; top: -26px; padding: 2px 10px; background: #fd5503; font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.16em; color: #04302a;">ERA OF MEASUREMENT · 2010 — 2013</span>
+          <img src="images/icons/cam-dome.svg" alt="Ceiling dome camera, lens dazzled" width="180" height="180" style="position: absolute; left: 210px; top: 70px; display: block;" />
+          <span class="ghostutter" style="left: 271px; top: 120px; --ghostutter-size: 57px;"></span>
+          <span style="position: absolute; left: 160px; top: 258px; width: 280px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; color: #04302a;">DOME CAMERA</span>
+          <span style="position: absolute; left: 700px; top: 160px; width: 450px; transform: translateY(-50%); display: block;">
+            <span style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.16em; color: #050505;">2010 — 2013</span>
+            <span style="display: block; margin-top: 6px; font-family: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-size: 44px; font-weight: 700; line-height: 1.02; color: #050505;">Landmark geometry</span>
+            <span style="display: block; margin-top: 12px; font-size: 16px; line-height: 1.42; color: #071a33;">Eigenfaces, Fisherfaces, 68-point meshes. The face is a set of distances between named points — and the dome never shows you which way it looks.</span>
+            <span style="display: block; margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #04302a;">DEFEATED IN 2014</span>
+            <span style="display: block; margin-top: 4px; font-family: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-style: italic; font-size: 26px; line-height: 1.2; color: #050505;">URME prosthetic — Leo Selvaggio</span>
+            <span style="display: block; margin-top: 12px; font-size: 14px; line-height: 1.45; color: #253a54;">Limits: hides the points rather than fooling them. Highly visible to humans.</span>
+          </span>
+        </a>
+
+        <a class="era" href="#era-contrast" data-era="contrast" data-ghostutter="hover" style="top: 2400px; width: 1200px; height: 500px;">
+          <span style="position: absolute; left: 40px; top: -26px; padding: 2px 10px; background: #fd5503; font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.16em; color: #04302a;">ERA OF CONTRAST · 2001 — 2009</span>
+          <img src="images/icons/cam-bullet.svg" alt="Bullet CCTV camera, lens dazzled" width="170" height="170" style="position: absolute; left: 845px; top: 104px; display: block;" />
+          <span class="ghostutter" style="left: 918px; top: 166px; --ghostutter-size: 50px;"></span>
+          <span style="position: absolute; left: 790px; top: 282px; width: 280px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; color: #04302a;">BULLET CCTV</span>
+          <span style="position: absolute; left: 50px; top: 189px; width: 450px; transform: translateY(-50%); display: block; text-align: right;">
+            <span style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.16em; color: #050505;">2001 — 2009</span>
+            <span style="display: block; margin-top: 6px; font-family: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-size: 44px; font-weight: 700; line-height: 1.02; color: #050505;">Haar cascades</span>
+            <span style="display: block; margin-top: 12px; font-size: 16px; line-height: 1.42; color: #071a33;">Viola-Jones slides rectangles of light and dark across the frame. Cheap, fast, everywhere — and it only ever looked for contrast.</span>
+            <span style="display: block; margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #04302a;">DEFEATED IN 2010</span>
+            <span style="display: block; margin-top: 4px; font-family: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-style: italic; font-size: 26px; line-height: 1.2; color: #050505;">CV Dazzle — Adam Harvey</span>
+            <span style="display: block; margin-top: 12px; font-size: 14px; line-height: 1.45; color: #253a54;">Limits: tuned to the detectors of its day; ineffective against the CNNs that replaced them.</span>
+          </span>
+        </a>
+
+        <div style="position: absolute; left: 770px; top: 2748px; padding: 2px 10px; background: #fd5503; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #04302a;">SOIL · PATTERN RECOGNITION, 1960s</div>
+      </div>
+    </div>
+   </div>
+   <div id="gm-soil" aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 150px; background-image: url('/images/motifs/soil-edge.svg'), linear-gradient(#031d1a,#031d1a); background-repeat: repeat-x, no-repeat; background-position: top left, bottom left; background-size: 1200px 64px, 100% calc(100% - 46px);"></div>
+  </div>
+
+  <div style="background: #031d1a;">
+    <div style="max-width: 1440px; margin: 0 auto; padding: 8px 40px 0;">
+      <p style="margin: 0 auto; max-width: 62ch; text-align: center; font-size: 14px; line-height: 1.55; color: rgba(255,231,168,0.72);">Dates mark first public demonstration, not deployment. Every era is a documented result under stated conditions — local, conditional and temporary. <a href="/references/" style="color: #ffe7a8;">Read the archive entries</a>.</p>
+    </div>
+    <div aria-hidden="true" style="height: clamp(200px, 24vw, 340px); margin-top: 28px; background-image: url('/images/motifs/camera-band.svg'); background-repeat: no-repeat; background-position: bottom center; background-size: auto 100%;"></div>
+  </div>
+</div>
+
+<script src="scripts/ghostutter.js"></script>
+<script>
+/* ----------------------------------------------------------------------------
+   Page logic. Plain functions on the document — no framework, no component
+   class, no refs. Three jobs:
+
+     1. fitStage()        scale the fixed 1200px artboard into a narrow window
+     2. setStampLabels()  bend the icon captions around the bottom of a circle
+     3. era clicks        re-broadcast as a gm:reference event for the host page
+
+   Motion for the dazzled lenses is entirely in styles/ghostutter.css; nothing
+   here touches it.
+---------------------------------------------------------------------------- */
+(function () {
+  'use strict';
+
+  var STAGE_W = 1200;
+  var STAGE_H = 3100;
+
+  var stage = document.getElementById('gm-stage');
+  var soil  = document.getElementById('gm-soil');
+  var lastScale = null;
+
+  /* --- 1. Fit ------------------------------------------------------------ */
+
+  function fitStage() {
+    if (!stage) return;
+    var s = Math.min(1, (window.innerWidth - 48) / STAGE_W);
+    if (s === lastScale) return;
+    lastScale = s;
+    stage.style.transform = 'scale(' + s + ')';
+    /* transform does not affect layout, so the wrapper has to be told the
+       painted height or the page keeps 3100px of empty scroll below the tree. */
+    stage.style.height = (STAGE_H * s) + 'px';
+    /* The ground may only ever cover the 200 svg-px of bare trunk under the
+       last era — any more and it eats the roots. */
+    if (soil) soil.style.height = Math.max(70, Math.round(200 * s)) + 'px';
+  }
+
+  /* --- 2. Arc labels ----------------------------------------------------- */
+
+  function setStampLabels() {
+    var labels = document.querySelectorAll('.gm-stamp > p');
+
+    Array.prototype.forEach.call(labels, function (p) {
+      /* Cache the original text once: after the first pass the <p> contains
+         spans, so textContent would come back with the spacing baked in. */
+      if (!p.dataset.arcSource) {
+        p.dataset.arcSource = (p.textContent || '').replace(/\s+/g, ' ').trim();
+      }
+      var text = p.dataset.arcSource;
+      if (!text) return;
+
+      var holder = p.closest('.gm-stamp') || p;
+      var style = getComputedStyle(holder);
+      var icon = holder.querySelector('img');
+      var iconH = icon ? icon.getBoundingClientRect().height : 0;
+      var gap = parseFloat(getComputedStyle(p).marginTop) || 0;
+
+      function num(name, fallback) {
+        var v = parseFloat(style.getPropertyValue(name));
+        return isFinite(v) ? v : fallback;
+      }
+
+      var radius = num('--arc-radius', iconH / 2 + 16);
+      var centreY = num('--arc-centre-y', -(gap + iconH / 2));  // icon centre
+      var spread = num('--arc-spread', 1);
+      var flip = num('--arc-flip', 0) >= 0.5;
+
+      var chars = Array.prototype.slice.call(text);
+      var centreX = p.clientWidth / 2;
+
+      /* Pass 1: lay the glyphs out flat to measure their real advance widths,
+         so spacing along the arc matches the font instead of being stretched
+         to an even angle per character. */
+      p.textContent = '';
+      var spans = chars.map(function (ch) {
+        var span = document.createElement('span');
+        span.className = 'arc-char';
+        span.style.position = 'static';
+        span.style.display = 'inline-block';
+        span.textContent = ch === ' ' ? '\u00a0' : ch;
+        p.appendChild(span);
+        return span;
+      });
+      var widths = spans.map(function (s) { return s.getBoundingClientRect().width; });
+      var total = widths.reduce(function (a, b) { return a + b; }, 0) * spread;
+
+      /* Pass 2: place each glyph. theta is measured from the bottom of the
+         circle (0 = straight down), positive to the right. Arc length along the
+         circle is the glyph advance, so every letter keeps its own width. */
+      var walked = 0;
+      for (var i = 0; i < spans.length; i++) {
+        var advance = widths[i] * spread;
+        var centreArc = walked + advance / 2 - total / 2;
+        walked += advance;
+
+        var theta = centreArc / radius;
+        var x = centreX + Math.sin(theta) * radius;
+        var y = centreY + Math.cos(theta) * radius;
+        /* Rotating by -theta points every glyph's up-vector at the circle
+           centre, so all letters converge on one point (the icon's middle). */
+        var deg = (flip ? theta : -theta) * 180 / Math.PI;
+
+        spans[i].style.position = 'absolute';
+        spans[i].style.display = 'block';
+        spans[i].style.left = x + 'px';
+        spans[i].style.top = y + 'px';
+        spans[i].style.transform = 'translate(-50%, -50%) rotate(' + deg + 'deg)';
+      }
+
+      var fontSize = parseFloat(getComputedStyle(p).fontSize) || 13;
+      p.style.height = Math.max(0, Math.round(centreY + radius + fontSize)) + 'px';
+    });
+  }
+
+  /* --- 3. Era clicks ----------------------------------------------------- */
+
+  /* One delegated listener instead of a handler per row. The host page can
+     listen for this and open the matching archive entry:
+
+       window.addEventListener('gm:reference', function (e) {
+         console.log(e.detail.era);   // 'depth' | 'learning' | ...
+       }); */
+  document.addEventListener('click', function (e) {
+    var era = e.target.closest && e.target.closest('[data-era]');
+    if (!era) return;
+    window.dispatchEvent(new CustomEvent('gm:reference', {
+      detail: { era: era.getAttribute('data-era') }
+    }));
+  });
+
+  /* --- boot -------------------------------------------------------------- */
+
+  function relayout() {
+    fitStage();
+    setStampLabels();
+  }
+
+  relayout();
+
+  /* Web fonts land after first paint and change every glyph advance, so the
+     arcs have to be measured again once the real faces are in. */
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(setStampLabels);
+  }
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(relayout, 150);
+  });
+})();
+</script>
+</body>
+</html>

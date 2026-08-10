@@ -1,0 +1,336 @@
+/* ============================================================================
+   GHOSTUTTER — Ghostmaxxing's spinner / dazzler.
+   ghost + stutter, built the way ghostyle is built: ghost + style.
+
+   Supersedes gm-spin.css (smooth rotation) and gm-dazzle.css (shudder).
+   Both are folded in here: --smooth is the old gm-spin, the default is the old
+   gm-dazzle. Aliases for the old class names are at the bottom of this file, so
+   existing markup keeps working while you migrate.
+
+   Needs no JavaScript for the hover / always / focus cases. js/ghostutter.js is
+   only required for the two extras: spawning marks from script, and the idle
+   cursor directive (--ghostutter-idle, section 6 below).
+
+   Contents
+     1. Tokens
+     2. The mark
+     3. Speed and profile modifiers
+     4. Triggers (hover, focus, script)
+     5. The lens wrapper
+     6. Idle cursor — the CSS directive
+     7. Reduced motion
+     8. Legacy aliases
+   ========================================================================= */
+
+
+/* --- 1. Tokens -------------------------------------------------------------
+   Override these on :root, or on any ancestor to scope them to one region.
+   Everything the mark does is driven from here; nothing else needs editing. */
+
+:root {
+  /* Dazzle pink. RESERVED — per tokens.css this colour only ever appears
+     inside a lens or as the logo spiral. The mark is always inside a lens. */
+  --ghostutter-colour: var(--gm-pink, #ff2f7a);
+
+  /* Nominal size. The shudder offsets are percentages of the mark's own box,
+     so the motion scales with this and never needs re-tuning. */
+  --ghostutter-size: 2.75rem;
+
+  /* One full revolution. The mark holds still between steps, so a longer
+     duration reads as a machine retrying, not as a slower spin. */
+  --ghostutter-duration: 2.2s;
+
+  /* Idle-cursor directive. OFF unless you set it — see section 6. */
+  --ghostutter-idle: off;
+  --ghostutter-idle-size: 3.25rem;
+  --ghostutter-idle-fade: 260ms;
+
+  /* The cursor mark gets its OWN colour, and it is not pink. Pink is reserved
+     for the inside of a lens, and this mark floats over whatever the page
+     happens to be — on --gm-bg orange the pink lands at 1.09:1 and effectively
+     disappears. Ink reads on orange, cream and yellow; set this to
+     var(--gm-cream) for a page on soil or green. */
+  --ghostutter-idle-colour: var(--gm-ink, #050505);
+}
+
+
+/* --- 2. The mark -----------------------------------------------------------
+   A <span> — no image request, no inline SVG to keep in sync. The shard
+   geometry arrives as a mask so --ghostutter-colour actually works; the
+   background is the paint. Put it on anything: span, i, img, inline <svg>.
+
+   NOTE the url() below is resolved relative to THIS file. If you move
+   ghostutter.css, move assets/ghostutter/ with it or redeclare
+   --ghostutter-shard in a stylesheet that sits at the new depth. */
+
+.ghostutter {
+  /* The shard, inline. It is here rather than in a url("../assets/...") because
+     Chrome subjects mask-image to CORS, and over file:// the origin is "null" —
+     an external mask silently fails to load and every mark renders as a solid
+     pink SQUARE. A data URI is exempt, so the pages open from disk unchanged.
+
+     assets/ghostutter/shard.svg is the same geometry as a real file, for
+     <img> use, for handing to a designer, and as the source of truth if you
+     edit the wedges. Point this property at it when you are on a server:
+
+       :root { --ghostutter-shard: url("assets/ghostutter/shard.svg"); }
+
+     (declare that from a stylesheet at the depth the path is written for, or
+     from the page — a url() in a custom property resolves against the file it
+     is DECLARED in, not the file that uses it). */
+  --ghostutter-shard: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23000'%3E%3Cpath d='M50 50 L44 10 L58 18 Z'/%3E%3Cpath d='M50 50 L86 24 L90 41 Z'/%3E%3Cpath d='M50 50 L92 60 L75 73 Z'/%3E%3Cpath d='M50 50 L58 90 L39 85 Z'/%3E%3Cpath d='M50 50 L14 75 L12 57 Z'/%3E%3Cpath d='M50 50 L10 35 L25 25 Z'/%3E%3C/g%3E%3C/svg%3E");
+
+  display: block;
+  width: var(--ghostutter-size);
+  height: var(--ghostutter-size);
+  flex: 0 0 auto;
+
+  background-color: var(--ghostutter-colour);
+  -webkit-mask-image: var(--ghostutter-shard);
+          mask-image: var(--ghostutter-shard);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-size: contain;
+          mask-size: contain;
+
+  /* Rotation happens about the shard's own pivot, which the SVG puts at 50,50 —
+     dead centre of a square box, so 50% 50% is that pivot for span and img
+     alike. Inline SVG needs the extra rule below, since a bare <g> has no box
+     of its own to take a percentage from. */
+  transform-origin: 50% 50%;
+
+  /* Hard steps, never eased. Every keyframe also throws the mark a couple of
+     percent off its own centre, so the pivot never settles: it reads as a
+     shudder rather than a turntable. */
+  animation: ghostutter-stutter var(--ghostutter-duration) steps(1, end) infinite;
+  animation-play-state: paused;   /* the default is STILL. See section 4. */
+}
+
+/* If you point the class at a real image instead of using the mask, drop the
+   paint so the file's own colours come through. */
+img.ghostutter,
+svg.ghostutter,
+g.ghostutter {
+  background-color: transparent;
+  -webkit-mask-image: none;
+          mask-image: none;
+}
+
+/* Inside an inline <svg>, measure the pivot from the shape's own bounding box
+   rather than from the whole canvas. */
+svg.ghostutter,
+g.ghostutter,
+path.ghostutter {
+  transform-box: fill-box;
+}
+
+/* Uneven dwell: two long holds and a burst, like a machine retrying a read.
+   Offsets are percentages of the element's own box, so they scale with
+   --ghostutter-size. */
+@keyframes ghostutter-stutter {
+  0%   { transform: rotate(0deg)   translate(0, 0); }
+  30%  { transform: rotate(17deg)  translate(-4%, 2%); }
+  38%  { transform: rotate(96deg)  translate(4%, -4%); }
+  46%  { transform: rotate(121deg) translate(-2%, -4%); }
+  54%  { transform: rotate(199deg) translate(4%, 4%); }
+  62%  { transform: rotate(214deg) translate(-4%, 0); }
+  90%  { transform: rotate(288deg) translate(2%, 4%); }
+  100% { transform: rotate(360deg) translate(0, 0); }
+}
+
+/* Evenly spaced steps — busier, no dwell. For small marks (under ~24px) where
+   the stutter's long holds just read as "broken". */
+@keyframes ghostutter-panic {
+  0%   { transform: rotate(0deg)   translate(0, 0); }
+  12%  { transform: rotate(44deg)  translate(3%, -4%); }
+  25%  { transform: rotate(91deg)  translate(-4%, 2%); }
+  37%  { transform: rotate(133deg) translate(4%, 4%); }
+  50%  { transform: rotate(182deg) translate(-2%, -4%); }
+  62%  { transform: rotate(224deg) translate(4%, -2%); }
+  75%  { transform: rotate(271deg) translate(-4%, 4%); }
+  87%  { transform: rotate(316deg) translate(2%, 3%); }
+  100% { transform: rotate(360deg) translate(0, 0); }
+}
+
+/* Continuous rotation — this is the old gm-spin, kept for the footer camera
+   band and anywhere the mark needs to read as machinery rather than failure. */
+@keyframes ghostutter-smooth {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+
+/* --- 3. Speed and profile --------------------------------------------------
+   Combine freely: .ghostutter.ghostutter--smooth.ghostutter--slow is valid. */
+
+.ghostutter--slow { --ghostutter-duration: 6s; }
+.ghostutter--fast { --ghostutter-duration: 0.9s; }
+
+.ghostutter--panic  { animation-name: ghostutter-panic; }
+.ghostutter--smooth {
+  animation-name: ghostutter-smooth;
+  animation-timing-function: linear;
+}
+
+
+/* --- 4. Triggers -----------------------------------------------------------
+   The mark is PAUSED by default and visible while still — that is deliberate.
+   A dazzled lens is dazzled whether or not you are pointing at it; the motion
+   is the reward for attention, not the state itself.
+
+   Four ways to start it:
+
+     a) hover / keyboard focus   put data-ghostutter="hover" on an ANCESTOR
+     b) always                   .ghostutter--always
+     c) from script              Ghostutter.start(el) — toggles .is-ghostuttering
+     d) idle cursor              the --ghostutter-idle directive, section 6
+
+   The ancestor form means the whole era row, card or button is the hit area,
+   not the 27px mark. Give that ancestor tabindex="0" if it is not already
+   focusable, or keyboard users never see the motion. */
+
+[data-ghostutter~="hover"]:hover .ghostutter,
+[data-ghostutter~="hover"]:focus-visible .ghostutter,
+[data-ghostutter~="hover"]:focus-within .ghostutter,
+.ghostutter--always,
+.ghostutter.is-ghostuttering {
+  animation-play-state: running;
+}
+
+/* Escape hatch: force one mark still inside a hovered ancestor. */
+.ghostutter--still { animation-play-state: paused !important; }
+
+
+/* --- 5. The lens -----------------------------------------------------------
+   A positioning wrapper, so the mark can sit over a camera icon without the
+   icon needing to know about it. Give the wrapper the icon's dimensions and
+   place the mark with left/top — the values per icon are in README.md. */
+
+.ghostutter-lens {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+
+.ghostutter-lens > .ghostutter {
+  position: absolute;
+  pointer-events: none;   /* the icon underneath keeps the hover */
+}
+
+/* Centre the mark on the lens without hand-measuring, when the icon happens to
+   be centred in its own box. Most cam-*.svg are NOT — check README.md first. */
+.ghostutter-lens > .ghostutter--centred {
+  left: 50%;
+  top: 50%;
+  margin: calc(var(--ghostutter-size) / -2) 0 0 calc(var(--ghostutter-size) / -2);
+}
+
+
+/* --- 6. Idle cursor — the CSS directive ------------------------------------
+   OPTIONAL. When the pointer holds still for longer than the interval below, a
+   ghostutter is left behind at the cursor's last position; the next movement
+   takes it away again. You stopped moving, so the read had time to land — the
+   mark is what got left in the frame.
+
+   The switch is CSS, not JavaScript config. js/ghostutter.js reads this custom
+   property off :root and does nothing at all unless it holds a positive time:
+
+       :root { --ghostutter-idle: 2s; }        <- on, after 2 seconds
+       :root { --ghostutter-idle: 900ms; }     <- on, brisker
+       :root { --ghostutter-idle: off; }       <- off (the default)
+
+   Change it at runtime and it takes effect on the next idle:
+
+       document.documentElement.style.setProperty('--ghostutter-idle', '3s');
+
+   Ignored on coarse pointers (there is no resting cursor on a touchscreen) and
+   under prefers-reduced-motion. */
+
+.ghostutter-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 2147483000;
+  width: var(--ghostutter-idle-size);
+  height: var(--ghostutter-idle-size);
+
+  /* JS writes translate3d() here, so the mark inside keeps its own transform
+     free for the shudder. Two elements, two transforms, no fighting. */
+  margin: calc(var(--ghostutter-idle-size) / -2) 0 0 calc(var(--ghostutter-idle-size) / -2);
+
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--ghostutter-idle-fade) linear;
+  will-change: transform, opacity;
+}
+
+.ghostutter-cursor[data-visible="1"] { opacity: 1; }
+
+.ghostutter-cursor > .ghostutter {
+  --ghostutter-size: var(--ghostutter-idle-size);
+  --ghostutter-colour: var(--ghostutter-idle-colour);
+}
+
+@media (pointer: coarse) {
+  .ghostutter-cursor { display: none; }
+}
+
+
+/* --- 7. Reduced motion -----------------------------------------------------
+   The mark still shows — it is a state, and hiding it would remove
+   information. Only the motion goes. */
+
+@media (prefers-reduced-motion: reduce) {
+  .ghostutter,
+  .ghostutter--always,
+  .ghostutter.is-ghostuttering {
+    animation: none;
+  }
+  .ghostutter-cursor { display: none; }
+}
+
+
+/* --- 8. Legacy aliases -----------------------------------------------------
+   Delete this block once the markup is migrated. Mapping:
+
+     .gm-spin              -> .ghostutter.ghostutter--smooth
+     .gm-spin--slow        -> .ghostutter--slow
+     .gm-spin--always      -> .ghostutter--always
+     .gm-dazzle            -> .ghostutter
+     .gm-dazzle--always    -> .ghostutter--always
+     [data-spin-on-hover]  -> data-ghostutter="hover"
+
+   The old classes assumed an <img> of the spiral, so no mask is applied here —
+   whatever file the img points at keeps rendering. */
+
+.gm-spin,
+.gm-dazzle {
+  transform-origin: 50% 50%;
+  transform-box: fill-box;
+  animation-duration: var(--ghostutter-duration);
+  animation-iteration-count: infinite;
+  animation-play-state: paused;
+}
+
+.gm-spin   { animation-name: ghostutter-smooth;  animation-timing-function: linear; }
+.gm-dazzle { animation-name: ghostutter-stutter; animation-timing-function: steps(1, end); }
+
+.gm-spin--slow { --ghostutter-duration: 9s; }
+
+.gm-spin--always,
+.gm-dazzle--always,
+[data-spin-on-hover]:hover .gm-spin,
+[data-spin-on-hover]:hover .gm-dazzle,
+[data-spin-on-hover]:focus-visible .gm-spin,
+[data-spin-on-hover]:focus-visible .gm-dazzle,
+[data-spin-on-hover]:hover .ghostutter,
+[data-spin-on-hover]:focus-visible .ghostutter {
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gm-spin,
+  .gm-dazzle { animation: none; }
+}
