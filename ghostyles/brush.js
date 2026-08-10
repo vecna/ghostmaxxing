@@ -2,7 +2,7 @@
  * ==Ghostyle==
  * @name         Face Brush
  * @slug         brush
- * @version      0.1.0
+ * @version      0.2.0
  * @author       vecna
  * @license      AGPL-3.0-only
  * @release_date 2026-07-04
@@ -84,8 +84,14 @@ let latest = null;
 let boundCanvas = null;
 /** Saved handlers so `onClear` can detach cleanly. */
 let handlers = null;
-/** The injected floating control panel element. */
+/** The injected control panel element. */
 let panel = null;
+/** Timestamp of the last frame that carried real landmarks, 0 if never. */
+let lastFaceAt = 0;
+/** Handle for the "is a face still there?" watchdog. */
+let faceWatch = null;
+/** The bus listener, kept so it is only ever registered once. */
+let busBound = false;
 
 /** Current brush settings (snapshotted per stroke at pointerdown). */
 const brush = { color: '#00e5ff', alpha: 0.85, widthPx: 26 };
@@ -275,17 +281,33 @@ function detach() {
 
 function buildPanel() {
    if (panel) return;
+
+   // lab.html reserves #gm-pluginbar-mount for exactly this. Mounting there
+   // means the panel inherits the lab's own type and surface tokens instead of
+   // hard-coding a second visual language on top of the app, and it lands
+   // inside a container the lab already shows and hides for command Ghostyles.
+   //
+   // The fixed-position fallback is for hosts that have no plugin bar —
+   // loader.html, a bare test page, someone's own embed.
+   const mount = document.getElementById('gm-pluginbar-mount');
+
    panel = document.createElement('div');
    panel.setAttribute('data-gstmxx-plugin', 'brush');
-   panel.style.cssText = [
-      'position:fixed', 'left:50%', 'bottom:16px', 'transform:translateX(-50%)',
-      'z-index:400', 'display:flex', 'flex-wrap:wrap', 'gap:10px', 'align-items:center',
-      'padding:10px 14px', 'border-radius:12px', 'pointer-events:auto',
-      'background:rgba(15,17,21,0.86)', 'backdrop-filter:blur(8px)',
-      'border:1px solid rgba(255,255,255,0.12)', 'color:#eef2ff',
-      'font:13px/1.2 Inter,system-ui,sans-serif', 'box-shadow:0 8px 30px rgba(0,0,0,0.45)',
-      'max-width:calc(100vw - 24px)'
-   ].join(';');
+
+   const shared = [
+      'display:flex', 'flex-wrap:wrap', 'gap:10px', 'align-items:center',
+      'pointer-events:auto', 'color:var(--fg,#eef2ff)',
+      'font:13px/1.2 var(--sans,system-ui),sans-serif'
+   ];
+   panel.style.cssText = mount
+      ? shared.join(';')
+      : shared.concat([
+         'position:fixed', 'left:50%', 'bottom:16px', 'transform:translateX(-50%)',
+         'z-index:400', 'padding:10px 14px', 'border-radius:12px',
+         'background:var(--panel,rgba(15,17,21,0.86))', 'backdrop-filter:blur(8px)',
+         'border:1px solid var(--line,rgba(255,255,255,0.12))',
+         'box-shadow:0 8px 30px rgba(0,0,0,0.45)', 'max-width:calc(100vw - 24px)'
+      ]).join(';');
 
    const label = (text) => {
       const s = document.createElement('span');
@@ -320,7 +342,7 @@ function buildPanel() {
       b.style.cssText = [
          'padding:6px 10px', 'border-radius:8px', 'cursor:pointer',
          'background:rgba(159,122,234,0.22)', 'border:1px solid rgba(159,122,234,0.5)',
-         'color:#fff', 'font:600 12px Inter,system-ui,sans-serif'
+         'color:#fff', 'font:600 12px var(--sans,system-ui),sans-serif'
       ].join(';');
       b.onclick = fn;
       return b;
@@ -330,22 +352,60 @@ function buildPanel() {
    count.setAttribute('data-role', 'count');
    count.style.cssText = 'opacity:0.7;min-width:74px;text-align:right';
 
+   // Shown whenever no face has been seen recently. The controls stay visible
+   // and usable underneath — the plugin is loaded and its settings are real
+   // even when there is nothing to paint on yet.
+   const hint = document.createElement('p');
+   hint.setAttribute('data-role', 'hint');
+   hint.style.cssText = [
+      'flex-basis:100%', 'margin:2px 0 0', 'font-size:12px', 'line-height:1.45',
+      'color:var(--muted,#b9a892)'
+   ].join(';');
+
    panel.append(
       label('Brush'), color, label('size'), size, label('opacity'), opacity,
       btn('Undo', 'Remove last stroke', () => { strokes.pop(); updatePanel(); }),
       btn('Clear', 'Remove all strokes', () => { strokes = []; updatePanel(); }),
       btn('Copy state', 'Copy the painted state as JSON', copyState),
       btn('Bake Ghostyle', 'Download this state as a standalone .js Ghostyle', bakeGhostyle),
-      count
+      count, hint
    );
-   document.body.appendChild(panel);
+
+   (mount || document.body).appendChild(panel);
    updatePanel();
+   updateFaceState();
 }
 
 function updatePanel() {
    if (!panel) return;
    const c = panel.querySelector('[data-role="count"]');
    if (c) c.textContent = `${strokes.length} stroke${strokes.length === 1 ? '' : 's'}`;
+}
+
+/**
+ * Tell the reader why nothing is happening. Three states, and the difference
+ * between them matters: a plugin that says nothing when no face is found is
+ * indistinguishable from a plugin that is broken.
+ */
+function updateFaceState() {
+   if (!panel) return;
+   const hint = panel.querySelector('[data-role="hint"]');
+   if (!hint) return;
+
+   const age = lastFaceAt ? Date.now() - lastFaceAt : Infinity;
+
+   if (age < 1500) {
+      hint.textContent = '';
+      hint.style.display = 'none';
+      return;
+   }
+
+   hint.style.display = '';
+   hint.textContent = lastFaceAt
+      ? 'Lost the face — strokes are kept and will snap back when it returns.'
+      : 'No face detected yet. The brush anchors to facial landmarks, so it '
+        + 'needs one before it can paint. Check the lens is clean and that you '
+        + 'are evenly lit and facing the camera.';
 }
 
 function removePanel() {
@@ -468,7 +528,67 @@ export function onDraw(ctx, landmarks){
 // ------------------------------ plugin hooks -------------------------------
 
 export function onInit() {
+   // NOTE ON LIFECYCLE, because this is the trap:
+   //
+   //   onInit  fires ONCE per plugin at page load, when ghostyles.json is read
+   //           and the module is imported. It is a REGISTRATION hook. Every
+   //           Ghostyle gets one, whether or not the reader ever selects it.
+   //   onClear fires on deactivation.
+   //   There is no onActivate hook at all.
+   //
+   // So onInit must not build UI: eight plugins building panels at load would
+   // all mount at once, and onClear would then destroy this one permanently
+   // since onInit never runs a second time.
+   //
+   // The activation signal is the `effectChanged` event on the shared bus,
+   // which is what lab-ui.js uses to show and hide the plugin bar. Listen to
+   // the same thing and the panel's lifetime matches the bar's exactly.
+   bindBus();
    return 'Face Brush ready — save a baseline, then hold and paint to watch the distance climb.';
+}
+
+/**
+ * Subscribe to the engine bus so the panel appears on activation and leaves on
+ * deactivation. `window.gstmxx.events` is the same EventTarget as
+ * `state.gstmxxEvents`; going through the global keeps this plugin free of
+ * imports, which is the contract every Ghostyle is written to.
+ *
+ * main.js may not have published the global yet when plugins are registered,
+ * so this retries briefly rather than failing silently.
+ */
+function bindBus(attempt = 0) {
+   if (busBound) return;
+
+   const bus = window.gstmxx && window.gstmxx.events;
+   if (!bus) {
+      if (attempt < 40) setTimeout(() => bindBus(attempt + 1), 100);
+      return;
+   }
+
+   busBound = true;
+   bus.addEventListener('effectChanged', (event) => {
+      const active = event.detail && event.detail.activeEffect;
+      if (active === 'brush') openPanel();
+      else if (panel) closePanel();
+   });
+}
+
+/** Activation: build the panel and start watching for the face. */
+function openPanel() {
+   lastFaceAt = 0;
+   buildPanel();
+   // onDraw only fires while a face is present, so it cannot be what notices a
+   // face going away. This can.
+   clearInterval(faceWatch);
+   faceWatch = setInterval(updateFaceState, 1000);
+}
+
+/** Deactivation: tear the panel down but keep the strokes. */
+function closePanel() {
+   removePanel();
+   clearInterval(faceWatch);
+   faceWatch = null;
+   lastFaceAt = 0;
 }
 
 /**
@@ -479,7 +599,21 @@ export function onInit() {
  * (c) redraw every stroke from the current landmarks.
  */
 export function onDraw(ctx, landmarks) {
+   // The panel used to be built here, AFTER the landmarks guard below, so a
+   // session that never resolved a face never got any controls at all — the
+   // plugin looked broken when it was merely waiting. Panel construction now
+   // happens in onInit(); this hook only reports whether a face is present.
    if (!landmarks || !landmarks.positions) return;
+
+   if (ctx.canvas.isConnected) {
+      // Safety net: if the bus never materialised, a live frame still proves
+      // this plugin is the active one, so build the panel here rather than
+      // leaving the reader with an empty bar.
+      if (!panel) openPanel();
+      lastFaceAt = Date.now();
+      updateFaceState();
+   }
+
    const positions = landmarks.positions.map((p) => ({ x: p.x, y: p.y }));
    const frame = eyeFrame(positions);
    const connected = ctx.canvas.isConnected; // visible overlay vs offscreen composite
@@ -489,7 +623,6 @@ export function onDraw(ctx, landmarks) {
       if (boundCanvas !== ctx.canvas) {
          if (boundCanvas) detach();
          attach(ctx.canvas);
-         buildPanel();
       }
    }
 
@@ -500,6 +633,6 @@ export function onDraw(ctx, landmarks) {
 /** Called when the effect is switched off. Tear down input + panel; keep strokes. */
 export function onClear() {
    detach();
-   removePanel();
+   closePanel();
    latest = null;
 }
