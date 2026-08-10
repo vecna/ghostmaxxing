@@ -1,6 +1,6 @@
-# web-static
+# web-files
 
-This folder contains static files copied to the root of https://ghostmaxing.vecna.eu for deployment.
+This folder contains static files copied to the root of https://ghostmaxxing.vecna.eu for deployment.
 
 - `CITATION.cff`: Citation metadata for the Ghostmaxxing project, including preferred citation details.
 - `llms.txt`: Large-language-model indexing instructions for discoverability and AI-friendly site summarization.
