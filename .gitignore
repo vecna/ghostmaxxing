@@ -2,8 +2,12 @@
 CODE2PROMPT*.txt
 node_modules
 playwright-report/*
+!playwright-report/FOLDER-DESCRIPTION.md
 test-results/*
+!test-results/FOLDER-DESCRIPTION.md
 coverage/*
+!coverage/FOLDER-DESCRIPTION.md
 docs/*
+!docs/FOLDER-DESCRIPTION.md
 references/.venv
 codemap/*
