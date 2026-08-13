@@ -63,13 +63,11 @@
 }
   </script>
 
-  <!-- Order is the architecture: tokens define, components draw, page places.
-       colors.css is the v2 palette and carries exactly the hexes this page used
-       to hardcode (#f26a1b / #fff1cf / #ff5f8f / #0a0a08 / #0a2b23), so linking
-       it changes nothing on screen. cameras.css is what paints the inline
-       cam-*.svg markup below — without it every camera renders black. -->
-  <link rel="stylesheet" href="/styles/colors.css" />
-  <link rel="stylesheet" href="/styles/cameras.css" />
+  <!-- One shared stylesheet, then one page stylesheet. styles.css carries the
+       self-hosted fonts, the tokens, the reset and the camera component; it is
+       what paints the inline cam-*.svg markup below, and without it every
+       camera on this page renders black. -->
+  <link rel="stylesheet" href="/styles/styles.css" />
   <link rel="stylesheet" href="/styles/index.css" />
 </head>
 

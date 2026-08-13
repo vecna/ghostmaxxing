@@ -1,20 +1,28 @@
+/* INDEX — placement for the homepage. Layer: PAGE.
+   Requires styles/styles.css to be linked first.
+
+   The hardcoded hexes are gone: every one of them was already exactly a v2
+   token value, so this is a rename, not a repaint. Nothing on screen moves.
+   The remaining ~50 inline style="" attributes in index.html still carry
+   literal hex and are the next thing to lift out. */
+
 * {
     box-sizing: border-box;
 }
 
 body {
     margin: 0;
-    font-family: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, sans-serif;
-    background: #f26a1b;
-    color: #0a0a08;
+    font-family: var(--sans);
+    background: var(--gm-bg);
+    color: var(--gm-ink);
 }
 
 a {
-    color: #ff5f8f;
+    color: var(--gm-pink);
 }
 
 a:hover {
-    color: #0a0a08;
+    color: var(--gm-ink);
 }
 
 .cam-spot {
@@ -49,8 +57,8 @@ a:hover {
     position: absolute;
     left: 0;
     right: 0;
-    background: #fff1cf;
-    color: #0a0a08;
+    background: var(--gm-cream);
+    color: var(--gm-ink);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -84,8 +92,8 @@ a:hover {
     top: 100%;
     left: 0;
     margin-top: .6rem;
-    background: #fff1cf;
-    border: 2px solid #0a0a08;
+    background: var(--gm-cream);
+    border: 2px solid var(--gm-ink);
     padding: 1.4rem 1.6rem;
     gap: 2rem;
     z-index: 5;
@@ -106,20 +114,20 @@ a:hover {
 
 .nav-menu li a {
     text-decoration: none;
-    color: #0a0a08;
+    color: var(--gm-ink);
     font-size: .92rem;
 }
 
 .nav-menu li a:hover {
-    color: #ff5f8f;
+    color: var(--gm-pink);
 }
 
 .nav-kicker {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--mono);
     font-size: .68rem;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: #ff5f8f;
+    color: var(--gm-pink);
     margin: 0 0 .3rem;
 }
 

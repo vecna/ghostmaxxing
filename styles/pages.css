@@ -1,6 +1,24 @@
-@import url("./vendor/newsreader.css");
-@import url("./vendor/atkinson.css");
-@import url("./tokens.css");
+/* ============================================================================
+   PAGES — shared layout for the content pages (about, report, transfer,
+   references). Layer: PAGE. Depends on styles.css being linked first.
+
+   REMOVED IN THIS PASS
+     - Its own @import of vendor/newsreader.css, vendor/atkinson.css and
+       tokens.css. styles.css does all three now, in the right order.
+     - A full :root block re-declaring FIFTEEN tokens in the v1 palette
+       (--gm-bg: #fd5503, --gm-ink: #050505, --gm-cream: #ffe7a8 ...). This was
+       the third copy of a palette in the repo and the reason about.html and
+       report.html rendered a different orange from index.html. A page
+       stylesheet that redefines a token is a mistake in the layer above it.
+     - A verbatim duplicate of the base.css reset (* box-sizing, html/body
+       margin, the body background gradient, the a and button rules).
+     - .camera-band's background-image. It pointed at
+       images/homepage-camera-band.svg, which does not exist — the band has
+       been rendering as an empty gradient strip on every page that uses it.
+       The band is superseded by the pyre + soil-edge footer; the .camera-band
+       rules are kept only so the remaining markup does not reflow while the
+       divs are removed page by page.
+   ========================================================================= */
 
 /* Editorial homepage, footer band revision.
  *
@@ -8,54 +26,6 @@
  * It is wider than many viewports so it can be bottom-aligned and cropped by CSS.
  */
 
-:root {
-  --gm-bg: #fd5503;
-  --gm-bg-deep: #df5512;
-  --gm-ink: #050505;
-  --gm-text: #071a33;
-  --gm-muted: #253a54;
-  --gm-green: #063f32;
-  --gm-green-soft: #1e6b4f;
-  --gm-yellow: #f3c747;
-  --gm-cream: #ffe7a8;
-  --gm-border: rgba(5, 5, 5, 0.22);
-  --gm-border-strong: rgba(5, 5, 5, 0.55);
-  --gm-panel: rgba(255, 231, 168, 0.16);
-  --gm-panel-strong: rgba(255, 231, 168, 0.4);
-  --gm-shadow-block: 4px 4px 0 rgba(5, 5, 5, 0.13);
-  --gm-focus-ring: 2px solid rgba(5, 5, 5, 0.55);
-  --page-max: 1440px;
-  --camera-band-min-width: 2400px;
-  --camera-band-height: clamp(10rem, 23vw, 21rem);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background:
-    radial-gradient(circle at top right, rgba(255, 220, 150, 0.08), transparent 34%),
-    linear-gradient(180deg, var(--gm-bg) 0%, var(--gm-bg) 68%, var(--gm-bg-deep) 100%);
-  color: var(--gm-text);
-  font-family: var(--sans);
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
 
 .cta-inline > i {
   font-variant-caps: all-petite-caps;
@@ -364,6 +334,10 @@ button:focus-visible {
   object-fit: cover;
 }
 
+/* Superseded by the pyre + soil-edge footer. The background-image that used to
+   sit here pointed at images/homepage-camera-band.svg, a file that is not in
+   the repo, so this element has only ever painted the faint ::before gradient.
+   Kept until the last .camera-band div is removed from the markup. */
 .camera-band {
   position: absolute;
   left: 50%;
@@ -372,10 +346,6 @@ button:focus-visible {
   width: max(100vw, var(--camera-band-min-width));
   height: var(--camera-band-height);
   transform: translateX(-50%);
-  background-image: url("../images/homepage-camera-band.svg");
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  background-size: 100% 100%;
   pointer-events: none;
 }
 

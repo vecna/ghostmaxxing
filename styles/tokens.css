@@ -1,61 +1,137 @@
-/* Ghostmaxxing design tokens.
- *
- * The single source of truth for colour and type. Import this before anything
- * else.
- *
- *   @import url("./tokens.css");
- */
+/* ============================================================================
+   gstmxx — TOKENS. The single source of truth for colour, type and layout.
+
+   This file replaces the old three-way split. Before this pass the project had
+   two palettes and no agreement on which was real:
+
+     tokens.css      v1 — orange #fd5503. Linked by genealogy, pages, field-guide
+     colors.css      v2 — orange #f26a1b. Linked by nobody, hardcoded by index
+     typography.css  the type half of v2. Linked by nobody
+
+   V2 WON. The reasoning, so it is not relitigated:
+     - index.html is the newest page and the site entry point. It hardcoded the
+       v2 hexes inline, so v2 is what the current design actually looks like.
+     - mark-color.svg — the header mark and the favicon, on every page — is
+       painted in v2.
+     - v2 is the only one of the two with a written rationale (the "institutional
+       poster" note below) and a contrast floor for the pink.
+
+   WHAT THIS COST: genealogy.html's orange moves #fd5503 -> #f26a1b. That is a
+   real, visible change to a page that was previously exempt. It is the price of
+   having one palette, and it is the only page affected.
+
+   Nothing else may define a --gm-* value. styles/lab.css is the one deliberate
+   exception: the lab is a dark tool chrome with its own scoped, unprefixed
+   names (--ink, --panel, --fg) and is not part of the poster system.
+
+   Layer: TOKENS. Depends on nothing. Import first, always.
+   ========================================================================= */
+
+
+/* --- 1. Colour -------------------------------------------------------------
+   "Institutional Poster". The orange is a poster wall or a public notice, not
+   neon cyberpunk. Flat fills, 2px ink separators, no drop shadows. */
 
 :root {
-  --gm-bg: #fd5503;
-  --gm-bg-deep: #df5512;
-  --gm-ink: #050505;
-  --gm-text: #071a33;
-  --gm-muted: #253a54;
-  /* FOUR greens, ordered light to dark. The order is the contract: --soft is
-     the one that reads as a surface (the masks), --green draws the lines on
-     it, --deep is the body of the smoke, --night is the ground the fire sits
-     in. Nothing should pick a green by eye. */
-  --gm-green: #063f32;
-  --gm-green-soft: #1e6b4f;
-  --gm-green-night: #031f19;
-  /* The barrel of every lens in every cam-*.svg. Not --gm-green (the outline),
-     not --gm-soil (the ground). Named here in this pass; it used to be an
-     unnamed #04302a scattered through the icon files. */
-  --gm-green-deep: #04302a;
-  --gm-yellow: #f3c747;
-  --gm-cream: #ffe7a8;
-  /* Dazzle pink. RESERVED: only ever inside a lens, or as the logo spiral.
-     Contrast against --gm-bg is 1.09:1 — never use it for text or on orange. */
-  --gm-pink: #ff2f7a;
-  /* Soil under the camera field, and the ground the genealogy tree grows from. */
-  --gm-soil: #031d1a;
-  --gm-border: rgba(5, 5, 5, 0.22);
-  --gm-border-strong: rgba(5, 5, 5, 0.55);
-  --gm-panel: rgba(255, 231, 168, 0.16);
-  --gm-panel-strong: rgba(255, 231, 168, 0.4);
-  --gm-shadow-block: 4px 4px 0 rgba(5, 5, 5, 0.13);
-  --gm-focus-ring: 2px solid rgba(5, 5, 5, 0.55);
-  --page-max: 1440px;
-  --camera-band-min-width: 2400px;
-  --camera-band-height: clamp(10rem, 23vw, 21rem);
+  --gm-bg: #f26a1b;
+  --gm-bg-deep: #d95a12;
+  --gm-ink: #0a0a08;
+  --gm-text: #0a2540;
+  --gm-muted: #35526e;
 
-  /* ---- Families -------------------------------------------------------
-   *   --serif  display only: --t-display, --t-h1, --t-h2, --t-h3
-   *   --sans   everything else: --t-lead, --t-body, --t-small
-   *   --mono   --t-meta only: years, tags, era labels
-   *
-   * Atkinson has TWO weights, 400 and 700. Never ask for 500/600/650.
-   */
+  /* FOUR greens, ordered light to dark. The order is the contract: --soft is
+     the one that reads as a surface, --green draws the lines on it, --deep is
+     the lens barrel and the body of the smoke, --night is the ground the fire
+     sits in. Nothing should pick a green by eye. */
+  --gm-green-soft: #2f7a5c;
+  --gm-green: #0b4a3c;
+  --gm-green-deep: #072e26;
+  --gm-green-night: #061f1a;
+
+  --gm-yellow: #f0c24a;
+  --gm-cream: #fff1cf;
+
+  /* Dazzle pink. RESERVED: only ever inside a lens, as wind, or as the logo
+     spiral. Contrast against --gm-bg is ~1.15:1 — never text, never on orange
+     without a cream or dark-green surface underneath. */
+  --gm-pink: #ff5f8f;
+
+  /* Soil under the camera field, and the ground the plume rises from. */
+  --gm-soil: #0a2b23;
+
+  --gm-border: rgba(10, 10, 8, 0.26);
+  --gm-border-strong: rgba(10, 10, 8, 0.55);
+  --gm-panel: rgba(255, 241, 207, 0.16);
+  --gm-panel-strong: rgba(255, 241, 207, 0.40);
+
+  /* Set to none because the documented system has no drop shadows. Declared
+     rather than deleted so the three files referencing it stay valid — an
+     undefined custom property invalidates the whole declaration, and silent
+     invalidation is how the focus ring went missing. If a raised surface is
+     ever needed it is an offset flat block, not a blur. */
+  --gm-shadow-block: none;
+
+  /* base.css does `:focus-visible { outline: var(--gm-focus-ring) }`. If this
+     is ever undefined the declaration is invalid at computed-value time, the
+     rule does nothing, and KEYBOARD NAVIGATION LOSES ITS INDICATOR SITE-WIDE.
+     Do not remove it without removing the rule in base.css first. */
+  --gm-focus-ring: 2px solid var(--gm-ink);
+
+
+  /* --- 1b. Smoke ramp — an accepted anomaly -------------------------------
+     images/motifs/{pyre,smoke-base,smoke-cut,smoke-tile}.svg bake four green
+     tones as literal hex, and those tones are from the v1 palette, not v2:
+
+       #031f19   #04302a   #063f32   #0a4d3a
+
+     They are painted files loaded through background-image, so they cannot
+     follow a token, and re-exporting roughly 2,000 <circle> elements to shift
+     four dark greens by a few percent is not worth the risk to a keeper page.
+
+     ACCEPTED. Named here so the values are at least centralized and greppable,
+     and so anything drawn NEXT to the smoke can match it deliberately instead
+     of picking a green by eye. Do not use these for anything else. If the
+     motifs are ever re-exported, re-export them to the --gm-green-* ramp above
+     and delete this block. */
+  --gm-smoke-1: #0a4d3a;
+  --gm-smoke-2: #063f32;
+  --gm-smoke-3: #04302a;
+  --gm-smoke-4: #031f19;
+
+
+  /* --- 2. Semantic aliases -----------------------------------------------
+     Use these in page CSS where the intent is clearer than the colour. */
+  --surface-page: var(--gm-bg);
+  --surface-panel: var(--gm-soil);
+  --surface-card: var(--gm-cream);
+  --text-heading: var(--gm-ink);
+  --text-body: var(--gm-text);
+  --text-muted: var(--gm-muted);
+  --text-on-dark: var(--gm-cream);
+  --accent: var(--gm-pink);
+  --accent-live: var(--gm-yellow);
+  --accent-spent: var(--gm-pink);
+
+
+  /* --- 3. Type -----------------------------------------------------------
+     Three families, each with exactly one job:
+       --serif  display only: --t-display, --t-h1, --t-h2, --t-h3, wordmark
+       --sans   everything else: body, nav, controls
+       --mono   --t-meta only: years, tags, era labels, section numbers
+
+     Atkinson ships TWO weights, 400 and 700. Never ask for 500/600/650.
+
+     The fallback families ("Newsreader Fallback", "Atkinson Fallback") are
+     metric-adjusted @font-face entries declared in styles/vendor/. They exist
+     so the page does not reflow when the real font swaps in. Keep them second
+     in each stack. */
   --serif: "Newsreader", "Newsreader Fallback", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --sans: "Atkinson Hyperlegible", "Atkinson Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --mono: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* ---- Type scale -----------------------------------------------------
-   *   clamp(MIN, PREFERRED, MAX)
-   * MIN is the size at a 400px viewport, MAX the size at 1440px. Every fluid
-   * step uses that SAME 400->1440 range. Only the display steps are fluid.
-   */
+  /* Fluid scale: clamp(MIN, PREFERRED, MAX). MIN is the size at a 400px
+     viewport, MAX at 1440px, and every fluid step uses that SAME 400->1440
+     range so they scale together. Only the display steps are fluid. */
   --t-display: clamp(3.4rem, 1.669rem + 6.923vw, 7.9rem);  /* 54 -> 126px */
   --t-h1:      clamp(2.2rem, 1.431rem + 3.077vw, 4.2rem);  /* 35 ->  67px */
   --t-h2:      clamp(1.6rem, 1.408rem + 0.769vw, 2.1rem);  /* 26 ->  34px */
@@ -71,4 +147,13 @@
   --lh-body: 1.55;
   --ls-display: -0.035em;
   --ls-meta: 0.12em;
+
+
+  /* --- 4. Layout ---------------------------------------------------------- */
+  --page-max: 1440px;
+
+  /* The decorative camera strip at the foot of the content pages. Overridden
+     in pages.css at the 900px and 1700px breakpoints. */
+  --camera-band-min-width: 2400px;
+  --camera-band-height: clamp(10rem, 23vw, 21rem);
 }

@@ -2,17 +2,33 @@
  *
  * The logo is a LENS with a shard on it. The lens never moves; only the shard
  * rotates. That is the whole rule, and it is why this file exists separately
- * from ghostutter.css — the ghostutter mark is a bare shard designed to sit on
- * top of a camera icon, with no lens of its own. Related object, different job.
+ * from ghostutter.css. NOTE: ghostutter.css and its shard were cut in an
+ * earlier pass — see cameras.css §3. No mark ever goes inside a camera lens
+ * again. The shard survives only here, on the logo.
  *
  * Three ways to place the logo, in order of preference:
  *
- *   1. <img src="images/logo/mark-ondark.svg">            still
- *   2. <img src="images/logo/mark-animated-ondark.svg">   moving, self-contained
+ *   1. <img src="/images/logo/mark-ondark.svg">            still
+ *   2. <img src="/images/logo/mark-animated-ondark.svg">   moving, self-contained
  *   3. inline <svg> + .gm-logo .gm-logo--animated         moving, controllable
  *
  * Only reach for (3) when the size, colour or duration must respond to the
  * page at runtime. Otherwise (1) or (2) is one HTTP request and no CSS.
+ *
+ * THE MONO MARK — read this before writing <img src="...mark-mono...">.
+ * There is no mark-mono.svg any more. It painted entirely with currentColor
+ * and the advice attached to it ("set CSS color on the img") was wrong: an
+ * <img>-loaded SVG is an isolated document, currentColor resolves against
+ * ITS root, and the mark came out black on every surface. It is now two
+ * painted files, and you pick by the surface you are on:
+ *
+ *   /images/logo/mark-mono-ink.svg      on cream, on orange
+ *   /images/logo/mark-mono-cream.svg    on soil, on green, on photography
+ *
+ * Same rule for the small cut (mark-small-onlight / -ondark) and the
+ * animated one (mark-animated-onlight / -ondark). If a single file really
+ * must follow the page colour, inline the SVG or use it as a mask-image
+ * with a background-color. Never through <img>.
  */
 
 :root {
