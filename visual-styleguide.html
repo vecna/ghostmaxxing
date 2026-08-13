@@ -13,7 +13,7 @@
      swatches, type scale, lens states. Nothing is hardcoded. The previous
      version had #f26a1b written into the markup and it had already drifted.
      ========================================================================= -->
-<link rel="stylesheet" href="styles/styles.css">
+<link rel="stylesheet" href="/styles/styles.css">
 
 <style>
 /* ----------------------------------------------------------------------------
@@ -160,7 +160,7 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
 <body class="sg">
 
 <div class="sg-alarm" id="sg-alarm">
-  Tokens are not loading. <code>../styles.css</code> did not resolve, or it does not define <code>--gm-bg</code>.
+  Tokens are not loading. <code>/styles/styles.css</code> did not resolve, or it does not define <code>--gm-bg</code>.
   Every colour and size on this page is currently a browser default — do not read anything off it until this is fixed.
 </div>
 
@@ -170,7 +170,7 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
       <div style="font-family:var(--serif);font-size:30px;font-weight:700;line-height:1;color:var(--gm-ink)">gstmxx</div>
       <div class="sg-meta" style="margin-top:4px">Ghostmaxxing design system · v2.0</div>
     </div>
-    <div class="sg-meta">Supersedes logo.html, field-guide.html, tokens.css</div>
+    <div class="sg-meta">Supersedes logo.html, field-guide.html, colors.css, typography.css</div>
   </div>
 
   <h1 class="sg-head__title">How the system speaks, and every component it speaks with.</h1>
@@ -188,7 +188,9 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
     <a href="#states"><b>09</b> Lens states</a>
     <a href="#stamps"><b>10</b> Stamps</a>
     <a href="#layout"><b>11</b> Layout</a>
-    <a href="#decisions"><b>12</b> Decision log</a>
+    <a href="#svgs"><b>12</b> Using the SVGs</a>
+    <a href="#chrome"><b>13</b> Site chrome</a>
+    <a href="#decisions"><b>14</b> Decision log</a>
   </nav>
 </header>
 
@@ -294,6 +296,8 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   <p class="sg-num">03</p>
   <h2 class="sg-sec__title">Colour</h2>
   <hr class="sg-rule">
+  <p class="sg-card__note" style="max-width:56em;margin-bottom:4px"><strong>One palette, one file.</strong> <code>styles/tokens.css</code> is the only place a <code>--gm-*</code> value may be defined. It absorbed <code>colors.css</code> and <code>typography.css</code>, and a third copy that was hiding in a <code>:root</code> block in <code>pages.css</code> — which is why about.html and report.html used to render a different orange from the homepage. The swatches below are read live from the stylesheet, so if one is wrong the token is wrong.</p>
+  <p class="sg-card__note" style="max-width:56em"><strong>One accepted anomaly.</strong> The smoke and pyre motifs bake four greens as literal hex across roughly 2,000 <code>&lt;circle&gt;</code> elements, and they are the <em>old</em> greens: <code>#0a4d3a</code>, <code>#063f32</code>, <code>#04302a</code>, <code>#031f19</code>. They are painted files behind <code>background-image</code>, so they cannot follow a token. Re-exporting them to shift four dark greens by a few percent was judged not worth the risk to a keeper page. They are declared as <code>--gm-smoke-1</code>…<code>4</code> so the values are centralized and greppable. <b>Do not use them for anything else.</b> If the motifs are ever re-exported, re-export to the <code>--gm-green-*</code> ramp and delete those four tokens.</p>
   <div class="sg-intro">
     <p>One background: surveillance orange. A <strong>poster-wall</strong> colour — a public notice pasted in the street — not neon, not cyberpunk. Everything else is seated on it.</p>
     <p>Every swatch below is read from the stylesheet at runtime, so this page cannot drift from the token file the way a hardcoded chart does. A swatch outlined in red means that token is not defined.</p>
@@ -429,20 +433,20 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
 
   <div class="sg-grid sg-grid--3">
     <div class="sg-card">
-      <p class="sg-card__id">assets/logo/mark-color.svg</p>
-      <div class="sg-stage sg-stage--dark"><img src="/assets/logo/mark-color.svg" width="72" alt="Full colour mark" data-fallback="mark-color.svg"></div>
+      <p class="sg-card__id">images/logo/mark-color.svg</p>
+      <div class="sg-stage sg-stage--dark"><img src="/images/logo/mark-color.svg" width="72" alt="Full colour mark" data-fallback="images/logo/mark-color.svg"></div>
       <p class="sg-card__name">Colour</p>
       <p class="sg-card__note">32px and up, any background.</p>
     </div>
     <div class="sg-card">
-      <p class="sg-card__id">assets/logo/mark-mono.svg</p>
-      <div class="sg-stage sg-stage--dark"><img src="/assets/logo/mark-mono.svg" width="72" style="color:var(--gm-cream)" alt="Mono mark" data-fallback="mark-mono.svg"></div>
+      <p class="sg-card__id">images/logo/mark-mono-cream.svg</p>
+      <div class="sg-stage sg-stage--dark"><img src="/images/logo/mark-mono-cream.svg" width="72" alt="Mono mark" data-fallback="images/logo/mark-mono-cream.svg"></div>
       <p class="sg-card__name">Mono</p>
-      <p class="sg-card__note">Single colour, inherits CSS <code>color</code>. Print, favicon at 16px and below, and over photography.</p>
+      <p class="sg-card__note">Single colour. Print, favicon at 16px and below, and over photography. Two painted files, <b>pick by surface</b>: <code>-cream</code> on soil and green, <code>-ink</code> on cream and orange. It does <b>not</b> inherit CSS <code>color</code> — see §12.</p>
     </div>
     <div class="sg-card">
-      <p class="sg-card__id">assets/logo/mark-small.svg</p>
-      <div class="sg-stage sg-stage--cream"><img src="/assets/logo/mark-small.svg" width="56" alt="Small mark" data-fallback="mark-small.svg"></div>
+      <p class="sg-card__id">images/logo/mark-small-onlight.svg</p>
+      <div class="sg-stage sg-stage--cream"><img src="/images/logo/mark-small-onlight.svg" width="56" alt="Small mark" data-fallback="images/logo/mark-small-onlight.svg"></div>
       <p class="sg-card__name">Small</p>
       <p class="sg-card__note">28px and below. Two circles, no iris dots — the detail is removed so the ring survives.</p>
     </div>
@@ -452,7 +456,7 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
     <div>
       <h3 class="sg-sub" style="margin-top:26px">Clear space</h3>
       <div class="sg-stage sg-stage--dark" style="min-height:180px;margin-top:14px">
-        <div class="sg-clear"><img src="/assets/logo/mark-color.svg" width="64" alt="" data-fallback="mark-color.svg"></div>
+        <div class="sg-clear"><img src="/images/logo/mark-color.svg" width="64" alt="" data-fallback="images/logo/mark-color.svg"></div>
       </div>
       <p class="sg-card__note" style="margin-top:12px">One lens radius on every side, expressed against the mark's own size so it holds at any scale: <code>padding: calc(var(--gm-logo-size) * 0.46)</code>. The dashed line is the keep-out boundary, not a frame to draw.</p>
     </div>
@@ -473,8 +477,8 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   <h3 class="sg-sub">Placement, in order of preference</h3>
   <table>
     <tr><th>#</th><th>How</th><th>When</th></tr>
-    <tr><td>1</td><td><code>&lt;img src="mark-color.svg"&gt;</code></td><td>Default. One request, no CSS.</td></tr>
-    <tr><td>2</td><td><code>&lt;img src="mark-animated.svg"&gt;</code></td><td>Moving and self-contained.</td></tr>
+    <tr><td>1</td><td><code>&lt;img src="/images/logo/mark-color.svg"&gt;</code></td><td>Default. One request, no CSS. Painted, so it is safe in an <code>&lt;img&gt;</code>.</td></tr>
+    <tr><td>2</td><td><code>&lt;img src="/images/logo/mark-animated-ondark.svg"&gt;</code></td><td>Moving and self-contained. There is no <code>mark-animated.svg</code> — pick <code>-ondark</code> or <code>-onlight</code>.</td></tr>
     <tr><td>3</td><td>Inline <code>&lt;svg&gt;</code> + <code>.gm-logo.gm-logo--animated</code></td><td>Only when size, colour or duration must respond to the page at runtime.</td></tr>
   </table>
 
@@ -533,7 +537,7 @@ glint = 0.17 × lens radius,
       <p class="sg-card__note" style="margin-top:12px">Written down so the next camera is derived rather than guessed. The old fleet carried these values in two of nine files and drifted everywhere else.</p>
 
       <h3 class="sg-sub">The class contract, now real</h3>
-      <p class="sg-card__note" style="margin-top:12px">The shipped <code>assets/icons/cam-*.svg</code> still carry pre-baked hex fills, recoloured to v2.0 by direct substitution as a stopgap. The six templates at the bottom of this page are the re-export the readme flags as the correct fix: <strong>no presentation attributes, class-driven, state by attribute.</strong> Lift them into the asset files and the caveat closes.</p>
+      <p class="sg-card__note" style="margin-top:12px"><strong>Closed.</strong> <code>images/icons/cam-*.svg</code> are the class-driven re-export — no presentation attributes, state by attribute — and they are the source of truth for the fleet. The old <code>assets/icons/</code> copies with baked hex are deleted. What that change exposed is §12: a class-driven file has to be inlined, and every <code>&lt;img&gt;</code> pointing at one was rendering black.</p>
 
       <h3 class="sg-sub">The id convention</h3>
       <pre style="margin-top:14px">&lt;circle <span class="k">class</span>=<span class="s">"cam-iris"</span> <span class="k">id</span>=<span class="s">"iris-dome"</span>
@@ -745,9 +749,112 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
 </section>
 
 
+
+
 <!-- 12 ==================================================================== -->
-<section class="sg-sec sg-wrap" id="decisions">
+<section class="sg-sec sg-wrap" id="svgs">
   <p class="sg-num">12</p>
+  <h2 class="sg-sec__title">Using the SVGs</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>This section replaces <code>field-guide.html</code>. It answers one question — <b>do I write <code>&lt;img&gt;</code> or do I paste the SVG into the page?</b> — and getting it wrong is the single most common bug in this repo. It is what made every camera on the homepage render as a black blob.</p>
+    <p><strong>The rule, in one sentence.</strong> An <code>&lt;img src="x.svg"&gt;</code> is an <em>isolated document</em>. External CSS never reaches inside it, and neither does <code>currentColor</code> from the host page.</p>
+  </div>
+
+  <h3 class="sg-sub">The decision table</h3>
+  <table>
+    <tr><th>The file is…</th><th>Through <code>&lt;img&gt;</code> or <code>background-image</code></th><th>Inlined in the page</th></tr>
+    <tr>
+      <td><b>painted</b> — hex baked into <code>fill</code>/<code>stroke</code> attributes<br><span class="sg-card__note">motifs, logo marks, report figures</span></td>
+      <td>correct</td>
+      <td>works, but ignores tokens — it will not follow a palette change</td>
+    </tr>
+    <tr>
+      <td><b>class-driven</b> — no presentation attributes at all<br><span class="sg-card__note">every <code>images/icons/cam-*.svg</code></span></td>
+      <td><b>renders black</b></td>
+      <td>correct</td>
+    </tr>
+    <tr>
+      <td><b><code>currentColor</code></b></td>
+      <td><b>renders black</b></td>
+      <td>correct</td>
+    </tr>
+  </table>
+
+  <p class="sg-card__note" style="margin-top:14px;max-width:56em">It is worse than uniformly black. <code>.cam-mount</code> is <code>fill: none; stroke: …</code>. Without CSS, a <code>&lt;path&gt;</code> with no fill attribute defaults to <em>filled black</em> — so mounts and brackets come out as solid lumps rather than lines, and the silhouette is unreadable rather than merely dark.</p>
+
+  <div class="sg-do">
+    <div><b class="yes">Do</b><span>Inline anything that needs state, tokens, ids or hover — and make sure the page links <code>styles.css</code>.</span></div>
+    <div><b class="yes">Do</b><span>Use <code>&lt;img&gt;</code> or <code>background-image</code> for anything static and decorative, from a painted export.</span></div>
+    <div><b class="yes">Do</b><span>Clone from a <code>&lt;template&gt;</code> when the same icon is needed many times at runtime. A clone is an ordinary node and gets styled normally.</span></div>
+    <div><b class="no">Never</b><span>Load a class-driven or <code>currentColor</code> file through <code>&lt;img&gt;</code>.</span></div>
+    <div><b class="no">Never</b><span>Fix a black icon by baking hex back into <code>images/icons/</code>. That kills the lens states and reintroduces the second palette.</span></div>
+  </div>
+
+  <h3 class="sg-sub" style="margin-top:26px">The <code>currentColor</code> trap</h3>
+  <p style="max-width:56em"><code>mark-mono.svg</code> used to paint entirely with <code>currentColor</code>, and both <code>readme.md</code> and an earlier version of this page said to set CSS <code>color</code> on it. That advice was wrong. Inside an <code>&lt;img&gt;</code>, <code>currentColor</code> resolves against <em>that document's</em> root, which is black — it is not inherited from the host page.</p>
+  <pre>&lt;!-- always black, whatever the style attribute says --&gt;
+&lt;img src="mark-mono.svg" style="color: var(--gm-cream)"&gt;</pre>
+  <p style="max-width:56em">The file is gone. It is now two painted files, <code>mark-mono-ink.svg</code> and <code>mark-mono-cream.svg</code>, and you pick by the surface you are on. Same for <code>mark-small-*</code> and <code>mark-animated-*</code>. If one file really must follow the page colour, inline it or use it as a <code>mask-image</code> with a <code>background-color</code>.</p>
+
+  <h3 class="sg-sub" style="margin-top:26px">The markup contract for a camera</h3>
+  <p style="max-width:56em">Every <code>cam-*.svg</code> is authored in a <code>0 0 100 100</code> viewBox and carries these classes, in drawing order. The colour lives in <code>cameras.css</code>, so one rule restyles the whole fleet.</p>
+  <table>
+    <tr><th>Class</th><th>What it is</th></tr>
+    <tr><td><code>.cam-mount</code></td><td>Bracket, pole or arm. Stroke only, never filled.</td></tr>
+    <tr><td><code>.cam-shell</code></td><td>The housing. Cream fill, green outline.</td></tr>
+    <tr><td><code>.cam-lens</code></td><td>The dark barrel.</td></tr>
+    <tr><td><code>.cam-iris</code></td><td>The coloured centre. <b>Must carry a unique id</b> — if the same icon appears more than once on a page, suffix it.</td></tr>
+    <tr><td><code>.cam-glint</code></td><td>The highlight. Decorative, no id.</td></tr>
+    <tr><td><code>.cam-iris--void</code></td><td>Geometry with nothing drawn. Lets the glasses take a state without taking a coloured centre.</td></tr>
+  </table>
+  <p class="sg-card__note" style="margin-top:12px;max-width:56em">Iris geometry is a fraction of the lens radius, not eyeballed per file: <code>iris = 0.44r</code>, <code>glint = 0.17r</code> offset <code>0.30r</code> up and left.</p>
+
+  <h3 class="sg-sub" style="margin-top:26px">Which files are which</h3>
+  <table>
+    <tr><th>Path</th><th>Kind</th><th>How to place it</th></tr>
+    <tr><td><code>images/icons/cam-*.svg</code></td><td>class-driven</td><td><b>Inline only.</b> Six files, the source of truth for the fleet.</td></tr>
+    <tr><td><code>images/logo/mark-*.svg</code></td><td>painted</td><td><code>&lt;img&gt;</code>. Pick the <code>-ondark</code> / <code>-onlight</code> / <code>-ink</code> / <code>-cream</code> cut by surface.</td></tr>
+    <tr><td><code>images/motifs/*.svg</code></td><td>painted</td><td><code>background-image</code>, as <code>genealogy.css</code> does.</td></tr>
+    <tr><td><code>images/report/*.svg</code></td><td>painted</td><td><code>&lt;img&gt;</code>.</td></tr>
+    <tr><td>the canopy, in <code>genealogy.html</code></td><td>class-driven</td><td><b>Inline only.</b> Five of its internal classes are painted from <code>genealogy.css</code>: socket, glint, lens, pupil, spark.</td></tr>
+    <tr><td><code>.era__wind</code>, in <code>genealogy.html</code></td><td>class-driven</td><td><b>Inline only.</b> Zero fill attributes and zero hex — <code>genealogy.css</code> strokes all of it. Extracting it to a file was proposed and rejected; through <code>&lt;img&gt;</code> it becomes solid black blobs.</td></tr>
+  </table>
+
+  <p class="sg-card__note" style="margin-top:18px;max-width:56em"><strong>Naming trap.</strong> <code>images/motifs/canopy.svg</code> is the <em>tree</em> head, from the abandoned direction. The canopy inlined in <code>genealogy.html</code> is the <em>plume</em> head. If that one is ever extracted, call it <code>plume-head.svg</code> — do not overwrite.</p>
+</section>
+
+
+<!-- 13 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="chrome">
+  <p class="sg-num">13</p>
+  <h2 class="sg-sec__title">Site chrome</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>This section absorbs the Navbar card from <code>logo.html</code>. One header and one footer, in <code>styles/chrome.css</code>, on every content page.</p>
+    <p>The markup block is <b>byte-identical</b> across pages so a find-and-replace still works. Only two things may differ: <code>aria-current="page"</code> on the link to the current page, and the optional <code>.gm-site-nav__extra</code> slot.</p>
+  </div>
+
+  <h3 class="sg-sub">Header</h3>
+  <table>
+    <tr><th>Part</th><th>Class</th><th>Note</th></tr>
+    <tr><td>Lockup</td><td><code>.gm-site-wordmark</code></td><td><code>mark-color.svg</code> at 40px, title in <code>--serif</code> 700, subtitle in caps at <code>.68rem</code>.</td></tr>
+    <tr><td>Dropdown</td><td><code>.gm-site-menu</code></td><td>Two columns, Informative and Technology. Opened by <code>scripts/nav.js</code>, which toggles <code>.is-open</code>.</td></tr>
+    <tr><td>CTA</td><td><code>.gm-site-cta</code></td><td>Pink pill, cream text. <b>The only rounded thing in the system</b> — everything else is square. It is a deliberate exception, not a licence.</td></tr>
+  </table>
+
+  <h3 class="sg-sub" style="margin-top:26px">Footer</h3>
+  <p style="max-width:56em">Pyre band, soil edge, then the link row with four inline camera icons at <code>opacity .6</code>. It replaced <code>.camera-band</code>, which pointed at <code>images/homepage-camera-band.svg</code> — a file that is not in the repo, so it had only ever painted a faint gradient.</p>
+  <p class="sg-card__note" style="max-width:56em">The footer cameras are <code>&lt;svg&gt;</code>, never <code>&lt;img&gt;</code>. See §12.</p>
+
+  <h3 class="sg-sub" style="margin-top:26px">Tool pages are different on purpose</h3>
+  <p style="max-width:56em"><code>lab.html</code>, <code>loader.html</code> and <code>realtime.html</code> are full-screen camera surfaces. The poster header competes with the stage and eats the vertical space the video needs, so they get <code>.gm-tool-back</code> — a small fixed back-link — and keep their own dark chrome from <code>lab.css</code>. That file is the one deliberate exception to the token system: it uses scoped, unprefixed names (<code>--ink</code>, <code>--panel</code>, <code>--fg</code>) and is not part of the poster palette.</p>
+</section>
+
+
+<!-- 14 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="decisions">
+  <p class="sg-num">14</p>
   <h2 class="sg-sec__title">Decision log</h2>
   <hr class="sg-rule">
   <div class="sg-intro">
@@ -787,8 +894,8 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
       <tr><th>Item</th><th>State</th></tr>
       <tr><td><code>--gm-focus-ring</code> is referenced by <code>base.css</code> but not defined in <code>colors.css</code>. An undefined custom property invalidates the whole declaration, so <strong>there is currently no visible focus indicator anywhere on the site.</strong> <code>--gm-border-strong</code>, <code>--gm-panel-strong</code> and <code>--gm-shadow-block</code> are missing the same way.</td><td><strong>Blocking.</strong> Patched in <code>styles.css</code> as a stopgap; move the four into <code>colors.css</code> and delete the block.</td></tr>
       <tr><td><code>base.css</code> paints <code>body</code> with a radial plus a linear gradient, while the documented shape language says flat colour fields and no gradients.</td><td>Contradiction. One of the two is wrong.</td></tr>
-      <tr><td><code>typography.css</code> loads three families from <code>fonts.googleapis.com</code> and declares no metric fallback families, so text reflows when the swap lands.</td><td>Self-host and add the fallback stacks, or accept the shift knowingly.</td></tr>
-      <tr><td>The shipped <code>assets/icons/cam-*.svg</code> still carry baked hex. The six templates at the foot of this page are the class-driven re-export.</td><td>Ready to lift.</td></tr>
+      <tr><td><code>typography.css</code> loaded three families from <code>fonts.googleapis.com</code> with no metric fallbacks, so text reflowed on swap. JetBrains Mono had no self-hosted copy at all.</td><td><b>Done.</b> All three self-hosted in <code>styles/vendor/</code>, each with an adjusted fallback face named in the token stack. <code>typography.css</code> is deleted.</td></tr>
+      <tr><td><code>assets/icons/cam-*.svg</code> carried baked hex alongside a class-driven copy in <code>images/icons/</code>.</td><td><b>Done.</b> <code>images/</code> is the source of truth, <code>assets/</code> deleted. See §12 for the consequence.</td></tr>
       <tr><td><code>logo.css</code>'s header comment still refers to <code>ghostutter.css</code>, which no longer exists.</td><td>Stale comment, one-line fix.</td></tr>
       <tr><td><code>--cam-glare-opacity</code> at <code>0.38</code> reads like scratches; <code>0.5</code> reads like glass but competes with the silhouette.</td><td>Decide on screen.</td></tr>
       <tr><td>The canopy's teeth are asymmetric — four to the left of the trunk, three offset.</td><td>Deliberate or not, decide.</td></tr>
