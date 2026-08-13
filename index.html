@@ -63,6 +63,13 @@
 }
   </script>
 
+  <!-- Order is the architecture: tokens define, components draw, page places.
+       colors.css is the v2 palette and carries exactly the hexes this page used
+       to hardcode (#f26a1b / #fff1cf / #ff5f8f / #0a0a08 / #0a2b23), so linking
+       it changes nothing on screen. cameras.css is what paints the inline
+       cam-*.svg markup below — without it every camera renders black. -->
+  <link rel="stylesheet" href="/styles/colors.css" />
+  <link rel="stylesheet" href="/styles/cameras.css" />
   <link rel="stylesheet" href="/styles/index.css" />
 </head>
 
@@ -115,17 +122,40 @@
     <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;opacity:.72;margin:1.5rem 0 1.2rem">How it works</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem">
       <div>
-        <img src="/images/icons/cam-street.svg" width="42" alt="" style="margin-bottom:.6rem" />
+        <svg class="cam" viewBox="0 0 100 100" style="width:42px;margin-bottom:.6rem" aria-hidden="true" focusable="false">
+          <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
+          <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
+          <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
+          <rect class="cam-shell" x="10" y="40" width="72" height="30" rx="7"></rect>
+          <rect class="cam-panel" x="54" y="47" width="22" height="16" rx="3"></rect>
+          <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle cx="70" cy="51" r="2"></circle><circle cx="60" cy="59" r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
+          <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
+          <circle class="cam-iris" id="iris-street-s1" cx="32" cy="55" r="5.3"></circle>
+          <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
+        </svg>
         <p style="font-weight:700;margin:0 0 .3rem">1. Detect</p>
         <p style="font-size:.92rem;margin:0;opacity:.85">A local pipeline reads your face the way a deployed system would — landmarks, descriptors, a baseline match.</p>
       </div>
       <div>
-        <img src="/images/icons/cam-glasses.svg" width="42" alt="" style="margin-bottom:.6rem" />
+        <svg class="cam" viewBox="0 0 100 100" style="width:42px;margin-bottom:.6rem" aria-hidden="true" focusable="false">
+          <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32" stroke-width="5"></path>
+          <path class="cam-shell" d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z" stroke-linecap="round"></path>
+          <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
+          <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
+          <circle class="cam-iris cam-iris--void" id="iris-glasses-l-s1" cx="28" cy="45" r="9"></circle>
+          <circle class="cam-iris cam-iris--void" id="iris-glasses-r-s2" cx="72" cy="45" r="9"></circle>
+        </svg>
         <p style="font-weight:700;margin:0 0 .3rem">2. Camouflage</p>
         <p style="font-size:.92rem;margin:0;opacity:.85">Apply a Ghostyle or your own intervention — makeup, an overlay, a physical change to the face.</p>
       </div>
       <div>
-        <img src="/images/icons/cam-dome.svg" width="42" alt="" style="margin-bottom:.6rem" />
+        <svg class="cam" viewBox="0 0 100 100" style="width:42px;margin-bottom:.6rem" aria-hidden="true" focusable="false">
+          <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
+          <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
+          <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
+          <circle class="cam-iris" id="iris-dome-s2" cx="50" cy="44" r="6.6"></circle>
+          <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
+        </svg>
         <p style="font-weight:700;margin:0 0 .3rem">3. Retest</p>
         <p style="font-size:.92rem;margin:0;opacity:.85">Compare the match, in your browser, under your own conditions. A local result, not a protection guarantee.</p>
       </div>
@@ -157,10 +187,40 @@
     <img src="/images/motifs/soil-edge.svg" style="display:block;width:100%;height:48px" alt="" />
     <div style="max-width:1080px;margin:0 auto;padding:0 2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem">
       <div style="display:flex;gap:1.6rem;opacity:.6">
-        <img src="/images/icons/cam-dome.svg" width="30" alt="" />
-        <img src="/images/icons/cam-street.svg" width="30" alt="" />
-        <img src="/images/icons/cam-glasses.svg" width="30" alt="" />
-        <img src="/images/icons/cam-bullet.svg" width="30" alt="" />
+        <svg class="cam" viewBox="0 0 100 100" style="width:30px" aria-hidden="true" focusable="false">
+          <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
+          <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
+          <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
+          <circle class="cam-iris" id="iris-dome-s3" cx="50" cy="44" r="6.6"></circle>
+          <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
+        </svg>
+        <svg class="cam" viewBox="0 0 100 100" style="width:30px" aria-hidden="true" focusable="false">
+          <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
+          <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
+          <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
+          <rect class="cam-shell" x="10" y="40" width="72" height="30" rx="7"></rect>
+          <rect class="cam-panel" x="54" y="47" width="22" height="16" rx="3"></rect>
+          <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle cx="70" cy="51" r="2"></circle><circle cx="60" cy="59" r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
+          <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
+          <circle class="cam-iris" id="iris-street-s4" cx="32" cy="55" r="5.3"></circle>
+          <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
+        </svg>
+        <svg class="cam" viewBox="0 0 100 100" style="width:30px" aria-hidden="true" focusable="false">
+          <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32" stroke-width="5"></path>
+          <path class="cam-shell" d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z" stroke-linecap="round"></path>
+          <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
+          <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
+          <circle class="cam-iris cam-iris--void" id="iris-glasses-l-s3" cx="28" cy="45" r="9"></circle>
+          <circle class="cam-iris cam-iris--void" id="iris-glasses-r-s4" cx="72" cy="45" r="9"></circle>
+        </svg>
+        <svg class="cam" viewBox="0 0 100 100" style="width:30px" aria-hidden="true" focusable="false">
+          <path class="cam-mount" d="M45,30 V12 M32,12 H58" stroke-width="5"></path>
+          <rect class="cam-shell" x="16" y="36" width="66" height="34" rx="5"></rect>
+          <path class="cam-mount" d="M12,30 H74 L84,40" stroke-width="5"></path>
+          <circle class="cam-lens" cx="60" cy="51" r="14"></circle>
+          <circle class="cam-iris" id="iris-bullet-s5" cx="60" cy="51" r="6.2"></circle>
+          <circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"></circle>
+        </svg>
       </div>
       <div style="display:flex;gap:1.5rem;font-size:.85rem">
         <a href="/docs" style="color:#fff1cf">Technical documentation</a>
@@ -169,6 +229,75 @@
       </div>
     </div>
   </footer>
+
+  <!-- Camera icon source, cloned by scripts/index.js into the hero field.
+       These are TEMPLATES, not <img>: images/icons/cam-*.svg are class-driven
+       (class="cam-shell", no fill attribute), so an <img src="…"> of one has no
+       stylesheet and every shape falls back to black. Cloned into the document
+       they are ordinary nodes and cameras.css paints them. Geometry here is a
+       verbatim copy of images/icons/ — that directory stays the source. -->
+  <template id="camtpl-dome">
+    <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
+      <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
+      <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
+      <circle class="cam-iris" id="iris-dome" cx="50" cy="44" r="6.6"></circle>
+      <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
+    </svg>
+  </template>
+  <template id="camtpl-cube">
+    <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <path class="cam-mount" d="M50,16 V6 M38,6 H62" stroke-width="5"></path>
+      <rect class="cam-shell" x="16" y="16" width="68" height="68" rx="19"></rect>
+      <circle class="cam-dot cam-dot--ring" cx="73" cy="26" r="3.4"></circle>
+      <circle class="cam-lens" cx="50" cy="50" r="17"></circle>
+      <circle class="cam-iris" id="iris-cube" cx="50" cy="50" r="7.5"></circle>
+      <circle class="cam-glint" cx="44.9" cy="44.9" r="2.9"></circle>
+    </svg>
+  </template>
+  <template id="camtpl-glasses">
+    <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32" stroke-width="5"></path>
+      <path class="cam-shell" d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z" stroke-linecap="round"></path>
+      <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
+      <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
+      <circle class="cam-iris cam-iris--void" id="iris-glasses-l" cx="28" cy="45" r="9"></circle>
+      <circle class="cam-iris cam-iris--void" id="iris-glasses-r" cx="72" cy="45" r="9"></circle>
+    </svg>
+  </template>
+  <template id="camtpl-pill">
+    <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <path class="cam-mount" d="M40,36 V22 M28,22 H52" stroke-width="5"></path>
+      <rect class="cam-shell" x="6" y="36" width="88" height="28" rx="14"></rect>
+      <g class="cam-dot cam-dot--dark"><circle cx="62" cy="44" r="2"></circle><circle cx="70" cy="50" r="2"></circle><circle cx="62" cy="56" r="2"></circle><circle cx="78" cy="45" r="2"></circle><circle cx="80" cy="55" r="2"></circle><circle cx="86" cy="50" r="2"></circle></g>
+      <circle class="cam-lens" cx="30" cy="50" r="12"></circle>
+      <circle class="cam-iris" id="iris-pill" cx="30" cy="50" r="5.3"></circle>
+      <circle class="cam-glint" cx="26.4" cy="46.4" r="2"></circle>
+    </svg>
+  </template>
+  <template id="camtpl-street">
+    <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
+      <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
+      <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
+      <rect class="cam-shell" x="10" y="40" width="72" height="30" rx="7"></rect>
+      <rect class="cam-panel" x="54" y="47" width="22" height="16" rx="3"></rect>
+      <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle cx="70" cy="51" r="2"></circle><circle cx="60" cy="59" r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
+      <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
+      <circle class="cam-iris" id="iris-street" cx="32" cy="55" r="5.3"></circle>
+      <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
+    </svg>
+  </template>
+  <template id="camtpl-bullet">
+    <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <path class="cam-mount" d="M45,30 V12 M32,12 H58" stroke-width="5"></path>
+      <rect class="cam-shell" x="16" y="36" width="66" height="34" rx="5"></rect>
+      <path class="cam-mount" d="M12,30 H74 L84,40" stroke-width="5"></path>
+      <circle class="cam-lens" cx="60" cy="51" r="14"></circle>
+      <circle class="cam-iris" id="iris-bullet" cx="60" cy="51" r="6.2"></circle>
+      <circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"></circle>
+    </svg>
+  </template>
 
   <script src="/scripts/index.js"></script>
 

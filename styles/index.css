@@ -26,7 +26,10 @@ a:hover {
     line-height: 0;
 }
 
-.cam-spot img {
+/* The hero cameras are inline <svg> cloned from the templates in index.html,
+   not <img>. Both are matched so the rule survives either. */
+.cam-spot img,
+.cam-spot svg {
     display: block;
     width: 100%;
     height: 100%;
@@ -36,7 +39,9 @@ a:hover {
 }
 
 .cam-spot:hover img,
-.cam-spot:focus-visible img {
+.cam-spot:focus-visible img,
+.cam-spot:hover svg,
+.cam-spot:focus-visible svg {
     transform: scale(1.08);
 }
 

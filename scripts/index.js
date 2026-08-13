@@ -10,20 +10,45 @@
     });
 
     var TYPES = [
-        { file: 'cam-dome.svg', label: 'Dome camera', key: 'dome' },
-        { file: 'cam-cube.svg', label: 'Box camera', key: 'cube' },
-        { file: 'cam-glasses.svg', label: 'Smart glasses', key: 'glasses' },
-        { file: 'cam-pill.svg', label: 'Pill sensor', key: 'pill' },
-        { file: 'cam-street.svg', label: 'Street pole unit', key: 'street' },
-        { file: 'cam-bullet.svg', label: 'Bullet camera', key: 'bullet' }
+        { label: 'Dome camera', key: 'dome' },
+        { label: 'Box camera', key: 'cube' },
+        { label: 'Smart glasses', key: 'glasses' },
+        { label: 'Pill sensor', key: 'pill' },
+        { label: 'Street pole unit', key: 'street' },
+        { label: 'Bullet camera', key: 'bullet' }
     ];
+
+    /* The icons are cloned from <template id="camtpl-*"> in index.html rather
+       than loaded as <img src="images/icons/cam-*.svg">. Those files are
+       class-driven — no fill attributes — and an <img>-loaded SVG is an
+       isolated document that never sees cameras.css, so every camera came out
+       solid black. A clone is an ordinary node and gets styled normally.
+
+       Ids are suffixed per instance because .cam-iris carries one and the field
+       puts 26 cameras on the page. */
+    var uid = 0;
+    function makeCam(key) {
+        var tpl = document.getElementById('camtpl-' + key);
+        if (!tpl) return null;
+        var svg = tpl.content.firstElementChild.cloneNode(true);
+        var n = ++uid;
+        var withId = svg.querySelectorAll('[id]');
+        for (var j = 0; j < withId.length; j++) { withId[j].id = withId[j].id + '-f' + n; }
+        return svg;
+    }
     var field = document.getElementById('camField');
     var halfTop = document.getElementById('camHalfTop');
     var halfBottom = document.getElementById('camHalfBottom');
     var halfTopText = document.getElementById('camHalfTopText');
     var halfBottomText = document.getElementById('camHalfBottomText');
     var FACTS = null;
-    fetch('/data/camera-facts.json').then(function (r) { return r.json(); }).then(function (j) { FACTS = j; });
+    /* data/camera-facts.json is optional. Without the catch, a 404 makes
+       r.json() reject and the console fills with an unhandled rejection; the
+       click handler already falls back to the plain camera label. */
+    fetch('/data/camera-facts.json')
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) { FACTS = j; })
+        .catch(function () { FACTS = null; });
 
     var seed = 17;
     function rand() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
@@ -48,10 +73,8 @@
             btn.setAttribute('aria-label', t.label);
             btn.dataset.topPct = topPct;
             btn.dataset.key = t.key;
-            var img = document.createElement('img');
-            img.src = '/images/icons/' + t.file;
-            img.alt = '';
-            btn.appendChild(img);
+            var art = makeCam(t.key);
+            if (art) { btn.appendChild(art); }
             btn.addEventListener('click', function (label, key, el) {
                 return function () {
                     var group = field.querySelectorAll('.cam-spot[data-key="' + key + '"]');
