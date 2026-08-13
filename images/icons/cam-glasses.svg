@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="SMART GLASSES"><path d="M8,44 L2,32 M92,44 L98,32" stroke="#063f32" stroke-width="5" stroke-linecap="round" fill="none"></path><path d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z" fill="#ffe7a8"></path><path d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z" fill="none" stroke="#063f32" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M41,45 H59" stroke="#063f32" stroke-width="5" stroke-linecap="round"></path><circle cx="28" cy="45" r="11" fill="#04302a" stroke="#063f32" stroke-width="3.6"></circle><circle cx="72" cy="45" r="11" fill="#04302a" stroke="#063f32" stroke-width="3.6"></circle></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="cam" role="img" aria-label="Smart glasses with outward cameras">
+  <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32" stroke-width="5"></path>
+  <path class="cam-shell" d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z" stroke-linecap="round"></path>
+  <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
+  <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
+  <circle class="cam-iris cam-iris--void" id="iris-glasses-l" cx="28" cy="45" r="9"></circle>
+  <circle class="cam-iris cam-iris--void" id="iris-glasses-r" cx="72" cy="45" r="9"></circle>
+</svg>

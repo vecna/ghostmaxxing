@@ -1,8 +1,7 @@
 /* Ghostmaxxing design tokens.
  *
  * The single source of truth for colour and type. Import this before anything
- * else; pages.css already contains it, so only import tokens.css on its own
- * when building something that does NOT use pages.css.
+ * else.
  *
  *   @import url("./tokens.css");
  */
@@ -13,8 +12,17 @@
   --gm-ink: #050505;
   --gm-text: #071a33;
   --gm-muted: #253a54;
+  /* FOUR greens, ordered light to dark. The order is the contract: --soft is
+     the one that reads as a surface (the masks), --green draws the lines on
+     it, --deep is the body of the smoke, --night is the ground the fire sits
+     in. Nothing should pick a green by eye. */
   --gm-green: #063f32;
   --gm-green-soft: #1e6b4f;
+  --gm-green-night: #031f19;
+  /* The barrel of every lens in every cam-*.svg. Not --gm-green (the outline),
+     not --gm-soil (the ground). Named here in this pass; it used to be an
+     unnamed #04302a scattered through the icon files. */
+  --gm-green-deep: #04302a;
   --gm-yellow: #f3c747;
   --gm-cream: #ffe7a8;
   /* Dazzle pink. RESERVED: only ever inside a lens, or as the logo spiral.
@@ -31,35 +39,22 @@
   --page-max: 1440px;
   --camera-band-min-width: 2400px;
   --camera-band-height: clamp(10rem, 23vw, 21rem);
+
   /* ---- Families -------------------------------------------------------
-   * Three, each with exactly one job. The "* Fallback" families are the
-   * system face squeezed to the webfont's metrics, so nothing reflows when
-   * the swap lands.
-   *
    *   --serif  display only: --t-display, --t-h1, --t-h2, --t-h3
    *   --sans   everything else: --t-lead, --t-body, --t-small
    *   --mono   --t-meta only: years, tags, era labels
    *
-   * Atkinson has TWO weights, 400 and 700. Never ask for 500/600/650 —
-   * the browser fakes it and the result is uneven.
+   * Atkinson has TWO weights, 400 and 700. Never ask for 500/600/650.
    */
   --serif: "Newsreader", "Newsreader Fallback", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --sans: "Atkinson Hyperlegible", "Atkinson Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* ---- Type scale -----------------------------------------------------
-   * How the clamps work, once, so no component ever hand-rolls another:
-   *
    *   clamp(MIN, PREFERRED, MAX)
-   *
-   * MIN is the size at a 400px viewport, MAX the size at 1440px, and
-   * PREFERRED is the straight line between them, written as
-   * "intercept + slope*vw". Every fluid step below uses that SAME 400->1440
-   * range, which is why they scale in step with each other instead of
-   * crossing over at some awkward width.
-   *
-   * Only the four display steps are fluid. Reading sizes are fixed: body
-   * text that grows with the window gets harder to read, not easier.
+   * MIN is the size at a 400px viewport, MAX the size at 1440px. Every fluid
+   * step uses that SAME 400->1440 range. Only the display steps are fluid.
    */
   --t-display: clamp(3.4rem, 1.669rem + 6.923vw, 7.9rem);  /* 54 -> 126px */
   --t-h1:      clamp(2.2rem, 1.431rem + 3.077vw, 4.2rem);  /* 35 ->  67px */
