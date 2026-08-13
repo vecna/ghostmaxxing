@@ -1,22 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-<x-dc>
-<helmet>
-<title>The genealogy of the read — Ghostmaxxing</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="styles/tokens.css">
-<link rel="stylesheet" href="styles/base.css">
-<link rel="stylesheet" href="styles/cameras.css">
-<link rel="stylesheet" href="styles/genealogy.css">
-<script src="scripts/stamp.js"></script>
-</helmet>
+<!doctype html>
+<html lang="en">
 
-<div class="gm-page" ref="{{ rootRef }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The genealogy of the read — Ghostmaxxing</title>
+  <meta name="description"
+    content="Fifteen years of face-recognition camouflage, era by era: what was demonstrated, under what conditions, and what stayed limited." />
+  <link rel="canonical" href="https://ghostmaxxing.vecna.eu/genealogy.html" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#14100c" />
+  <link rel="icon" type="image/svg+xml" href="/images/logo/mark-color.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/images/logo/favicon-180.png" />
+  <meta property="og:title" content="The genealogy of the read — Ghostmaxxing" />
+  <meta property="og:description" content="Fifteen years of face-recognition camouflage, era by era." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="/images/social-card.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="/styles/vendor/fonts/atkinson-hyperlegible-latin-400-normal.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="/styles/vendor/fonts/newsreader-latin-700-normal.woff2">
+
+  <!-- One shared stylesheet, then one page stylesheet. -->
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <link rel="stylesheet" href="/styles/genealogy.css" />
+</head>
+
+<body>
+
+<div class="gm-page">
 
   <div class="wrap">
     <header class="gm-head">
@@ -268,99 +283,53 @@
   </div>
 
 </div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props="{
-  &quot;glareOpacity&quot;: {
-    &quot;editor&quot;: &quot;range&quot;,
-    &quot;default&quot;: 0.38,
-    &quot;min&quot;: 0.2,
-    &quot;max&quot;: 0.6,
-    &quot;step&quot;: 0.02,
-    &quot;tsType&quot;: &quot;number&quot;,
-    &quot;section&quot;: &quot;Open questions&quot;,
-    &quot;label&quot;: &quot;Glasses glare opacity&quot;
-  },
-  &quot;lensPreview&quot;: {
-    &quot;editor&quot;: &quot;enum&quot;,
-    &quot;default&quot;: &quot;as authored&quot;,
-    &quot;options&quot;: [&quot;as authored&quot;, &quot;all live&quot;, &quot;all spent&quot;],
-    &quot;tsType&quot;: &quot;string&quot;,
-    &quot;section&quot;: &quot;Review&quot;,
-    &quot;label&quot;: &quot;Lens state preview&quot;
-  },
-  &quot;stampMode&quot;: {
-    &quot;editor&quot;: &quot;enum&quot;,
-    &quot;default&quot;: &quot;auto&quot;,
-    &quot;options&quot;: [&quot;auto&quot;, &quot;arc&quot;, &quot;flat&quot;],
-    &quot;tsType&quot;: &quot;string&quot;,
-    &quot;section&quot;: &quot;Review&quot;,
-    &quot;label&quot;: &quot;Stamp layout&quot;
-  }
-}">
-class Component extends DCLogic {
-  rootRef = React.createRef();
 
-  /* Props are applied imperatively rather than through style holes: they are
-     review knobs, not runtime data, and a hole would delay first paint. */
-  apply() {
-    const el = this.rootRef.current;
-    if (!el) return;
+  <!-- ------------------------------------------------------------------------
+       Was a Claude Design component. The export wrapped this page in <x-dc>, a
+       <helmet> that put the stylesheet links inside <body>, an unresolved
+       {{ rootRef }} attribute, and a React class carrying four review knobs.
+       All of it is gone. Two things in that class were real behaviour and are
+       kept below; the other two were defaults the CSS already applies:
 
-    el.style.setProperty('--cam-glare-opacity', String(this.props.glareOpacity ?? 0.38));
+         glareOpacity   dropped — cameras.css already defaults to 0.38 via
+                        var(--cam-glare-opacity, 0.38)
+         stampMode      dropped — "auto" meant removeProperty, i.e. do nothing
+         lensPreview    dropped — a review override for forcing every lens live
+                        or spent. The authored data-lens attributes are the
+                        content and must not be overridden at runtime.
+       ---------------------------------------------------------------------- -->
+  <script src="/scripts/stamp.js"></script>
+  <script>
+    (function () {
+      'use strict';
 
-    const mode = this.props.stampMode || 'auto';
-    el.querySelectorAll('.gm-stamp').forEach((s) => {
-      if (mode === 'auto') s.style.removeProperty('--arc-mode');
-      else s.style.setProperty('--arc-mode', mode);
-    });
+      /* 1. Lay out the curved camera labels. stamp.js only exports
+            window.GMStamp; nothing called it once the React wrapper went, so
+            every .gm-stamp was rendering as unpositioned absolute spans.
+            watch() re-measures on resize and again after document.fonts.ready,
+            because the real faces change every glyph advance. */
+      function startStamps(tries) {
+        if (window.GMStamp) {
+          window.GMStamp.layout(document);
+          window.GMStamp.watch(document);
+          return;
+        }
+        if ((tries || 0) < 20) { setTimeout(function () { startStamps((tries || 0) + 1); }, 120); }
+      }
+      startStamps();
 
-    const preview = this.props.lensPreview || 'as authored';
-    el.querySelectorAll('svg.cam').forEach((svg) => {
-      if (!svg.dataset.lensAuthored) svg.dataset.lensAuthored = svg.dataset.lens || 'live';
-      if (preview === 'all live') svg.dataset.lens = 'live';
-      else if (preview === 'all spent') svg.dataset.lens = 'spent';
-      else svg.dataset.lens = svg.dataset.lensAuthored;
-    });
-  }
+      /* 2. One delegated listener for the whole timeline instead of a handler
+            per row. Listen for it to open the matching archive entry:
+              window.addEventListener('gm:reference', e => e.detail.era) */
+      document.addEventListener('click', function (e) {
+        var era = e.target.closest && e.target.closest('[data-era]');
+        if (!era) { return; }
+        window.dispatchEvent(new CustomEvent('gm:reference', {
+          detail: { era: era.getAttribute('data-era') }
+        }));
+      });
+    })();
+  </script>
 
-  stamps(tries) {
-    const el = this.rootRef.current;
-    if (!el) return;
-    if (window.GMStamp) { window.GMStamp.layout(el); return; }
-    const n = tries || 0;
-    if (n < 20) setTimeout(() => this.stamps(n + 1), 120);
-  }
-
-  componentDidMount() {
-    this.apply();
-    this.stamps();
-    if (window.GMStamp) window.GMStamp.watch(this.rootRef.current);
-    else setTimeout(() => { if (window.GMStamp) window.GMStamp.watch(this.rootRef.current); }, 300);
-
-    /* One delegated listener instead of a handler per row. The host page can
-       listen for this and open the matching archive entry:
-         window.addEventListener('gm:reference', e => e.detail.era) */
-    this.onClick = (e) => {
-      const era = e.target.closest && e.target.closest('[data-era]');
-      if (!era) return;
-      window.dispatchEvent(new CustomEvent('gm:reference', { detail: { era: era.getAttribute('data-era') } }));
-    };
-    document.addEventListener('click', this.onClick);
-  }
-
-  componentDidUpdate() {
-    this.apply();
-    this.stamps();
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('click', this.onClick);
-  }
-
-  renderVals() {
-    return { rootRef: this.rootRef };
-  }
-}
-</script>
 </body>
 </html>
