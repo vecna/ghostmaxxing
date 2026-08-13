@@ -64,7 +64,7 @@
    --ghostutter-shard in a stylesheet that sits at the new depth. */
 
 .ghostutter {
-  /* The shard, inline. It is here rather than in a url("../assets/...") because
+  /* The shard, inline. It is here rather than in a url("/assets/...") because
      Chrome subjects mask-image to CORS, and over file:// the origin is "null" —
      an external mask silently fails to load and every mark renders as a solid
      pink SQUARE. A data URI is exempt, so the pages open from disk unchanged.

@@ -5,9 +5,9 @@
   <meta charset="utf-8" />
   <link rel="canonical" href="https://ghostmaxxing.vecna.eu/" />
   <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#14100c" />
+  <meta name="theme-color" content="#f26a1b" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" type="image/svg+xml" href="/images/logo/mark-onlight.svg">
+  <link rel="icon" type="image/svg+xml" href="/images/logo/mark-color.svg">
   <title>Ghostmaxxing</title>
   <meta name="description"
     content="Ghostmaxxing is a public lab for testing face-recognition camouflage through browser experiments, Ghostyles, references, and reporting." />
@@ -19,8 +19,6 @@
   <meta name="twitter:title" content="Ghostmaxxing" />
   <meta name="twitter:description" content="A public lab for testing face-recognition camouflage." />
   <meta name="twitter:image" content="/images/social-card.svg" />
-  <link rel="stylesheet" href="styles/pages.css" />
-
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -39,7 +37,7 @@
       "@id": "https://ghostmaxxing.vecna.eu/#publisher",
       "name": "Ghostmaxxing",
       "url": "https://ghostmaxxing.vecna.eu/",
-      "logo": "https://ghostmaxxing.vecna.eu/images/ghostmaxxing-mark.svg",
+      "logo": "https://ghostmaxxing.vecna.eu/images/logo/mark-color.svg",
       "sameAs": ["https://github.com/vecna/ghostmaxxing"]
     },
     {
@@ -65,73 +63,114 @@
 }
   </script>
 
+  <link rel="stylesheet" href="/styles/index.css" />
 </head>
 
 <body>
-  <main class="editorial-homepage variant-a editorial-homepage--svg-footer-band">
-    <div class="editorial-homepage__shell">
-      <header class="editorial-homepage__header">
-        <a class="wordmark" href="#" aria-label="Ghostmaxxing" data-i18n-aria-label="homepage_wordmark_label">
-          <span class="wordmark__main">
-            <img class="wordmark__mark" src="images/logo/mark-onlight.svg" alt="" aria-hidden="true" />
-            <span class="wordmark__title">Ghostmaxxing</span>
-          </span>
-          <span class="wordmark__subtitle" data-i18n="homepage_subtitle">
-            A public lab for testing face-recognition camouflage
-          </span>
-        </a>
 
-        <nav class="editorial-homepage__nav" aria-label="Prototype navigation" data-i18n-aria-label="prototype_navigation_label">
-          <a class="navlink" href="/references/" target="_blank" rel="noopener noreferrer" data-i18n="research_references_link">Research References</a>
-          <a class="navlink" href="about.html" data-i18n="vision_about_link">Vision & About</a>
-          <a class="cta-inline" href="report.html" data-i18n-html="leak_to_us_link_html">How to <i>leak</i> to us<span aria-hidden="true">↗</span></a>
-          <span class="locale-control" aria-hidden="false">
-            <span class="locale-control__flag" aria-hidden="true"></span>
-            <select id="localeSelect" class="locale-select" aria-label="Language" data-i18n-aria-label="language_label"></select>
-          </span>
-        </nav>
-      </header>
-
-      <section class="editorial-homepage__hero" aria-labelledby="hero-title-a">
-        <div class="hero-copy">
-          <h1 class="hero-copy__title" id="hero-title-a" data-i18n-html="hero_title_html">Disrupt<br>the read.</h1>
-          <p class="hero-copy__lead" data-i18n="homepage_lead">Ghostmaxxing is a real-time web app for testing face-recognition
-            camouflage. Point your camera, change how your face looks, and watch a local recognition
-            pipeline react &mdash; live. Everything runs in your browser, so your data stays with you.</p>
-          <p class="hero-copy__small" data-i18n-html="homepage_small_html">Built for hands-on <a href="workshops.html">workshops</a> and
-            self-experiments: see for yourself when a look stops a match, under your own conditions
-            &mdash; not a promise that it will hold anywhere else.</p>
-          <div class="hero-copy__actions">
-            <a class="btn-primary" href="lab.html" data-i18n-html="open_lab_link_html">Open the lab <span aria-hidden="true">↗</span></a>
+  <header style="display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;flex-wrap:wrap;gap:1rem;position:relative;z-index:10">
+    <a href="#" aria-label="Ghostmaxxing" style="display:flex;align-items:center;gap:.7rem;text-decoration:none;color:#0a0a08">
+      <img src="/images/logo/mark-color.svg" width="40" alt="" aria-hidden="true" />
+      <span style="display:flex;flex-direction:column;gap:.15rem">
+        <span style="font-family:Newsreader,Georgia,serif;font-weight:700;font-size:1.7rem;line-height:1">Ghostmaxxing</span>
+        <span style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;opacity:.78">A public lab for testing face-recognition camouflage</span>
+      </span>
+    </a>
+    <nav aria-label="Primary" style="display:flex;align-items:center;gap:1.8rem;font-size:.95rem;position:relative">
+      <div style="position:relative">
+        <button id="knowMoreTrigger" aria-expanded="false" aria-controls="knowMoreMenu" style="background:none;border:none;font:inherit;color:#0a0a08;cursor:pointer;padding:0;display:flex;align-items:center;gap:.3rem">Know more <span aria-hidden="true">▾</span></button>
+        <div id="knowMoreMenu" class="nav-menu" role="menu">
+          <div>
+            <p class="nav-kicker">Informative</p>
+            <ul><li><a href="about.html">Vision &amp; about</a></li><li><a href="report.html">Report a deployment</a></li><li><a href="workshops.html">Workshops</a></li></ul>
           </div>
-          <div class="hero-copy__meta" aria-label="Internal tools" data-i18n-aria-label="internal_tools_label">
-            <span><a href="loader.html" data-i18n="video_loader_link">Video Loader</a></span>
-            <!-- RELEASE: unreleased tools — uncomment on launch of Ghostyle Transfer / Latent Space Visualizer.
-                 The i18n keys (ghostyle_transfer_link, realtime_visualizer_link) are already in the catalog.
-            <span><a href="ghostyle-transfer.html" data-i18n="ghostyle_transfer_link">Ghostyle Transfer</a></span>
-            <span><a href="realtime.html" data-i18n="realtime_visualizer_link">Latent Space Visualizer</a></span>
-            -->
-          </div>
-          <div class="hero-copy__meta" aria-label="Explore further" data-i18n-aria-label="explore_further_label">
-            <span><a href="/docs" data-i18n="technical_documentation_link">Technical documentation</a></span>
-            <span><a href="https://github.com/vecna/ghostmaxxing" data-i18n="code_link">Code</a></span>
+          <div>
+            <p class="nav-kicker">Technology</p>
+            <ul><li><a href="lab.html">Open the lab ↗</a></li><li><a href="/references/">References archive</a></li><li><a href="/docs">Docs</a></li><li><a href="https://github.com/vecna/ghostmaxxing">Code</a></li></ul>
           </div>
         </div>
+      </div>
+      <a href="report.html" style="background:#ff5f8f;color:#fff1cf;padding:.55rem 1.2rem;border-radius:999px;font-weight:700;font-size:.85rem;text-decoration:none">Leak to us ↗</a>
+    </nav>
+  </header>
 
-        <figure class="hero-figure">
-          <div class="hero-figure__frame">
-            <img class="hero-figure__image" src="images/ghostmaxxing-homepage.webp"
-              alt="Portrait split between face-recognition overlay and adversarial camouflage." data-i18n-alt="homepage_hero_alt" />
-          </div>
-          <!-- <figcaption class="hero-figure__origin">Ghostmaxxing helps you in understanding and mitigating facial recognition technologies.</figcaption> -->
-        </figure>
-      </section>
+  <section aria-label="Surveillance landscape — tap a camera to learn more" style="position:relative;height:82vh;min-height:520px;overflow:hidden;background:#0a2b23">
+    <div id="camField" style="position:absolute;inset:0;z-index:2"></div>
+    <div id="camHalfTop" class="cam-half top" aria-live="polite">
+      <p id="camHalfTopText" style="max-width:60ch;font-size:1.15rem;line-height:1.5;margin:0"></p>
     </div>
-    <br class="editorial-homepage__spacer" />
-    <br class="editorial-homepage__spacer" />
-    <div class="camera-band" aria-hidden="true"></div>
-  </main>
-  <script type="module" src="scripts/home.js"></script>
-</body>
+    <div id="camHalfBottom" class="cam-half bottom" aria-live="polite">
+      <p id="camHalfBottomText" style="max-width:60ch;font-size:1.15rem;line-height:1.5;margin:0"></p>
+    </div>
+  </section>
 
+  <section style="text-align:center;max-width:760px;margin:0 auto;padding:3.5rem 2rem 2.5rem">
+    <h1 style="font-family:Newsreader,Georgia,serif;font-size:clamp(3.6rem, 2.6rem + 5.5vw, 7.4rem);line-height:.96;margin:0 0 1.3rem;letter-spacing:-.01em">Disrupt<br>the read.</h1>
+    <p style="font-size:1.1rem;margin:0 auto .8rem;max-width:52ch;line-height:1.55">Ghostmaxxing is a real-time web app for testing face-recognition camouflage. Point your camera, change how your face looks, and watch a local recognition pipeline react — live. Everything runs in your browser, so your data stays with you.</p>
+    <p style="font-size:.92rem;margin:0 auto 1.6rem;max-width:54ch;opacity:.85">Built for hands-on <a href="workshops.html">workshops</a> and self-experiments: see for yourself when a look stops a match, under your own conditions — not a promise that it will hold anywhere else.</p>
+    <a href="lab.html" style="display:inline-block;background:#0a0a08;color:#fff1cf;padding:.85rem 1.7rem;text-decoration:none;font-weight:700;font-size:.95rem">Open the lab ↗</a>
+  </section>
+
+  <section style="max-width:1080px;margin:0 auto;padding:1rem 2rem 4rem;border-top:2px solid #0a0a08">
+    <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;opacity:.72;margin:1.5rem 0 1.2rem">How it works</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem">
+      <div>
+        <img src="/images/icons/cam-street.svg" width="42" alt="" style="margin-bottom:.6rem" />
+        <p style="font-weight:700;margin:0 0 .3rem">1. Detect</p>
+        <p style="font-size:.92rem;margin:0;opacity:.85">A local pipeline reads your face the way a deployed system would — landmarks, descriptors, a baseline match.</p>
+      </div>
+      <div>
+        <img src="/images/icons/cam-glasses.svg" width="42" alt="" style="margin-bottom:.6rem" />
+        <p style="font-weight:700;margin:0 0 .3rem">2. Camouflage</p>
+        <p style="font-size:.92rem;margin:0;opacity:.85">Apply a Ghostyle or your own intervention — makeup, an overlay, a physical change to the face.</p>
+      </div>
+      <div>
+        <img src="/images/icons/cam-dome.svg" width="42" alt="" style="margin-bottom:.6rem" />
+        <p style="font-weight:700;margin:0 0 .3rem">3. Retest</p>
+        <p style="font-size:.92rem;margin:0;opacity:.85">Compare the match, in your browser, under your own conditions. A local result, not a protection guarantee.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#fff1cf;padding:3rem 2rem">
+    <div style="max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2.5rem">
+      <div>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;opacity:.65;margin:0 0 .6rem">References archive</p>
+        <p style="font-family:Newsreader,Georgia,serif;font-size:1.5rem;margin:0 0 .6rem">A longer lineage than most people think</p>
+        <p style="font-size:.92rem;margin:0 0 1rem;opacity:.85">CV Dazzle, adversarial makeup, physical-world attacks, face-obfuscation research — each entry names what was demonstrated and what remains limited.</p>
+        <a href="/references/" style="text-decoration:none;font-weight:700;font-size:.9rem">Explore references →</a>
+      </div>
+      <div>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;opacity:.65;margin:0 0 .6rem">Workshops</p>
+        <p style="font-family:Newsreader,Georgia,serif;font-size:1.5rem;margin:0 0 .6rem">Bring a laptop and curiosity</p>
+        <p style="font-size:.92rem;margin:0 0 1rem;opacity:.85">Hands-on sessions testing local recognition behavior together. No biometric data is uploaded by the browser lab.</p>
+        <a href="workshops.html" style="text-decoration:none;font-weight:700;font-size:.9rem">See upcoming workshops →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Standard site footer — same block on every page: pyre band (full illustration by default; togglable to a cropped band via the Tweaks panel) + soil-edge + link row. -->
+  <footer style="background:#0a2b23">
+    <div id="pyreWrap" data-mode="full" style="background:#0a2b23;overflow:hidden">
+      <img id="pyreImg" src="/images/motifs/pyre.svg" style="display:block;width:100%" alt="" aria-hidden="true" />
+    </div>
+    <img src="/images/motifs/soil-edge.svg" style="display:block;width:100%;height:48px" alt="" />
+    <div style="max-width:1080px;margin:0 auto;padding:0 2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem">
+      <div style="display:flex;gap:1.6rem;opacity:.6">
+        <img src="/images/icons/cam-dome.svg" width="30" alt="" />
+        <img src="/images/icons/cam-street.svg" width="30" alt="" />
+        <img src="/images/icons/cam-glasses.svg" width="30" alt="" />
+        <img src="/images/icons/cam-bullet.svg" width="30" alt="" />
+      </div>
+      <div style="display:flex;gap:1.5rem;font-size:.85rem">
+        <a href="/docs" style="color:#fff1cf">Technical documentation</a>
+        <a href="https://github.com/vecna/ghostmaxxing" style="color:#fff1cf">Code</a>
+        <a href="loader.html" style="color:#fff1cf">Video Loader</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/scripts/index.js"></script>
+
+</body>
 </html>

@@ -1,0 +1,60 @@
+/* ============================================================================
+   gstmxx — root import list.
+
+   readme.md describes this file as "link this one file", but it was never
+   written. This is it. Every page needs exactly one stylesheet link:
+
+     <link rel="stylesheet" href="/styles.css">
+
+   Order is the architecture and is not negotiable: tokens define, base resets,
+   components draw, pages place. A component that needs a page rule, or a page
+   that redefines a token, is a mistake in the layer above it.
+   ========================================================================= */
+
+/* ---- 1. Tokens — decisions ---------------------------------------------- */
+@import url("./tokens/colors.css");
+@import url("./tokens/typography.css");
+
+/* ---- 2. Base — the reset ------------------------------------------------ */
+@import url("./base.css");
+
+/* ---- 3. Components — draw and state, never placement -------------------- */
+@import url("./components/logo.css");
+@import url("./components/cameras.css");
+
+/* ---- 4. Pages — placement only ------------------------------------------
+   Uncomment as each is written. A page stylesheet loaded on every page is a
+   page stylesheet that has stopped being one. */
+/* @import url("./pages/homepage.css"); */
+/* @import url("./pages/genealogy.css"); */
+
+
+/* ============================================================================
+   STOPGAP — four tokens referenced by files you already have, but absent from
+   tokens/colors.css. Move them there and delete this block.
+
+   The first one is not cosmetic. base.css does:
+
+       :focus-visible { outline: var(--gm-focus-ring); }
+
+   An undefined custom property makes the whole declaration invalid at computed
+   -value time, so the rule does nothing and THE FOCUS RING DISAPPEARS SITE-
+   WIDE. Keyboard navigation currently has no visible indicator.
+
+   Values below follow readme.md's shape language: 2px solid ink as the primary
+   separator, flat fills, no drop shadows.
+   ========================================================================= */
+
+:root {
+  --gm-focus-ring: 2px solid var(--gm-ink);
+  --gm-border-strong: rgba(10, 10, 8, 0.55);
+  --gm-panel-strong: rgba(255, 241, 207, 0.40);
+
+  /* Declared so nothing that references it breaks, and set to none because the
+     documented system has no drop shadows. If a raised surface is ever needed,
+     it is an offset flat block, not a blur. */
+  --gm-shadow-block: none;
+
+  /* Layout constants that lived in the old tokens.css and have no other home. */
+  --page-max: 1440px;
+}

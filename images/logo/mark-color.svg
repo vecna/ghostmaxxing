@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ghostmaxxing mark: a column of camera lenses, the top one cut open">
+  <circle cx="32" cy="55.5" r="6.2" fill="#2f7a5c" stroke="#072e26" stroke-width="2"></circle>
+  <circle cx="32" cy="55.5" r="2.2" fill="#f0c24a"></circle>
+  <circle cx="32" cy="43" r="7.4" fill="#2f7a5c" stroke="#072e26" stroke-width="2.2"></circle>
+  <circle cx="32" cy="43" r="2.6" fill="#f0c24a"></circle>
+  <circle cx="32" cy="28" r="8.6" fill="#2f7a5c" stroke="#072e26" stroke-width="2.4"></circle>
+  <circle cx="32" cy="28" r="3" fill="#f0c24a"></circle>
+  <circle cx="32" cy="12" r="11" fill="#fff1cf" stroke="#ff5f8f" stroke-width="2.6"></circle>
+  <circle cx="32" cy="12" r="4.2" fill="#072e26"></circle>
+  <rect x="26.5" y="10.7" width="11" height="2.6" rx="1" fill="#ff5f8f" transform="rotate(-28 32 12)"></rect>
+</svg>

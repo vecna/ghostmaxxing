@@ -1,0 +1,133 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, sans-serif;
+    background: #f26a1b;
+    color: #0a0a08;
+}
+
+a {
+    color: #ff5f8f;
+}
+
+a:hover {
+    color: #0a0a08;
+}
+
+.cam-spot {
+    position: absolute;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    line-height: 0;
+}
+
+.cam-spot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: .85;
+    transition: opacity .15s ease, transform .15s ease;
+    position: relative;
+}
+
+.cam-spot:hover img,
+.cam-spot:focus-visible img {
+    transform: scale(1.08);
+}
+
+.cam-half {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: #fff1cf;
+    color: #0a0a08;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 3rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .18s ease;
+    z-index: 4;
+}
+
+.cam-half.show {
+    opacity: 1;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.cam-half.top {
+    top: 0;
+    height: 50%;
+}
+
+.cam-half.bottom {
+    bottom: 0;
+    height: 50%;
+}
+
+.nav-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: .6rem;
+    background: #fff1cf;
+    border: 2px solid #0a0a08;
+    padding: 1.4rem 1.6rem;
+    gap: 2rem;
+    z-index: 5;
+}
+
+.nav-menu.open {
+    display: flex;
+}
+
+.nav-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.nav-menu li a {
+    text-decoration: none;
+    color: #0a0a08;
+    font-size: .92rem;
+}
+
+.nav-menu li a:hover {
+    color: #ff5f8f;
+}
+
+.nav-kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .68rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #ff5f8f;
+    margin: 0 0 .3rem;
+}
+
+#pyreWrap[data-mode="cropped"] {
+    height: 230px;
+}
+
+#pyreWrap[data-mode="cropped"] #pyreImg {
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+}
+
+#pyreWrap[data-mode="full"] #pyreImg {
+    height: auto;
+}

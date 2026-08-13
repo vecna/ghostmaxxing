@@ -84,10 +84,6 @@
   font-size: clamp(3rem, 1.85rem + 4.6vw, 5.75rem);
   line-height: 0.92; letter-spacing: -0.02em; text-wrap: balance;
 }
-.gm-hero__lead {
-  margin: 26px 0 0; max-width: 34em;
-  font-size: var(--t-lead); line-height: var(--lh-lead); color: var(--gm-text);
-}
 /* The hero carries no display title of its own — the wordmark and the kicker do
    that — so the opening statement has to hold the top of the page by itself.
    Serif, display scale, no fixed box: it wraps to whatever the column is. */
@@ -248,8 +244,6 @@
 .era__wind .w-coat .w5 { stroke-width: 18px; }
 .era__wind .w-blow .wd { stroke-width: 7px; }
 .era__wind .w-coat .wd { stroke-width: 14px; }
-.era__wind .w-coat .w-vortex { stroke-width: 15px; }
-.era__wind .w-blow .w-vortex { stroke-width: 8px; }
 .era__wind .w-spark .sp-coat { fill: var(--gm-green-deep); }
 .era__wind .w-spark .sp-core { fill: var(--gm-pink); }
 
@@ -279,10 +273,6 @@
   mask-image: linear-gradient(to top, #000 0 10%, rgba(0,0,0,0.16) 31%, rgba(0,0,0,0) 40% 50%, rgba(0,0,0,0.24) 60%, rgba(0,0,0,0.82) 80%, #000 92%);
 }
 
-
-/* Nothing to draw: the column behind the stack shows through. The element
-   stays as the row's spacer so the grid keeps its shape. */
-.era__smoke { display: none; }
 
 .era__node {
   grid-row: 2; grid-column: 1; justify-self: center;
@@ -408,7 +398,6 @@
 /* --- Print ----------------------------------------------------------------- */
 
 @media print {
-  .gm-noprint { display: none; }
   .era { break-inside: avoid; }
 }
 

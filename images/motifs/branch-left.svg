@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 60" width="120" height="60" preserveAspectRatio="none" role="img" aria-hidden="true">
-  
-  <path d="M120,20 C88,22 44,30 0,40" fill="none" stroke="var(--gm-green, #063f32)" stroke-width="9" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
-  <path d="M74,26 Q68,9 46,3 Q52,20 74,26 Z" fill="var(--gm-green-soft, #1e6b4f)" stroke="var(--gm-green-deep, #04302a)" stroke-width="2" vector-effect="non-scaling-stroke"></path>
-</svg>

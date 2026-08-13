@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visual styleguide — Ghostmaxxing</title>
+
+<!-- ============================================================================
+     One stylesheet link. styles.css is the root import list: tokens, base,
+     components, in that order.
+
+     Everything on this page reads its values FROM that stylesheet at runtime —
+     swatches, type scale, lens states. Nothing is hardcoded. The previous
+     version had #f26a1b written into the markup and it had already drifted.
+     ========================================================================= -->
+<link rel="stylesheet" href="styles/styles.css">
+
+<style>
+/* ----------------------------------------------------------------------------
+   Document chrome. Furniture of the styleguide itself; belongs to no other
+   page. Follows the documented shape language: square corners, 2px solid ink
+   borders, flat fills, no shadows, no gradients.
+---------------------------------------------------------------------------- */
+
+.sg { --sg-pad: clamp(20px, 4vw, 48px); }
+.sg-wrap { max-width: var(--page-max, 1440px); margin: 0 auto; padding: 0 var(--sg-pad); max-width: 1180px; }
+
+/* Must survive a broken stylesheet, so it uses no tokens. */
+.sg-alarm { display: none; background: #b00020; color: #fff; padding: 14px 18px; font: 700 14px/1.5 ui-sans-serif, system-ui, sans-serif; }
+.sg-alarm[data-show] { display: block; }
+
+.sg-head { padding: clamp(28px, 5vw, 56px) 0 0; }
+.sg-head__bar { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px; border-bottom: 2px solid var(--gm-ink); padding-bottom: 16px; }
+.sg-head__title { font-family: var(--serif); font-weight: 700; color: var(--gm-ink); font-size: var(--t-h1); line-height: var(--lh-heading); letter-spacing: -0.02em; margin: clamp(26px, 5vw, 48px) 0 0; text-wrap: balance; }
+.sg-head__lead { font-size: var(--t-lead); line-height: var(--lh-lead); max-width: 42em; margin: 16px 0 0; }
+
+.sg-meta, .sg-num { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--ls-meta); text-transform: uppercase; color: var(--gm-green); }
+
+.sg-toc { margin: 32px 0 0; padding: 18px 0 0; border-top: 2px solid var(--gm-ink); display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px 24px; }
+.sg-toc a { font-family: var(--mono); font-size: var(--t-small); color: var(--gm-text); display: block; padding: 2px 0; }
+.sg-toc a b { color: var(--gm-green); margin-right: 8px; font-weight: 400; }
+
+.sg-sec { padding: clamp(46px, 8vw, 88px) 0 0; }
+.sg-sec__title { font-family: var(--serif); font-weight: 700; color: var(--gm-ink); font-size: var(--t-h2); line-height: var(--lh-heading); margin: 6px 0 0; }
+.sg-rule { border: 0; border-top: 2px solid var(--gm-ink); margin: 14px 0 0; }
+.sg-intro { max-width: 46em; margin: 14px 0 0; }
+.sg-intro p { margin: 0 0 12px; }
+
+h3.sg-sub { font-family: var(--mono); font-size: var(--t-small); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gm-ink); margin: 38px 0 0; padding-bottom: 6px; border-bottom: 1px solid var(--gm-border); }
+
+.sg-card { background: var(--gm-cream); border: 2px solid var(--gm-ink); padding: 16px; display: grid; gap: 12px; align-content: start; }
+.sg-card__id { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: .08em; color: var(--gm-green); margin: 0; word-break: break-word; }
+.sg-card__name { font-family: var(--serif); font-size: var(--t-h3); font-weight: 700; color: var(--gm-ink); margin: 0; line-height: 1.15; }
+.sg-card__note { font-size: var(--t-small); line-height: 1.45; margin: 0; color: var(--gm-text); }
+.sg-stage { display: grid; place-items: center; min-height: 148px; padding: 12px; background: var(--gm-bg); }
+.sg-stage .cam { max-width: 130px; }
+.sg-stage--dark { background: var(--gm-soil); }
+.sg-stage--cream { background: var(--gm-cream); border: 1px solid var(--gm-border); }
+
+.sg-grid { display: grid; gap: 16px; margin-top: 20px; }
+.sg-grid--2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.sg-grid--3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+pre { margin: 0; padding: 12px 14px; overflow-x: auto; background: var(--gm-soil); color: var(--gm-cream); font-family: var(--mono); font-size: 12px; line-height: 1.65; }
+pre .c { opacity: .55; }
+pre .k { color: var(--gm-yellow); }
+pre .s { color: var(--gm-pink); }
+p code, li code, td code, th code { font-family: var(--mono); font-size: .86em; background: var(--gm-cream); padding: 1px 5px; color: var(--gm-ink); word-break: break-word; }
+
+table { border-collapse: collapse; width: 100%; margin-top: 16px; font-size: var(--t-small); }
+th, td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--gm-border); vertical-align: top; }
+th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--ls-meta); text-transform: uppercase; color: var(--gm-green); border-bottom: 2px solid var(--gm-ink); }
+
+.sg-do { display: grid; margin-top: 18px; }
+.sg-do div { display: grid; grid-template-columns: 78px 1fr; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--gm-border); font-size: var(--t-small); }
+.sg-do b { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 400; }
+.sg-do .yes { color: var(--gm-green); }
+.sg-do .no { color: var(--gm-ink); }
+
+.sg-sw { display: flex; flex-wrap: wrap; gap: 8px; }
+.sg-btn { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; padding: 7px 12px; cursor: pointer; background: transparent; color: var(--gm-ink); border: 2px solid var(--gm-ink); line-height: 1; }
+.sg-btn:hover { background: var(--gm-cream); }
+.sg-btn[aria-pressed="true"] { background: var(--gm-ink); color: var(--gm-cream); }
+
+.sg-pal { display: grid; grid-template-columns: repeat(auto-fill, minmax(126px, 1fr)); gap: 2px; margin-top: 20px; }
+.sg-chip { aspect-ratio: 1 / 0.82; display: flex; flex-direction: column; justify-content: flex-end; padding: 8px; font-family: var(--mono); font-size: 10px; line-height: 1.45; }
+.sg-chip b { font-weight: 400; letter-spacing: .04em; }
+.sg-chip span { opacity: .74; text-transform: uppercase; }
+.sg-chip[data-missing] { outline: 2px solid #b00020; outline-offset: -2px; color: #b00020; }
+.sg-chip[data-missing] b::after { content: " — not defined"; }
+
+.sg-type div { border-bottom: 1px solid var(--gm-border); padding: 14px 0; display: grid; gap: 4px; }
+.sg-type p { margin: 0; color: var(--gm-ink); }
+
+.sg-knob { display: grid; grid-template-columns: 1fr auto; gap: 3px 12px; align-items: center; }
+.sg-knob label { font-family: var(--mono); font-size: 12px; color: var(--gm-green); }
+.sg-knob output { font-family: var(--mono); font-size: 12px; color: var(--gm-ink); }
+.sg-knob input { grid-column: 1 / -1; width: 100%; accent-color: var(--gm-ink); }
+
+.sg-clear { position: relative; display: inline-block; padding: calc(var(--gm-logo-size, 3rem) * 0.46); outline: 1px dashed var(--gm-pink); }
+.sg-clear::before { content: ""; position: absolute; inset: calc(var(--gm-logo-size, 3rem) * 0.46); outline: 1px solid var(--gm-cream); }
+
+/* Shown by script only when a mark file fails to load. A broken-image icon in
+   a styleguide is worse than an honest gap. */
+.sg-missing { display: grid; place-items: center; gap: 6px; padding: 16px; border: 2px dashed var(--gm-cream); color: var(--gm-cream); font-family: var(--mono); font-size: 10px; line-height: 1.5; text-align: center; min-width: 120px; }
+.sg-stage:not(.sg-stage--dark) .sg-missing { border-color: var(--gm-ink); color: var(--gm-ink); }
+
+/* --- claims ladder -------------------------------------------------------- */
+.sg-claims div { display: grid; grid-template-columns: 108px 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--gm-border); }
+.sg-claims b { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 400; }
+.sg-claims q { font-family: var(--serif); font-size: var(--t-h3); color: var(--gm-ink); display: block; margin-bottom: 4px; quotes: "\201C" "\201D"; }
+.sg-claims p { margin: 0; font-size: var(--t-small); color: var(--gm-text); }
+.sg-claims .unsafe q { text-decoration: line-through; text-decoration-color: var(--gm-pink); text-decoration-thickness: 2px; }
+
+/* --- vocabulary ----------------------------------------------------------- */
+.sg-vocab { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2px; margin-top: 20px; }
+.sg-vocab > div { padding: 16px; }
+.sg-vocab .use { background: var(--gm-cream); }
+.sg-vocab .avoid { background: var(--gm-soil); color: var(--gm-cream); }
+.sg-vocab h4 { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; margin: 0 0 10px; font-weight: 400; }
+.sg-vocab ul { margin: 0; padding: 0; list-style: none; font-size: var(--t-small); line-height: 1.9; }
+.sg-vocab .avoid li { text-decoration: line-through; text-decoration-color: var(--gm-pink); }
+
+/* --- four pieces ---------------------------------------------------------- */
+.pieces { --spine-w: clamp(56px, 7vw, 96px); margin-top: 20px; border: 2px solid var(--gm-ink); background: var(--gm-bg); container-type: inline-size; }
+.pieces__row { display: grid; align-items: center; grid-template-columns: 1fr var(--spine-w) 1fr; position: relative; padding: 24px 0; }
+.pieces__row::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 14px; margin-left: -7px; background: var(--gm-green); z-index: 0; }
+.pieces__node { grid-column: 1; justify-self: end; position: relative; z-index: 1; width: 104px; }
+.pieces__branch { grid-column: 2; height: 6px; background: var(--gm-green); align-self: center; }
+.pieces__dossier { grid-column: 3; padding: 0 8px 0 18px; }
+.pieces__row--flip .pieces__node { grid-column: 3; justify-self: start; }
+.pieces__row--flip .pieces__dossier { grid-column: 1; padding: 0 18px 0 8px; text-align: right; }
+.pieces__dossier h4 { font-family: var(--serif); font-size: var(--t-h3); font-weight: 700; color: var(--gm-ink); margin: 0 0 3px; line-height: 1.1; }
+.pieces__dossier p { margin: 0; font-size: var(--t-small); color: var(--gm-text); }
+@container (max-width: 620px) {
+  .pieces__row, .pieces__row--flip { grid-template-columns: 1fr; justify-items: center; padding: 20px 0; }
+  .pieces__node, .pieces__row--flip .pieces__node { grid-column: 1; justify-self: center; }
+  .pieces__dossier, .pieces__row--flip .pieces__dossier { grid-column: 1; text-align: center; padding: 12px 18px 0; max-width: 46ch; background: var(--gm-bg); position: relative; z-index: 1; }
+  .pieces__branch { display: none; }
+}
+.sg-resize { resize: horizontal; overflow: auto; min-width: 300px; max-width: 100%; }
+
+/* --- anatomy -------------------------------------------------------------- */
+.sg-anat { display: grid; grid-template-columns: minmax(230px, 330px) 1fr; gap: 26px; align-items: start; margin-top: 20px; }
+@media (max-width: 760px) { .sg-anat { grid-template-columns: 1fr; } }
+.sg-anat svg text { font-family: var(--mono); font-size: 5px; fill: var(--gm-green); letter-spacing: .06em; }
+.sg-anat svg .lead { stroke: var(--gm-green); stroke-width: .7; opacity: .6; fill: none; }
+.sg-key div { display: grid; grid-template-columns: 118px 1fr; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--gm-border); font-size: var(--t-small); }
+.sg-key b { font-family: var(--mono); font-size: 12px; color: var(--gm-green); font-weight: 400; }
+
+.sg-foot { margin-top: clamp(52px, 9vw, 96px); background: var(--gm-soil); color: var(--gm-cream); }
+.sg-foot .sg-wrap { padding-top: 34px; padding-bottom: 46px; }
+.sg-foot h3 { font-family: var(--serif); font-size: var(--t-h3); margin: 0 0 8px; color: var(--gm-cream); }
+.sg-foot p, .sg-foot li, .sg-foot td { color: rgba(255, 241, 207, .8); font-size: var(--t-small); }
+.sg-foot th { color: var(--gm-yellow); border-bottom-color: rgba(255, 241, 207, .4); }
+.sg-foot td { border-bottom-color: rgba(255, 241, 207, .16); }
+.sg-foot code { background: rgba(255, 241, 207, .14); color: var(--gm-cream); }
+</style>
+</head>
+<body class="sg">
+
+<div class="sg-alarm" id="sg-alarm">
+  Tokens are not loading. <code>../styles.css</code> did not resolve, or it does not define <code>--gm-bg</code>.
+  Every colour and size on this page is currently a browser default — do not read anything off it until this is fixed.
+</div>
+
+<header class="sg-wrap sg-head">
+  <div class="sg-head__bar">
+    <div>
+      <div style="font-family:var(--serif);font-size:30px;font-weight:700;line-height:1;color:var(--gm-ink)">gstmxx</div>
+      <div class="sg-meta" style="margin-top:4px">Ghostmaxxing design system · v2.0</div>
+    </div>
+    <div class="sg-meta">Supersedes logo.html, field-guide.html, tokens.css</div>
+  </div>
+
+  <h1 class="sg-head__title">How the system speaks, and every component it speaks with.</h1>
+  <p class="sg-head__lead">Ghostmaxxing is a public research lab for testing, explaining and questioning facial recognition through browser-based AR camouflage, adversarial-makeup experiments and a curated references archive. This document carries the identity that work is delivered in: voice, colour, type, the mark, and the camera-lens motif. Each component appears here as the live thing rather than a picture of it.</p>
+
+  <nav class="sg-toc">
+    <a href="#system"><b>01</b> The system</a>
+    <a href="#voice"><b>02</b> Voice</a>
+    <a href="#colour"><b>03</b> Colour</a>
+    <a href="#type"><b>04</b> Type</a>
+    <a href="#shape"><b>05</b> Shape &amp; surface</a>
+    <a href="#mark"><b>06</b> The mark</a>
+    <a href="#anatomy"><b>07</b> Camera anatomy</a>
+    <a href="#fleet"><b>08</b> The fleet</a>
+    <a href="#states"><b>09</b> Lens states</a>
+    <a href="#stamps"><b>10</b> Stamps</a>
+    <a href="#layout"><b>11</b> Layout</a>
+    <a href="#decisions"><b>12</b> Decision log</a>
+  </nav>
+</header>
+
+
+<!-- 01 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="system">
+  <p class="sg-num">01</p>
+  <h2 class="sg-sec__title">The system</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>Four layers, each allowed to know about the ones above it and nothing below. The rule that keeps this honest: <strong>a component never positions itself on a page.</strong> <code>cameras.css</code> draws a camera and sets the state of its lens; where that camera goes is <code>genealogy.css</code>'s business.</p>
+    <p>One stylesheet link per page. <code>styles.css</code> is the root import list and the import order <em>is</em> the architecture.</p>
+  </div>
+
+  <table>
+    <tr><th>Layer</th><th>File</th><th>Holds</th></tr>
+    <tr><td>tokens</td><td><code>tokens/colors.css</code><br><code>tokens/typography.css</code></td><td>Colour and type. Nothing but <code>:root</code>. <strong>Icons are assets, not tokens</strong> — they do not go here.</td></tr>
+    <tr><td>base</td><td><code>base.css</code></td><td>The reset. Knows about no page and no component.</td></tr>
+    <tr><td>components</td><td><code>components/logo.css</code><br><code>components/cameras.css</code></td><td>Used by more than one page. Draw and state, never placement.</td></tr>
+    <tr><td>pages</td><td><code>pages/genealogy.css</code><br><code>pages/homepage.css</code></td><td>One per page. Layout only.</td></tr>
+  </table>
+
+  <p class="sg-card__note" style="margin-top:16px;max-width:46em">A <em>design token</em> is a named design decision — the smallest indivisible unit of the system: a colour, a size, a typeface. The term is standard; it originates at Salesforce and is now a W3C draft. It is worth being strict about, because the moment a component rule lands in a token file, that file stops being a source of truth and becomes another place to look.</p>
+</section>
+
+
+<!-- 02 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="voice">
+  <p class="sg-num">02</p>
+  <h2 class="sg-sec__title">Voice</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p><strong>Activist first, culturally staged second, editorial third.</strong> Not an academic paper, not a cybersecurity product, not a policy campaign. It should sound like people who understand code, research, public space and political risk — in that combination, which is rarer than any one of them.</p>
+    <p>No emoji. Direct and precise, never sloganistic.</p>
+  </div>
+
+  <h3 class="sg-sub">Four principles</h3>
+  <div class="sg-do">
+    <div><b class="yes">01</b><span><strong>Test, do not trust.</strong> A face match is a system output, not a truth. Never "this defeats surveillance."</span></div>
+    <div><b class="yes">02</b><span><strong>No false safety.</strong> Always name the conditions: model, camera, light, pose, distance. Never "protect yourself" or "become invisible."</span></div>
+    <div><b class="yes">03</b><span><strong>The archive is evidence, not an appendix.</strong> Every reference names what is testable and what is limited.</span></div>
+    <div><b class="yes">04</b><span><strong>Every claim is graded before it ships.</strong> See the ladder below.</span></div>
+  </div>
+
+  <h3 class="sg-sub">The claims ladder</h3>
+  <div class="sg-claims" style="margin-top:14px">
+    <div>
+      <b class="yes">Safe</b>
+      <div>
+        <q>A face match is a system output, not a truth.</q>
+        <p>True independent of conditions. Ships as written.</p>
+      </div>
+    </div>
+    <div>
+      <b class="yes">Conditional</b>
+      <div>
+        <q>In our tests, this pattern lowered detection confidence on one open model at close range under even light.</q>
+        <p>True under stated conditions, and the conditions are stated. Names the model, the distance, the light. Never generalises past what was measured.</p>
+      </div>
+    </div>
+    <div>
+      <b class="yes">Research</b>
+      <div>
+        <q>Whether this transfers to deployed systems is untested.</q>
+        <p>An open question, published as an open question. This grade is a feature — it is what makes the other two credible.</p>
+      </div>
+    </div>
+    <div class="unsafe">
+      <b class="no">Unsafe</b>
+      <div>
+        <q>Ghostmaxxing protects you from facial recognition.</q>
+        <p>Does not ship. Not softened, not hedged, not moved below the fold — cut.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sg-sub">Vocabulary</h3>
+  <div class="sg-vocab">
+    <div class="use">
+      <h4>Use</h4>
+      <ul>
+        <li>face recognition</li><li>face detection</li><li>biometric surveillance</li>
+        <li>adversarial makeup</li><li>Ghostyle</li><li>reference archive</li>
+        <li>testability</li><li>reporting node</li><li>local experiment</li>
+      </ul>
+    </div>
+    <div class="avoid">
+      <h4>Avoid, or qualify heavily</h4>
+      <ul>
+        <li>invisibility</li><li>anonymity guarantee</li><li>protection</li>
+        <li>foolproof</li><li>defeat</li><li>bypass all systems</li>
+        <li>untrackable</li><li>undetectable</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="sg-card__note" style="margin-top:18px;max-width:48em">One tension worth naming: the genealogy page is built on the word <em>defeated</em> — "defeated in 2016", the spent lens state. That word is on the avoid list. It survives there because it describes <strong>a historical, documented, past-tense event about a specific model</strong>, not a promise to the reader about their own face. If it ever slips into the present tense or the second person, it has become an unsafe claim.</p>
+</section>
+
+
+<!-- 03 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="colour">
+  <p class="sg-num">03</p>
+  <h2 class="sg-sec__title">Colour</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>One background: surveillance orange. A <strong>poster-wall</strong> colour — a public notice pasted in the street — not neon, not cyberpunk. Everything else is seated on it.</p>
+    <p>Every swatch below is read from the stylesheet at runtime, so this page cannot drift from the token file the way a hardcoded chart does. A swatch outlined in red means that token is not defined.</p>
+  </div>
+
+  <div class="sg-pal" id="sg-palette"></div>
+
+  <h3 class="sg-sub">The greens are ordered, and the order is the contract</h3>
+  <p class="sg-card__note" style="max-width:48em;margin-top:12px">Light to dark: <code>--gm-green-soft</code> reads as a surface, <code>--gm-green</code> draws the lines on it, <code>--gm-green-deep</code> is the barrel of every camera lens, <code>--gm-green-night</code> is the ground. Nothing should pick a green by eye.</p>
+
+  <h3 class="sg-sub">The pink rule</h3>
+  <div class="sg-grid sg-grid--2">
+    <div class="sg-card">
+      <p class="sg-card__id">--gm-pink · seating</p>
+      <div class="sg-stage">
+        <div style="display:grid;gap:10px;justify-items:center">
+          <div style="background:var(--gm-cream);display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:2px solid var(--gm-ink)">
+            <span style="width:15px;height:15px;border-radius:50%;background:var(--gm-pink)"></span>
+            <span style="font-family:var(--mono);font-size:11px;color:var(--gm-ink)">on cream — correct</span>
+          </div>
+          <div style="background:var(--gm-soil);display:inline-flex;align-items:center;gap:8px;padding:8px 12px">
+            <span style="width:15px;height:15px;border-radius:50%;background:var(--gm-pink)"></span>
+            <span style="font-family:var(--mono);font-size:11px;color:var(--gm-cream)">on soil — correct</span>
+          </div>
+          <div style="display:inline-flex;align-items:center;gap:8px;padding:8px 12px">
+            <span style="width:15px;height:15px;border-radius:50%;background:var(--gm-pink)"></span>
+            <span style="font-family:var(--mono);font-size:11px;color:var(--gm-pink)">bare on orange — never</span>
+          </div>
+        </div>
+      </div>
+      <p class="sg-card__note">Pink against the page orange sits near <strong>1.15:1</strong>. That is not low contrast, it is no contrast — the shape simply stops existing. It always needs cream, soil or dark green seated underneath.</p>
+    </div>
+    <div>
+      <div class="sg-do">
+        <div><b class="yes">Use</b><span>The cut / defeated state — the residue ring of a spent lens.</span></div>
+        <div><b class="yes">Use</b><span>The ring of the logo mark, and the one short line through the cut lens.</span></div>
+        <div><b class="yes">Use</b><span>Page accents: tags, rules, link underlines — on a seated surface.</span></div>
+        <div><b class="no">Never</b><span>Bare on <code>--gm-bg</code> with nothing between.</span></div>
+        <div><b class="no">Never</b><span>As body text.</span></div>
+      </div>
+      <p class="sg-card__note" style="margin-top:16px">This supersedes the older reservation of pink to lenses only. It is now a page accent — but the seating requirement is not a preference, it is the reason the earlier rule was written that strictly.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- 04 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="type">
+  <p class="sg-num">04</p>
+  <h2 class="sg-sec__title">Type</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>Three families, each with exactly one job. The discipline is the point: as soon as the mono is allowed into a paragraph or the serif into a button, the hierarchy stops carrying meaning and becomes decoration.</p>
+  </div>
+
+  <div class="sg-type" style="margin-top:8px">
+    <div>
+      <p style="font-family:var(--serif);font-size:34px;line-height:1">Disrupt the read.</p>
+      <p class="sg-meta">--serif · Newsreader · poster headlines only — h1, h2, h3, wordmark, pull-quotes</p>
+    </div>
+    <div>
+      <p style="font-size:15px;line-height:1.55;max-width:52ch">Ghostmaxxing tests face-recognition camouflage through browser-based overlays and local experiments.</p>
+      <p class="sg-meta">--sans · Atkinson Hyperlegible · every reading and UI surface. Weights 400 and 700, nothing between</p>
+    </div>
+    <div>
+      <p style="font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase">2019 · Directly testable · 04</p>
+      <p class="sg-meta">--mono · JetBrains Mono · metadata only — years, tags, testability badges, section numbers. Never body text</p>
+    </div>
+  </div>
+
+  <h3 class="sg-sub">The scale, rendered live</h3>
+  <div id="sg-scale"></div>
+
+  <p class="sg-card__note" style="margin-top:16px;max-width:48em">Only the four display steps are fluid, and all of them interpolate across the same <code>400px → 1440px</code> range — which is why they scale in step instead of crossing over at some awkward width. <strong>Reading sizes are fixed on purpose:</strong> body text that grows with the window gets harder to read, not easier.</p>
+
+  <p class="sg-card__note" style="margin-top:12px;max-width:48em">Atkinson ships two weights. Asking for 500, 600 or 650 makes the browser synthesise one, and the result is visibly uneven against the real 400 beside it.</p>
+</section>
+
+
+<!-- 05 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="shape">
+  <p class="sg-num">05</p>
+  <h2 class="sg-sec__title">Shape &amp; surface</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>The look is <strong>poster and archive</strong>, not SaaS dashboard. That is a shape decision before it is a colour one, and it is the fastest thing to lose.</p>
+  </div>
+
+  <div class="sg-grid sg-grid--2">
+    <div class="sg-card">
+      <p class="sg-card__id">Correct</p>
+      <div class="sg-stage" style="min-height:130px">
+        <div style="background:var(--gm-cream);border:2px solid var(--gm-ink);padding:14px 18px">
+          <p style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 6px;color:var(--gm-green)">2016 · Conditional</p>
+          <p style="font-family:var(--serif);font-size:20px;font-weight:700;margin:0;color:var(--gm-ink)">CNN face embeddings</p>
+        </div>
+      </div>
+      <p class="sg-card__note">Square corners, 2px solid ink border, flat fill.</p>
+    </div>
+    <div class="sg-card">
+      <p class="sg-card__id">Wrong</p>
+      <div class="sg-stage" style="min-height:130px">
+        <div style="background:#fff;border-radius:12px;border-left:4px solid #7c5cff;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:14px 18px">
+          <p style="font-family:var(--sans);font-size:11px;margin:0 0 6px;color:#8a8f98">2016 · Conditional</p>
+          <p style="font-family:var(--sans);font-size:18px;font-weight:700;margin:0;color:#1a1d23">CNN face embeddings</p>
+        </div>
+      </div>
+      <p class="sg-card__note">Rounded corner, coloured left border, drop shadow. The default card of every dashboard on the internet, and it makes an evidence archive look like a product tour.</p>
+    </div>
+  </div>
+
+  <div class="sg-do">
+    <div><b class="yes">Do</b><span>Solid 2px ink borders as the primary separator.</span></div>
+    <div><b class="yes">Do</b><span>Flat colour fields: orange, soil, cream.</span></div>
+    <div><b class="no">Never</b><span>Drop shadows. There are none in the system.</span></div>
+    <div><b class="no">Never</b><span>Border radius on cards and panels.</span></div>
+    <div><b class="no">Never</b><span>Gradients — with one exception: the optional very-low-opacity pink/soil pinwheel gutter pattern, desktop ≥1440px only, and never pink alone on orange.</span></div>
+  </div>
+
+  <p class="sg-card__note" style="margin-top:18px;max-width:48em"><strong>Note a live contradiction.</strong> <code>base.css</code> currently paints <code>body</code> with a radial gradient plus a linear gradient down to <code>--gm-bg-deep</code>. That is two gradients on the flattest surface in the system. Either the rule loses its "flat fields" wording or the reset loses its gradients — they cannot both be right.</p>
+</section>
+
+
+<!-- 06 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="mark">
+  <p class="sg-num">06</p>
+  <h2 class="sg-sec__title">The mark</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>Four lenses stacked on a 64-unit grid, centred on <code>x=32</code>. The bottom three are identical in kind — green-soft body, green-deep ring, yellow iris — scaling down slightly toward the bottom. <strong>The top one is always the cut:</strong> cream body, pink ring, dark iris, one short pink line through it.</p>
+    <p>That is the whole idea. A column of lenses reading, and the one at the top that has been interrupted.</p>
+  </div>
+
+  <div class="sg-grid sg-grid--3">
+    <div class="sg-card">
+      <p class="sg-card__id">assets/logo/mark-color.svg</p>
+      <div class="sg-stage sg-stage--dark"><img src="/assets/logo/mark-color.svg" width="72" alt="Full colour mark" data-fallback="mark-color.svg"></div>
+      <p class="sg-card__name">Colour</p>
+      <p class="sg-card__note">32px and up, any background.</p>
+    </div>
+    <div class="sg-card">
+      <p class="sg-card__id">assets/logo/mark-mono.svg</p>
+      <div class="sg-stage sg-stage--dark"><img src="/assets/logo/mark-mono.svg" width="72" style="color:var(--gm-cream)" alt="Mono mark" data-fallback="mark-mono.svg"></div>
+      <p class="sg-card__name">Mono</p>
+      <p class="sg-card__note">Single colour, inherits CSS <code>color</code>. Print, favicon at 16px and below, and over photography.</p>
+    </div>
+    <div class="sg-card">
+      <p class="sg-card__id">assets/logo/mark-small.svg</p>
+      <div class="sg-stage sg-stage--cream"><img src="/assets/logo/mark-small.svg" width="56" alt="Small mark" data-fallback="mark-small.svg"></div>
+      <p class="sg-card__name">Small</p>
+      <p class="sg-card__note">28px and below. Two circles, no iris dots — the detail is removed so the ring survives.</p>
+    </div>
+  </div>
+
+  <div class="sg-grid sg-grid--2">
+    <div>
+      <h3 class="sg-sub" style="margin-top:26px">Clear space</h3>
+      <div class="sg-stage sg-stage--dark" style="min-height:180px;margin-top:14px">
+        <div class="sg-clear"><img src="/assets/logo/mark-color.svg" width="64" alt="" data-fallback="mark-color.svg"></div>
+      </div>
+      <p class="sg-card__note" style="margin-top:12px">One lens radius on every side, expressed against the mark's own size so it holds at any scale: <code>padding: calc(var(--gm-logo-size) * 0.46)</code>. The dashed line is the keep-out boundary, not a frame to draw.</p>
+    </div>
+    <div>
+      <h3 class="sg-sub" style="margin-top:26px">Motion</h3>
+      <pre style="margin-top:14px">.gm-logo--animated .gm-logo-shard {
+  <span class="k">animation</span>: gm-logo-stutter
+    var(--gm-logo-duration) infinite
+    <span class="s">steps(1, end)</span>;
+}</pre>
+      <p class="sg-card__note" style="margin-top:12px">Five uneven steps: two long holds, a burst, then round. <code>steps(1, end)</code> makes every keyframe a hard cut. <strong>The mark must never appear to sweep</strong> — sweeping reads as progress, and this is not progress. It is a machine retrying a read and failing.</p>
+      <p class="sg-card__note" style="margin-top:10px"><code>transform-origin</code> is set in user units (<code>32px 32px</code>), matching the SVG pivot exactly. A percentage would resolve against the element box and drift the moment the viewBox is not square.</p>
+      <p class="sg-card__note" style="margin-top:10px">Under <code>prefers-reduced-motion</code> the shard <em>stops but stays put</em>. It carries information; resetting its rotation would remove some.</p>
+      <p class="sg-card__note" style="margin-top:10px">This is the <strong>only</strong> motion in the system. Everything else, including lens states, is instant.</p>
+    </div>
+  </div>
+
+  <h3 class="sg-sub">Placement, in order of preference</h3>
+  <table>
+    <tr><th>#</th><th>How</th><th>When</th></tr>
+    <tr><td>1</td><td><code>&lt;img src="mark-color.svg"&gt;</code></td><td>Default. One request, no CSS.</td></tr>
+    <tr><td>2</td><td><code>&lt;img src="mark-animated.svg"&gt;</code></td><td>Moving and self-contained.</td></tr>
+    <tr><td>3</td><td>Inline <code>&lt;svg&gt;</code> + <code>.gm-logo.gm-logo--animated</code></td><td>Only when size, colour or duration must respond to the page at runtime.</td></tr>
+  </table>
+
+  <div class="sg-do">
+    <div><b class="no">Never</b><span>Rotate, flip or recolour a live circle. Only the top circle is ever cut.</span></div>
+    <div><b class="no">Never</b><span>Use <code>.gm-logo--smooth</code> as the logo. It exists to demonstrate the wrong thing, and for the rare case where the mark stands in as a loading indicator — at which point it is not the logo.</span></div>
+    <div><b class="no">Never</b><span>Put a mark or sigil inside a camera lens. See section 12.</span></div>
+  </div>
+</section>
+
+
+<!-- 07 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="anatomy">
+  <p class="sg-num">07</p>
+  <h2 class="sg-sec__title">Camera anatomy</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>One custom fleet, no icon font and no third-party set. Five parts, five classes, always drawn in this order, on a <code>0 0 100 100</code> viewBox. Every icon carries <strong>no colour of its own</strong> — the paint comes from <code>cameras.css</code>, so one rule restyles the whole fleet.</p>
+  </div>
+
+  <div class="sg-anat">
+    <div class="sg-card">
+      <p class="sg-card__id">cam-dome · exploded</p>
+      <div class="sg-stage" style="min-height:220px">
+        <svg viewBox="0 0 130 100" class="cam" style="max-width:100%" aria-label="Exploded dome camera">
+          <g transform="translate(-6,0)">
+            <path class="cam-mount" d="M6,29 H94" stroke-width="7"/>
+            <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"/>
+            <circle class="cam-lens" cx="50" cy="44" r="15"/>
+            <circle class="cam-iris" cx="50" cy="44" r="6.6"/>
+            <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"/>
+          </g>
+          <path class="lead" d="M52,29 H112"/><path class="lead" d="M60,36 L84,32 H112"/>
+          <path class="lead" d="M55,44 L86,52 H112"/><path class="lead" d="M46,44 L80,64 H112"/>
+          <path class="lead" d="M39.5,39.5 L74,78 H112"/>
+          <text x="114" y="30.5">.cam-mount</text><text x="114" y="33.5">.cam-shell</text>
+          <text x="114" y="53.5">.cam-lens</text><text x="114" y="65.5">.cam-iris</text>
+          <text x="114" y="79.5">.cam-glint</text>
+        </svg>
+      </div>
+    </div>
+
+    <div>
+      <div class="sg-key">
+        <div><b>.cam-mount</b><span>Bracket, pole or arm. Stroke only, never filled, so it can pass behind other things.</span></div>
+        <div><b>.cam-shell</b><span>The housing. This is the shape the model is recognised by, so it is the one thing that must never be obscured.</span></div>
+        <div><b>.cam-lens</b><span>The dark barrel, always <code>--gm-green-deep</code>. It does not change with state — hardware does not care whether it is working.</span></div>
+        <div><b>.cam-iris</b><span>The coloured centre, and the only part with an <code>id</code>.</span></div>
+        <div><b>.cam-glint</b><span>The highlight. Decorative: no <code>id</code>, no meaning beyond "this lens is live".</span></div>
+      </div>
+
+      <h3 class="sg-sub">Proportions, not eyeballs</h3>
+      <pre style="margin-top:14px"><span class="c">iris  = 0.44 × lens radius
+glint = 0.17 × lens radius,
+        offset 0.30 × up and left</span></pre>
+      <p class="sg-card__note" style="margin-top:12px">Written down so the next camera is derived rather than guessed. The old fleet carried these values in two of nine files and drifted everywhere else.</p>
+
+      <h3 class="sg-sub">The class contract, now real</h3>
+      <p class="sg-card__note" style="margin-top:12px">The shipped <code>assets/icons/cam-*.svg</code> still carry pre-baked hex fills, recoloured to v2.0 by direct substitution as a stopgap. The six templates at the bottom of this page are the re-export the readme flags as the correct fix: <strong>no presentation attributes, class-driven, state by attribute.</strong> Lift them into the asset files and the caveat closes.</p>
+
+      <h3 class="sg-sub">The id convention</h3>
+      <pre style="margin-top:14px">&lt;circle <span class="k">class</span>=<span class="s">"cam-iris"</span> <span class="k">id</span>=<span class="s">"iris-dome"</span>
+        cx=<span class="s">"50"</span> cy=<span class="s">"44"</span> r=<span class="s">"6.6"</span>/&gt;</pre>
+      <p class="sg-card__note" style="margin-top:12px"><code>&lt;symbol&gt;</code> plus <code>&lt;use&gt;</code> puts the copy in a shadow tree, so <code>#iris-dome</code> becomes unreachable and duplicate ids collide. Each camera appears once per page — inline the SVG and write the id by hand. If a model ever has to appear twice, clone a <code>&lt;template&gt;</code> in script and prefix the ids, which is what this page does for its own repeated specimens.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- 08 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="fleet">
+  <p class="sg-num">08</p>
+  <h2 class="sg-sec__title">The fleet</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>Six models, one per era of the genealogy. <strong>There are no <code>-alive</code> variant files any more</strong> — that was nine files describing six objects. State is an attribute, so one drawing covers every condition.</p>
+  </div>
+
+  <div class="sg-sw" style="margin-top:16px">
+    <button class="sg-btn" type="button" data-fleet="live" aria-pressed="true">live</button>
+    <button class="sg-btn" type="button" data-fleet="reading" aria-pressed="false">reading</button>
+    <button class="sg-btn" type="button" data-fleet="spent" aria-pressed="false">spent</button>
+  </div>
+
+  <div class="sg-grid sg-grid--3" id="sg-fleet">
+    <div class="sg-card">
+      <p class="sg-card__id">#iris-street</p>
+      <div class="sg-stage" data-lens="live"><div data-cam="street" data-suffix="f"></div></div>
+      <p class="sg-card__name">Street pole</p>
+      <p class="sg-card__note">Era of vision, 2021 →. The only model whose mount is longer than its housing: it is street furniture first.</p>
+    </div>
+    <div class="sg-card">
+      <p class="sg-card__id">#iris-glasses-l / -r</p>
+      <div class="sg-stage" data-lens="live"><div data-cam="glasses" data-suffix="f"></div></div>
+      <p class="sg-card__name">Wearable glasses</p>
+      <p class="sg-card__note"><strong>The exception.</strong> Their lens body is already cream, so a filled iris makes welding goggles and eats the figure-of-eight silhouette. They get a glass glare instead, plus two <em>void</em> irises that draw nothing but exist as geometry.</p>
+    </div>
+    <div class="sg-card">
+      <p class="sg-card__id">#iris-pill</p>
+      <div class="sg-stage" data-lens="live"><div data-cam="pill" data-suffix="f"></div></div>
+      <p class="sg-card__name">Depth sensor array</p>
+      <p class="sg-card__note">Era of depth, 2017–2020. The dot field is the projector and stays dark in every state — it emits, it does not read.</p>
+    </div>
+    <div class="sg-card">
+      <p class="sg-card__id">#iris-cube</p>
+      <div class="sg-stage" data-lens="live"><div data-cam="cube" data-suffix="f"></div></div>
+      <p class="sg-card__name">Edge AI cube</p>
+      <p class="sg-card__note">Era of learning, 2014–2016. The status dot is a <code>.cam-dot</code>, never an iris.</p>
+    </div>
+    <div class="sg-card">
+      <p class="sg-card__id">#iris-dome</p>
+      <div class="sg-stage" data-lens="live"><div data-cam="dome" data-suffix="f"></div></div>
+      <p class="sg-card__name">Ceiling dome</p>
+      <p class="sg-card__note">Era of measurement, 2010–2013. The model whose whole point is that you cannot tell which way it is looking — giving it a visible iris is a small editorial decision, taken knowingly.</p>
+    </div>
+    <div class="sg-card">
+      <p class="sg-card__id">#iris-bullet</p>
+      <div class="sg-stage" data-lens="live"><div data-cam="bullet" data-suffix="f"></div></div>
+      <p class="sg-card__name">Bullet CCTV</p>
+      <p class="sg-card__note">Era of contrast, 2001–2009. The oldest housing in the tree, and the one most people can name on sight.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- 09 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="states">
+  <p class="sg-num">09</p>
+  <h2 class="sg-sec__title">Lens states</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>Three, and there will not be a fourth. Set <code>data-lens</code> on the <code>&lt;svg&gt;</code> or on <em>any</em> ancestor — on an era row it switches every camera in that row at once.</p>
+  </div>
+
+  <div class="sg-grid sg-grid--3">
+    <div class="sg-card">
+      <p class="sg-card__id">data-lens="live" — or unset</p>
+      <div class="sg-stage" data-lens="live"><div data-cam="dome" data-suffix="s1"></div></div>
+      <p class="sg-card__name">Live</p>
+      <p class="sg-card__note">Yellow iris, glint on. Still reading. Not defeated.</p>
+    </div>
+    <div class="sg-card">
+      <p class="sg-card__id">data-lens="reading"</p>
+      <div class="sg-stage" data-lens="reading"><div data-cam="dome" data-suffix="s2"></div></div>
+      <p class="sg-card__name">Reading</p>
+      <p class="sg-card__note">Pink iris, glint off. Transient — it exists for the length of a transition and is never left on a page at rest.</p>
+    </div>
+    <div class="sg-card">
+      <p class="sg-card__id">data-lens="spent"</p>
+      <div class="sg-stage" data-lens="spent"><div data-cam="dome" data-suffix="s3"></div></div>
+      <p class="sg-card__name">Spent</p>
+      <p class="sg-card__note">Dark iris, thin pink residue ring, no glint. <strong>Permanent, and deliberately still.</strong></p>
+    </div>
+  </div>
+
+  <p class="sg-card__note" style="margin-top:20px;max-width:48em">State changes are <strong>instant, not animated</strong>. A camera having been defeated is information, and information must survive a screenshot, a print, and <code>prefers-reduced-motion</code>. The ring is the residue of the read that failed.</p>
+
+  <pre style="margin-top:18px">&lt;svg <span class="k">class</span>=<span class="s">"cam"</span> <span class="k">data-lens</span>=<span class="s">"spent"</span>&gt; ... &lt;/svg&gt;      <span class="c">one camera</span>
+&lt;section <span class="k">class</span>=<span class="s">"era"</span> <span class="k">data-lens</span>=<span class="s">"spent"</span>&gt; ... &lt;/section&gt;  <span class="c">a whole row</span>
+row.dataset.lens = <span class="s">'spent'</span>;                        <span class="c">from script</span></pre>
+
+  <h3 class="sg-sub">The specificity trap</h3>
+  <p class="sg-card__note" style="max-width:48em;margin-top:12px"><code>[data-lens="spent"] .cam-iris</code> scores 0,2,0 and outranks <code>.cam-iris--void</code> at 0,1,0 — which handed the glasses two pink rings, exactly the welding-goggles look the void iris exists to prevent. The guard is <code>[data-lens] .cam-iris--void</code>, matching specificity and placed after. <strong>Do not reorder <code>cameras.css</code> casually.</strong></p>
+</section>
+
+
+<!-- 10 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="stamps">
+  <p class="sg-num">10</p>
+  <h2 class="sg-sec__title">Stamps</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>One class, <code>.gm-stamp</code>, for every camera caption. <strong>There is no second kind of label.</strong> The curve is a <em>property</em> of a stamp, not a separate species — below 700px the same element renders flat, because curved text under a small icon is decoration pretending to be a label.</p>
+    <p>Every knob is a custom property. Set them on the <code>.gm-stamp</code>, never from script.</p>
+  </div>
+
+  <div class="sg-grid sg-grid--2">
+    <div class="sg-card">
+      <p class="sg-card__id">.gm-stamp · live</p>
+      <div class="sg-stage" style="min-height:240px;align-content:center">
+        <div class="gm-stamp" id="sg-stamp" style="width:150px;--arc-radius:92px;--arc-centre-y:-83px;--arc-spread:1">
+          <div data-cam="dome" data-suffix="st"></div>
+          <p>Ceiling dome</p>
+        </div>
+      </div>
+      <div style="display:grid;gap:9px">
+        <div class="sg-knob"><label for="k-r">--arc-radius</label><output id="o-r">92</output><input id="k-r" type="range" min="50" max="180" value="92"></div>
+        <div class="sg-knob"><label for="k-c">--arc-centre-y</label><output id="o-c">-83</output><input id="k-c" type="range" min="-160" max="0" value="-83"></div>
+        <div class="sg-knob"><label for="k-s">--arc-spread</label><output id="o-s">1.00</output><input id="k-s" type="range" min="0.6" max="2" step="0.02" value="1"></div>
+      </div>
+      <div class="sg-sw">
+        <button class="sg-btn" type="button" data-arc="arc" aria-pressed="true">arc</button>
+        <button class="sg-btn" type="button" data-arc="flat" aria-pressed="false">flat</button>
+        <button class="sg-btn" type="button" data-flip aria-pressed="false">--arc-flip</button>
+      </div>
+    </div>
+    <div>
+      <pre id="sg-stamp-code"></pre>
+      <table>
+        <tr><th>Property</th><th>What it does</th></tr>
+        <tr><td><code>--arc-mode</code></td><td><code>arc</code> or <code>flat</code>. Flat skips the layout pass and leaves ordinary centred text.</td></tr>
+        <tr><td><code>--arc-radius</code></td><td>Circle centre to the middle of each letter, in px. <code>auto</code> = half the icon height + 16.</td></tr>
+        <tr><td><code>--arc-centre-y</code></td><td>Circle centre relative to the <code>&lt;p&gt;</code>'s own top edge. Negative moves it up inside the icon.</td></tr>
+        <tr><td><code>--arc-spread</code></td><td>Letter spacing along the arc. <code>1</code> is the font's natural advance — glyphs are repositioned, never distorted.</td></tr>
+        <tr><td><code>--arc-flip</code></td><td><code>0</code> reads along the bottom of the circle. <code>1</code> points the letter tops outward.</td></tr>
+      </table>
+      <p class="sg-card__note" style="margin-top:14px">Two passes, and the second is why this looks right: glyphs are laid out flat first to measure their <em>real</em> advance widths, then placed along the arc by arc length. Spacing an even angle per character instead is what makes most curved-text implementations look like a ransom note.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- 11 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="layout">
+  <p class="sg-num">11</p>
+  <h2 class="sg-sec__title">Layout — the four pieces</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>The genealogy tree is not one drawing. It is four independent pieces, which is the whole reason a single set of assets serves both layouts.</p>
+    <p><strong>Drag the handle at the bottom-right of the frame</strong> to narrow it. Nothing swaps files and nothing is redrawn — only the branch changes length, and below 620px it disappears entirely and the camera sits directly on the trunk.</p>
+  </div>
+
+  <table>
+    <tr><th>Piece</th><th>What it is</th><th>Desktop</th><th>Mobile</th></tr>
+    <tr><td><code>spine</code></td><td>The trunk. A repeating vertical texture with no height of its own, so it follows whatever the row grows to.</td><td>centre track</td><td>centre track</td></tr>
+    <tr><td><code>branch</code></td><td>Trunk to camera. <strong>The only piece that differs between layouts.</strong></td><td>long, left or right</td><td>none</td></tr>
+    <tr><td><code>node</code></td><td>Camera plus its stamp.</td><td>side column</td><td>on the trunk</td></tr>
+    <tr><td><code>dossier</code></td><td>Dates, title, what defeated it, limits.</td><td>opposite column</td><td>below, full width</td></tr>
+  </table>
+
+  <div class="pieces sg-resize">
+    <div class="pieces__row">
+      <div class="pieces__node"><div data-cam="pill" data-suffix="l1"></div></div>
+      <div class="pieces__branch"></div>
+      <div class="pieces__dossier"><h4>Depth &amp; near-infrared</h4><p>2017–2020 · defeated 2021</p></div>
+    </div>
+    <div class="pieces__row pieces__row--flip">
+      <div class="pieces__node"><div data-cam="cube" data-suffix="l2"></div></div>
+      <div class="pieces__branch"></div>
+      <div class="pieces__dossier"><h4>CNN face embeddings</h4><p>2014–2016 · defeated 2016</p></div>
+    </div>
+    <div class="pieces__row">
+      <div class="pieces__node"><div data-cam="dome" data-suffix="l3"></div></div>
+      <div class="pieces__branch"></div>
+      <div class="pieces__dossier"><h4>Landmark geometry</h4><p>2010–2013 · defeated 2014</p></div>
+    </div>
+  </div>
+
+  <div class="sg-grid sg-grid--2">
+    <div>
+      <pre>.era {
+  <span class="k">display</span>: grid;
+  <span class="k">grid-template-columns</span>: 1fr var(--spine-w) 1fr;
+}
+<span class="k">:root</span> { --spine-w: clamp(56px, 7vw, 96px); }
+
+<span class="k">@media</span> (max-width: 620px) {
+  .era { <span class="k">grid-template-columns</span>: 1fr; }
+  .era__branch { <span class="k">display</span>: none; }
+}</pre>
+    </div>
+    <div>
+      <p class="sg-card__note"><strong>Three tracks, not twelve.</strong> There is no 12-column convention in this codebase to stay consistent with, and the spine has a requirement fractional tracks break: the trunk's stroke weight must not scale with the viewport. A trunk that is 14px at 1440 and 9px at 900 reads as a botched export.</p>
+      <p class="sg-card__note" style="margin-top:12px"><strong>The trunk stays centred on mobile.</strong> A left rail would waste less width, but the canopy is symmetric and centred by construction and would then need a second version. Centred in both means the canopy is drawn once.</p>
+      <p class="sg-card__note" style="margin-top:12px">Note what is absent: no fixed artboard, no <code>transform: scale()</code>, no measured heights. The previous page scaled a 1200px board to fit, which on a 390px phone is <code>0.285</code> — 16px body text arriving at 4.6px.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- 12 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="decisions">
+  <p class="sg-num">12</p>
+  <h2 class="sg-sec__title">Decision log</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>What changed, and why — so a future pass does not helpfully restore something that was removed on purpose.</p>
+  </div>
+
+  <table>
+    <tr><th>Decision</th><th>Why</th></tr>
+    <tr><td><strong><code>colors.css</code> is canonical</strong></td><td>Two token files defined different values for the same names. The v2.0 palette in <code>tokens/colors.css</code> wins; the old <code>tokens.css</code> is superseded and should be deleted rather than left to be found.</td></tr>
+    <tr><td><strong><code>styles.css</code> now exists</strong></td><td>The readme described it as the one file to link, but it had never been written. It is the import list, and the order is the layer architecture.</td></tr>
+    <tr><td><strong>Every camera has an iris</strong></td><td>The old set encoded "defeated" as the <em>absence</em> of a bright lens. Absence is a poor representation of anything — the dazzled cameras read as holes. State is now carried by colour.</td></tr>
+    <tr><td><strong>The glasses have no iris</strong></td><td>Their lens body is already cream, so a filled iris makes welding goggles and eats the silhouette. Glare bars instead, plus void irises for geometry.</td></tr>
+    <tr><td><strong>No <code>-alive</code> files</strong></td><td>Nine files describing six objects, kept in sync by hand. State is an attribute now.</td></tr>
+    <tr><td><strong>No mark inside a lens</strong></td><td>Six pink wedges on a spent iris read as an eye sigil rather than as damage, which put a fictional emblem in the middle of an evidence graphic. The shard survives <em>only</em> in the logo, where it has a lens of its own and means something else.</td></tr>
+    <tr><td><strong>No stutter on cameras</strong></td><td>It was never reachable: the old script could only wrap HTML nodes, and the cameras lived inside an <code>&lt;img&gt;</code>. Cut rather than repaired — the system's own rule is that motion is not required and the page should work as a poster. About 450 lines and two coordination surfaces removed with no visible information lost.</td></tr>
+    <tr><td><strong><code>--gm-green-deep</code> named</strong></td><td>The barrel colour of every lens in all nine icons, scattered as a literal with no name.</td></tr>
+    <tr><td><strong><code>plate</code> abolished</strong></td><td>Two label classes doing the same job with different rendering. One class, one meaning, with the curve as a property.</td></tr>
+    <tr><td><strong>The tree SVG is inlined</strong></td><td>An <code>&lt;img&gt;</code> is an isolated document: no external CSS, no hover, no reachable ids. Everything its interior needs to do requires it to be inline.</td></tr>
+  </table>
+
+  <h3 class="sg-sub">Do not reintroduce</h3>
+  <div class="sg-do">
+    <div><b class="no">No</b><span>A mark, shape or sigil inside a camera lens. If a spent lens needs to be louder, make the ring heavier.</span></div>
+    <div><b class="no">No</b><span><code>-alive</code> variant icon files.</span></div>
+    <div><b class="no">No</b><span>A second label class alongside <code>.gm-stamp</code>.</span></div>
+    <div><b class="no">No</b><span>Hardcoded hex in a page, or in a specimen that documents the palette.</span></div>
+    <div><b class="no">No</b><span>A fixed artboard with a fitting transform.</span></div>
+    <div><b class="no">No</b><span>Drop shadows, border radius on panels, or a second gradient.</span></div>
+  </div>
+</section>
+
+
+<footer class="sg-foot">
+  <div class="sg-wrap">
+    <h3>Open, and blocking</h3>
+    <table>
+      <tr><th>Item</th><th>State</th></tr>
+      <tr><td><code>--gm-focus-ring</code> is referenced by <code>base.css</code> but not defined in <code>colors.css</code>. An undefined custom property invalidates the whole declaration, so <strong>there is currently no visible focus indicator anywhere on the site.</strong> <code>--gm-border-strong</code>, <code>--gm-panel-strong</code> and <code>--gm-shadow-block</code> are missing the same way.</td><td><strong>Blocking.</strong> Patched in <code>styles.css</code> as a stopgap; move the four into <code>colors.css</code> and delete the block.</td></tr>
+      <tr><td><code>base.css</code> paints <code>body</code> with a radial plus a linear gradient, while the documented shape language says flat colour fields and no gradients.</td><td>Contradiction. One of the two is wrong.</td></tr>
+      <tr><td><code>typography.css</code> loads three families from <code>fonts.googleapis.com</code> and declares no metric fallback families, so text reflows when the swap lands.</td><td>Self-host and add the fallback stacks, or accept the shift knowingly.</td></tr>
+      <tr><td>The shipped <code>assets/icons/cam-*.svg</code> still carry baked hex. The six templates at the foot of this page are the class-driven re-export.</td><td>Ready to lift.</td></tr>
+      <tr><td><code>logo.css</code>'s header comment still refers to <code>ghostutter.css</code>, which no longer exists.</td><td>Stale comment, one-line fix.</td></tr>
+      <tr><td><code>--cam-glare-opacity</code> at <code>0.38</code> reads like scratches; <code>0.5</code> reads like glass but competes with the silhouette.</td><td>Decide on screen.</td></tr>
+      <tr><td>The canopy's teeth are asymmetric — four to the left of the trunk, three offset.</td><td>Deliberate or not, decide.</td></tr>
+    </table>
+  </div>
+</footer>
+
+
+<!-- The class-driven re-export the readme flags as the correct fix. Cloned with
+     prefixed ids here because these models appear more than once on this page;
+     on a real page each appears once and is written inline with its own id. -->
+
+<template id="tpl-street"><svg viewBox="0 0 100 100" class="cam" aria-label="Street pole surveillance camera">
+  <path class="cam-mount" d="M80,26 V92" stroke-width="6"/><path class="cam-mount" d="M80,30 H44" stroke-width="6"/>
+  <path class="cam-mount" d="M52,30 V40" stroke-width="5"/>
+  <rect class="cam-shell" x="10" y="40" width="72" height="30" rx="7"/>
+  <rect class="cam-panel" x="54" y="47" width="22" height="16" rx="3"/>
+  <g class="cam-dot"><circle cx="60" cy="51" r="2"/><circle cx="70" cy="51" r="2"/><circle cx="60" cy="59" r="2"/><circle cx="70" cy="59" r="2"/></g>
+  <circle class="cam-lens" cx="32" cy="55" r="12"/>
+  <circle class="cam-iris" id="iris-street" cx="32" cy="55" r="5.3"/>
+  <circle class="cam-glint" cx="28.4" cy="51.2" r="2"/>
+</svg></template>
+
+<template id="tpl-glasses"><svg viewBox="0 0 100 100" class="cam" aria-label="Smart glasses with outward cameras">
+  <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32" stroke-width="5"/>
+  <path class="cam-shell" d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z" stroke-linecap="round"/>
+  <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"/>
+  <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"/>
+  <circle class="cam-iris cam-iris--void" id="iris-glasses-l" cx="28" cy="45" r="9"/>
+  <circle class="cam-iris cam-iris--void" id="iris-glasses-r" cx="72" cy="45" r="9"/>
+</svg></template>
+
+<template id="tpl-pill"><svg viewBox="0 0 100 100" class="cam" aria-label="Depth sensor array">
+  <path class="cam-mount" d="M40,36 V22 M28,22 H52" stroke-width="5"/>
+  <rect class="cam-shell" x="6" y="36" width="88" height="28" rx="14"/>
+  <g class="cam-dot cam-dot--dark"><circle cx="62" cy="44" r="2"/><circle cx="70" cy="50" r="2"/><circle cx="62" cy="56" r="2"/><circle cx="78" cy="45" r="2"/><circle cx="80" cy="55" r="2"/><circle cx="86" cy="50" r="2"/></g>
+  <circle class="cam-lens" cx="30" cy="50" r="12"/>
+  <circle class="cam-iris" id="iris-pill" cx="30" cy="50" r="5.3"/>
+  <circle class="cam-glint" cx="26.4" cy="46.4" r="2"/>
+</svg></template>
+
+<template id="tpl-cube"><svg viewBox="0 0 100 100" class="cam" aria-label="Edge AI cube camera">
+  <path class="cam-mount" d="M50,16 V6 M38,6 H62" stroke-width="5"/>
+  <rect class="cam-shell" x="16" y="16" width="68" height="68" rx="19"/>
+  <circle class="cam-dot cam-dot--ring" cx="73" cy="26" r="3.4"/>
+  <circle class="cam-lens" cx="50" cy="50" r="17"/>
+  <circle class="cam-iris" id="iris-cube" cx="50" cy="50" r="7.5"/>
+  <circle class="cam-glint" cx="44.9" cy="44.9" r="2.9"/>
+</svg></template>
+
+<template id="tpl-dome"><svg viewBox="0 0 100 100" class="cam" aria-label="Ceiling dome camera">
+  <path class="cam-mount" d="M6,29 H94" stroke-width="7"/>
+  <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"/>
+  <circle class="cam-lens" cx="50" cy="44" r="15"/>
+  <circle class="cam-iris" id="iris-dome" cx="50" cy="44" r="6.6"/>
+  <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"/>
+</svg></template>
+
+<template id="tpl-bullet"><svg viewBox="0 0 100 100" class="cam" aria-label="Bullet CCTV camera">
+  <path class="cam-mount" d="M45,30 V12 M32,12 H58" stroke-width="5"/>
+  <rect class="cam-shell" x="16" y="36" width="66" height="34" rx="5"/>
+  <path class="cam-mount" d="M12,30 H74 L84,40" stroke-width="5"/>
+  <circle class="cam-lens" cx="60" cy="51" r="14"/>
+  <circle class="cam-iris" id="iris-bullet" cx="60" cy="51" r="6.2"/>
+  <circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"/>
+</svg></template>
+
+<script>
+/* ----------------------------------------------------------------------------
+   Styleguide runtime. Four jobs, none of which ship with the design system:
+     1. fail loudly if the stylesheet did not resolve
+     2. mount the demo cameras
+     3. read the real token values, so nothing here can drift from the source
+     4. the stamp arc layout — this ONE function belongs in scripts/stamp.js
+---------------------------------------------------------------------------- */
+(function () {
+  'use strict';
+
+  var cs = getComputedStyle(document.documentElement);
+  function token(name) { return cs.getPropertyValue(name).trim(); }
+
+  /* --- 0. Alarm ---------------------------------------------------------- */
+
+  if (!token('--gm-bg')) document.getElementById('sg-alarm').setAttribute('data-show', '1');
+
+  /* --- 1. Missing mark files show a labelled gap, not a broken-image icon - */
+
+  document.querySelectorAll('img[data-fallback]').forEach(function (img) {
+    img.addEventListener('error', function () {
+      var box = document.createElement('div');
+      box.className = 'sg-missing';
+      box.innerHTML = 'file not found<br><b>' + img.dataset.fallback + '</b>';
+      img.replaceWith(box);
+    });
+  });
+
+  /* --- 2. Mount cameras, prefixing ids ----------------------------------- */
+
+  document.querySelectorAll('[data-cam]').forEach(function (slot) {
+    var tpl = document.getElementById('tpl-' + slot.dataset.cam);
+    if (!tpl) return;
+    var svg = tpl.content.firstElementChild.cloneNode(true);
+    var sfx = slot.dataset.suffix || '';
+    svg.querySelectorAll('[id]').forEach(function (n) { n.id = n.id + '-' + sfx; });
+    slot.appendChild(svg);
+  });
+
+  /* --- 3. Palette, read live --------------------------------------------- */
+
+  var PALETTE = [
+    ['--gm-bg', 'page'], ['--gm-bg-deep', 'page foot'], ['--gm-ink', 'headings'],
+    ['--gm-text', 'body'], ['--gm-muted', 'secondary'],
+    ['--gm-green-soft', 'surface'], ['--gm-green', 'lines'],
+    ['--gm-green-deep', 'lens barrel'], ['--gm-green-night', 'ground'],
+    ['--gm-yellow', 'live iris'], ['--gm-cream', 'housings'],
+    ['--gm-pink', 'cut · always seated'], ['--gm-soil', 'dark panels']
+  ];
+
+  function readColour(value) {
+    var probe = document.createElement('span');
+    probe.style.color = value;
+    document.body.appendChild(probe);
+    var rgb = getComputedStyle(probe).color;
+    probe.remove();
+    var m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(rgb);
+    return m ? [+m[1], +m[2], +m[3]] : null;
+  }
+
+  function hex(rgb) {
+    return '#' + rgb.map(function (n) { return ('0' + n.toString(16)).slice(-2); }).join('');
+  }
+
+  /* Relative luminance, so the label colour is derived rather than guessed
+     swatch by swatch. */
+  function luminance(rgb) {
+    var a = rgb.map(function (v) {
+      v /= 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+  }
+
+  var pal = document.getElementById('sg-palette');
+  PALETTE.forEach(function (entry) {
+    var raw = token(entry[0]);
+    var chip = document.createElement('div');
+    chip.className = 'sg-chip';
+
+    if (!raw) {
+      chip.setAttribute('data-missing', '1');
+      chip.innerHTML = '<b>' + entry[0] + '</b><span>' + entry[1] + '</span>';
+      pal.appendChild(chip);
+      return;
+    }
+
+    var rgb = readColour(raw);
+    chip.style.background = raw;
+    chip.style.color = (rgb && luminance(rgb) > 0.42) ? token('--gm-ink') : token('--gm-cream');
+    chip.innerHTML = '<b>' + entry[0] + '</b><span>' + (rgb ? hex(rgb) : raw) + ' · ' + entry[1] + '</span>';
+    pal.appendChild(chip);
+  });
+
+  /* --- 4. Type scale, read live ------------------------------------------ */
+
+  var SCALE = [
+    ['--t-display', 'Disrupt', '--serif', '--lh-display'],
+    ['--t-h1', 'The genealogy of the read', '--serif', '--lh-heading'],
+    ['--t-h2', 'Era of measurement', '--serif', '--lh-heading'],
+    ['--t-h3', 'Landmark geometry', '--serif', '--lh-heading'],
+    ['--t-lead', 'A public lab for testing face-recognition camouflage.', '--sans', '--lh-lead'],
+    ['--t-body', 'Every camera on this site is the same object drawn six ways.', '--sans', '--lh-body'],
+    ['--t-small', 'Limited: one open model, close range, even light.', '--sans', '--lh-body'],
+    ['--t-meta', '2019 · Directly testable · 04', '--mono', null]
+  ];
+
+  var host = document.getElementById('sg-scale');
+  host.className = 'sg-type';
+  SCALE.forEach(function (row) {
+    var probe = document.createElement('span');
+    probe.style.fontSize = 'var(' + row[0] + ')';
+    document.body.appendChild(probe);
+    var px = Math.round(parseFloat(getComputedStyle(probe).fontSize) * 10) / 10;
+    probe.remove();
+
+    var wrap = document.createElement('div');
+    var sample = document.createElement('p');
+    sample.textContent = row[1];
+    sample.style.fontSize = 'var(' + row[0] + ')';
+    sample.style.fontFamily = 'var(' + row[2] + ')';
+    if (row[3]) sample.style.lineHeight = 'var(' + row[3] + ')';
+    if (row[2] === '--mono') { sample.style.letterSpacing = 'var(--ls-meta)'; sample.style.textTransform = 'uppercase'; }
+    if (row[0] === '--t-display') sample.style.letterSpacing = 'var(--ls-display)';
+
+    var label = document.createElement('p');
+    label.className = 'sg-meta';
+    label.textContent = row[0] + ' · ' + px + 'px at this width · ' + row[2].replace('--', '');
+
+    wrap.appendChild(sample);
+    wrap.appendChild(label);
+    host.appendChild(wrap);
+  });
+
+  /* --- 5. Fleet state switch --------------------------------------------- */
+
+  document.querySelectorAll('[data-fleet]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('[data-fleet]').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
+      document.querySelectorAll('#sg-fleet [data-lens]').forEach(function (stage) {
+        stage.dataset.lens = btn.dataset.fleet;
+      });
+    });
+  });
+
+  /* --- 6. Stamp knobs ----------------------------------------------------- */
+
+  var stamp = document.getElementById('sg-stamp');
+  var codeEl = document.getElementById('sg-stamp-code');
+
+  var KNOBS = [
+    { input: 'k-r', out: 'o-r', prop: '--arc-radius', unit: 'px', fmt: function (v) { return v; } },
+    { input: 'k-c', out: 'o-c', prop: '--arc-centre-y', unit: 'px', fmt: function (v) { return v; } },
+    { input: 'k-s', out: 'o-s', prop: '--arc-spread', unit: '', fmt: function (v) { return (+v).toFixed(2); } }
+  ];
+
+  function writeCode() {
+    var parts;
+    if (stamp.style.getPropertyValue('--arc-mode') === 'flat') {
+      parts = ['--arc-mode: flat'];
+    } else {
+      parts = KNOBS.map(function (k) {
+        return k.prop + ': ' + document.getElementById(k.input).value + k.unit;
+      });
+      if (stamp.style.getPropertyValue('--arc-flip') === '1') parts.push('--arc-flip: 1');
+    }
+    codeEl.innerHTML =
+      '&lt;div <span class="k">class</span>=<span class="s">"gm-stamp"</span>\n' +
+      '     <span class="k">style</span>=<span class="s">"' + parts.join(';\n            ') + '"</span>&gt;\n' +
+      '  &lt;svg <span class="k">class</span>=<span class="s">"cam"</span>&gt; ... &lt;/svg&gt;\n' +
+      '  &lt;p&gt;Ceiling dome&lt;/p&gt;\n' +
+      '&lt;/div&gt;';
+  }
+
+  KNOBS.forEach(function (k) {
+    var input = document.getElementById(k.input);
+    input.addEventListener('input', function () {
+      document.getElementById(k.out).textContent = k.fmt(input.value);
+      stamp.style.setProperty(k.prop, input.value + k.unit);
+      layoutStamps(); writeCode();
+    });
+  });
+
+  document.querySelectorAll('[data-arc]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('[data-arc]').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
+      stamp.style.setProperty('--arc-mode', btn.dataset.arc);
+      layoutStamps(); writeCode();
+    });
+  });
+
+  var flip = document.querySelector('[data-flip]');
+  flip.addEventListener('click', function () {
+    var on = flip.getAttribute('aria-pressed') === 'true';
+    flip.setAttribute('aria-pressed', String(!on));
+    stamp.style.setProperty('--arc-flip', on ? '0' : '1');
+    layoutStamps(); writeCode();
+  });
+
+  /* --- 7. Stamp arc layout -------------------------------------------------
+     THIS is the function that belongs in scripts/stamp.js — the only script
+     the genealogy page still needs. Everything above is demo wiring. */
+
+  function layoutStamps() {
+    document.querySelectorAll('.gm-stamp > p').forEach(function (p) {
+      if (!p.dataset.arcSource) {
+        p.dataset.arcSource = (p.textContent || '').replace(/\s+/g, ' ').trim();
+      }
+      var text = p.dataset.arcSource;
+      if (!text) return;
+
+      var holder = p.closest('.gm-stamp') || p;
+      var style = getComputedStyle(holder);
+
+      /* flat: restore the plain string and stop. Same element, same class. */
+      if (style.getPropertyValue('--arc-mode').trim() === 'flat') {
+        p.textContent = text;
+        p.style.height = '';
+        return;
+      }
+
+      var icon = holder.querySelector('svg, img');
+      var iconH = icon ? icon.getBoundingClientRect().height : 0;
+      var gap = parseFloat(getComputedStyle(p).marginTop) || 0;
+
+      function num(name, fallback) {
+        var v = parseFloat(style.getPropertyValue(name));
+        return isFinite(v) ? v : fallback;
+      }
+
+      var radius = num('--arc-radius', iconH / 2 + 16);
+      var centreY = num('--arc-centre-y', -(gap + iconH / 2));
+      var spread = num('--arc-spread', 1);
+      var flipped = num('--arc-flip', 0) >= 0.5;
+
+      var chars = Array.prototype.slice.call(text);
+      var centreX = p.clientWidth / 2;
+
+      /* Pass 1 — lay out flat to measure real glyph advances. */
+      p.textContent = '';
+      var spans = chars.map(function (ch) {
+        var s = document.createElement('span');
+        s.className = 'arc-char';
+        s.style.position = 'static';
+        s.style.display = 'inline-block';
+        s.textContent = ch === ' ' ? '\u00a0' : ch;
+        p.appendChild(s);
+        return s;
+      });
+      var widths = spans.map(function (s) { return s.getBoundingClientRect().width; });
+      var total = widths.reduce(function (a, b) { return a + b; }, 0) * spread;
+
+      /* Pass 2 — place by arc length, so each letter keeps its own width. */
+      var walked = 0;
+      for (var i = 0; i < spans.length; i++) {
+        var advance = widths[i] * spread;
+        var mid = walked + advance / 2 - total / 2;
+        walked += advance;
+
+        var theta = mid / radius;
+        var x = centreX + Math.sin(theta) * radius;
+        var y = centreY + Math.cos(theta) * radius;
+        var deg = (flipped ? theta : -theta) * 180 / Math.PI;
+
+        spans[i].style.position = 'absolute';
+        spans[i].style.display = 'block';
+        spans[i].style.left = x + 'px';
+        spans[i].style.top = y + 'px';
+        spans[i].style.transform = 'translate(-50%, -50%) rotate(' + deg + 'deg)';
+      }
+
+      var fs = parseFloat(getComputedStyle(p).fontSize) || 12;
+      p.style.height = Math.max(0, Math.round(centreY + radius + fs)) + 'px';
+    });
+  }
+
+  layoutStamps();
+  writeCode();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutStamps);
+
+  var t;
+  window.addEventListener('resize', function () {
+    clearTimeout(t); t = setTimeout(layoutStamps, 150);
+  });
+})();
+</script>
+</body>
+</html>
