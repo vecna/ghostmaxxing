@@ -73,29 +73,45 @@
 
 <body>
 
-  <header style="display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;flex-wrap:wrap;gap:1rem;position:relative;z-index:10">
-    <a href="#" aria-label="Ghostmaxxing" style="display:flex;align-items:center;gap:.7rem;text-decoration:none;color:#0a0a08">
-      <img src="/images/logo/mark-color.svg" width="40" alt="" aria-hidden="true" />
-      <span style="display:flex;flex-direction:column;gap:.15rem">
-        <span style="font-family:Newsreader,Georgia,serif;font-weight:700;font-size:1.7rem;line-height:1">Ghostmaxxing</span>
-        <span style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;opacity:.78">A public lab for testing face-recognition camouflage</span>
+  <!-- ===== SITE HEADER — canonical. Byte-identical on every page. =========
+       Only two things may differ per page: aria-current="page" on the link to
+       the current page, and the optional .gm-site-nav__extra slot.
+       Styling: styles/chrome.css. Behaviour: scripts/nav.js.
+       ==================================================================== -->
+  <header class="gm-site-header">
+    <a class="gm-site-wordmark" href="/" aria-label="Ghostmaxxing homepage">
+      <img class="gm-site-wordmark__mark" src="/images/logo/mark-color.svg" width="40" height="40" alt="" aria-hidden="true" />
+      <span class="gm-site-wordmark__text">
+        <span class="gm-site-wordmark__title">Ghostmaxxing</span>
+        <span class="gm-site-wordmark__sub">A public lab for testing face-recognition camouflage</span>
       </span>
     </a>
-    <nav aria-label="Primary" style="display:flex;align-items:center;gap:1.8rem;font-size:.95rem;position:relative">
-      <div style="position:relative">
-        <button id="knowMoreTrigger" aria-expanded="false" aria-controls="knowMoreMenu" style="background:none;border:none;font:inherit;color:#0a0a08;cursor:pointer;padding:0;display:flex;align-items:center;gap:.3rem">Know more <span aria-hidden="true">▾</span></button>
-        <div id="knowMoreMenu" class="nav-menu" role="menu">
+    <nav class="gm-site-nav" aria-label="Primary">
+      <div class="gm-site-nav__group">
+        <button class="gm-site-nav__trigger" aria-expanded="false" aria-controls="gmSiteMenu">Know more <span aria-hidden="true">&#9662;</span></button>
+        <div class="gm-site-menu" id="gmSiteMenu">
           <div>
-            <p class="nav-kicker">Informative</p>
-            <ul><li><a href="about.html">Vision &amp; about</a></li><li><a href="report.html">Report a deployment</a></li><li><a href="workshops.html">Workshops</a></li></ul>
+            <p class="gm-site-menu__kicker">Informative</p>
+            <ul>
+              <li><a href="/about.html">Vision &amp; about</a></li>
+              <li><a href="/genealogy.html">The genealogy of the read</a></li>
+              <li><a href="/report.html">Report a deployment</a></li>
+              <li><a href="/workshops.html">Workshops</a></li>
+            </ul>
           </div>
           <div>
-            <p class="nav-kicker">Technology</p>
-            <ul><li><a href="lab.html">Open the lab ↗</a></li><li><a href="/references/">References archive</a></li><li><a href="/docs">Docs</a></li><li><a href="https://github.com/vecna/ghostmaxxing">Code</a></li></ul>
+            <p class="gm-site-menu__kicker">Technology</p>
+            <ul>
+              <li><a href="/lab.html">Open the lab &#8599;</a></li>
+              <li><a href="/ghostyle-transfer.html">Ghostyle transfer</a></li>
+              <li><a href="/references/">References archive</a></li>
+              <li><a href="/docs/">Docs</a></li>
+              <li><a href="https://github.com/vecna/ghostmaxxing">Code</a></li>
+            </ul>
           </div>
         </div>
       </div>
-      <a href="report.html" style="background:#ff5f8f;color:#fff1cf;padding:.55rem 1.2rem;border-radius:999px;font-weight:700;font-size:.85rem;text-decoration:none">Leak to us ↗</a>
+      <a class="gm-site-cta" href="/report.html">Leak to us &#8599;</a>
     </nav>
   </header>
 
@@ -177,22 +193,27 @@
     </div>
   </section>
 
-  <!-- Standard site footer — same block on every page: pyre band (full illustration by default; togglable to a cropped band via the Tweaks panel) + soil-edge + link row. -->
-  <footer style="background:#0a2b23">
-    <div id="pyreWrap" data-mode="full" style="background:#0a2b23;overflow:hidden">
-      <img id="pyreImg" src="/images/motifs/pyre.svg" style="display:block;width:100%" alt="" aria-hidden="true" />
+  <!-- ===== SITE FOOTER — canonical. Byte-identical on every page. =========
+       Pyre band, soil edge, link row. Replaces the .camera-band div, which
+       pointed at images/homepage-camera-band.svg — not in the repo, so it only
+       ever painted a faint gradient. The camera icons are INLINE <svg>: the
+       files in images/icons/ are class-driven and render black through <img>.
+       ==================================================================== -->
+  <footer class="gm-site-footer">
+    <div class="gm-site-footer__pyre" data-mode="full">
+      <img src="/images/motifs/pyre.svg" alt="" aria-hidden="true" />
     </div>
-    <img src="/images/motifs/soil-edge.svg" style="display:block;width:100%;height:48px" alt="" />
-    <div style="max-width:1080px;margin:0 auto;padding:0 2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem">
-      <div style="display:flex;gap:1.6rem;opacity:.6">
-        <svg class="cam" viewBox="0 0 100 100" style="width:30px" aria-hidden="true" focusable="false">
+    <img class="gm-site-footer__edge" src="/images/motifs/soil-edge.svg" alt="" aria-hidden="true" />
+    <div class="gm-site-footer__row">
+      <div class="gm-site-footer__cams">
+        <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
           <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
           <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
           <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
-          <circle class="cam-iris" id="iris-dome-s3" cx="50" cy="44" r="6.6"></circle>
+          <circle class="cam-iris" id="iris-dome" cx="50" cy="44" r="6.6"></circle>
           <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
         </svg>
-        <svg class="cam" viewBox="0 0 100 100" style="width:30px" aria-hidden="true" focusable="false">
+        <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
           <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
           <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
           <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
@@ -200,30 +221,30 @@
           <rect class="cam-panel" x="54" y="47" width="22" height="16" rx="3"></rect>
           <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle cx="70" cy="51" r="2"></circle><circle cx="60" cy="59" r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
           <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
-          <circle class="cam-iris" id="iris-street-s4" cx="32" cy="55" r="5.3"></circle>
+          <circle class="cam-iris" id="iris-street" cx="32" cy="55" r="5.3"></circle>
           <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
         </svg>
-        <svg class="cam" viewBox="0 0 100 100" style="width:30px" aria-hidden="true" focusable="false">
+        <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
           <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32" stroke-width="5"></path>
           <path class="cam-shell" d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z" stroke-linecap="round"></path>
           <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
           <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
-          <circle class="cam-iris cam-iris--void" id="iris-glasses-l-s3" cx="28" cy="45" r="9"></circle>
-          <circle class="cam-iris cam-iris--void" id="iris-glasses-r-s4" cx="72" cy="45" r="9"></circle>
+          <circle class="cam-iris cam-iris--void" id="iris-glasses-l" cx="28" cy="45" r="9"></circle>
+          <circle class="cam-iris cam-iris--void" id="iris-glasses-r" cx="72" cy="45" r="9"></circle>
         </svg>
-        <svg class="cam" viewBox="0 0 100 100" style="width:30px" aria-hidden="true" focusable="false">
+        <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
           <path class="cam-mount" d="M45,30 V12 M32,12 H58" stroke-width="5"></path>
           <rect class="cam-shell" x="16" y="36" width="66" height="34" rx="5"></rect>
           <path class="cam-mount" d="M12,30 H74 L84,40" stroke-width="5"></path>
           <circle class="cam-lens" cx="60" cy="51" r="14"></circle>
-          <circle class="cam-iris" id="iris-bullet-s5" cx="60" cy="51" r="6.2"></circle>
+          <circle class="cam-iris" id="iris-bullet" cx="60" cy="51" r="6.2"></circle>
           <circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"></circle>
         </svg>
       </div>
-      <div style="display:flex;gap:1.5rem;font-size:.85rem">
-        <a href="/docs" style="color:#fff1cf">Technical documentation</a>
-        <a href="https://github.com/vecna/ghostmaxxing" style="color:#fff1cf">Code</a>
-        <a href="loader.html" style="color:#fff1cf">Video Loader</a>
+      <div class="gm-site-footer__links">
+        <a href="/docs/">Technical documentation</a>
+        <a href="https://github.com/vecna/ghostmaxxing">Code</a>
+        <a href="/loader.html">Video Loader</a>
       </div>
     </div>
   </footer>
@@ -297,6 +318,7 @@
     </svg>
   </template>
 
+  <script src="/scripts/nav.js" defer></script>
   <script src="/scripts/index.js"></script>
 
 </body>

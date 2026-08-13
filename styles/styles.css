@@ -20,6 +20,9 @@
        load from the same origin, so there is no third-party request and no
        flash of fallback text.
      - tokens.css absorbed colors.css and typography.css. Both are deleted.
+     - chrome.css is new: the site header and footer, which existed three
+       different ways (inline styles on index, .editorial-homepage__header in
+       pages.css, .gm-head in genealogy.css) and are now one component.
    ========================================================================= */
 
 
@@ -37,6 +40,7 @@
 /* ---- 3. Components — draw and state, never placement -------------------- */
 @import url("./logo.css");
 @import url("./cameras.css");
+@import url("./chrome.css");
 
 /* ---- 4. Pages — placement only ------------------------------------------
    Deliberately empty. A page stylesheet loaded on every page has stopped being

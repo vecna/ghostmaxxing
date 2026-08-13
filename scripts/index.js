@@ -1,14 +1,7 @@
+/* The homepage camera field. The "Know more" dropdown that used to live at the
+   top of this file moved to scripts/nav.js — it is site chrome, not homepage
+   behaviour, and keeping it here is why every other page had a different nav. */
 (function () {
-    var trigger = document.getElementById('knowMoreTrigger');
-    var menu = document.getElementById('knowMoreMenu');
-    trigger.addEventListener('click', function () {
-        var open = menu.classList.toggle('open');
-        trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-    document.addEventListener('click', function (e) {
-        if (!menu.contains(e.target) && e.target !== trigger) { menu.classList.remove('open'); trigger.setAttribute('aria-expanded', 'false'); }
-    });
-
     var TYPES = [
         { label: 'Dome camera', key: 'dome' },
         { label: 'Box camera', key: 'cube' },

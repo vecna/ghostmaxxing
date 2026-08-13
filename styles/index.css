@@ -4,7 +4,10 @@
    The hardcoded hexes are gone: every one of them was already exactly a v2
    token value, so this is a rename, not a repaint. Nothing on screen moves.
    The remaining ~50 inline style="" attributes in index.html still carry
-   literal hex and are the next thing to lift out. */
+   literal hex and are the next thing to lift out.
+
+   The nav dropdown and pyre-footer rules moved to styles/chrome.css — they are
+   site chrome, shared by every page, not homepage placement. */
 
 * {
     box-sizing: border-box;
@@ -84,63 +87,4 @@ a:hover {
 .cam-half.bottom {
     bottom: 0;
     height: 50%;
-}
-
-.nav-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    margin-top: .6rem;
-    background: var(--gm-cream);
-    border: 2px solid var(--gm-ink);
-    padding: 1.4rem 1.6rem;
-    gap: 2rem;
-    z-index: 5;
-}
-
-.nav-menu.open {
-    display: flex;
-}
-
-.nav-menu ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-}
-
-.nav-menu li a {
-    text-decoration: none;
-    color: var(--gm-ink);
-    font-size: .92rem;
-}
-
-.nav-menu li a:hover {
-    color: var(--gm-pink);
-}
-
-.nav-kicker {
-    font-family: var(--mono);
-    font-size: .68rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--gm-pink);
-    margin: 0 0 .3rem;
-}
-
-#pyreWrap[data-mode="cropped"] {
-    height: 230px;
-}
-
-#pyreWrap[data-mode="cropped"] #pyreImg {
-    height: 100%;
-    object-fit: cover;
-    object-position: top;
-}
-
-#pyreWrap[data-mode="full"] #pyreImg {
-    height: auto;
 }
