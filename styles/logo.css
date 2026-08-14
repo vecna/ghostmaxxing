@@ -1,42 +1,54 @@
 /* Ghostmaxxing logo component.
  *
- * The logo is a LENS with a shard on it. The lens never moves; only the shard
- * rotates. That is the whole rule, and it is why this file exists separately
- * from ghostutter.css. NOTE: ghostutter.css and its shard were cut in an
- * earlier pass — see cameras.css §3. No mark ever goes inside a camera lens
- * again. The shard survives only here, on the logo.
+ * THE MARK IS TWO MOUNTED LENSES, A GUST OF WIND, AND A SPENT LENS BELOW.
+ * A rail across the top with two stems; two lenses hanging from it with live
+ * yellow irises; a pink gust beneath them; one spent lens under that with a
+ * green flame over it. The two lenses are the undefeated present, the gust is
+ * the interruption, the spent lens is the era it put out.
  *
- * Three ways to place the logo, in order of preference:
+ * What moves is the GUST. The lenses never move — they are the thing that has
+ * not been stopped, and animating them would say the opposite.
  *
- *   1. <img src="/images/logo/mark-ondark.svg">            still
- *   2. <img src="/images/logo/mark-animated-ondark.svg">   moving, self-contained
- *   3. inline <svg> + .gm-logo .gm-logo--animated         moving, controllable
+ * SUPERSEDED, so you do not go looking for it: the mark used to be a single
+ * disc with four pink shards radiating from the centre, and this file used to
+ * open with "the logo is a LENS with a shard on it; the lens never moves, only
+ * the shard rotates". That design is gone. There is no shard, no
+ * .gm-logo-shard, and no rotation. The old ghostutter shard it was related to
+ * was cut earlier — see cameras.css section 3.
  *
- * Only reach for (3) when the size, colour or duration must respond to the
- * page at runtime. Otherwise (1) or (2) is one HTTP request and no CSS.
+ * Three ways to place it, in order of preference:
  *
- * THE MONO MARK — read this before writing <img src="...mark-mono...">.
- * There is no mark-mono.svg any more. It painted entirely with currentColor
- * and the advice attached to it ("set CSS color on the img") was wrong: an
- * <img>-loaded SVG is an isolated document, currentColor resolves against
- * ITS root, and the mark came out black on every surface. It is now two
- * painted files, and you pick by the surface you are on:
+ *   1. <img src="/images/logo/mark-color.svg">              still
+ *   2. <img src="/images/logo/mark-animated-ondark.svg">    moving, self-contained
+ *   3. inline <svg> + .gm-logo .gm-logo--animated           moving, controllable
  *
- *   /images/logo/mark-mono-ink.svg      on cream, on orange
- *   /images/logo/mark-mono-cream.svg    on soil, on green, on photography
+ * Only reach for (3) when size, colour or duration must respond to the page at
+ * runtime. Otherwise (1) or (2) is one request and no CSS. Note that (2) is
+ * genuinely self-contained: the animation and its prefers-reduced-motion guard
+ * are a <style> block inside the file, which works even through <img>.
  *
- * Same rule for the small cut (mark-small-onlight / -ondark) and the
- * animated one (mark-animated-onlight / -ondark). If a single file really
- * must follow the page colour, inline the SVG or use it as a mask-image
- * with a background-color. Never through <img>.
+ * PICK THE CUT BY SURFACE. There is no mark-mono.svg any more — it painted with
+ * currentColor, and the advice attached to it ("set CSS color on the img") was
+ * wrong: inside an <img> currentColor resolves against that document's own
+ * root, so it came out black everywhere.
+ *
+ *   mark-color.svg / mark-onlight.svg    full colour, light surfaces
+ *   mark-ondark.svg                      full colour, soil and green
+ *   mark-mono-ink.svg                    one colour, on cream or orange
+ *   mark-mono-cream.svg                  one colour, on soil or photography
+ *   mark-small-*                         below ~28px. Drops the spent lens and
+ *                                        the flame; they are illegible there
+ *
+ * The full mark holds to about 32px. Under that use a -small cut.
  */
 
 :root {
-  /* Overridable per instance. The shard geometry is measured from the 32,32
-     pivot in a 64-unit box, so every offset is proportional and the mark needs
-     no re-tuning at any size. */
+  /* Overridable per instance. Every coordinate in the mark is measured in the
+     64-unit box, so the whole thing is proportional and needs no re-tuning at
+     any size. Duration matches the gust in mark-animated-*.svg — change both
+     or they drift visibly when an inline mark sits near an <img> one. */
   --gm-logo-size: 3rem;
-  --gm-logo-duration: 2.2s;
+  --gm-logo-duration: 2.6s;
 }
 
 .gm-logo {
@@ -54,47 +66,39 @@
 }
 
 /* ---- motion ------------------------------------------------------------
- * Five uneven steps: two long holds, a burst, then round. `steps(1, end)`
- * makes each keyframe a hard cut rather than a tween — the mark must never
- * appear to sweep. Sweeping reads as progress, and this is not progress.
+ * The GUST moves. Nothing else does.
+ *
+ * It is a dash sweeping along the wind path, not a rotation and not a fade. A
+ * gust crosses and is gone; that is the whole gesture. Five uneven steps used
+ * to live here to make a shard stutter rather than sweep, on the reasoning that
+ * sweeping reads as progress. That reasoning still holds for a lens. It does
+ * not hold for wind, which is the one thing in this system that genuinely does
+ * travel — so the gust sweeps, linearly, and only the gust.
+ *
+ * REMOVED WITH THE OLD MARK: @keyframes gm-logo-stutter, @keyframes
+ * gm-logo-smooth, .gm-logo-shard, .gm-logo--smooth. There is no shard to
+ * rotate. .gm-logo--smooth in particular existed only so specimen.html could
+ * demonstrate the wrong animation, and specimen.html is gone too.
  */
-@keyframes gm-logo-stutter {
-  0%, 26% { transform: rotate(0deg); }
-  30%, 56% { transform: rotate(58deg); }
-  60%, 72% { transform: rotate(131deg); }
-  76%, 84% { transform: rotate(198deg); }
-  88%, 94% { transform: rotate(291deg); }
-  100% { transform: rotate(360deg); }
+@keyframes gm-logo-gust {
+  from { stroke-dashoffset: 90; }
+  to { stroke-dashoffset: 0; }
 }
 
-@keyframes gm-logo-smooth {
-  to { transform: rotate(360deg); }
+.gm-logo-wind {
+  stroke-dasharray: 22 68;
 }
 
-/* transform-origin in user units, matching the SVG pivot exactly. Using a
-   percentage here would resolve against the element box and drift as soon as
-   the viewBox is not square. */
-.gm-logo-shard {
-  transform-origin: 32px 32px;
+.gm-logo--animated .gm-logo-wind {
+  animation: gm-logo-gust var(--gm-logo-duration) linear infinite;
 }
 
-.gm-logo--animated .gm-logo-shard {
-  animation: gm-logo-stutter var(--gm-logo-duration) infinite steps(1, end);
-}
-
-/* Deliberately available, deliberately wrong for the logo. Kept so the
-   specimen page can show the difference, and for the rare case where the mark
-   is standing in as a loading indicator — at which point it is not the logo. */
-.gm-logo--smooth .gm-logo-shard {
-  animation: gm-logo-smooth var(--gm-logo-duration) infinite linear;
-}
-
-/* The mark stops but stays put. It carries information; hiding it or resetting
-   its rotation would remove information. */
+/* The gust stops mid-path and stays visible. The spent lens, the flame and the
+   two live irises are information and never depended on motion to be read. */
 @media (prefers-reduced-motion: reduce) {
-  .gm-logo--animated .gm-logo-shard,
-  .gm-logo--smooth .gm-logo-shard {
+  .gm-logo--animated .gm-logo-wind {
     animation: none;
+    stroke-dasharray: none;
   }
 }
 

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ghostmaxxing mark: two mounted camera lenses still reading, a gust of pink wind beneath them, and the spent lens of an earlier era below that">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ghostmaxxing mark: two mounted camera lenses still reading, a gust of pink wind below them, and beneath that a spent lens with a green flame where its iris was">
   <style>
     .gm-wind { stroke-dasharray: 22 68; animation: gm-gust 2.6s linear infinite; }
     @keyframes gm-gust { from { stroke-dashoffset: 90; } to { stroke-dashoffset: 0; } }
@@ -13,6 +13,7 @@
   <circle cx="44" cy="22" r="3.6" fill="#f0c24a"/>
   <circle cx="41.2" cy="19.2" r="1.56" fill="#fff1cf" opacity="0.9"/>
   <path class="gm-wind" d="M5,40 C18,36 27,42 34,38 C42,34 51,37.5 60,33.5" fill="none" stroke="#ff5f8f" stroke-width="3.2" stroke-linecap="round"/>
-  <circle cx="32" cy="52" r="6.4" fill="#fff1cf" stroke="#ff5f8f" stroke-width="2.4"/>
-  <circle cx="32" cy="52" r="2.1" fill="#072e26"/>
+  <circle cx="32" cy="53" r="7.4" fill="#fff1cf" stroke="#ff5f8f" stroke-width="2.3"/>
+  <path d="M32.6,48.4 c1.58,2.24 2.38,3.50 2.38,4.82 c0,1.72 -1.06,2.84 -2.51,2.84 c-1.52,0 -2.51,-1.12 -2.51,-2.57 c0,-1.06 0.59,-2.11 1.52,-3.37 c0.07,1.12 0.40,1.72 0.99,2.11 c0.13,-1.45 0.13,-2.84 0.13,-4.29 z" fill="#072e26"/>
+  <path d="M32.47,51.70 c0.86,1.32 1.25,1.98 1.25,2.64 c0,0.92 -0.59,1.52 -1.32,1.52 c-0.79,0 -1.32,-0.59 -1.32,-1.39 c0,-0.73 0.46,-1.52 1.39,-2.77 z" fill="#2f7a5c"/>
 </svg>

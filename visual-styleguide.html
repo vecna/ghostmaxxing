@@ -427,8 +427,15 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   <h2 class="sg-sec__title">The mark</h2>
   <hr class="sg-rule">
   <div class="sg-intro">
-    <p>Four lenses stacked on a 64-unit grid, centred on <code>x=32</code>. The bottom three are identical in kind — green-soft body, green-deep ring, yellow iris — scaling down slightly toward the bottom. <strong>The top one is always the cut:</strong> cream body, pink ring, dark iris, one short pink line through it.</p>
-    <p>That is the whole idea. A column of lenses reading, and the one at the top that has been interrupted.</p>
+    <p>A rail across the top with two stems. Two lenses hang from it — green-soft body, green-deep ring, <strong>live yellow iris, no cut</strong>. Beneath them a gust of pink wind. Beneath that a single spent lens, pink ring and dark iris, with a small green flame over it.</p>
+    <p>That is the argument in one mark. <strong>The two at the top are the undefeated present</strong> — the pair at the canopy of the genealogy. The gust is an intervention that was demonstrated and worked. The spent lens is the era it put out, and the flame is that era still burning as fuel for the next one.</p>
+    <div class="sg-do">
+      <div><b class="yes">Do</b><span>Pick the cut by surface: <code>-ondark</code> on soil and green, <code>-onlight</code> or <code>mark-color</code> on cream and orange, <code>-mono-ink</code> / <code>-mono-cream</code> for one colour.</span></div>
+      <div><b class="yes">Do</b><span>Use a <code>-small</code> cut below about 28px. It drops the spent lens and the flame, which turn to mush at that size, and enlarges the rail and the two lenses.</span></div>
+      <div><b class="no">Never</b><span>Show the two top lenses cut, ringed pink, or dark-irised. They are undefeated by definition. If that ever changes it is a research finding and a content change, not a styling one.</span></div>
+      <div><b class="no">Never</b><span>Animate the lenses. Only the gust moves.</span></div>
+    </div>
+    <p class="sg-card__note" style="max-width:56em;margin-top:16px"><strong>Superseded, so you do not go looking for it.</strong> The mark was previously a single disc with four pink shards radiating from the centre, and before that this section described a column of four lenses with the top one cut. Both are gone. There is no <code>.gm-logo-shard</code>, no <code>gm-logo-stutter</code>, and no rotation anywhere in <code>logo.css</code> — the only animation is a dash sweeping along the gust.</p>
   </div>
 
   <div class="sg-grid sg-grid--3">
@@ -478,13 +485,13 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   <table>
     <tr><th>#</th><th>How</th><th>When</th></tr>
     <tr><td>1</td><td><code>&lt;img src="/images/logo/mark-color.svg"&gt;</code></td><td>Default. One request, no CSS. Painted, so it is safe in an <code>&lt;img&gt;</code>.</td></tr>
-    <tr><td>2</td><td><code>&lt;img src="/images/logo/mark-animated-ondark.svg"&gt;</code></td><td>Moving and self-contained. There is no <code>mark-animated.svg</code> — pick <code>-ondark</code> or <code>-onlight</code>.</td></tr>
+    <tr><td>2</td><td><code>&lt;img src="/images/logo/mark-animated-ondark.svg"&gt;</code></td><td>Moving and genuinely self-contained — the keyframes <em>and</em> the <code>prefers-reduced-motion</code> guard are a <code>&lt;style&gt;</code> inside the file, which works even through <code>&lt;img&gt;</code>. There is no <code>mark-animated.svg</code>; pick <code>-ondark</code> or <code>-onlight</code>.</td></tr>
     <tr><td>3</td><td>Inline <code>&lt;svg&gt;</code> + <code>.gm-logo.gm-logo--animated</code></td><td>Only when size, colour or duration must respond to the page at runtime.</td></tr>
   </table>
 
   <div class="sg-do">
     <div><b class="no">Never</b><span>Rotate, flip or recolour a live circle. Only the top circle is ever cut.</span></div>
-    <div><b class="no">Never</b><span>Use <code>.gm-logo--smooth</code> as the logo. It exists to demonstrate the wrong thing, and for the rare case where the mark stands in as a loading indicator — at which point it is not the logo.</span></div>
+    <div><b class="no">Never</b><span>Reach for <code>.gm-logo--smooth</code>. It was removed with the shard — it existed only so <code>specimen.html</code> could demonstrate the wrong animation, and that page is gone too.</span></div>
     <div><b class="no">Never</b><span>Put a mark or sigil inside a camera lens. See section 12.</span></div>
   </div>
 </section>
@@ -818,7 +825,7 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
     <tr><td><code>images/motifs/*.svg</code></td><td>painted</td><td><code>background-image</code>, as <code>genealogy.css</code> does.</td></tr>
     <tr><td><code>images/report/*.svg</code></td><td>painted</td><td><code>&lt;img&gt;</code>.</td></tr>
     <tr><td>the canopy, in <code>genealogy.html</code></td><td>class-driven</td><td><b>Inline only.</b> Five of its internal classes are painted from <code>genealogy.css</code>: socket, glint, lens, pupil, spark.</td></tr>
-    <tr><td><code>.era__wind</code>, in <code>genealogy.html</code></td><td>class-driven</td><td><b>Inline only.</b> Zero fill attributes and zero hex — <code>genealogy.css</code> strokes all of it. Extracting it to a file was proposed and rejected; through <code>&lt;img&gt;</code> it becomes solid black blobs.</td></tr>
+    <tr><td><code>#gm-wind</code>, in <code>genealogy.html</code></td><td>self-painting, in a <code>&lt;defs&gt;</code></td><td><b>Inline once, <code>&lt;use&gt;</code> four times.</b> It cannot be a file — zero fill attributes, zero hex, and through <code>&lt;img&gt;</code> it is solid black blobs. So the painting moved onto the groups as inline <code>style</code> with <code>var()</code>, which <em>does</em> cross a <code>&lt;use&gt;</code> shadow boundary, and the widths onto the paths as attributes. 140 KB to 30 KB, pixel-identical.</td></tr>
   </table>
 
   <p class="sg-card__note" style="margin-top:18px;max-width:56em"><strong>Naming trap.</strong> <code>images/motifs/canopy.svg</code> is the <em>tree</em> head, from the abandoned direction. The canopy inlined in <code>genealogy.html</code> is the <em>plume</em> head. If that one is ever extracted, call it <code>plume-head.svg</code> — do not overwrite.</p>

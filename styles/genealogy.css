@@ -230,22 +230,36 @@
 /* Dazzle pink is 1.09:1 against the orange — on its own it is invisible. Every
    pink stroke is therefore laid over a darker one of the same path: the dark
    coat is the legibility, the pink is the signal. Do not remove the coat. */
-.era__wind .w-coat path { fill: none; stroke: var(--gm-green-deep); stroke-linecap: round; stroke-linejoin: round; }
-.era__wind .w-blow path { fill: none; stroke: var(--gm-pink); stroke-linecap: round; stroke-linejoin: round; }
-.era__wind .w-blow .w1 { stroke-width: 14px; }
-.era__wind .w-blow .w2 { stroke-width: 12px; }
-.era__wind .w-blow .w3 { stroke-width: 13px; }
-.era__wind .w-blow .w4 { stroke-width: 12px; }
-.era__wind .w-blow .w5 { stroke-width: 11px; }
-.era__wind .w-coat .w1 { stroke-width: 22px; }
-.era__wind .w-coat .w2 { stroke-width: 20px; }
-.era__wind .w-coat .w3 { stroke-width: 21px; }
-.era__wind .w-coat .w4 { stroke-width: 20px; }
-.era__wind .w-coat .w5 { stroke-width: 18px; }
-.era__wind .w-blow .wd { stroke-width: 7px; }
-.era__wind .w-coat .wd { stroke-width: 14px; }
-.era__wind .w-spark .sp-coat { fill: var(--gm-green-deep); }
-.era__wind .w-spark .sp-core { fill: var(--gm-pink); }
+/* ---------------------------------------------------------------------------
+   THE WIND IS PAINTED IN THE MARKUP NOW, NOT HERE.
+
+   Fourteen rules used to live at this spot:
+
+     .era__wind .w-coat path  { stroke: var(--gm-green-deep); ... }
+     .era__wind .w-blow path  { stroke: var(--gm-pink); ... }
+     .era__wind .w-blow .w1   { stroke-width: 14px; }        (x6)
+     .era__wind .w-coat .w1   { stroke-width: 22px; }        (x6)
+     .era__wind .w-spark .sp-coat { fill: var(--gm-green-deep); }
+     .era__wind .w-spark .sp-core { fill: var(--gm-pink); }
+
+   The wind block was inlined four times, 140 KB of the page. It is now one
+   <g id="gm-wind"> in a <defs> at the top of genealogy.html, referenced four
+   times with <use>.
+
+   A CSS selector does not reach into a <use> shadow tree. Inherited properties
+   and custom properties do. So the two stroke colours moved onto the groups as
+   inline style using var(--gm-green-deep) / var(--gm-pink), and the twelve
+   stroke-widths moved onto the paths as stroke-width attributes. The values did
+   not change — the rendering was diffed and is pixel-identical.
+
+   IF YOU ADD A RULE HERE IT WILL NOT APPLY. It will also not obviously fail:
+   the geometry still draws, so you get black strokes and a plausible-looking
+   bug report about the wind "going dark". Change the inline style in the defs
+   instead, or the attributes on the paths.
+
+   The rules below this comment still work — they target .era__wind itself,
+   which is a real element in the document, not shadow content.
+   ------------------------------------------------------------------------ */
 
 /* THE RESUMPTION. After the wind has taken the column, the smoke does not
    snap back on: it re-forms above the cut from a base WIDER than the column
