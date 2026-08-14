@@ -1,6 +1,8 @@
 # scripts
 
-This folder contains the browser runtime JavaScript for Ghostmaxxing. The app is a static ES-module site with no production bundling step, so these files are loaded directly by `lab.html`, `index.html`, `loader.html`, `ghostyle-transfer.html`, `realtime.html`, and support pages.
+This folder contains the browser runtime JavaScript for Ghostmaxxing. The app is a static ES-module site with no production bundling step, so these files are loaded directly by `lab.html`, `loader.html`, `ghostyle-transfer.html`, `realtime.html`.
+
+The index.hmtl or other informative/support pages scripts AREN'T here, they are in ../pages-js.
 
 The main lab runtime is coordinated by `main.js`, with `state.js` holding shared mutable state and the `gstmxxEvents` event bus. Camera lifecycle and recording live in `camera.js`; DOM lookup and UI status helpers live in `dom.js`; project constants, local model URLs, thresholds, and upload settings live in `config.js`.
 
