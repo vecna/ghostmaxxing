@@ -190,7 +190,8 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
     <a href="#layout"><b>11</b> Layout</a>
     <a href="#svgs"><b>12</b> Using the SVGs</a>
     <a href="#chrome"><b>13</b> Site chrome</a>
-    <a href="#decisions"><b>14</b> Decision log</a>
+    <a href="#actions"><b>14</b> Actions &amp; the other spaces</a>
+    <a href="#decisions"><b>15</b> Decision log</a>
   </nav>
 </header>
 
@@ -846,8 +847,9 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
   <table>
     <tr><th>Part</th><th>Class</th><th>Note</th></tr>
     <tr><td>Lockup</td><td><code>.gm-site-wordmark</code></td><td><code>mark-color.svg</code> at 40px, title in <code>--serif</code> 700, subtitle in caps at <code>.68rem</code>.</td></tr>
-    <tr><td>Dropdown</td><td><code>.gm-site-menu</code></td><td>Two columns, Informative and Technology. Opened by <code>scripts/nav.js</code>, which toggles <code>.is-open</code>.</td></tr>
-    <tr><td>CTA</td><td><code>.gm-site-cta</code></td><td>Pink pill, cream text. <b>The only rounded thing in the system</b> — everything else is square. It is a deliberate exception, not a licence.</td></tr>
+    <tr><td>Dropdown</td><td><code>.gm-site-menu</code></td><td>Two columns, Informative and Technology. Opened by <code>nav.js</code>, which toggles <code>.is-open</code>.</td></tr>
+    <tr><td>Chip</td><td><code>.gm-site-chip</code></td><td>Secondary destinations. Square, outlined, dotted. See §14 for why it is not a second pill.</td></tr>
+    <tr><td>CTA</td><td><code>.gm-site-cta</code></td><td>Pink pill, <b>ink</b> text, 2px ink border. The only rounded thing in the system. One per page — see §14.</td></tr>
   </table>
 
   <h3 class="sg-sub" style="margin-top:26px">Footer</h3>
@@ -859,9 +861,68 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
 </section>
 
 
+
+
 <!-- 14 ==================================================================== -->
-<section class="sg-sec sg-wrap" id="decisions">
+<section class="sg-sec sg-wrap" id="actions">
   <p class="sg-num">14</p>
+  <h2 class="sg-sec__title">Actions &amp; the other spaces</h2>
+  <hr class="sg-rule">
+  <div class="sg-intro">
+    <p>The site has exactly <b>one</b> filled call to action. Everything else that looks like a button is a chip, and the difference is carried by shape, not colour.</p>
+    <p>This is not a stylistic preference. Colour in this system is already load-bearing — yellow is a live iris, pink is an interruption — so a second coloured button would have to either steal one of those meanings or invent a third. Shape is free.</p>
+  </div>
+
+  <h3 class="sg-sub">Why not two pills</h3>
+  <table>
+    <tr><th>Pair</th><th>Contrast</th><th>Consequence</th></tr>
+    <tr><td>pink vs yellow</td><td><b>1.72:1</b></td><td>In greyscale, in bright sun, or to a red-green colourblind reader these are <b>the same button</b>. Nothing separates them but hue.</td></tr>
+    <tr><td>yellow vs green-soft</td><td>3.08:1</td><td>Better, still weak for two adjacent controls of equal shape.</td></tr>
+    <tr><td>pink vs green-deep</td><td>5.10:1</td><td>Would work — but green-deep is the lens barrel and the smoke. Spending it on a button costs more than it buys.</td></tr>
+  </table>
+
+  <h3 class="sg-sub" style="margin-top:26px">Two contrast facts that shape the CTA</h3>
+  <table>
+    <tr><th>Pair</th><th>Contrast</th><th>Rule it forces</th></tr>
+    <tr><td>cream on pink</td><td><b>2.57:1</b></td><td>Fails AA. <b>CTA text is ink, not cream.</b> This was wrong on the site until now.</td></tr>
+    <tr><td>ink on pink</td><td>6.87:1</td><td>Passes.</td></tr>
+    <tr><td>pink on orange</td><td><b>1.06:1</b></td><td>No accent in this palette reaches the 3:1 a UI component needs against the page — yellow is 1.83, green-soft 1.69, cream 2.73. <b>Every button carries a 2px ink border.</b> Without it the pill has no perceivable edge.</td></tr>
+  </table>
+
+  <h3 class="sg-sub" style="margin-top:26px">The two components</h3>
+  <table>
+    <tr><th>Class</th><th>Shape</th><th>For</th></tr>
+    <tr><td><code>.gm-site-cta</code></td><td>Filled pink, round, 2px ink border, ink text</td><td><b>One per page.</b> The consequential action. Pink because pink means interruption, and leaking to the node <em>is</em> the interruption — colour and destination agree.</td></tr>
+    <tr><td><code>.gm-site-chip</code></td><td>Transparent, square, 2px ink border, ink text, small dot</td><td>Secondary destinations. Costs no accent. The dot is a destination marker, never a state — override with <code>--gm-chip-dot</code>.</td></tr>
+  </table>
+  <p class="sg-card__note" style="max-width:56em;margin-top:12px">The pill is the only rounded thing in the system. That exception is what makes it read as the primary action; it is not a licence to round anything else.</p>
+
+  <h3 class="sg-sub" style="margin-top:26px">Order in the navbar</h3>
+  <pre>&lt;a class="gm-site-chip" href="…" rel="me"&gt;Fediverse ↗&lt;/a&gt;
+&lt;div class="gm-site-nav__group"&gt;… Know more ▾ …&lt;/div&gt;
+&lt;a class="gm-site-cta" href="/report.html"&gt;Leak to us ↗&lt;/a&gt;</pre>
+  <p style="max-width:56em">Commitment rises left to right: follow us, read us, tell us something dangerous. The consequential action is last, which in a left-to-right reading is the terminal and strongest position, and it is furthest from the chip so a mis-tap does not land someone on the reporting page by accident.</p>
+  <p class="sg-card__note" style="max-width:56em">The trade-off, stated so it is a choice and not an oversight: DOM order is tab order, so a keyboard user reaches the chip — the least important control — first. Acceptable at three items. If a fourth is ever added, move the chip after the dropdown and keep the CTA last.</p>
+
+  <h3 class="sg-sub" style="margin-top:26px">The other spaces</h3>
+  <p style="max-width:56em">Ghostmaxxing lives in three places. They are told apart by <b>ground</b>, not by a new accent — the surface axis is the only one nothing else was using, and each choice means something.</p>
+  <table>
+    <tr><th>Space</th><th>Ground</th><th>Accent</th><th>Why</th></tr>
+    <tr><td>The site</td><td>orange</td><td>pink</td><td>The public wall. A poster, a notice, visible to everyone.</td></tr>
+    <tr><td>The whistleblowing node</td><td>soil</td><td>pink</td><td>Dark, quiet, protected. Pink continues from the button that sent you, and it is semantically exact: this is where the interruption happens.</td></tr>
+    <tr><td>The fediverse presence</td><td>cream</td><td>green-soft</td><td>A reading surface. Ambient, everyday, low stakes.</td></tr>
+  </table>
+  <div class="sg-do" style="margin-top:16px">
+    <div><b class="no">Never</b><span>Give the fediverse yellow. Yellow is a live iris — it appears in every camera on this site meaning <em>reading, right now</em>. On a social presence it would say the fediverse is watching you.</span></div>
+    <div><b class="no">Never</b><span>Use pink as a page ground anywhere. It is reserved, and at 1.06:1 against orange nothing on it would be readable.</span></div>
+    <div><b class="yes">Do</b><span>Put <code>rel="me"</code> on the fediverse link. It is what enables domain verification on Mastodon, and for an accountability project that checkmark is worth having.</span></div>
+  </div>
+</section>
+
+
+<!-- 15 ==================================================================== -->
+<section class="sg-sec sg-wrap" id="decisions">
+  <p class="sg-num">15</p>
   <h2 class="sg-sec__title">Decision log</h2>
   <hr class="sg-rule">
   <div class="sg-intro">
