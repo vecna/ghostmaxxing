@@ -1,1 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Ghostmaxxing"><defs><clipPath id="gmClip"><circle cx="32" cy="32" r="28.2"/></clipPath><mask id="gmPupil"><rect width="64" height="64" fill="#fff"/><circle cx="32" cy="32" r="9.5" fill="#000"/></mask></defs><circle cx="32" cy="32" r="21" fill="#fff1cf"/><circle cx="32" cy="32" r="9.5" fill="#0a0a08"/><g fill="#ff5f8f" clip-path="url(#gmClip)"><path d="M32 32 L26 -4 L44 0 Z"/><path d="M32 32 L56 2 L68 18 Z"/><path d="M32 32 L70 34 L62 52 Z"/><path d="M32 32 L46 62 L34 64 Z"/></g><circle cx="32" cy="32" r="29.5" fill="none" stroke="#0a0a08" stroke-width="2.6"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ghostmaxxing mark: two mounted camera lenses still reading, a gust of pink wind beneath them, and the spent lens of an earlier era below that">
+  <path d="M6,6 H58" fill="none" stroke="#072e26" stroke-width="3" stroke-linecap="round"/>
+  <path d="M20,6 V13 M44,6 V13" fill="none" stroke="#072e26" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="20" cy="22" r="9.2" fill="#2f7a5c" stroke="#072e26" stroke-width="2.4"/>
+  <circle cx="20" cy="22" r="3.6" fill="#f0c24a"/>
+  <circle cx="17.2" cy="19.2" r="1.56" fill="#fff1cf" opacity="0.9"/>
+  <circle cx="44" cy="22" r="9.2" fill="#2f7a5c" stroke="#072e26" stroke-width="2.4"/>
+  <circle cx="44" cy="22" r="3.6" fill="#f0c24a"/>
+  <circle cx="41.2" cy="19.2" r="1.56" fill="#fff1cf" opacity="0.9"/>
+  <path d="M5,40 C18,36 27,42 34,38 C42,34 51,37.5 60,33.5" fill="none" stroke="#ff5f8f" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="32" cy="52" r="6.4" fill="#fff1cf" stroke="#ff5f8f" stroke-width="2.4"/>
+  <circle cx="32" cy="52" r="2.1" fill="#072e26"/>
+</svg>

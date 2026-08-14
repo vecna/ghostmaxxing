@@ -20,13 +20,10 @@ body {
     color: var(--gm-ink);
 }
 
-a {
-    color: var(--gm-pink);
-}
-
-a:hover {
-    color: var(--gm-ink);
-}
+/* The bare `a { color: var(--gm-pink) }` that was here is removed. Pink on
+   --gm-bg is 1.06:1 — invisible, not merely low-contrast — and tokens.css
+   reserves pink so that it is never text. Prose links now come from
+   styles/prose.css via class="gm-prose"; component links style themselves. */
 
 .cam-spot {
     position: absolute;

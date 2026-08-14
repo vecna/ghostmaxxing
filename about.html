@@ -22,49 +22,50 @@
 </head>
 
 <body>
+
+  <!-- ===== SITE HEADER — canonical. Byte-identical on every page. =========
+       Only two things may differ per page: aria-current="page" on the link to
+       the current page, and the optional .gm-site-nav__extra slot.
+       Styling: styles/chrome.css. Behaviour: scripts/nav.js.
+       ==================================================================== -->
+  <header class="gm-site-header">
+    <a class="gm-site-wordmark" href="/" aria-label="Ghostmaxxing homepage">
+      <img class="gm-site-wordmark__mark" src="/images/logo/mark-color.svg" width="40" height="40" alt="" aria-hidden="true" />
+      <span class="gm-site-wordmark__text">
+        <span class="gm-site-wordmark__title">Ghostmaxxing</span>
+        <span class="gm-site-wordmark__sub">A public lab for testing face-recognition camouflage</span>
+      </span>
+    </a>
+    <nav class="gm-site-nav" aria-label="Primary">
+      <div class="gm-site-nav__group">
+        <button class="gm-site-nav__trigger" aria-expanded="false" aria-controls="gmSiteMenu">Know more <span aria-hidden="true">&#9662;</span></button>
+        <div class="gm-site-menu" id="gmSiteMenu">
+          <div>
+            <p class="gm-site-menu__kicker">Informative</p>
+            <ul>
+              <li><a href="/about.html" aria-current="page">Vision &amp; about</a></li>
+              <li><a href="/genealogy.html">The genealogy of the read</a></li>
+              <li><a href="/report.html">Report a deployment</a></li>
+              <li><a href="/workshops.html">Workshops</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="gm-site-menu__kicker">Technology</p>
+            <ul>
+              <li><a href="/lab.html">Open the lab &#8599;</a></li>
+              <li><a href="/ghostyle-transfer.html">Ghostyle transfer</a></li>
+              <li><a href="/references/">References archive</a></li>
+              <li><a href="/docs/">Docs</a></li>
+              <li><a href="https://github.com/vecna/ghostmaxxing">Code</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <a class="gm-site-cta" href="/report.html">Leak to us &#8599;</a>
+    </nav>
+  </header>
   <main class="editorial-homepage content-page editorial-homepage--svg-footer-band">
     <div class="editorial-homepage__shell">
-      <!-- ===== SITE HEADER — canonical. Byte-identical on every page. =========
-           Only two things may differ per page: aria-current="page" on the link to
-           the current page, and the optional .gm-site-nav__extra slot.
-           Styling: styles/chrome.css. Behaviour: scripts/nav.js.
-           ==================================================================== -->
-      <header class="gm-site-header">
-        <a class="gm-site-wordmark" href="/" aria-label="Ghostmaxxing homepage">
-          <img class="gm-site-wordmark__mark" src="/images/logo/mark-color.svg" width="40" height="40" alt="" aria-hidden="true" />
-          <span class="gm-site-wordmark__text">
-            <span class="gm-site-wordmark__title">Ghostmaxxing</span>
-            <span class="gm-site-wordmark__sub">A public lab for testing face-recognition camouflage</span>
-          </span>
-        </a>
-        <nav class="gm-site-nav" aria-label="Primary">
-          <div class="gm-site-nav__group">
-            <button class="gm-site-nav__trigger" aria-expanded="false" aria-controls="gmSiteMenu">Know more <span aria-hidden="true">&#9662;</span></button>
-            <div class="gm-site-menu" id="gmSiteMenu">
-              <div>
-                <p class="gm-site-menu__kicker">Informative</p>
-                <ul>
-                  <li><a href="/about.html" aria-current="page">Vision &amp; about</a></li>
-                  <li><a href="/genealogy.html">The genealogy of the read</a></li>
-                  <li><a href="/report.html">Report a deployment</a></li>
-                  <li><a href="/workshops.html">Workshops</a></li>
-                </ul>
-              </div>
-              <div>
-                <p class="gm-site-menu__kicker">Technology</p>
-                <ul>
-                  <li><a href="/lab.html">Open the lab &#8599;</a></li>
-                  <li><a href="/ghostyle-transfer.html">Ghostyle transfer</a></li>
-                  <li><a href="/references/">References archive</a></li>
-                  <li><a href="/docs/">Docs</a></li>
-                  <li><a href="https://github.com/vecna/ghostmaxxing">Code</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <a class="gm-site-cta" href="/report.html">Leak to us &#8599;</a>
-        </nav>
-      </header>
 
       <section class="content-page__header-area" aria-labelledby="page-title">
         <span class="content-page__kicker">Vision &amp; About</span>
@@ -80,7 +81,7 @@
       </section>
 
       <div class="content-page__layout">
-        <article class="content-page__main">
+        <article class="content-page__main gm-prose">
           <section class="content-section" id="workshop-assistant">
             <h2>Workshop assistant.</h2>
             <p>

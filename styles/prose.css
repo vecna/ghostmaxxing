@@ -1,0 +1,106 @@
+/* ============================================================================
+   PROSE — body copy and the links inside it.
+
+   Layer: SHARED COMPONENT. Depends on tokens.css.
+
+   OPT-IN, NOT OPT-OUT. Add class="gm-prose" to a container of running text and
+   its bare links get the treatment. This replaces:
+
+     .content-page a:not(.wordmark):not(.navlink):not(.cta-inline)
+                    :not(.btn-primary):not(.link-secondary)
+
+   which was a BLOCKLIST of component class names. Blocklists fail silently the
+   moment a class is renamed — when the nav moved to .gm-site-*, every nav link
+   started getting a yellow highlighter behind it. An allowlist cannot fail that
+   way: a container either opts in or it does not.
+
+   The second guard is :not([class]). Inside .gm-prose, an anchor carrying any
+   class is a component — a button, a CTA, a chip — and styles itself. A bare
+   anchor is prose. Nothing to keep in sync.
+
+   THE TREATMENT — "the cut"
+   A 2px pink rule under ink text, drawn as a background-image so it sits below
+   the baseline without touching the descenders, and so it survives a line wrap
+   as two separate rules rather than one box. On hover and keyboard focus the
+   background fills cream and the rule stays.
+
+   It is the same gesture as the pink cut in the mark and the pink wind in the
+   genealogy: the accent marks an interruption, it never carries meaning by
+   itself. Contrast is 6.5:1 at rest and 17.7:1 on hover, both against the
+   orange page. The colour is never load-bearing — remove the pink entirely and
+   the link is still bold ink against body weight.
+
+   WHAT THIS FIXES ON THE HOMEPAGE
+   index.css had `a { color: var(--gm-pink) }`. Pink on --gm-bg is 1.06:1.
+   Not "low contrast" — invisible. It also broke the rule written into
+   tokens.css: pink is reserved, and never text.
+   ========================================================================= */
+
+.gm-prose a:not([class]) {
+  color: var(--gm-ink);
+  font-weight: 700;
+  text-decoration: none;
+  padding-bottom: 1px;
+  background-color: transparent;
+  background-image: linear-gradient(var(--gm-pink), var(--gm-pink));
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.gm-prose a:not([class]):hover,
+.gm-prose a:not([class]):focus-visible {
+  background-color: var(--gm-cream);
+  color: var(--gm-ink);
+}
+
+/* Focus is the outline from base.css. Restated with an offset so the ring
+   clears the cream fill instead of cutting through it. */
+.gm-prose a:not([class]):focus-visible {
+  outline: var(--gm-focus-ring);
+  outline-offset: 2px;
+}
+
+/* On soil, green or any dark panel. Same rule, cream text. The hover inverts
+   to cream-on-ink so the fill still reads as a fill. */
+.gm-prose--ondark a:not([class]),
+.gm-site-footer__links a:not([class]) {
+  color: var(--gm-cream);
+  font-weight: 700;
+  text-decoration: none;
+  padding-bottom: 1px;
+  background-color: transparent;
+  background-image: linear-gradient(var(--gm-pink), var(--gm-pink));
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.gm-prose--ondark a:not([class]):hover,
+.gm-prose--ondark a:not([class]):focus-visible,
+.gm-site-footer__links a:not([class]):hover,
+.gm-site-footer__links a:not([class]):focus-visible {
+  background-color: var(--gm-cream);
+  color: var(--gm-ink);
+}
+
+/* Visited is deliberately NOT differentiated. On an archive of research links
+   a purple visited state would recolour half the page, and pink is the only
+   accent the system has. */
+
+/* An external link gets a marker in the markup (the ↗ character), not a
+   generated ::after — a pseudo-element cannot be selected, copied, or read
+   reliably, and it lands inside the underline rule. */
+
+@media (prefers-contrast: more) {
+  .gm-prose a:not([class]),
+  .gm-prose--ondark a:not([class]),
+  .gm-site-footer__links a:not([class]) {
+    background-size: 100% 3px;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+}

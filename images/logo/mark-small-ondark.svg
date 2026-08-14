@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Ghostmaxxing"><defs><clipPath id="gmClip"><circle cx="32" cy="32" r="28.2"/></clipPath><mask id="gmPupil"><rect width="64" height="64" fill="#fff"/><circle cx="32" cy="32" r="9.5" fill="#000"/></mask></defs><circle cx="32" cy="32" r="23" fill="#fff1cf"/><g fill="#ff5f8f" clip-path="url(#gmClip)"><path d="M32 32 L22 -6 L50 -2 Z"/><path d="M32 32 L72 28 L54 62 Z"/></g><circle cx="32" cy="32" r="29.5" fill="none" stroke="#fff1cf" stroke-width="4.0"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ghostmaxxing mark: two mounted camera lenses and a gust of pink wind">
+  <path d="M5,7 H59" fill="none" stroke="#fff1cf" stroke-width="4.4" stroke-linecap="round"/>
+  <path d="M19,7 V16 M45,7 V16" fill="none" stroke="#fff1cf" stroke-width="4.4" stroke-linecap="round"/>
+  <circle cx="19" cy="29" r="12.4" fill="#2f7a5c" stroke="#fff1cf" stroke-width="3.4"/>
+  <circle cx="19" cy="29" r="5.2" fill="#f0c24a"/>
+  <circle cx="45" cy="29" r="12.4" fill="#2f7a5c" stroke="#fff1cf" stroke-width="3.4"/>
+  <circle cx="45" cy="29" r="5.2" fill="#f0c24a"/>
+  <path d="M5,52 C18,47.5 27,54 34,49.5 C42,45 51,49 60,44.5" fill="none" stroke="#ff5f8f" stroke-width="4.6" stroke-linecap="round"/>
+</svg>

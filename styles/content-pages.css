@@ -139,26 +139,14 @@
   font-weight: 800;
 }
 
-.content-page a:not(.wordmark):not(.navlink):not(.cta-inline):not(.btn-primary):not(.link-secondary) {
-  color: var(--gm-ink);
-  font-weight: 760;
-  text-decoration: none;
-  padding-inline: 0.08em;
-  background:
-    linear-gradient(180deg,
-      transparent 56%,
-      rgba(243, 199, 71, 0.72) 56%,
-      rgba(243, 199, 71, 0.72) 90%,
-      transparent 90%);
-}
-
-.content-page a:not(.wordmark):not(.navlink):not(.cta-inline):not(.btn-primary):not(.link-secondary):hover,
-.content-page a:not(.wordmark):not(.navlink):not(.cta-inline):not(.btn-primary):not(.link-secondary):focus-visible {
-  background: var(--gm-cream);
-  color: var(--gm-ink);
-  outline: var(--gm-focus-ring);
-  outline-offset: 0.12em;
-}
+/* The prose link rule that lived here is gone — see styles/prose.css.
+   It was:
+     .content-page a:not(.wordmark):not(.navlink):not(.cta-inline)
+                    :not(.btn-primary):not(.link-secondary)
+   a blocklist of component class names, which stopped excluding the nav the
+   moment those classes were renamed to .gm-site-*. Opt in with class="gm-prose"
+   on the container instead. The yellow it used was a hardcoded #f3c747 — the
+   v1 token value, stale since the palette consolidated. */
 
 .content-page__aside {
   position: sticky;

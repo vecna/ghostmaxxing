@@ -23,6 +23,9 @@
      - chrome.css is new: the site header and footer, which existed three
        different ways (inline styles on index, .editorial-homepage__header in
        pages.css, .gm-head in genealogy.css) and are now one component.
+     - prose.css is new: the link treatment for running text, opt-in via
+       class="gm-prose". It replaces a :not() blocklist in content-pages.css
+       that leaked onto the navbar the moment the nav classes were renamed.
    ========================================================================= */
 
 
@@ -41,6 +44,7 @@
 @import url("./logo.css");
 @import url("./cameras.css");
 @import url("./chrome.css");
+@import url("./prose.css");
 
 /* ---- 4. Pages — placement only ------------------------------------------
    Deliberately empty. A page stylesheet loaded on every page has stopped being

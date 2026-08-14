@@ -386,37 +386,62 @@ Example:
 
 ## Visual language
 
-The visual style should feel like:
+**The authority is `visual-styleguide.html`, not this file.** It carries the
+palette, the type scale, every component as the live thing, and §12 on when an
+SVG may be an `<img>` and when it has to be inlined. `tutorials/visual-direction.md`
+carries the reasoning. What follows is only what a writer needs in order to not
+write against the design.
 
-- dark public lab
-- neon annotations
-- festival signage
-- accessible technical archive
-- biometric system under inspection
-- face as interface
-- evidence, not spectacle
+The previous version of this section is worth recording because it was actively
+wrong, and copy was still being written to it: it asked for "dark public lab,
+neon annotations, scanlines, terminal-like labels, subtle glitch." That is the
+cyberlab aesthetic the project deliberately left, and `visual-direction.md` in
+this same folder lists cyberpunk, dark terminal dashboards and hacker-conference
+identity under *what this style is not*. Two internal documents were briefing
+opposite directions.
 
-Good motifs:
+### What the surface actually is
 
-- timelines
-- scanlines
-- bounding boxes
-- landmark points
-- masks
-- cards as specimens
-- metadata strips
-- terminal-like labels
-- large CTA buttons
-- subtle glitch, not unreadable glitch
+An institutional poster. Flat orange field, cream reading surfaces, 2px solid
+ink separators, square corners. No gradients, no drop shadows, no glow, no
+scanlines. Closer to a public notice pinned to a wall than to a console.
 
-Avoid:
+### The one structural idea a writer needs
+
+The site argues through a **lineage**: each era of face recognition, the
+documents that fuelled it, the intervention that interrupted it, the technology
+that emerged anyway — and two lenses at the top that nothing demonstrated so far
+has defeated. Pink marks an interruption and nothing else.
+
+This constrains copy directly:
+
+- Write about eras and sequence, not about a single "surveillance state".
+- Every claim of a defeat is scoped to one era, one method, one set of stated
+  conditions. Never to the problem as a whole.
+- Never write copy that implies the two undefeated lenses have been beaten. If
+  that ever becomes true it is a research finding and it changes the page, not
+  the adjectives.
+
+### Good motifs
+
+- lineages and timelines
+- documents, dossiers, procurement records — the paper trail that funded a
+  deployment
+- lens states: reading, being interrupted, spent
+- bounding boxes and landmark points, where they are the actual output
+- metadata strips, years, era labels
+- cards as evidence
+
+### Avoid
 
 - horror aesthetics
-- military/tactical aesthetics
+- military or tactical framing
 - corporate cybersecurity visuals
-- anonymous hacker clichés
-- surveillance fetish imagery
+- anonymous-hacker clichés
+- surveillance fetish imagery — the housings are the subject, not the aesthetic
 - beauty branding without critique
+- neon, glitch, scanlines, terminal chrome. The lab interface is the one place
+  a denser technical surface is allowed, and even there it does not revert.
 
 ## Accessibility
 
