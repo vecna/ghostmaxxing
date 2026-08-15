@@ -1,89 +1,127 @@
 <!doctype html>
 <html lang="en">
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>References — Ghostmaxxing</title>
-  <link rel="icon" type="image/svg+xml" href="/images/logo/mark-onlight.svg">
-  <meta name="description"
-    content="A curated technical and cultural genealogy of face-recognition camouflage, adversarial makeup, CV Dazzle, face obfuscation and physical-world attacks against computer vision systems." />
-  <meta property="og:title" content="References - Ghostmaxxing" />
-  <meta property="og:description"
-    content="An investigative archive of face-recognition camouflage, adversarial makeup, and anti-biometric appearance design." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="/images/social-card.svg" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="References - Ghostmaxxing" />
-  <meta name="twitter:description"
-    content="An investigative archive of face-recognition camouflage, adversarial makeup, and anti-biometric appearance design." />
-  <meta name="twitter:image" content="/images/social-card.svg" />
-  <link rel="stylesheet" href="/styles/pages.css" />
-  <link rel="stylesheet" href="/styles/content-pages.css" />
-  <link rel="stylesheet" href="/styles/references-list.css" />
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>References — Ghostmaxxing</title>
+    <link rel="icon" type="image/svg+xml" href="/images/logo/mark-onlight.svg">
+    <meta name="description"
+      content="A curated technical and cultural genealogy of face-recognition camouflage, adversarial makeup, CV Dazzle, face obfuscation and physical-world attacks against computer vision systems." />
+    <meta property="og:title" content="References - Ghostmaxxing" />
+    <meta property="og:description"
+      content="An investigative archive of face-recognition camouflage, adversarial makeup, and anti-biometric appearance design." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/social-card.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="References - Ghostmaxxing" />
+    <meta name="twitter:description"
+      content="An investigative archive of face-recognition camouflage, adversarial makeup, and anti-biometric appearance design." />
+    <meta name="twitter:image" content="/images/social-card.svg" />
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/pages.css" />
+    <link rel="stylesheet" href="/styles/content-pages.css" />
+    <link rel="stylesheet" href="/styles/references-list.css" />
+  </head>
 
-<body>
-  <!--
+  <body>
+    <!--
     Relevance-star icon, defined once and reused via <use href="#icon-star">.
     This is a placeholder star (auto-generated) — replace the single <path>
     below whenever you have a real icon and every star on the page updates.
     Keep the id "icon-star" and the 0 0 24 24 viewBox on the <symbol>.
-  -->
-  <svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
-    <symbol id="icon-star" viewBox="0 0 24 24">
-      <path
-        d="M12 2.5 L14.23 8.93 L21.04 9.06 L15.61 13.17 L17.58 19.69 L12 15.8 L6.42 19.69 L8.39 13.17 L2.96 9.06 L9.77 8.93 Z" />
-    </symbol>
-  </svg>
+    -->
+    <svg aria-hidden="true" focusable="false"
+      style="position:absolute;width:0;height:0;overflow:hidden">
+      <symbol id="icon-star" viewBox="0 0 24 24">
+        <path
+          d="M12 2.5 L14.23 8.93 L21.04 9.06 L15.61 13.17 L17.58 19.69 L12 15.8 L6.42 19.69 L8.39 13.17 L2.96 9.06 L9.77 8.93 Z" />
+      </symbol>
+    </svg>
 
-  <main class="editorial-homepage content-page editorial-homepage--svg-footer-band">
-    <div class="editorial-homepage__shell">
-      <header class="editorial-homepage__header">
-        <a class="wordmark" href="../index.html" aria-label="Ghostmaxxing homepage">
-          <span class="wordmark__main">
-            <img class="wordmark__mark" src="../images/logo/mark-onlight.svg" alt="" aria-hidden="true" />
-            <span class="wordmark__title">Ghostmaxxing</span>
-          </span>
-          <span class="wordmark__subtitle">
-            A public lab for testing face-recognition camouflage
-          </span>
-        </a>
+    <!-- ===== SITE HEADER — canonical. Byte-identical on every page. =========
+       Only two things may differ per page: aria-current="page" on the link to
+       the current page, and the optional .gm-site-nav__extra slot.
+       Styling: styles/chrome.css. Behaviour: scripts/nav.js.
+       ==================================================================== -->
+    <header class="gm-site-header">
+      <a class="gm-site-wordmark" href="/" aria-label="Ghostmaxxing homepage">
+        <img class="gm-site-wordmark__mark" src="/images/logo/mark-color.svg"
+          width="40" height="40" alt aria-hidden="true" />
+        <span class="gm-site-wordmark__text">
+          <span class="gm-site-wordmark__title">Ghostmaxxing</span>
+          <span class="gm-site-wordmark__sub">A public lab for testing
+            camouflage</span>
+        </span>
+      </a>
+      <nav class="gm-site-nav" aria-label="Primary">
+        <a class="gm-site-chip" href="/fediverse.html">in the Fediverse</a>
+        <div class="gm-site-nav__group">
+          <button class="gm-site-nav__trigger" aria-expanded="false"
+            aria-controls="gmSiteMenu">Know more <span
+              aria-hidden="true">&#9662;</span></button>
+          <div class="gm-site-menu" id="gmSiteMenu">
+            <div>
+              <p class="gm-site-menu__kicker">Informative</p>
+              <ul>
+                <li><a href="/about.html">Vision &amp; about</a></li>
+                <li><a href="/genealogy.html">The genealogy of the read</a></li>
+                <li><a href="/report.html">Report a deployment</a></li>
+                <li><a href="/workshops.html">Workshops</a></li>
+              </ul>
+            </div>
+            <div>
+              <p class="gm-site-menu__kicker">Technology</p>
+              <ul>
+                <li><a href="/lab.html">Open the lab &#8599;</a></li>
+                <li><a href="/ghostyle-transfer.html">Ghostyle transfer</a></li>
+                <li><a href="/references/">References archive</a></li>
+                <li><a href="/docs/">Docs</a></li>
+                <li><a
+                    href="https://github.com/vecna/ghostmaxxing">Code</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <a class="gm-site-cta" href="/report.html">Leak to us &#8599;</a>
+      </nav>
+    </header>
 
-        <nav class="editorial-homepage__nav" aria-label="Project navigation">
-          <a class="navlink" href="/references" aria-current="page">Research References</a>
-          <a class="navlink" href="../about.html">Vision &amp; About</a>
-          <a class="cta-inline" href="../report.html">How to <i>leak</i> to us<span aria-hidden="true">↗</span></a>
-        </nav>
-      </header>
+    <main
+      class="editorial-homepage content-page editorial-homepage--svg-footer-band">
+      <div class="editorial-homepage__shell">
 
-      <!--
+        <!--
         Edit this intro freely — it is static and will not be touched by
         scripts-dev/build-references-page.js. Only the {{...}} placeholders
         below are replaced by the build script.
       -->
-      <section class="content-page__header-area" aria-labelledby="page-title">
-        <span class="content-page__kicker">References</span>
-        <h1 id="page-title">A working genealogy of face-recognition camouflage.</h1>
-        <!--
+        <section class="content-page__header-area" aria-labelledby="page-title">
+          <span class="content-page__kicker">References</span>
+          <h1 id="page-title">A working genealogy of face-recognition
+            camouflage.</h1>
+          <!--
         <p class="content-page__lead">
           20 references, 2010&ndash;2025, newest first.
         </p>
         -->
-        <p class="content-page__deck">
-          The Ghostmaxxing references archive maps artistic, academic, and activist work around face obfuscation,
-          adversarial makeup, physical-world attacks, and anti-surveillance aesthetics. Each entry documents what was
-          demonstrated, what its limits are, and whether Ghostmaxxing can directly or partially retest the idea.
-        </p>
-      </section>
+          <p class="content-page__deck">
+            The Ghostmaxxing references archive maps artistic, academic, and
+            activist work around face obfuscation,
+            adversarial makeup, physical-world attacks, and anti-surveillance
+            aesthetics. Each entry documents what was
+            demonstrated, what its limits are, and whether Ghostmaxxing can
+            directly or partially retest the idea.
+          </p>
+        </section>
 
-      <div class="content-page__layout">
-        <article class="content-page__main">
-          <section class="content-section" id="references-list">
-          <!--
+        <div class="content-page__layout">
+          <article class="content-page__main">
+            <section class="content-section" id="references-list">
+              <!--
             <p class="content-page__lead reference-stats">20 references &middot; 15 peer-reviewed &middot; 3 art &middot; 2 advocacy &middot; 2010&ndash;2025</p>
           -->
-            <h3 class="reference-group" id="group-artistic">Art initiatives <span class="reference-group__count">(3)</span></h3>
+              <h3 class="reference-group" id="group-artistic">Art initiatives <span class="reference-group__count">(3)</span></h3>
 <div class="reference-group__list">
 
           <article class="content-section reference-entry" id="cv-dazzle">
@@ -752,33 +790,212 @@
             </p>
           </article>
 </div>
-          </section>
+            </section>
 
-          <!-- Static section — edit freely -->
-          <section class="content-section" id="method">
-            <h2>How to suggest a new entry.</h2>
-            <p>
-              Every possible reference should be read and transformed into the format of <code>REFERENCES.json</code>,
-              Once you're sure it might suit us, and potentially we can even program a Ghostyle to retest it, please
-              open an issue or submit a pull request.
-            </p>
-          </section>
-        </article>
+            <!-- Static section — edit freely -->
+            <section class="content-section" id="method">
+              <h2>How to suggest a new entry.</h2>
+              <p>
+                Every possible reference should be read and transformed into the
+                format of <code>REFERENCES.json</code>,
+                Once you're sure it might suit us, and potentially we can even
+                program a Ghostyle to retest it, please
+                open an issue or submit a pull request.
+              </p>
+            </section>
+          </article>
 
-        <aside class="content-page__aside" aria-label="Page sections">
-          <h2>Jump to</h2>
-          <nav>
-            <a href="#group-artistic">Art initiatives</a>
+          <aside class="content-page__aside" aria-label="Page sections">
+            <h2>Jump to</h2>
+            <nav>
+              <a href="#group-artistic">Art initiatives</a>
             <a href="#group-activism">Advocacy efforts</a>
             <a href="#group-research">Peer-reviewed papers</a>
-            <a href="#method">Suggest a new entry</a>
-          </nav>
-        </aside>
+              <a href="#method">Suggest a new entry</a>
+            </nav>
+          </aside>
+        </div>
       </div>
-    </div>
 
-    <div class="camera-band" aria-hidden="true"></div>
-  </main>
-</body>
+      <div class="camera-band" aria-hidden="true"></div>
+    </main>
+
+    <!-- ===== SITE FOOTER — canonical. Byte-identical on every page. =========
+       Pyre band, soil edge, link row. Replaces the .camera-band div, which
+       pointed at images/homepage-camera-band.svg — not in the repo, so it only
+       ever painted a faint gradient. The camera icons are INLINE <svg>: the
+       files in images/icons/ are class-driven and render black through <img>.
+       ==================================================================== -->
+    <footer class="gm-site-footer">
+      <div class="gm-site-footer__pyre" data-mode="full">
+        <img src="/images/motifs/pyre.svg" alt aria-hidden="true" />
+      </div>
+      <img class="gm-site-footer__edge" src="/images/motifs/soil-edge.svg" alt
+        aria-hidden="true" />
+      <div class="gm-site-footer__row">
+        <div class="gm-site-footer__cams">
+          <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+            focusable="false">
+            <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
+            <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
+            <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
+            <circle class="cam-iris" id="iris-dome" cx="50" cy="44"
+              r="6.6"></circle>
+            <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
+          </svg>
+          <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+            focusable="false">
+            <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
+            <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
+            <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
+            <rect class="cam-shell" x="10" y="40" width="72" height="30"
+              rx="7"></rect>
+            <rect class="cam-panel" x="54" y="47" width="22" height="16"
+              rx="3"></rect>
+            <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle
+                cx="70" cy="51" r="2"></circle><circle cx="60" cy="59"
+                r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
+            <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
+            <circle class="cam-iris" id="iris-street" cx="32" cy="55"
+              r="5.3"></circle>
+            <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
+          </svg>
+          <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+            focusable="false">
+            <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32"
+              stroke-width="5"></path>
+            <path class="cam-shell"
+              d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z"
+              stroke-linecap="round"></path>
+            <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
+            <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
+            <circle class="cam-iris cam-iris--void" id="iris-glasses-l" cx="28"
+              cy="45" r="9"></circle>
+            <circle class="cam-iris cam-iris--void" id="iris-glasses-r" cx="72"
+              cy="45" r="9"></circle>
+          </svg>
+          <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+            focusable="false">
+            <path class="cam-mount" d="M45,30 V12 M32,12 H58"
+              stroke-width="5"></path>
+            <rect class="cam-shell" x="16" y="36" width="66" height="34"
+              rx="5"></rect>
+            <path class="cam-mount" d="M12,30 H74 L84,40"
+              stroke-width="5"></path>
+            <circle class="cam-lens" cx="60" cy="51" r="14"></circle>
+            <circle class="cam-iris" id="iris-bullet" cx="60" cy="51"
+              r="6.2"></circle>
+            <circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"></circle>
+          </svg>
+        </div>
+        <div class="gm-site-footer__links">
+          <a href="/docs/">Technical documentation</a>
+          <a href="https://github.com/vecna/ghostmaxxing">Code</a>
+          <a href="/loader.html">Video Loader</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Camera icon source, cloned by pages-js/index.js into the hero field.
+       These are TEMPLATES, not <img>: images/icons/cam-*.svg are class-driven
+       (class="cam-shell", no fill attribute), so an <img src="…"> of one has no
+       stylesheet and every shape falls back to black. Cloned into the document
+       they are ordinary nodes and cameras.css paints them. Geometry here is a
+       verbatim copy of images/icons/ — that directory stays the source. -->
+    <template id="camtpl-dome">
+      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+        focusable="false">
+        <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
+        <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
+        <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
+        <circle class="cam-iris" id="iris-dome" cx="50" cy="44"
+          r="6.6"></circle>
+        <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
+      </svg>
+    </template>
+    <template id="camtpl-cube">
+      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+        focusable="false">
+        <path class="cam-mount" d="M50,16 V6 M38,6 H62" stroke-width="5"></path>
+        <rect class="cam-shell" x="16" y="16" width="68" height="68"
+          rx="19"></rect>
+        <circle class="cam-dot cam-dot--ring" cx="73" cy="26" r="3.4"></circle>
+        <circle class="cam-lens" cx="50" cy="50" r="17"></circle>
+        <circle class="cam-iris" id="iris-cube" cx="50" cy="50"
+          r="7.5"></circle>
+        <circle class="cam-glint" cx="44.9" cy="44.9" r="2.9"></circle>
+      </svg>
+    </template>
+    <template id="camtpl-glasses">
+      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+        focusable="false">
+        <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32"
+          stroke-width="5"></path>
+        <path class="cam-shell"
+          d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z"
+          stroke-linecap="round"></path>
+        <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
+        <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
+        <circle class="cam-iris cam-iris--void" id="iris-glasses-l" cx="28"
+          cy="45" r="9"></circle>
+        <circle class="cam-iris cam-iris--void" id="iris-glasses-r" cx="72"
+          cy="45" r="9"></circle>
+      </svg>
+    </template>
+    <template id="camtpl-pill">
+      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+        focusable="false">
+        <path class="cam-mount" d="M40,36 V22 M28,22 H52"
+          stroke-width="5"></path>
+        <rect class="cam-shell" x="6" y="36" width="88" height="28"
+          rx="14"></rect>
+        <g class="cam-dot cam-dot--dark"><circle cx="62" cy="44"
+            r="2"></circle><circle cx="70" cy="50" r="2"></circle><circle
+            cx="62" cy="56" r="2"></circle><circle cx="78" cy="45"
+            r="2"></circle><circle cx="80" cy="55" r="2"></circle><circle
+            cx="86" cy="50" r="2"></circle></g>
+        <circle class="cam-lens" cx="30" cy="50" r="12"></circle>
+        <circle class="cam-iris" id="iris-pill" cx="30" cy="50"
+          r="5.3"></circle>
+        <circle class="cam-glint" cx="26.4" cy="46.4" r="2"></circle>
+      </svg>
+    </template>
+    <template id="camtpl-street">
+      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+        focusable="false">
+        <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
+        <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
+        <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
+        <rect class="cam-shell" x="10" y="40" width="72" height="30"
+          rx="7"></rect>
+        <rect class="cam-panel" x="54" y="47" width="22" height="16"
+          rx="3"></rect>
+        <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle
+            cx="70" cy="51" r="2"></circle><circle cx="60" cy="59"
+            r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
+        <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
+        <circle class="cam-iris" id="iris-street" cx="32" cy="55"
+          r="5.3"></circle>
+        <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
+      </svg>
+    </template>
+    <template id="camtpl-bullet">
+      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+        focusable="false">
+        <path class="cam-mount" d="M45,30 V12 M32,12 H58"
+          stroke-width="5"></path>
+        <rect class="cam-shell" x="16" y="36" width="66" height="34"
+          rx="5"></rect>
+        <path class="cam-mount" d="M12,30 H74 L84,40" stroke-width="5"></path>
+        <circle class="cam-lens" cx="60" cy="51" r="14"></circle>
+        <circle class="cam-iris" id="iris-bullet" cx="60" cy="51"
+          r="6.2"></circle>
+        <circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"></circle>
+      </svg>
+    </template>
+
+    <script src="/pages-js/nav.js" defer></script>
+
+  </body>
 
 </html>

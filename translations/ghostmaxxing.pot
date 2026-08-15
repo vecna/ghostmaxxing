@@ -1927,7 +1927,7 @@ msgstr ""
 #. key: homepage_subtitle
 #. it: Un laboratorio pubblico per testare il camouflage contro il riconoscimento facciale
 #: index.html:32
-msgid "A public lab for testing face-recognition camouflage"
+msgid "A public lab for testing camouflage"
 msgstr ""
 
 #. key: prototype_navigation_label

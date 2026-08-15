@@ -227,6 +227,46 @@
   z-index: 4; overflow: visible; pointer-events: none;
 }
 .era:not(.era--flip) .era__wind { transform: translateY(-50%) scaleX(-1); }
+
+/* ---------------------------------------------------------------------------
+   THE WHIRLWIND — the gust turning in on itself where it meets the column.
+
+   Placed at the LEADING end of the sweep, not the trailing one: the moment of
+   interruption is where the gust reaches the smoke, and that is the only place
+   on the row that earns a second spiral. The wind already curls at its source,
+   so keeping the vortex at the far end stops both ends looking the same.
+
+   The wind is mirrored on non-flip rows (scaleX(-1) above), so the vortex side
+   alternates with it and the two always agree. It is NOT mirrored itself —
+   there are four separate files, whirlwind-a to -d, two turning each way. One
+   drawing flipped four times reads as a repeat; four drawings read as weather.
+
+   PAINTED WITH A FALLBACK, so <img> is correct here:
+   style="stroke:var(--gm-pink, #ff5f8f)". Inside the page it follows the
+   tokens; opened on its own it still renders. Unlike the wind, which carries no
+   colour at all and had to stay inline.
+
+   DENSITY IS THE RISK. Both the wind and the vortex are pink over a dark coat,
+   and this is the busiest strip on the page. If they merge into one pink mass,
+   the first thing to try is dropping --era-whirl-size, then raising the top
+   offset so the vortex clears the wind's own curls. Do not thin the coat. */
+.era__whirl {
+  position: absolute;
+  top: 0;
+  z-index: 5;
+  width: var(--era-whirl-size, 26%);
+  height: auto;
+  display: block;
+  pointer-events: none;
+  transform: translateY(-62%);
+}
+
+.era--flip .era__whirl { right: 48%; }
+.era:not(.era--flip) .era__whirl { left: 48%; }
+
+@media (max-width: 900px) {
+  .era__whirl { --era-whirl-size: 34%; transform: translateY(-58%); }
+}
 /* Dazzle pink is 1.09:1 against the orange — on its own it is invisible. Every
    pink stroke is therefore laid over a darker one of the same path: the dark
    coat is the legibility, the pink is the signal. Do not remove the coat. */
