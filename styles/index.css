@@ -57,11 +57,13 @@ body {
     position: absolute;
     left: 0;
     right: 0;
+    z-index: 5;
     background: var(--gm-cream);
     color: var(--gm-ink);
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: clamp(1rem, 3vw, 2.2rem);
     text-align: center;
     padding: 2rem 3rem;
     opacity: 0;
@@ -84,4 +86,189 @@ body {
 .cam-half.bottom {
     bottom: 0;
     height: 50%;
+}
+
+
+/* ===========================================================================
+   THE HERO STAGE — the six-step arc.
+
+   Ground is soil while the field is full. Behind the cameras, and visible from
+   the first paint at 14% opacity, is the plume head. Clearing a type raises it.
+   At six of six the ground crosses to cream over two seconds and the whirlwind
+   arrives.
+
+   The crossing is a colour transition, not a flash: 2s ease, and the whole
+   thing is a plain opacity/background change so prefers-reduced-motion can cut
+   it to an instant swap without losing any information.
+   ======================================================================== */
+
+.cam-stage {
+    position: relative;
+    height: 82vh;
+    min-height: 520px;
+    overflow: hidden;
+    background: var(--gm-soil);
+    transition: background-color 2s ease;
+}
+
+.cam-stage.is-finale {
+    background: var(--gm-cream);
+}
+
+/* Painted files, so <img> is correct here — unlike images/icons/, which are
+   class-driven and must be inlined. */
+.cam-plume {
+    position: absolute;
+    left: 50%;
+    top: 52%;
+    width: min(46rem, 82vw);
+    max-height: 86%;
+    transform: translate(-50%, -50%) scale(0.86);
+    opacity: 0.14;
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity 900ms ease, transform 900ms ease;
+}
+
+.cam-stage.is-finale .cam-whirl {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+}
+
+/* ---- the closing line ---------------------------------------------------
+   The honest half of the finale. It is not a congratulation and must never
+   become one: two of them are still reading, and the page says so. */
+.cam-finale {
+    position: absolute;
+    left: 50%;
+    bottom: 8%;
+    transform: translateX(-50%);
+    z-index: 4;
+    width: min(46rem, 88vw);
+    text-align: center;
+    opacity: 0;
+    transition: opacity 900ms ease 1.2s;
+}
+
+.cam-finale.show {
+    opacity: 1;
+}
+
+.cam-finale__line {
+    font-family: var(--serif);
+    font-size: var(--t-h3);
+    line-height: 1.2;
+    color: var(--gm-ink);
+    /* margin: 0 0 1rem; */
+}
+
+.cam-finale__actions {
+    display: flex;
+    gap: 0.9rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    pointer-events: auto;
+}
+
+.cam-finale__padded {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+@media (min-width: 600px) {
+    .cam-finale__padded {
+        padding-left: 10%;
+        padding-right: 10%;
+    }
+}
+
+.cam-reset {
+    background: transparent;
+    border: 2px solid var(--gm-ink);
+    color: var(--gm-ink);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+
+.cam-reset:hover {
+    background: var(--gm-cream);
+}
+
+/* ---- the fact panel -----------------------------------------------------
+   The camera sits beside its own fact, drawn LIVE — yellow iris, glint. It has
+   not been defeated by being tapped, it has been named, and the sentence is
+   about something it does now. */
+.cam-fact__art {
+    flex: none;
+    width: clamp(64px, 12vw, 104px);
+}
+
+.cam-fact__art .cam {
+    width: 100%;
+}
+
+.cam-fact__body {
+    max-width: 52ch;
+    text-align: left;
+}
+
+.cam-fact__kicker {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: var(--ls-meta);
+    text-transform: uppercase;
+    color: var(--gm-green);
+    margin: 0 0 0.5rem;
+}
+
+/* H typography, p semantics. A real heading here would inject a stray level
+   into the document outline and land in every screen reader's heading list. */
+.cam-fact__text {
+    font-family: var(--serif);
+    font-size: var(--t-h3);
+    line-height: 1.25;
+    margin: 0;
+}
+
+/* The prose rule from prose.css, restated because the panel is not .gm-prose
+   and the link is not a bare anchor. */
+.cam-fact__link {
+    color: var(--gm-ink);
+    text-decoration: none;
+    padding-bottom: 2px;
+    background-image: linear-gradient(var(--gm-pink), var(--gm-pink));
+    background-size: 100% 2px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-color 120ms ease;
+}
+
+.cam-fact__link:hover,
+.cam-fact__link:focus-visible {
+    background-color: var(--gm-bg);
+}
+
+.cam-fact__ext {
+    color: var(--gm-pink);
+}
+
+@media (max-width: 720px) {
+    .cam-fact__art { width: 56px; }
+    .cam-fact__body { text-align: center; }
+    .cam-finale { bottom: 5%; }
+}
+
+/* Everything above communicates through position and opacity, so removing the
+   motion removes nothing. The ground still crosses to cream, instantly. */
+@media (prefers-reduced-motion: reduce) {
+    .cam-stage,
+    .cam-plume,
+    .cam-whirl,
+    .cam-finale {
+        transition-duration: 1ms;
+        transition-delay: 0ms;
+    }
 }
