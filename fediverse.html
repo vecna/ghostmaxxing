@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>In the Fediverse — Ghostmaxxing</title>
+    <meta name="description"
+      content="Follow approved Ghostmaxxing experiments, documented ghostyles and project news from any Fediverse account." />
+    <link rel="canonical" href="https://ghostmaxxing.vecna.eu/fediverse.html" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#14100c" />
+    <link rel="icon" type="image/svg+xml" href="/images/logo/mark-color.svg" />
+    <link rel="icon" type="image/png" sizes="32x32"
+      href="/images/logo/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/images/logo/favicon-180.png" />
+
+    <meta property="og:title" content="In the Fediverse — Ghostmaxxing" />
+    <meta property="og:description"
+      content="Follow approved experiments, documented ghostyles and project news from any Fediverse account." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/social-card.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/pages.css" />
+    <link rel="stylesheet" href="/styles/content-pages.css" />
+  </head>
+
+  <body>
+
+    <!-- ===== SITE HEADER — canonical. Byte-identical on every page. =========
+   Only two things may differ per page: aria-current="page" on the link to
+   the current page, and the optional .gm-site-nav__extra slot.
+   Styling: styles/chrome.css. Behaviour: lab-js/nav.js.
+   ==================================================================== -->
+    <header class="gm-site-header">
+      <a class="gm-site-wordmark" href="/" aria-label="Ghostmaxxing homepage">
+        <img class="gm-site-wordmark__mark" src="/images/logo/mark-color.svg"
+          width="40" height="40" alt aria-hidden="true" />
+        <span class="gm-site-wordmark__text">
+          <span class="gm-site-wordmark__title">Ghostmaxxing</span>
+          <span class="gm-site-wordmark__sub">A public lab for testing
+            camouflage</span>
+        </span>
+      </a>
+      <nav class="gm-site-nav" aria-label="Primary">
+        <a class="gm-site-chip" href="/fediverse.html"
+          aria-current="page">in the Fediverse</a>
+        <div class="gm-site-nav__group">
+          <button class="gm-site-nav__trigger" aria-expanded="false"
+            aria-controls="gmSiteMenu">Know more <span
+              aria-hidden="true">&#9662;</span></button>
+          <div class="gm-site-menu" id="gmSiteMenu">
+            <div>
+              <p class="gm-site-menu__kicker">Informative</p>
+              <ul>
+                <li><a href="/about.html">Vision &amp; about</a></li>
+                <li><a href="/genealogy.html">The genealogy of the read</a></li>
+                <li><a href="/report.html">Report a deployment</a></li>
+                <li><a href="/workshops.html">Workshops</a></li>
+              </ul>
+            </div>
+            <div>
+              <p class="gm-site-menu__kicker">Technology</p>
+              <ul>
+                <li><a href="/lab.html">Open the lab &#8599;</a></li>
+                <li><a href="/ghostyle-transfer.html">Ghostyle transfer</a></li>
+                <li><a href="/references/">References archive</a></li>
+                <li><a href="/docs/">Docs</a></li>
+                <li><a
+                    href="https://github.com/vecna/ghostmaxxing">Code</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <a class="gm-site-cta" href="/report.html">Leak to us &#8599;</a>
+      </nav>
+    </header>
+
+    <main class="editorial-homepage content-page">
+      <div class="editorial-homepage__shell">
+        <div class="content-page__layout">
+          <article class="content-page__body gm-prose">
+
+            <span class="content-page__kicker">distribution</span>
+            <h1>In the Fediverse</h1>
+            <p class="content-page__lead">
+              Follow approved experiments, documented ghostyles and project
+              news from Mastodon or any compatible Fediverse service.
+            </p>
+
+            <section>
+              <h2>One lab, several feeds</h2>
+              <p>
+                Ghostmaxxing does not push everything through one account. Each
+                feed has a clear source or selection rule, so you can follow
+                the parts of the project you care about without accepting a
+                personalised recommendation system.
+              </p>
+
+              <h3>Primary accounts</h3>
+              <ul>
+                <li>
+                  <strong><code>@video@ghostmaxxing.vecna.eu</code></strong> —
+                  approved video experiments contributed through the lab.
+                </li>
+                <li>
+                  <strong><code>@ghostyles@ghostmaxxing.vecna.eu</code></strong>
+                  — approved pictures and videos associated with a documented
+                  ghostyle: a specific attempt to alter a face-recognition
+                  reading under stated test conditions.
+                </li>
+                <li>
+                  <strong><code>@clipboard@ghostmaxxing.vecna.eu</code></strong>
+                  — approved stills, screenshots and visual fragments from the
+                  lab.
+                </li>
+                <li>
+                  <strong><code>@news@ghostmaxxing.vecna.eu</code></strong> —
+                  project news and editorial updates published by the
+                  Ghostmaxxing team.
+                </li>
+              </ul>
+
+              <h3>Transparent filters</h3>
+              <p>
+                These accounts are automatic views of
+                <code>@ghostyles</code>. Their rules are encoded in their names
+                and applied once for everyone; they do not profile individual
+                followers.
+              </p>
+              <ul>
+                <li>
+                  <strong><code>@ghostyles-pictures@ghostmaxxing.vecna.eu</code></strong>
+                  — re-shares every approved ghostyle picture.
+                </li>
+                <li>
+                  <strong><code>@ghostyles-video@ghostmaxxing.vecna.eu</code></strong>
+                  — re-shares every approved ghostyle video.
+                </li>
+                <li>
+                  <strong><code>@ghostyles-daily@ghostmaxxing.vecna.eu</code></strong>
+                  — publishes one random selection from the preceding 24-hour
+                  window.
+                </li>
+                <li>
+                  <strong><code>@ghostyles-weekly@ghostmaxxing.vecna.eu</code></strong>
+                  — publishes one random selection from the preceding seven-day
+                  window.
+                </li>
+                <li>
+                  <strong><code>@ghostyles-top-rated@ghostmaxxing.vecna.eu</code></strong>
+                  — publishes the item with the most Fediverse likes in the
+                  preceding 24-hour window.
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h2>How to follow an account</h2>
+              <ol>
+                <li>Open the search field in Mastodon or another Fediverse app.</li>
+                <li>Paste one complete address from the lists above.</li>
+                <li>
+                  Check that the account is hosted on
+                  <code>ghostmaxxing.vecna.eu</code>, then select Follow.
+                </li>
+              </ol>
+              <p>
+                The first search may take a few seconds while your server
+                discovers the account. These are public, automatically accepted
+                follows: Ghostmaxxing does not manually approve followers.
+              </p>
+            </section>
+
+            <section>
+              <h2>From an experiment to a public post</h2>
+              <ol>
+                <li>
+                  You run an experiment in the browser. Running it does not, by
+                  itself, publish a recording or image.
+                </li>
+                <li>
+                  If you explicitly choose to contribute a video or PNG image,
+                  the lab asks you to accept the current consent notice before
+                  it sends the file.
+                </li>
+                <li>
+                  The contribution enters a private queue. A human moderator
+                  reviews it before anything becomes public.
+                </li>
+                <li>
+                  If it is approved, Ghostmaxxing creates one public post. The
+                  same record can then appear on the web, in RSS, as an
+                  ActivityPub object and in followers' Fediverse timelines.
+                </li>
+              </ol>
+              <p>
+                Approval is editorial, not a technical certification. A
+                published result documents what happened in a particular test;
+                it is not a promise that the same look will defeat every model,
+                camera or deployment.
+              </p>
+            </section>
+
+            <section>
+              <h2>Your contribution and your control</h2>
+              <p>
+                A contribution does not require a Ghostmaxxing account and is
+                not published under your name. Here, “anonymous contribution”
+                means that the public post has no contributor account or
+                byline; it does not mean that ordinary network data can never
+                be processed by the web server or its infrastructure.
+              </p>
+              <ul>
+                <li>
+                  <strong>Before you upload:</strong> work created in the lab is
+                  not placed in the moderation queue merely because you ran an
+                  experiment. Use the client controls to keep, download or
+                  discard it on your device.
+                </li>
+                <li>
+                  <strong>When you upload:</strong> the server receives the
+                  selected media, its submission type and consent version. A
+                  submission may also include its ghostyle identifier, app
+                  version, an optional note and experiment metrics.
+                </li>
+                <li>
+                  <strong>While it is pending:</strong> the original file is
+                  held for moderation. Pending media that has not been reviewed
+                  is automatically removed after 14 days. Rejected media is
+                  removed rather than published.
+                </li>
+                <li>
+                  <strong>If it is approved:</strong> video is transcoded and
+                  container metadata, including embedded device or location
+                  fields, is stripped before publication. PNG images are
+                  published as submitted, so remove sensitive image content or
+                  metadata before contributing one.
+                </li>
+                <li>
+                  <strong>Your deletion code:</strong> after an upload, the lab
+                  returns a unique secret code. Keep it somewhere safe. It is
+                  the credential that lets you remove that contribution while
+                  it is pending or after publication. Anyone who obtains the
+                  code can request that deletion, so do not publish it.
+                </li>
+              </ul>
+              <p>
+                Deleting an approved contribution removes its post and media
+                from Ghostmaxxing and sends a deletion notice to known
+                followers. Federation is a form of distribution, however:
+                another server or person may already have cached, copied or
+                re-shared the material. No federated publisher can guarantee
+                that every remote copy will disappear.
+              </p>
+            </section>
+
+            <section>
+              <h2>Prefer RSS?</h2>
+              <p>
+                You do not need a social account to subscribe. Use the
+                <a href="/feed/all.xml">combined RSS feed</a>, or replace
+                <code>all</code> in that address with an account handle such as
+                <code>video</code>, <code>ghostyles</code>, <code>news</code> or
+                <code>clipboard</code> to receive only that stream.
+              </p>
+            </section>
+
+            <section>
+              <h2>Try it, then decide what to share</h2>
+              <p>
+                <a href="/lab.html">Open the lab</a> to test a look locally, or
+                read <a href="/about.html">the project's vision and limits</a>
+                before contributing. If you have found a real-world deployment
+                we should investigate, you can also
+                <a href="/report.html">report it to us</a>.
+              </p>
+            </section>
+
+          </article>
+        </div>
+      </div>
+    </main>
+
+    <!-- ===== SITE FOOTER — canonical. Byte-identical on every page. =========
+       Pyre band, soil edge, link row. Replaces the .camera-band div, which
+       pointed at images/homepage-camera-band.svg — not in the repo, so it only
+       ever painted a faint gradient. The camera icons are INLINE <svg>: the
+       files in images/icons/ are class-driven and render black through <img>.
+       ==================================================================== -->
+    <footer class="gm-site-footer">
+      <div class="gm-site-footer__pyre" data-mode="full">
+        <img src="/images/motifs/pyre.svg" alt aria-hidden="true" />
+      </div>
+      <img class="gm-site-footer__edge" src="/images/motifs/soil-edge.svg" alt
+        aria-hidden="true" />
+      <div class="gm-site-footer__row">
+        <div class="gm-site-footer__cams">
+          <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+            focusable="false">
+            <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
+            <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
+            <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
+            <circle class="cam-iris" id="iris-dome" cx="50" cy="44"
+              r="6.6"></circle>
+            <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
+          </svg>
+          <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+            focusable="false">
+            <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
+            <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
+            <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
+            <rect class="cam-shell" x="10" y="40" width="72" height="30"
+              rx="7"></rect>
+            <rect class="cam-panel" x="54" y="47" width="22" height="16"
+              rx="3"></rect>
+            <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle
+                cx="70" cy="51" r="2"></circle><circle cx="60" cy="59"
+                r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
+            <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
+            <circle class="cam-iris" id="iris-street" cx="32" cy="55"
+              r="5.3"></circle>
+            <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
+          </svg>
+          <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+            focusable="false">
+            <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32"
+              stroke-width="5"></path>
+            <path class="cam-shell"
+              d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z"
+              stroke-linecap="round"></path>
+            <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
+            <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
+            <circle class="cam-iris cam-iris--void" id="iris-glasses-l" cx="28"
+              cy="45" r="9"></circle>
+            <circle class="cam-iris cam-iris--void" id="iris-glasses-r" cx="72"
+              cy="45" r="9"></circle>
+          </svg>
+          <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+            focusable="false">
+            <path class="cam-mount" d="M45,30 V12 M32,12 H58"
+              stroke-width="5"></path>
+            <rect class="cam-shell" x="16" y="36" width="66" height="34"
+              rx="5"></rect>
+            <path class="cam-mount" d="M12,30 H74 L84,40"
+              stroke-width="5"></path>
+            <circle class="cam-lens" cx="60" cy="51" r="14"></circle>
+            <circle class="cam-iris" id="iris-bullet" cx="60" cy="51"
+              r="6.2"></circle>
+            <circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"></circle>
+          </svg>
+        </div>
+        <div class="gm-site-footer__links">
+          <a href="/docs/">Technical documentation</a>
+          <a href="https://github.com/vecna/ghostmaxxing">Code</a>
+          <a href="/loader.html">Video Loader</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/pages-js/nav.js" defer></script>
+  </body>
+
+</html>
