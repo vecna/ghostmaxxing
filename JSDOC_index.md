@@ -31,7 +31,7 @@ Node tooling exists only for tests, docs, validation, and i18n extraction.
 ```text
 lab.html
   ├─ face-api.js (Vladmandic) + MediaPipe Tasks Vision
-  ├─ scripts/main.js                — application controller; exposes window.gstmxx
+  ├─ lab-js/main.js                — application controller; exposes window.gstmxx
   │   ├─ camera.js                  — webcam stream lifecycle, 2s recording
   │   ├─ engine.js                  — face-api 2D detection / landmarks / descriptors / matching
   │   ├─ engine-3d.js               — MediaPipe ImageEmbedder experimental visual-embedding path
@@ -73,7 +73,7 @@ with "does the modified face still match". This split is documented in the
 
 ## Module map
 
-### Core scripts (`scripts/`)
+### Core scripts (`lab-js/`)
 
 - **`main.js`** — application entry point; initialises subsystems, dispatches the
   `gstmxxReady` lifecycle event, and exposes the public API on `window.gstmxx`.

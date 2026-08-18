@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="cam" role="img" aria-label="Street pole surveillance camera">
+  <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
+  <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
+  <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
+  <rect class="cam-shell" x="10" y="40" width="72" height="30" rx="7"></rect>
+  <rect class="cam-panel" x="54" y="47" width="22" height="16" rx="3"></rect>
+  <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle cx="70" cy="51" r="2"></circle><circle cx="60" cy="59" r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
+  <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
+  <circle class="cam-iris" id="iris-street" cx="32" cy="55" r="5.3"></circle>
+  <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
+</svg>

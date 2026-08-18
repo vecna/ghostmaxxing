@@ -1,0 +1,8 @@
+Fonts in this directory are redistributed under the SIL Open Font License 1.1.
+
+  Newsreader             (c) Production Type            https://github.com/productiontype/Newsreader
+  Atkinson Hyperlegible  (c) Braille Institute          https://www.brailleinstitute.org/freefont
+  JetBrains Mono         (c) JetBrains                  https://github.com/JetBrains/JetBrainsMono
+
+Packaged via @fontsource 5.3.0. Latin subset only, woff2 only.
+OFL-1.1 full text: https://openfontlicense.org/

@@ -1,0 +1,62 @@
+/* ============================================================================
+   gstmxx — root import list. THE shared stylesheet.
+
+   Every page links exactly this one file, plus at most one page stylesheet:
+
+     <link rel="stylesheet" href="/styles/styles.css">
+     <link rel="stylesheet" href="/styles/genealogy.css">   <- page, optional
+
+   Order is the architecture and is not negotiable: fonts load, tokens define,
+   base resets, components draw, pages place. A component that needs a page
+   rule, or a page that redefines a token, is a mistake in the layer above it.
+
+   FIXED IN THIS PASS
+     - Every import pointed at styles/tokens/ and styles/components/, neither of
+       which exists. The file imported NOTHING. visual-styleguide.html was its
+       only consumer and had been rendering with no tokens, no reset and no
+       camera component since the day it was written.
+     - The fonts moved here. typography.css pulled three families from
+       fonts.googleapis.com; self-hosted copies now live in styles/vendor/ and
+       load from the same origin, so there is no third-party request and no
+       flash of fallback text.
+     - tokens.css absorbed colors.css and typography.css. Both are deleted.
+     - chrome.css is new: the site header and footer, which existed three
+       different ways (inline styles on index, .editorial-homepage__header in
+       pages.css, .gm-head in genealogy.css) and are now one component.
+     - prose.css is new: the link treatment for running text, opt-in via
+       class="gm-prose". It replaces a :not() blocklist in content-pages.css
+       that leaked onto the navbar the moment the nav classes were renamed.
+   ========================================================================= */
+
+
+/* ---- 0. Fonts — self-hosted, same origin -------------------------------- */
+@import url("./vendor/newsreader.css");
+@import url("./vendor/atkinson.css");
+@import url("./vendor/jetbrains-mono.css");
+
+/* ---- 1. Tokens — decisions ---------------------------------------------- */
+@import url("./tokens.css");
+
+/* ---- 2. Base — the reset ------------------------------------------------ */
+@import url("./base.css");
+
+/* ---- 3. Components — draw and state, never placement -------------------- */
+@import url("./logo.css");
+@import url("./cameras.css");
+@import url("./chrome.css");
+@import url("./prose.css");
+
+/* ---- 4. Pages — placement only ------------------------------------------
+   Deliberately empty. A page stylesheet loaded on every page has stopped being
+   a page stylesheet. Link them per page:
+
+     index.html               styles/index.css
+     genealogy.html           styles/genealogy.css
+     about.html               styles/pages.css  styles/content-pages.css
+     report.html              styles/pages.css  styles/content-pages.css  styles/report-page.css
+     ghostyle-transfer.html   styles/pages.css  styles/content-pages.css
+     lab.html                 styles/lab.css
+     realtime.html            styles/lab.css    styles/realtime.css
+     loader.html              styles/loader.css
+     /references/             styles/pages.css  styles/references-list.css
+   ------------------------------------------------------------------------ */

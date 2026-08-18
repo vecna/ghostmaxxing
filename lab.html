@@ -16,13 +16,22 @@
   <meta name="twitter:description" content="A local browser lab for testing face-recognition camouflage with AR Ghostyles." />
   <meta name="twitter:image" content="/images/social-card.svg" />
 
-  <link rel="icon" type="image/svg+xml" href="/images/ghostmaxxing-favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="/images/logo/mark-onlight.svg">
   <meta name="generator" content="Hand-coded with rage against the algorithm" />
 
-  <link rel="stylesheet" href="styles/lab.css" />
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <link rel="stylesheet" href="/styles/pages.css" />
+  <link rel="stylesheet" href="/styles/lab.css" />
 </head>
 
 <body>
+  <!-- Back to the site. Tool pages get this instead of the poster header —
+       see chrome.css §5. -->
+  <a class="gm-tool-back" href="/">
+    <img src="/images/logo/mark-color.svg" alt="" aria-hidden="true" />
+    <span>Ghostmaxxing</span>
+  </a>
+
   <!-- ============================ STAGE ============================ -->
   <!-- #viewer holds the camera + every overlay canvas the engine draws to. -->
   <div class="viewer" id="viewer" data-view="off">
@@ -298,15 +307,15 @@
 
   <!-- ============================ SCRIPTS ============================ -->
   <!-- Engine (unchanged), then the new presentation controller. -->
-  <script src="scripts/mobile-ui.js"></script>
-  <script type="module" src="scripts/ghostyle3d-uv-renderer.js"></script>
-  <script type="module" src="scripts/plugins3d-loader.js"></script>
-  <script type="module" src="scripts/mediapipe-loop.js"></script>
-  <script src="scripts/vendor/face-api.js"></script>
-  <script type="module" src="scripts/bbox-overlay.js"></script>
-  <script type="module" src="scripts/auto-find-loop.js"></script>
-  <script type="module" src="scripts/main.js"></script>
-  <script type="module" src="scripts/lab-ui.js"></script>
+  <script src="/lab-js/mobile-ui.js"></script>
+  <script type="module" src="/lab-js/ghostyle3d-uv-renderer.js"></script>
+  <script type="module" src="/lab-js/plugins3d-loader.js"></script>
+  <script type="module" src="/lab-js/mediapipe-loop.js"></script>
+  <script src="/lab-js/vendor/face-api.js"></script>
+  <script type="module" src="/lab-js/bbox-overlay.js"></script>
+  <script type="module" src="/lab-js/auto-find-loop.js"></script>
+  <script type="module" src="/lab-js/main.js"></script>
+  <script type="module" src="/lab-js/lab-ui.js"></script>
 </body>
 
 </html>

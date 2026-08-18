@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-vi.mock('../../scripts/main.js', () => ({
+vi.mock('../../lab-js/main.js', () => ({
   els: {},
   clearOverlay: vi.fn(),
   DETECTOR_OPTIONS: {}
 }));
 
-vi.mock('../../scripts/utils.js', () => ({
+vi.mock('../../lab-js/utils.js', () => ({
   distance: vi.fn(() => 0),
   avgPoint: vi.fn(() => ({ x: 0, y: 0 })),
   drawClosedPath: vi.fn(),
@@ -15,17 +15,17 @@ vi.mock('../../scripts/utils.js', () => ({
   setLog: vi.fn()
 }));
 
-vi.mock('../../scripts/camera.js', () => ({
+vi.mock('../../lab-js/camera.js', () => ({
   triggerOverlayFadeout: vi.fn(),
   resizeCanvas: vi.fn()
 }));
 
-vi.mock('../../scripts/db.js', () => ({
+vi.mock('../../lab-js/db.js', () => ({
   persistDb: vi.fn(),
   renderDbStats: vi.fn()
 }));
 
-import { hasActivePlugin } from '../../scripts/engine.js';
+import { hasActivePlugin } from '../../lab-js/engine.js';
 
 describe('engine.hasActivePlugin', () => {
   beforeEach(() => {

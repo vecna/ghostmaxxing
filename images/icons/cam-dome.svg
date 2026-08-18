@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="cam" role="img" aria-label="Ceiling dome camera">
+  <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
+  <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
+  <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
+  <circle class="cam-iris" id="iris-dome" cx="50" cy="44" r="6.6"></circle>
+  <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
+</svg>

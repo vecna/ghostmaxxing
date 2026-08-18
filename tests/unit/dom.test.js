@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-import { state } from '../../scripts/state.js';
+import { state } from '../../lab-js/state.js';
 import {
   els,
   setStatus,
   clearOverlay,
   clearActiveEffect,
   effectSelected
-} from '../../scripts/dom.js';
+} from '../../lab-js/dom.js';
 
-vi.mock('../../scripts/i18n.js', () => ({
+vi.mock('../../lab-js/i18n.js', () => ({
   t: vi.fn((key) => {
     const messages = {
       not_available_label: 'not_available_label',

@@ -1,0 +1,74 @@
+{
+  "dome": [
+    {
+      "text": "The tinted bubble hides which way the lens is actually pointed — you cannot tell if you are in frame."
+    },
+    {
+      "text": "Dome housings are cheap enough that most are never checked for the angle they were mounted at."
+    },
+    {
+      "text": "A dome reads as \"watching everywhere\" by design — most of that field of view is unused, or unmonitored.",
+      "href": "/genealogy.html"
+    }
+  ],
+  "cube": [
+    {
+      "text": "Basic box units are commonly left on their factory default password, live feed searchable by anyone online.",
+      "href": "/report.html"
+    },
+    {
+      "text": "A box camera's recording almost never comes with a public record of who can access the footage."
+    },
+    {
+      "text": "Cheap sensors like this one are deployed at volume precisely because nobody has to justify each one."
+    }
+  ],
+  "glasses": [
+    {
+      "text": "Face-recognition glasses let matching happen with no visible lens at all — no moment of being told you were scanned.",
+      "href": "/genealogy.html"
+    },
+    {
+      "text": "Wearable cameras move the decision to record from a fixed public notice to one person's judgment."
+    },
+    {
+      "text": "There is no dome, no housing, no blinking light — the absence of a visible camera is the whole design."
+    }
+  ],
+  "pill": [
+    {
+      "text": "Pill-shaped sensors are cheap enough to deploy in bulk, with no requirement to prove they improve safety first."
+    },
+    {
+      "text": "Miniaturized units like this are built to be missed — the smaller the housing, the less anyone questions it."
+    },
+    {
+      "text": "Bulk deployment is the business model: price per unit matters more than whether each one is needed."
+    }
+  ],
+  "street": [
+    {
+      "text": "Pole-mounted units are frequently wired into shared city-wide systems with little public oversight of who can query them.",
+      "href": "/report.html"
+    },
+    {
+      "text": "A single street pole can host several sensors at once, each logged to a different, rarely-audited system."
+    },
+    {
+      "text": "Municipal camera networks routinely outlive the policy that was supposed to govern how they're used.",
+      "href": "/references/"
+    }
+  ],
+  "bullet": [
+    {
+      "text": "Long-range bullet cameras are marketed on resolution alone — accuracy claims rarely account for real lighting, angle, or distance."
+    },
+    {
+      "text": "The longer the barrel, the further this unit claims to identify a face — a claim almost never tested at that range."
+    },
+    {
+      "text": "Higher zoom does not mean higher confidence; matching error still rises with distance and motion.",
+      "href": "/references/"
+    }
+  ]
+}

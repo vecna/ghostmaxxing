@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="cam" role="img" aria-label="Edge AI cube camera">
+  <path class="cam-mount" d="M50,16 V6 M38,6 H62" stroke-width="5"></path>
+  <rect class="cam-shell" x="16" y="16" width="68" height="68" rx="19"></rect>
+  <circle class="cam-dot cam-dot--ring" cx="73" cy="26" r="3.4"></circle>
+  <circle class="cam-lens" cx="50" cy="50" r="17"></circle>
+  <circle class="cam-iris" id="iris-cube" cx="50" cy="50" r="7.5"></circle>
+  <circle class="cam-glint" cx="44.9" cy="44.9" r="2.9"></circle>
+</svg>

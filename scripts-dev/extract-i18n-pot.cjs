@@ -5,7 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
-const i18nPath = path.join(root, 'scripts', 'i18n.js');
+const i18nPath = path.join(root, 'lab-js', 'i18n.js');
 const translationsDir = path.join(root, 'translations');
 const potPath = path.join(translationsDir, 'ghostmaxxing.pot');
 const csvPath = path.join(translationsDir, 'ghostmaxxing-summary.csv');
@@ -36,7 +36,7 @@ function escapeCsv(value) {
 }
 
 function sourceRefs(context) {
-   return String(context || 'scripts/i18n.js')
+   return String(context || 'lab-js/i18n.js')
       .split(';')
       .map((entry) => entry.trim())
       .filter(Boolean);

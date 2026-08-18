@@ -1,8 +1,12 @@
 .DS_Store
-CODE2PROMPT*.txt
+C2P-*.*
 node_modules
 playwright-report/*
+!playwright-report/FOLDER-DESCRIPTION.md
 test-results/*
+!test-results/FOLDER-DESCRIPTION.md
 coverage/*
+!coverage/FOLDER-DESCRIPTION.md
 docs/*
-references/.venv
+!docs/FOLDER-DESCRIPTION.md
+codemap/*

@@ -6,7 +6,7 @@ const mediapipeMocks = vi.hoisted(() => ({
   detectForVideo: vi.fn(),
 }));
 
-vi.mock('../../scripts/vendor/tasks-vision@0.10.35.js', () => ({
+vi.mock('../../lab-js/vendor/tasks-vision@0.10.35.js', () => ({
   FilesetResolver: {
     forVisionTasks: mediapipeMocks.forVisionTasks,
   },
@@ -16,12 +16,12 @@ vi.mock('../../scripts/vendor/tasks-vision@0.10.35.js', () => ({
   },
 }), { virtual: true });
 
-vi.mock('../../scripts/config.js', () => ({
+vi.mock('../../lab-js/config.js', () => ({
   MEDIAPIPE_WASM_URL: 'https://cdn.example.test/mediapipe/wasm',
   MEDIAPIPE_FACE_LANDMARKER_URL: 'https://cdn.example.test/face_landmarker.task',
 }));
 
-vi.mock('../../scripts/i18n.js', () => ({
+vi.mock('../../lab-js/i18n.js', () => ({
   t: vi.fn((key, params) => (params ? `${key}:${JSON.stringify(params)}` : key)),
 }));
 
@@ -71,7 +71,7 @@ describe('mediapipe loop', () => {
   });
 
   it('warns and skips startup when the gstmxx event bus is missing', async () => {
-    await import('../../scripts/mediapipe-loop.js');
+    await import('../../lab-js/mediapipe-loop.js');
 
     window.dispatchEvent(new CustomEvent('gstmxxReady'));
     await flushPromises();
@@ -89,7 +89,7 @@ describe('mediapipe loop', () => {
     events.addEventListener('landmarks3d', onLandmarks);
     window.gstmxx = { events, log: vi.fn() };
 
-    await import('../../scripts/mediapipe-loop.js');
+    await import('../../lab-js/mediapipe-loop.js');
     window.dispatchEvent(new CustomEvent('gstmxxReady'));
     await flushPromises();
 
@@ -118,7 +118,7 @@ describe('mediapipe loop', () => {
     mediapipeMocks.createFromOptions.mockRejectedValueOnce(loadError);
     window.gstmxx = { events: new EventTarget(), log: vi.fn() };
 
-    await import('../../scripts/mediapipe-loop.js');
+    await import('../../lab-js/mediapipe-loop.js');
     window.dispatchEvent(new CustomEvent('gstmxxReady'));
     await flushPromises();
 

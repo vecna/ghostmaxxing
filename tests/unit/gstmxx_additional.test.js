@@ -13,8 +13,8 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import '../../scripts/main.js';
-import { state } from '../../scripts/state.js';
+import '../../lab-js/main.js';
+import { state } from '../../lab-js/state.js';
 
 function getDbSnapshot() {
   return structuredClone(state.db);

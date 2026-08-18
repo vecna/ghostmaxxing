@@ -1,8 +1,10 @@
-@import url("./vendor/google-fonts.css");
-
 /* ============================================================================
    Ghostmaxxing — lab.css
    Production dark skin for the redesigned lab.
+
+   This stylesheet builds on the shared editorial page styles in pages.css and
+   keeps only the lab-specific layout and dark-surface overrides that are
+   unique to lab.html.
 
    Named regions (see lab.html / lab-ui.js):
      View bar    .viewbar     top overlay selector (Camera / 2D / 3D)
@@ -11,9 +13,6 @@
      Dock        .dock        bottom two-zone nav (On device / Online)
      Plugin bar  .pluginbar   replaces the Dock when a command Ghostyle is on
      Screens     .screen      full-camera overrides (Faces / Settings / Upload / Gallery / Info)
-
-   Warm dark translation of the editorial --gm-* palette. System fonts only
-   (no Google Fonts). Colour, type and layout tokens live in :root.
    ============================================================================ */
 
 :root {
@@ -41,10 +40,6 @@
   --net: #ff8a4c;
   --net-dim: #c98a63;
 
-  --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
-  --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
-
   --dock-w: 460px;   /* fixed width of Dock/Plugin bar on desktop */
   --z-stage: 1;
   --z-chrome: 20;
@@ -53,20 +48,14 @@
   --z-toast: 60;
 }
 
-* { box-sizing: border-box; }
-
 html, body {
-  margin: 0;
   height: 100%;
   background: var(--ink-deep);
   color: var(--fg);
-  font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
   overscroll-behavior: none;
 }
-
-button { font-family: inherit; }
 
 /* ============================ STAGE / VIEWER ============================ */
 .viewer {

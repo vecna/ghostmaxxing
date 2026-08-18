@@ -4,7 +4,7 @@ import {
   seekFaceInDb,
   computeCompositeMetrics,
   decideMatchState,
-} from '../../scripts/landmark-analysis.js';
+} from '../../lab-js/landmark-analysis.js';
 
 describe('landmark-analysis', () => {
   it('distanceToDiversity maps expected values', () => {

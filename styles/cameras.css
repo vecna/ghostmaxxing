@@ -1,0 +1,230 @@
+/* ============================================================================
+   CAMERAS — the camera icons, their lenses, their mark and their labels.
+
+   Layer: SHARED COMPONENT. Sits next to logo.css.
+   Depends on: tokens.css (colour + type).
+   Does NOT depend on: pages.css / homepage.css. Nothing here knows about a
+   page layout, so genealogy, references and the lab can all use it.
+
+   Nothing in this file positions anything on a page. It draws a camera, sets
+   the state of its lens, and sets its label. Where the camera GOES is the
+   page's business — see genealogy.css.
+
+   CHANGED IN THIS PASS
+     - --gm-green-deep moved to tokens.css, where it belongs.
+     - ghostutter.css is gone (lab-js/ghostutter.js with it), and so is the
+       shard that replaced it. Spent is now an EXTINGUISHED lens, nothing more.
+
+   Contents
+     1. Camera parts
+     2. Lens states — the whole vocabulary
+     3. The shard
+     4. Stamp — the camera's label
+     5. Reduced motion
+   ========================================================================= */
+
+
+/* --- 1. Camera parts -------------------------------------------------------
+   Every cam-*.svg is authored in a 0 0 100 100 viewBox and uses these classes.
+   Presentation attributes have been removed from the files: the colour lives
+   here, so one rule restyles the whole fleet.
+
+   Iris geometry, as a fraction of the lens radius. Every icon is drawn to
+   these, so they are documented rather than eyeballed per file:
+     iris  = 0.44 x lens radius
+     glint = 0.17 x lens radius, offset 0.30 x lens radius up and left
+
+   Markup contract, in drawing order:
+     .cam-mount   the bracket, pole or arm. Stroke only.
+     .cam-shell   the housing. Cream fill, green outline.
+     .cam-lens    the dark barrel.
+     .cam-iris    the coloured centre. MUST carry a unique id.
+     .cam-glint   the highlight. Decorative, no id.  */
+
+.cam {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.cam-mount {
+  fill: none;
+  stroke: var(--gm-green);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cam-shell {
+  fill: var(--gm-cream);
+  stroke: var(--gm-green);
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+
+.cam-lens {
+  fill: var(--gm-green-deep);
+  stroke: var(--gm-green);
+  stroke-width: 3.4;
+}
+
+.cam-iris {
+  fill: var(--gm-yellow);
+  stroke: none;
+  transition: fill 320ms ease, stroke 320ms ease;
+}
+
+.cam-glint {
+  fill: var(--gm-cream);
+  opacity: 0.9;
+  transition: opacity 320ms ease;
+}
+
+/* A recessed panel in a housing — the street pole's sensor block. */
+.cam-panel { fill: var(--gm-green); }
+
+/* Little status LEDs and sensor dots. Never a lens, never a shard target. */
+.cam-dot { fill: var(--gm-yellow); }
+.cam-dot--dark { fill: var(--gm-green-deep); }
+.cam-dot--ring { stroke: var(--gm-green); stroke-width: 1.3; }
+
+/* Glasses only. The lens body is already --gm-cream, so a filled iris turns
+   the pair into welding goggles and eats the figure-of-eight silhouette. They
+   get a glass glare instead: two diagonal bars, no fill.
+
+   --cam-glare-opacity is the one knob worth having on screen: 0.38 reads like
+   scratches, 0.5 like solid glass but starts competing with the silhouette. */
+.cam-glare {
+  fill: none;
+  stroke: var(--gm-green);
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: var(--cam-glare-opacity, 0.38);
+}
+
+/* An iris that draws nothing but still exists as geometry, so the glasses can
+   take the spent state without taking a coloured centre. */
+.cam-iris--void {
+  fill: none;
+  stroke: none;
+  pointer-events: none;
+}
+
+
+/* --- 2. Lens states --------------------------------------------------------
+   Three, and only three. Set data-lens on the <svg> or on ANY ancestor, so a
+   whole era row can be switched with one attribute.
+
+     (unset) / data-lens="live"    still reading. Yellow iris, glint on.
+     data-lens="reading"           being defeated, right now. Transient.
+     data-lens="spent"             defeated. Dark iris, pink residue ring.
+
+   "spent" is the permanent state and it is deliberately still: the fact that a
+   camera was defeated is information, and information should not require an
+   animation to be legible. It survives a screenshot, a print, and
+   prefers-reduced-motion. */
+
+[data-lens="reading"] .cam-iris {
+  fill: var(--gm-pink);
+}
+
+[data-lens="spent"] .cam-iris {
+  fill: var(--gm-green-deep);
+  stroke: var(--gm-pink);
+  stroke-width: 2.5;
+}
+
+[data-lens="spent"] .cam-glint,
+[data-lens="reading"] .cam-glint {
+  opacity: 0;
+}
+
+/* The glare bars are the glasses' equivalent of the glint. */
+[data-lens="spent"] .cam-glare { opacity: calc(var(--cam-glare-opacity, 0.38) * 0.4); }
+
+/* A void iris stays void in every state. Without this, "spent" would hand the
+   glasses two pink rings — exactly the welding-goggles look the void iris
+   exists to avoid. Written with the attribute selector so it matches the
+   specificity of the state rules above and, coming later, wins.
+   DO NOT REORDER THIS FILE CASUALLY. */
+[data-lens] .cam-iris--void {
+  fill: none;
+  stroke: none;
+}
+
+
+/* --- 3. (was: the shard) ---------------------------------------------------
+   REMOVED IN THIS PASS. The six pink wedges on a spent iris read as an eye
+   sigil rather than as damage, which put a fictional emblem in the middle of
+   an evidence graphic. "Spent" now says the same thing with less: the iris
+   goes out, the glint goes with it, and a single thin pink ring is left as the
+   residue of the read that failed. Still, printable, screenshot-proof — the
+   properties that mattered about the shard — with nothing to misread.
+
+   Do not reintroduce a mark inside a lens. If a spent lens ever needs to be
+   louder, make the ring heavier; do not add a shape.  */
+
+
+/* --- 4. Stamp — the camera's label -----------------------------------------
+   ONE class for every camera caption. There is no second kind of label.
+
+   The arc is a PROPERTY of the stamp, not a separate species: below the width
+   where curved text stops being readable, --arc-mode flips to flat and the
+   same element renders as a straight line. lab-js/stamp.js reads --arc-mode
+   and does nothing but restore plain text if the value is "flat".
+
+     --arc-mode      arc | flat
+     --arc-radius    centre of circle to middle of each letter (px). auto =
+                     half the icon height + 16.
+     --arc-centre-y  circle centre relative to the <p>'s top edge. Negative =
+                     up inside the icon. auto = centre of the icon above.
+     --arc-spread    letter spacing along the arc. 1 = natural, 1.4 = airier.
+     --arc-flip      0 = readable at the bottom of the circle. 1 = tops out. */
+
+.gm-stamp {
+  --arc-mode: arc;
+  --arc-radius: auto;
+  --arc-centre-y: auto;
+  --arc-spread: 1;
+  --arc-flip: 0;
+  display: block;
+}
+
+.gm-stamp > p {
+  position: relative;
+  margin: 8px 0 0;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: var(--ls-meta);
+  text-transform: uppercase;
+  color: var(--gm-green-deep);
+}
+
+.gm-stamp > p .arc-char {
+  position: absolute;
+  left: 0;
+  top: 0;
+  line-height: 1;
+  display: block;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+/* Curved text under a small icon is decoration pretending to be a label.
+   Under roughly 90px of camera there is not enough arc for it to read, so the
+   stamp goes flat. Same class, same content, same meaning. */
+@media (max-width: 700px) {
+  .gm-stamp { --arc-mode: flat; }
+}
+
+
+/* --- 5. Reduced motion -----------------------------------------------------
+   State transitions are information arriving, so they are allowed to be
+   instant but not to disappear. */
+
+@media (prefers-reduced-motion: reduce) {
+  .cam-iris,
+  .cam-glint,
+  .cam-glare { transition: none; }
+}

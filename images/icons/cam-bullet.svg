@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="cam" role="img" aria-label="Bullet CCTV camera">
+  <path class="cam-mount" d="M45,30 V12 M32,12 H58" stroke-width="5"></path>
+  <rect class="cam-shell" x="16" y="36" width="66" height="34" rx="5"></rect>
+  <path class="cam-mount" d="M12,30 H74 L84,40" stroke-width="5"></path>
+  <circle class="cam-lens" cx="60" cy="51" r="14"></circle>
+  <circle class="cam-iris" id="iris-bullet" cx="60" cy="51" r="6.2"></circle>
+  <circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"></circle>
+</svg>

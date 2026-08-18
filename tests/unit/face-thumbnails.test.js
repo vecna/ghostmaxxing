@@ -8,7 +8,7 @@ import {
   getThumbnail,
   loadThumbnailsStore,
   saveThumbnail,
-} from '../../scripts/face-thumbnails.js';
+} from '../../lab-js/face-thumbnails.js';
 
 function createVideoMock(width = 640, height = 480) {
   const video = document.createElement('video');

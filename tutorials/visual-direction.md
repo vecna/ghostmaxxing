@@ -81,22 +81,74 @@ Avoid as core identity:
 
 ## Core metaphor
 
-Surveillance has become part of the landscape.
+Surveillance is not one machine. It is a lineage.
 
-It grows everywhere.
-It is installed as infrastructure.
-It is normalized as safety, convenience, and administration.
-It becomes background scenery before people have understood who operates it, what it sees, what it stores, and who can access it.
+Every era of face recognition produced its own technology, its own confident
+claim, and its own archive of documents that justified it — procurement
+records, accuracy figures, pilot reports, press releases. Those documents are
+the fuel. They accumulate. They are what makes the next deployment easy to
+approve.
 
-The “camera flowers” motif captures this:
-from a distance, the bottom of the page looks decorative, almost botanical.
-On closer inspection, the flowers are cameras.
+And in each era, something interrupted it. A demonstrated intervention: paint,
+prosthetics, printed patterns, adversarial makeup. In this system that
+interruption is **a gust of pink wind** crossing the column and putting the
+lens out. It is not a victory and it is not permanent — it is a documented
+result, under stated conditions, on the technology of that moment.
 
-This is the central visual metaphor:
+Then the technology moved. The counter-move that worked against one generation
+did not survive the next, and the smoke resumed above the cut.
 
-> Surveillance is naturalized as landscape.
+That sequence — documents accumulate, wind interrupts, technology re-emerges —
+repeats up the whole page. At the top, where the column opens out, **two
+lenses are still reading.** They have not been defeated by anything
+demonstrated so far. They are the present tense of the problem.
 
-The design should make that naturalization feel beautiful, unsettling, and legible.
+> A genealogy of interruptions, and the two that have not been interrupted yet.
+
+Ghostmaxxing is what sits at the end of that column: a public lab for testing
+whether the next interruption is possible, in your own browser, under your own
+conditions.
+
+### What each element carries
+
+| Element | Means |
+|---|---|
+| The stacked documents / dossiers | What fuelled the surveillance of that era |
+| The smoke column | The technology itself, rising and continuing |
+| The pink wind | A documented intervention that interrupted it |
+| The cut in the column | The moment the lens went out |
+| The smoke resuming above | The next generation, unaffected by the last counter-move |
+| The two lenses at the canopy | The undefeated present. Live irises, no cut |
+| The pyre at the foot | Where the lineage starts — pattern recognition, 1960s |
+
+### Rules this metaphor imposes
+
+- **Pink only ever marks an interruption.** Wind, the cut on a spent lens, the
+  rule under a link. It is never a surface, never body text, and never
+  decoration. Its contrast against the orange is around 1.1:1, so it can never
+  be the only thing carrying a meaning.
+- **The two at the top are never shown defeated.** No cut, no pink ring, live
+  yellow irises. The day one of them is genuinely defeated is a content change,
+  not a style change.
+- **A spent lens is still, and permanent.** No animation. The fact that
+  something was defeated is information, and information has to survive a
+  screenshot, a print, and `prefers-reduced-motion`.
+- **Never claim the wind won.** Every interruption is local, conditional and
+  temporary. The visual language may be triumphant for exactly one era at a
+  time and never about the whole column.
+
+### What this replaces
+
+The earlier direction was a botanical border at the foot of the page whose
+blossoms were CCTV housings — surveillance naturalized as landscape. It shipped
+as `images/homepage-camera-band.svg` and `.camera-band`.
+
+It is gone. Both the file and the divs have been removed. The landscape idea
+survives in exactly one place — the scattered camera field in the homepage hero
+— and that is the whole of it. Do not reintroduce the border, and do not
+describe the project as being about naturalization: the argument is now about
+lineage and interruption, which is a claim about time rather than about
+scenery.
 
 ## Short style description
 
@@ -166,40 +218,42 @@ then:
 
 ## Color direction
 
-Primary palette:
+**The values are not in this document.** They are in `styles/tokens.css`, which
+is the only place a `--gm-*` value may be defined, and this file will drift
+from it the moment anyone edits one and not the other.
 
-- hot orange background
-- black serif headlines
-- dark navy body text
-- green and yellow botanical/camera illustration
-- occasional cream or pale yellow accent
-- occasional deep green shadow
+That is not hypothetical — it already happened. Two `:root` blocks used to sit
+in this document, and they specified the v2 orange with the v1 greens, ink,
+cream and yellow. Anyone implementing from here got a hybrid that matched
+neither stylesheet. Combined with a third copy hiding in `pages.css`, the site
+ran three palettes at once and `about.html` rendered a visibly different orange
+from `index.html`.
 
-Suggested palette names, not strict values:
+Read the swatches off `visual-styleguide.html` §03 instead. That page reads the
+live computed values from the stylesheet at runtime, so it cannot drift.
 
-- surveillance orange
-- ink black
-- institutional navy
-- leaf green
-- warning yellow
-- faded cream
+### The intent, which is what belongs here
 
-Example CSS tokens:
+- **Orange is the page.** A poster wall, a public notice, a civic warning — not
+  neon, not cyberpunk. It is the loudest thing in the system and it is
+  deliberately flat.
+- **Cream is the surface.** Anything that has to be read at length sits on it.
+- **Soil and the greens are the machine.** Housings, lenses, smoke, the ground
+  the pyre sits in. Four greens ordered light to dark; nothing picks a green by
+  eye.
+- **Yellow is a live iris.** Something is reading, right now.
+- **Pink is an interruption and nothing else.** See the core metaphor. It is
+  reserved, it never carries meaning alone, and it never sits directly on
+  orange without cream or dark green underneath.
 
-:root {
-  --gm-bg: #f26a1b;
-  --gm-bg-deep: #df5512;
-  --gm-ink: #050505;
-  --gm-text: #071a33;
-  --gm-muted: #253a54;
-  --gm-green: #063f32;
-  --gm-green-soft: #1e6b4f;
-  --gm-yellow: #f3c747;
-  --gm-cream: #ffe7a8;
-  --gm-border: rgba(5, 5, 5, 0.28);
-}
+### One accepted anomaly
 
-The orange should feel like a poster wall, a public notice, a heat field, or institutional alarm color — not neon cyberpunk.
+The smoke and pyre motifs bake four greens as literal hex across roughly 2,000
+`<circle>` elements, and they are the pre-consolidation values. They are
+painted files behind `background-image`, so they cannot follow a token.
+Re-exporting them to move four dark greens by a few percent was judged not
+worth the risk. They are declared as `--gm-smoke-1`…`4` so the values are at
+least centralized. Do not use them for anything else.
 
 ## Typography
 
@@ -269,31 +323,29 @@ Keep it elegant, not sci-fi.
 
 The recognition overlay should be present enough to be legible, but not dominate the aesthetic. Avoid excessive HUD elements, scanline overload, or military target visuals.
 
-### Camera flowers
+### The camera field
 
-The bottom illustration should be SVG-like and aligned to the bottom of the page.
+Superseded the botanical border. Same instinct — surveillance as
+something installed everywhere and looked past — but scattered rather than
+botanical, and in the hero rather than the footer.
 
-It should resemble a field of flowers at first glance:
-- stems
-- leaves
-- repeated shapes
-- irregular heights
-- botanical rhythm
+The homepage builds it at runtime: camera housings of six types, seeded so the
+arrangement is stable between loads, rotated slightly, on soil. Tapping one
+removes every camera of that type and states a fact about it. The interaction
+is the argument — you can clear one kind of camera off the page and the field
+is still full.
 
-But the blossoms are:
-- CCTV cameras
-- sensor boxes
-- camera housings
-- small lenses
+Reusable as: the homepage hero, social cards, stickers and posters.
 
-Use green and yellow on orange.
+Green and yellow on soil. Never on orange — the housings are cream-shelled and
+they need a dark ground to read against.
 
-The motif should be reusable across pages:
-- landing footer
-- report page divider
-- references header detail
-- social cards
-- stickers/posters
+### The plume
+
+The footer and the genealogy both use the smoke column instead: pyre at the
+foot, smoke rising, the wind cutting across it, the two lenses at the canopy.
+That is the lineage argument, and it belongs anywhere the page is making a
+claim about time. See the core metaphor.
 
 ## Interaction
 
@@ -378,7 +430,8 @@ Avoid:
 - body text below headline
 - primary CTA button
 - secondary text link
-- camera flowers anchored at bottom
+- the camera field as the hero, on soil
+- pyre + soil-edge footer anchored at the bottom
 - generous whitespace
 - strong orange field
 
@@ -426,8 +479,10 @@ Key claim:
 
 Seen facial recognition in public space? Help document where it appears, who operates it, what technology is used, and what safeguards or abuses are present.
 
-Use the camera flowers motif more literally here:
-the surveillance landscape is what the reporting node tries to map.
+Use the camera field more literally here: the deployments a reader is being
+asked to document are the same housings the hero is full of. What the reporting
+node collects becomes the documents at the foot of the next era's column — that
+is the connection worth making visible on this page.
 
 ## App / Ghostmaxxing interface direction
 
@@ -606,43 +661,30 @@ Before publishing a page, check:
 
 ## Practical CSS direction
 
-Use global design tokens for the new visual system:
+Removed. It carried a second verbatim copy of the token block and duplicated
+`styles/tokens.css`, `base.css` and `cameras.css` in prose.
 
-:root {
-  --gm-bg: #f26a1b;
-  --gm-bg-deep: #df5512;
-  --gm-ink: #050505;
-  --gm-text: #071a33;
-  --gm-muted: #253a54;
-  --gm-green: #063f32;
-  --gm-green-soft: #1e6b4f;
-  --gm-yellow: #f3c747;
-  --gm-cream: #ffe7a8;
-  --gm-border: rgba(5, 5, 5, 0.28);
-  --gm-panel: rgba(255, 231, 168, 0.16);
-}
+The implementation is:
 
-Typography direction:
+- `styles/styles.css` — the one stylesheet every page links. Fonts, tokens,
+  reset, components, in that order.
+- `styles/tokens.css` — every colour, type and layout value.
+- `visual-styleguide.html` — every component as the live thing, plus §12 on
+  when an SVG may be an `<img>` and when it must be inlined.
 
-- display serif for h1/h2/wordmark
-- readable sans for body and nav
-- small monospace only for tags, years, and metadata
-
-Layout direction:
-
-- poster-scale hero
-- clear CTA cluster
-- bottom-aligned illustrated motif
-- large type on desktop
-- compressed but still dramatic type on mobile
+This document says what the system is for. That one says what it is.
 
 ## Future tasks
 
-- [x] Build a static SVG camera-flower border.
-- [x] Replace the cyberlab landing prototype with a static editorial landing prototype.
-- [x] Update brand-voice.md to include Ghostmaxxing and the new visual direction.
-- [x] Adapt references.css away from cyberlab toward investigative archive.
-- [x] Create a report.html design using the same visual system.
-- [x] Define international copy around Ghostmaxxing.
-- [x] Create social cards using the orange/camera-flower/serif system.
-- [x] Build reusable CSS tokens and components for the broader site.
+The previous list was eight items, all checked, several describing work that
+has since been undone or redone. Reset to what is actually open:
+
+- [ ] Re-express the era dossiers so the "documents that fuelled it" reading
+      is legible without the caption.
+- [ ] Decide whether the two undefeated lenses get named, or stay anonymous.
+- [ ] Social cards still use the old camera-flower composition.
+- [ ] `styles/lab.css` runs its own scoped dark palette. Deliberate, but it
+      has never been reconciled with the poster system on paper.
+- [ ] The `era__wind` block is inlined four times, 140 KB. Deduplicating it
+      needs a mechanism that keeps CSS reach — it has no fill attributes of
+      its own.

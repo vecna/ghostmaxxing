@@ -1,20 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../../scripts/utils.js', () => ({
+vi.mock('../../lab-js/utils.js', () => ({
   setLog: vi.fn(),
 }));
 
-vi.mock('../../scripts/camera.js', () => ({
+vi.mock('../../lab-js/camera.js', () => ({
   stopEffectLoop: vi.fn(),
   startEffectLoop: vi.fn(),
 }));
 
-vi.mock('../../scripts/engine.js', () => ({
+vi.mock('../../lab-js/engine.js', () => ({
   runEffectPass: vi.fn(),
   hasActivePlugin: vi.fn(() => false),
 }));
 
-vi.mock('../../scripts/engine-3d.js', () => ({
+vi.mock('../../lab-js/engine-3d.js', () => ({
   getFaceEmbedding: vi.fn(),
   cosineSimilarity: vi.fn((a, b) => {
     if (!Array.isArray(a) || !Array.isArray(b)) return 0;
@@ -22,30 +22,30 @@ vi.mock('../../scripts/engine-3d.js', () => ({
   }),
 }));
 
-vi.mock('../../scripts/face-thumbnails.js', () => ({
+vi.mock('../../lab-js/face-thumbnails.js', () => ({
   captureThumbnail: vi.fn(),
   getThumbnail: vi.fn(),
 }));
 
-vi.mock('../../scripts/config.js', () => ({
+vi.mock('../../lab-js/config.js', () => ({
   ANALYZE_PANEL_MAX_WIDTH_DESKTOP: 960,
   DETECTOR_OPTIONS: {},
 }));
 
-vi.mock('../../scripts/landmark-analysis.js', () => ({
+vi.mock('../../lab-js/landmark-analysis.js', () => ({
   seekFaceInDb: vi.fn(),
   decideMatchState: vi.fn(() => ({ headline: 'Riconoscimento stabile' })),
   distanceToDiversity: vi.fn((distance) => Math.round(distance * 100)),
 }));
 
-import { setLog } from '../../scripts/utils.js';
-import { stopEffectLoop, startEffectLoop } from '../../scripts/camera.js';
-import { runEffectPass, hasActivePlugin } from '../../scripts/engine.js';
-import { getFaceEmbedding, cosineSimilarity } from '../../scripts/engine-3d.js';
-import { captureThumbnail, getThumbnail } from '../../scripts/face-thumbnails.js';
-import { seekFaceInDb, decideMatchState, distanceToDiversity } from '../../scripts/landmark-analysis.js';
-import { state } from '../../scripts/state.js';
-import { generateReportText, openAnalyzePanel, closeAnalyzePanel } from '../../scripts/analyze-panel.js';
+import { setLog } from '../../lab-js/utils.js';
+import { stopEffectLoop, startEffectLoop } from '../../lab-js/camera.js';
+import { runEffectPass, hasActivePlugin } from '../../lab-js/engine.js';
+import { getFaceEmbedding, cosineSimilarity } from '../../lab-js/engine-3d.js';
+import { captureThumbnail, getThumbnail } from '../../lab-js/face-thumbnails.js';
+import { seekFaceInDb, decideMatchState, distanceToDiversity } from '../../lab-js/landmark-analysis.js';
+import { state } from '../../lab-js/state.js';
+import { generateReportText, openAnalyzePanel, closeAnalyzePanel } from '../../lab-js/analyze-panel.js';
 
 function makeFaceResult() {
   return {

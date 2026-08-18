@@ -3,7 +3,7 @@
 /**
  * Standalone consent-upload POST tester.
  *
- * Mirrors scripts/upload-consent.js:
+ * Mirrors lab-js/upload-consent.js:
  * - formData.append('video', clip.blob, clip.filename)
  * - formData.set('kind', 'video')
  * - formData.set('consent_version', ...)
@@ -11,7 +11,7 @@
  * - optional ghostyle_id, user_note, metrics_json
  *
  * Uploaded content provenance (same app flow):
- * - In production, scripts/camera.js creates clip.blob from MediaRecorder chunks
+ * - In production, lab-js/camera.js creates clip.blob from MediaRecorder chunks
  *   and emits it in the clipRecorded event.
  * - This standalone script cannot access the browser's in-memory Blob, so it uses
  *   CLIP_PATH as a file-backed equivalent of clip.blob and CLIP_FILENAME as the

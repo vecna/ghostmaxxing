@@ -1,0 +1,28 @@
+/* BASE — the reset, lifted out of the top of pages.css.
+   Layer: BASE. Depends on tokens.css. Knows about no page and no component. */
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  background:
+    radial-gradient(circle at top right, rgba(255, 220, 150, 0.08), transparent 34%),
+    linear-gradient(180deg, var(--gm-bg) 0%, var(--gm-bg) 68%, var(--gm-bg-deep) 100%);
+  color: var(--gm-text);
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  /* Lens states are information; they must survive a print. */
+  -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+}
+
+a { color: var(--gm-ink); text-decoration: none; }
+a:hover { color: var(--gm-green-deep); }
+button, a { -webkit-tap-highlight-color: transparent; }
+
+:focus-visible { outline: var(--gm-focus-ring); outline-offset: 3px; }
+
+img, svg { max-width: 100%; }

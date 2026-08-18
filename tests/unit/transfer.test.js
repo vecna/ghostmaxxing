@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../../scripts/i18n.js', () => ({
+vi.mock('../../lab-js/i18n.js', () => ({
   applyI18n: vi.fn(),
   initI18n: vi.fn(),
   setupLocaleSelect: vi.fn(),
@@ -12,7 +12,7 @@ vi.mock('../../scripts/i18n.js', () => ({
   }),
 }));
 
-import { initI18n, setupLocaleSelect } from '../../scripts/i18n.js';
+import { initI18n, setupLocaleSelect } from '../../lab-js/i18n.js';
 
 function buildTransferDom() {
   document.body.innerHTML = `
@@ -111,7 +111,7 @@ function installCanvasMocks() {
 
 async function importTransfer() {
   vi.resetModules();
-  await import('../../scripts/transfer.js');
+  await import('../../lab-js/transfer.js');
   return window.GT;
 }
 

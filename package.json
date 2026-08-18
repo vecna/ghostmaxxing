@@ -23,7 +23,7 @@
     "web-ar",
     "ghostyles"
   ],
-  "author": "Vecna",
+  "author": "vecna (me.vecna.eu)",
   "scripts": {
     "start": "http-server . -p 8080 -c-1 -o /lab.html",
     "serve": "http-server . -p 8080 -c-1",
@@ -43,14 +43,17 @@
     "update:coverage-badge": "node scripts-dev/update-coverage-badge.js",
     "update:references": "node references/build-references-page.js",
     "i18n:extract": "node scripts-dev/extract-i18n-pot.cjs",
-    "web-client-setup": "npm update:references; npm run docs:rebuild; node scripts-dev/install-client-interface.cjs",
+    "web-client-setup": "npm run update:references; npm run docs:rebuild; node scripts-dev/install-client-interface.cjs",
     "check": "npm run validate:ghostyles && npm run test:unit",
     "prepare:e2e": "playwright install chromium",
-    "c2p": "code2prompt . --no-ignore --include '*.html,*.css,*.js,*.cjs,*.json,*.md,*.d.ts,*.xml,**/*.html,**/*.css,**/*.js,**/*.cjs,**/*.json,**/*.md,**/*.d.ts,**/*.xml' --exclude 'node_modules/**,package-lock.json,CODE2PROMPT*.txt,.DS_Store,**/.DS_Store,tests/**/*.js,tests/**/*.jpg,tests/**/*.mjpeg,scripts/i18n.js,scripts-dev/extract-i18n-pot.cjs,scripts/vendor/README.md,scripts/vendor/**/*.js,scripts/vendor/**/*.json,scripts/vendor/**/*.wasm,scripts/vendor/**/*.task,scripts/vendor/**/*.tflite,scripts/vendor/**/*-shard*,scripts/vendor/foca.sh,styles/vendor/README.md,styles/vendor/**/*.css,styles/vendor/**/*.woff2,docs/jsdoc/**,coverage/**/*.html,coverage/**/*.js,coverage/**/*.css,coverage/**/*.json,coverage/**/*.info,coverage/**/*.png,playwright-report/**/*.html,test-results/**/*.json,images/**/*.svg,images/**/*.png,images/**/*.webp,data/**/*.json,translations/README.md,translations/**/*.pot,translations/**/*.csv,references/index.html,references/*.js,references/*.txt' --sort name_asc --output-format markdown -O \"CODE2PROMPT-$(date +%Y-%m-%d).txt\""
+    "c2p": "node scripts-dev/code2prompt.js",
+    "codemap": "node scripts-dev/build-codemap.js && node scripts-dev/build-codemap-html.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@vitest/coverage-v8": "^4.1.8",
+    "acorn": "^8.18.0",
+    "acorn-walk": "^8.3.5",
     "canvas": "^3.2.3",
     "clean-jsdoc-theme": "^5.0.2",
     "http-server": "^14.1.1",

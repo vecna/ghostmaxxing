@@ -1,0 +1,135 @@
+/* Ghostmaxxing logo component.
+ *
+ * THE MARK IS TWO MOUNTED LENSES, A GUST OF WIND, AND A SPENT LENS BELOW.
+ * A rail across the top with two stems; two lenses hanging from it with live
+ * yellow irises; a pink gust beneath them; one spent lens under that with a
+ * green flame over it. The two lenses are the undefeated present, the gust is
+ * the interruption, the spent lens is the era it put out.
+ *
+ * What moves is the GUST. The lenses never move — they are the thing that has
+ * not been stopped, and animating them would say the opposite.
+ *
+ * SUPERSEDED, so you do not go looking for it: the mark used to be a single
+ * disc with four pink shards radiating from the centre, and this file used to
+ * open with "the logo is a LENS with a shard on it; the lens never moves, only
+ * the shard rotates". That design is gone. There is no shard, no
+ * .gm-logo-shard, and no rotation. The old ghostutter shard it was related to
+ * was cut earlier — see cameras.css section 3.
+ *
+ * Three ways to place it, in order of preference:
+ *
+ *   1. <img src="/images/logo/mark-color.svg">              still
+ *   2. <img src="/images/logo/mark-animated-ondark.svg">    moving, self-contained
+ *   3. inline <svg> + .gm-logo .gm-logo--animated           moving, controllable
+ *
+ * Only reach for (3) when size, colour or duration must respond to the page at
+ * runtime. Otherwise (1) or (2) is one request and no CSS. Note that (2) is
+ * genuinely self-contained: the animation and its prefers-reduced-motion guard
+ * are a <style> block inside the file, which works even through <img>.
+ *
+ * PICK THE CUT BY SURFACE. There is no mark-mono.svg any more — it painted with
+ * currentColor, and the advice attached to it ("set CSS color on the img") was
+ * wrong: inside an <img> currentColor resolves against that document's own
+ * root, so it came out black everywhere.
+ *
+ *   mark-color.svg / mark-onlight.svg    full colour, light surfaces
+ *   mark-ondark.svg                      full colour, soil and green
+ *   mark-mono-ink.svg                    one colour, on cream or orange
+ *   mark-mono-cream.svg                  one colour, on soil or photography
+ *   mark-small-*                         below ~28px. Drops the spent lens and
+ *                                        the flame; they are illegible there
+ *
+ * The full mark holds to about 32px. Under that use a -small cut.
+ */
+
+:root {
+  /* Overridable per instance. Every coordinate in the mark is measured in the
+     64-unit box, so the whole thing is proportional and needs no re-tuning at
+     any size. Duration matches the gust in mark-animated-*.svg — change both
+     or they drift visibly when an inline mark sits near an <img> one. */
+  --gm-logo-size: 3rem;
+  --gm-logo-duration: 2.6s;
+}
+
+.gm-logo {
+  display: inline-block;
+  inline-size: var(--gm-logo-size);
+  block-size: var(--gm-logo-size);
+  line-height: 0;
+  flex: none;
+}
+
+.gm-logo > svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* ---- motion ------------------------------------------------------------
+ * The GUST moves. Nothing else does.
+ *
+ * It is a dash sweeping along the wind path, not a rotation and not a fade. A
+ * gust crosses and is gone; that is the whole gesture. Five uneven steps used
+ * to live here to make a shard stutter rather than sweep, on the reasoning that
+ * sweeping reads as progress. That reasoning still holds for a lens. It does
+ * not hold for wind, which is the one thing in this system that genuinely does
+ * travel — so the gust sweeps, linearly, and only the gust.
+ *
+ * REMOVED WITH THE OLD MARK: @keyframes gm-logo-stutter, @keyframes
+ * gm-logo-smooth, .gm-logo-shard, .gm-logo--smooth. There is no shard to
+ * rotate. .gm-logo--smooth in particular existed only so specimen.html could
+ * demonstrate the wrong animation, and specimen.html is gone too.
+ */
+@keyframes gm-logo-gust {
+  from { stroke-dashoffset: 90; }
+  to { stroke-dashoffset: 0; }
+}
+
+.gm-logo-wind {
+  stroke-dasharray: 22 68;
+}
+
+.gm-logo--animated .gm-logo-wind {
+  animation: gm-logo-gust var(--gm-logo-duration) linear infinite;
+}
+
+/* The gust stops mid-path and stays visible. The spent lens, the flame and the
+   two live irises are information and never depended on motion to be read. */
+@media (prefers-reduced-motion: reduce) {
+  .gm-logo--animated .gm-logo-wind {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}
+
+/* ---- header lockup ------------------------------------------------------
+ * Mark plus wordmark as live HTML, for the site header where the wordmark
+ * should stay selectable text rather than baked into an SVG.
+ */
+.gm-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  text-decoration: none;
+  color: inherit;
+}
+
+.gm-lockup__word {
+  font-family: var(--serif, Georgia, serif);
+  font-size: var(--gm-logo-size);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.gm-lockup--stacked {
+  flex-direction: column;
+  gap: 0.35em;
+  text-align: center;
+}
+
+/* Clear space: one lens radius on every side, expressed against the mark's own
+   size so it holds at any scale. */
+.gm-logo--framed {
+  padding: calc(var(--gm-logo-size) * 0.46);
+}

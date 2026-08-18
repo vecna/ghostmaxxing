@@ -99,7 +99,7 @@ authoring guide — kept there so they live in one place only.
 ## Internationalization
 
 Runtime translations for English, Italian, and Portuguese are shipped through
-`scripts/i18n.js` (a single inline message catalog + `data-i18n*` attributes +
+`lab-js/i18n.js` (a single inline message catalog + `data-i18n*` attributes +
 `t()` in JS). There is no `locales/` directory and no build step. Translated
 pages currently include `index.html`, `lab.html`, and `loader.html`; other static
 pages are English-baseline until they add `data-i18n*` bindings. See

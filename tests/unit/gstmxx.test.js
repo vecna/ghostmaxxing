@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import '../../scripts/main.js';
-import { state } from '../../scripts/state.js';
+import '../../lab-js/main.js';
+import { state } from '../../lab-js/state.js';
 
 describe('Ghostmaxxing utils and state logic', () => {
   let Ghostmaxxing;

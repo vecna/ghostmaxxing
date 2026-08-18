@@ -1,0 +1,380 @@
+/* ============================================================================
+   CHROME — the site header and the site footer. One implementation.
+
+   Layer: SHARED COMPONENT. Sits next to cameras.css and logo.css.
+   Depends on: tokens.css. Knows about no page.
+
+   WHY THIS FILE EXISTS
+   Before this pass there were three headers and two footers:
+
+     index.html              inline style="" on every element, ~20 of them
+     about / report /        .editorial-homepage__header + .wordmark, in
+       ghostyle-transfer     pages.css
+     genealogy.html          .gm-head + .gm-wordmark + .gm-nav, in genealogy.css
+
+     footer                  index.html only — the pyre band. Every other page
+                             ended on a .camera-band div pointing at a file
+                             that is not in the repo.
+
+   index.html's header and footer are the newest and were declared canonical.
+   Every value below is lifted verbatim from its inline styles, so the homepage
+   renders identically and the other pages move to match it. The old rules stay
+   in pages.css and genealogy.css for now — they are dead once the last page is
+   converted and are on the delete list.
+
+   The markup block is in every page byte-identical, so a find-and-replace
+   still works. Do not add a page-specific class to it; use a modifier.
+   ========================================================================= */
+
+
+/* --- 1. Header ------------------------------------------------------------ */
+
+.gm-site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: relative;
+  z-index: 10;
+}
+
+.gm-site-wordmark {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  text-decoration: none;
+  color: var(--gm-ink);
+}
+
+.gm-site-wordmark__mark {
+  width: 40px;
+  height: auto;
+  flex: none;
+}
+
+.gm-site-wordmark__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.gm-site-wordmark__title {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.gm-site-wordmark__sub {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.78;
+}
+
+
+/* --- 2. Nav --------------------------------------------------------------- */
+
+.gm-site-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+  font-size: 0.95rem;
+  position: relative;
+}
+
+.gm-site-nav__group {
+  position: relative;
+}
+
+.gm-site-nav__trigger {
+  background: none;
+  border: none;
+  font: inherit;
+  color: var(--gm-ink);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* The dropdown. Hidden by default and opened by lab-js/nav.js, which toggles
+   .is-open. It is NOT hidden with [hidden] or display via the open attribute,
+   because the panel has to stay in the layout for the arrow to line up. */
+.gm-site-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.6rem;
+  background: var(--gm-cream);
+  border: 2px solid var(--gm-ink);
+  padding: 1.4rem 1.6rem;
+  gap: 2rem;
+  z-index: 5;
+}
+
+.gm-site-menu.is-open {
+  display: flex;
+}
+
+.gm-site-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gm-site-menu li a {
+  text-decoration: none;
+  color: var(--gm-ink);
+  font-size: 0.92rem;
+}
+
+.gm-site-menu li a:hover {
+  color: var(--gm-pink);
+}
+
+.gm-site-menu__kicker {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: var(--ls-meta);
+  text-transform: uppercase;
+  color: var(--gm-pink);
+  margin: 0 0 0.3rem;
+}
+
+/* The page you are on, marked with aria-current="page" in the markup so the
+   styling and the accessible name cannot drift apart. */
+.gm-site-menu li a[aria-current="page"],
+.gm-site-nav > a[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* The one CTA. Pink because pink means interruption in this system, and
+   leaking to the node IS the interruption — colour and destination agree.
+
+   TEXT IS INK, NOT CREAM. Cream on pink is 2.57:1 and fails AA; ink on pink is
+   6.87:1. The 2px ink border is not decoration either: no accent in this
+   palette reaches 3:1 against the orange page (pink is 1.06:1), so without a
+   border the pill has no perceivable edge at all. The border is what makes it
+   read as a button. */
+.gm-site-cta {
+  background: var(--gm-pink);
+  color: var(--gm-ink);
+  border: 2px solid var(--gm-ink);
+  padding: 0.55rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* SECOND ACTION — a chip, not a second pill.
+   Deliberately NOT another coloured pill. Two filled pills of equal weight
+   means no primary action, and the numbers make it worse: pink against yellow
+   is 1.72:1 of luminance, so in greyscale, in bright sun, or to a red-green
+   colourblind reader the two buttons are the same button. Nothing separates
+   them but hue.
+
+   So the difference is carried by SHAPE, which survives all of that: filled vs
+   outlined, round vs square. The chip also costs no accent — the palette has
+   three and two are already load-bearing (yellow is a live iris, pink is an
+   interruption).
+
+   The dot is a quiet destination marker, not a state. Override --gm-chip-dot
+   per link; green-soft for the fediverse, and nothing else without a reason. */
+.gm-site-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: var(--gm-ink);
+  border: 2px solid var(--gm-ink);
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.gm-site-chip::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gm-chip-dot, var(--gm-green-soft));
+  flex: none;
+}
+
+.gm-site-chip:hover,
+.gm-site-chip:focus-visible {
+  background: var(--gm-cream);
+}
+
+/* Optional slot after the CTA — ghostyle-transfer.html puts its locale select
+   here. Anything in it must survive the nav wrapping on a narrow screen. */
+.gm-site-nav__extra {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+
+/* --- 3. Footer ------------------------------------------------------------
+   Pyre band, soil edge, then the link row. Replaces .camera-band, which
+   pointed at images/homepage-camera-band.svg — a file that is not in the repo,
+   so it had only ever painted a faint gradient. */
+
+.gm-site-footer {
+  background: var(--gm-soil);
+}
+
+.gm-site-footer__pyre {
+  background: var(--gm-soil);
+  overflow: hidden;
+}
+
+.gm-site-footer__pyre img {
+  display: block;
+  width: 100%;
+}
+
+/* Two modes. "full" shows the whole illustration; "cropped" clips it to a
+   band. Set data-mode on the wrapper. */
+.gm-site-footer__pyre[data-mode="full"] img {
+  height: auto;
+}
+
+.gm-site-footer__pyre[data-mode="cropped"] {
+  height: 230px;
+}
+
+.gm-site-footer__pyre[data-mode="cropped"] img {
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.gm-site-footer__edge {
+  display: block;
+  width: 100%;
+  height: 48px;
+}
+
+.gm-site-footer__row {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 2rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+/* Inline class-driven camera icons. They are <svg>, never <img>: the files in
+   images/icons/ carry no fill attributes, and an <img>-loaded SVG never sees
+   cameras.css, so through <img> the whole row renders solid black. */
+.gm-site-footer__cams {
+  display: flex;
+  gap: 1.6rem;
+  opacity: 0.6;
+}
+
+.gm-site-footer__cams .cam {
+  width: 30px;
+}
+
+.gm-site-footer__links {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.gm-site-footer__links a {
+  color: var(--gm-cream);
+}
+
+
+/* --- 4. Narrow ------------------------------------------------------------ */
+
+@media (max-width: 720px) {
+  .gm-site-header {
+    padding: 1.1rem 1.25rem;
+  }
+
+  .gm-site-nav {
+    gap: 1.1rem;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Left-anchored would push the panel off-screen once the trigger sits near
+     the right edge. */
+  .gm-site-menu {
+    left: auto;
+    right: 0;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .gm-site-footer__row {
+    padding: 0 1.25rem 2rem;
+  }
+}
+
+
+/* --- 5. Tool pages --------------------------------------------------------
+   lab, loader and realtime are full-screen camera surfaces. The poster header
+   is wrong on them — it competes with the stage and eats vertical space that
+   the video needs. They get a back-link instead, and they keep their own dark
+   chrome from lab.css.
+
+   realtime.html already had one (.realtime-home-link) and loader.html has its
+   wordmark; this is the shared version, currently used by lab.html. */
+
+.gm-tool-back {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.7rem 0.4rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(10, 43, 35, 0.72);
+  color: var(--gm-cream);
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: var(--ls-meta);
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
+}
+
+.gm-tool-back:hover {
+  background: rgba(10, 43, 35, 0.9);
+  color: var(--gm-cream);
+}
+
+.gm-tool-back img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .gm-tool-back {
+    background: var(--gm-soil);
+    backdrop-filter: none;
+  }
+}

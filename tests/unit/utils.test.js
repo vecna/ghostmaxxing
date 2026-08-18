@@ -68,8 +68,8 @@ describe('Additional coverage tests', () => {
  */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { state } from '../../scripts/state.js';
-import * as utils from '../../scripts/utils.js';
+import { state } from '../../lab-js/state.js';
+import * as utils from '../../lab-js/utils.js';
 
 describe('Time utilities', () => {
   test('formatTime returns HH:MM:SS from current time', () => {

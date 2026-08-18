@@ -1,0 +1,470 @@
+/* ============================================================================
+   GENEALOGY v2 — THE PLUME. The page layer for the fire reading of the
+   infographic. No camera or stamp rules: those stay in cameras.css.
+
+   Layer: PAGE. Depends on tokens.css, base.css, cameras.css.
+
+   Four pieces, and the argument lives in the second one:
+
+     smoke   the column. A repeating tile, NOT a stretched drawing: puffs and
+             toroidal rings have to stay round, so nothing here is ever scaled
+             non-uniformly. Height-agnostic by construction.
+     wind    the intervention. Five pink streams sourced by the dossier box,
+             leaving it on its own side and crossing the column: the smoke does
+             not bend around them, it stops and is carried off. The curls are
+             drawn INTO the stroked line, never layered over it.
+     node    camera plus its stamp. It no longer connects to the column —
+             nothing is drawn between the two.
+     dossier the text block.
+
+   The column is deliberately discontinuous. Each era's segment runs the height
+   of its content row and stops; the gap above it is where the wind is. That is
+   why there is no join to get wrong.
+   ========================================================================= */
+
+:root {
+  /* The centre track must be WIDER than the column, or the column's own width
+     spills under the dossier. Derived from --smoke-w, never guessed. */
+  --smoke-w: 160px;
+  --smoke-tile-h: 240px;
+  --wind-track: clamp(180px, 15vw, 240px);
+  --tail-h: clamp(300px, 34vw, 420px);
+  --era-gap: clamp(84px, 11vw, 152px);
+}
+
+.gm-page { overflow-x: hidden; background: var(--gm-bg); }
+.wrap { max-width: var(--page-max); margin: 0 auto; padding: 0 clamp(18px, 4vw, 40px); }
+
+
+/* --- Header ---------------------------------------------------------------- */
+
+.gm-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(20px, 3vw, 32px) 0 18px;
+  border-bottom: 1px solid var(--gm-border);
+}
+.gm-wordmark { display: grid; gap: 4px; }
+.gm-wordmark b {
+  font-family: var(--serif);
+  font-size: clamp(1.75rem, 1.46rem + 1.15vw, 2.5rem);
+  font-weight: 700; line-height: 1; color: var(--gm-ink);
+}
+.gm-wordmark span {
+  font-family: var(--mono); font-size: var(--t-meta);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gm-text); opacity: 0.78;
+}
+.gm-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; font-size: var(--t-small); }
+.gm-nav a { color: var(--gm-text); border-bottom: 1px solid var(--gm-border-strong); }
+.gm-nav a:hover { color: var(--gm-ink); }
+.gm-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border: 1.5px solid var(--gm-border-strong);
+  color: var(--gm-ink); font-weight: 700;
+}
+.gm-btn:hover { background: var(--gm-panel-strong); }
+
+
+/* --- Hero ------------------------------------------------------------------ */
+
+.gm-hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: clamp(28px, 4vw, 48px);
+  align-items: end;
+  padding: clamp(36px, 6vw, 60px) 0 clamp(20px, 3vw, 30px);
+}
+.gm-hero h1 {
+  margin: 0;
+  font-family: var(--serif); font-weight: 700; color: var(--gm-ink);
+  font-size: clamp(3rem, 1.85rem + 4.6vw, 5.75rem);
+  line-height: 0.92; letter-spacing: -0.02em; text-wrap: balance;
+}
+/* The hero carries no display title of its own — the wordmark and the kicker do
+   that — so the opening statement has to hold the top of the page by itself.
+   Serif, display scale, no fixed box: it wraps to whatever the column is. */
+.gm-hero__statement {
+  margin: 0; max-width: 26ch;
+  font-family: var(--serif); font-weight: 700; color: var(--gm-ink);
+  font-size: clamp(1.5rem, 1.18rem + 1.28vw, 2.25rem);
+  line-height: 1.14; letter-spacing: -0.012em; text-wrap: pretty;
+}
+
+.gm-legend { display: grid; gap: 12px; border-top: 1.5px solid var(--gm-border-strong); padding-top: 20px; }
+.gm-legend__title {
+  margin: 0; font-family: var(--mono); font-size: var(--t-meta);
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--gm-green-deep);
+}
+.gm-legend__rows {
+  display: grid; grid-template-columns: 52px 1fr; gap: 12px 16px;
+  align-items: center; font-size: var(--t-small); line-height: 1.35; color: var(--gm-text);
+}
+.gm-legend__rows .cam { width: 52px; }
+
+
+/* --- The plume column ------------------------------------------------------ */
+
+.plume { position: relative; padding-bottom: 0; background: var(--gm-bg); }
+.plume__stack { position: relative; }
+
+/* THE COLUMN. ONE element behind the whole stack, not one per row. Per-row
+   segments meant a tile seam at every element edge, and a repeated tile is
+   clipped flat at its box — a razor-straight cut through a puff. Continuous by
+   construction; the interruptions are DRAWN by the wind, which bites the
+   column with a ragged edge instead of relying on a box boundary.
+
+   The tile also seams on a narrow neck now (r=13 at y=0/240), so the two cuts
+   that do remain — under the canopy and down inside the fire — fall on a thin
+   waist and are covered anyway. */
+.plume__col {
+  position: absolute; top: 0; bottom: 0; left: 50%;
+  width: var(--smoke-w); margin-left: calc(var(--smoke-w) / -2);
+  background: url("../images/motifs/smoke-tile.svg") repeat-y center top;
+  background-size: var(--smoke-w) var(--smoke-tile-h);
+  z-index: 0; pointer-events: none;
+}
+.smoke-run { margin-inline: auto; }
+.smoke-run--head { height: clamp(120px, 14vw, 190px); }
+.smoke-run--tail {
+  position: relative;
+  height: var(--tail-h);
+  display: grid; align-content: start; justify-items: center;
+}
+.smoke-run--tail > .pyre__strap { margin-top: 18px; }
+
+/* THE HEAD. Capped at its drawn size so it never scales up. Pulled down over
+   its own last 90 units so the column starts inside the mouth. */
+/* The head, with the two cameras that have NOT been defeated standing either
+   side of it. They are stamps like every other node, so stamp.js arcs their
+   labels the same way. */
+.canopy-holder {
+  position: relative; z-index: 3;
+  width: 100%; max-width: min(940px, 100%);
+  margin: 0 auto; padding: 0 clamp(18px, 4vw, 40px);
+}
+/* The wedge is widest at the crown and narrows to nothing, so the two cameras
+   that are still reading sit in the empty corners it leaves — never against
+   its widest point. */
+.canopy-cam { position: absolute; bottom: 5%; width: clamp(160px, 21vw, 268px); }
+.canopy-cam--l { left: 4%; }
+.canopy-cam--r { right: 4%; }
+.canopy {
+  display: block; width: 100%; height: auto;
+  margin-bottom: -2.6%;
+  position: relative; z-index: 3;
+}
+
+.plume__intro { position: relative; z-index: 1; text-align: center; max-width: 46rem; margin: 0 auto; padding: 0 18px 0; }
+.plume__intro h2 {
+  margin: 0; font-family: var(--serif); font-weight: 700; color: var(--gm-ink);
+  font-size: clamp(2.5rem, 1.62rem + 3.5vw, 4.55rem);
+  line-height: 0.94; letter-spacing: -0.03em; text-wrap: balance;
+}
+
+
+/* THE RISE. The column does not start as a column: it gathers out of the whole
+   width of the fire and closes upward. Same construction as the resumption —
+   opaque puffs, softened only at the base, never a half-transparent wash. */
+.pyre__rise {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  bottom: calc(var(--tail-h) * -0.52);
+  width: min(1200px, 94vw); height: calc(var(--tail-h) * 1.5);
+  background: url("../images/motifs/smoke-base.svg") no-repeat center bottom;
+  background-size: 100% 100%;
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.72) 0, rgba(0,0,0,0.92) 18%, #000 46%);
+  mask-image: linear-gradient(to top, rgba(0,0,0,0.72) 0, rgba(0,0,0,0.92) 18%, #000 46%);
+  z-index: 0; pointer-events: none;
+}
+
+
+/* --- The era row ----------------------------------------------------------- */
+
+/* Padding is half a gap on each side so the space above the rule equals the
+   space below it: with a full gap top and bottom PLUS the band's own bottom
+   margin, the rule sat two thirds of the way down the void and the wind could
+   never be centred in what it is supposed to be filling. */
+.era {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr var(--wind-track) 1fr;
+  align-items: center;
+  padding: calc(var(--era-gap) * 0.5) 0;
+  color: inherit;
+}
+.era:focus-visible { outline: var(--gm-focus-ring); outline-offset: -6px; }
+
+/* The band carries nothing but the wind now: the era chips went when the
+   dossier proved to already carry the era's name and its years, and the dashed
+   rule went with them. */
+.era__band {
+  grid-row: 1; grid-column: 1 / -1;
+  position: relative;
+  margin: 0 0 var(--era-gap);
+  display: block;
+}
+.era__band > .era__chip {
+  position: relative; z-index: 3;
+  padding: 2px 12px;
+  background: var(--gm-bg);
+  font-family: var(--mono); font-size: var(--t-small);
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--gm-green-deep);
+}
+
+/* THE WIND. Five streams, sourced by the dossier box: they leave it on its own
+   side, cross the column and die out on the far side. The curls are part of the
+   line, not a layer on top, so NOTHING here may be stretched on one axis — the
+   svg scales as one drawing and the stroke widths are user units. */
+.era__windzone { display: block; position: relative; height: 0; }
+.era__wind {
+  position: absolute; left: 0; right: 0; top: 0;
+  transform: translateY(-50%);
+  display: block; width: 100%; height: auto;
+  z-index: 4; overflow: visible; pointer-events: none;
+}
+.era:not(.era--flip) .era__wind { transform: translateY(-50%) scaleX(-1); }
+
+/* ---------------------------------------------------------------------------
+   THE WHIRLWIND — the gust turning in on itself where it meets the column.
+
+   Placed at the LEADING end of the sweep, not the trailing one: the moment of
+   interruption is where the gust reaches the smoke, and that is the only place
+   on the row that earns a second spiral. The wind already curls at its source,
+   so keeping the vortex at the far end stops both ends looking the same.
+
+   The wind is mirrored on non-flip rows (scaleX(-1) above), so the vortex side
+   alternates with it and the two always agree. It is NOT mirrored itself —
+   there are four separate files, whirlwind-a to -d, two turning each way. One
+   drawing flipped four times reads as a repeat; four drawings read as weather.
+
+   PAINTED WITH A FALLBACK, so <img> is correct here:
+   style="stroke:var(--gm-pink, #ff5f8f)". Inside the page it follows the
+   tokens; opened on its own it still renders. Unlike the wind, which carries no
+   colour at all and had to stay inline.
+
+   DENSITY IS THE RISK. Both the wind and the vortex are pink over a dark coat,
+   and this is the busiest strip on the page. If they merge into one pink mass,
+   the first thing to try is dropping --era-whirl-size, then raising the top
+   offset so the vortex clears the wind's own curls. Do not thin the coat. */
+.era__whirl {
+  position: absolute;
+  top: 0;
+  z-index: 5;
+  width: var(--era-whirl-size, 26%);
+  height: auto;
+  display: block;
+  pointer-events: none;
+  transform: translateY(-62%);
+}
+
+.era--flip .era__whirl { right: 48%; }
+.era:not(.era--flip) .era__whirl { left: 48%; }
+
+@media (max-width: 900px) {
+  .era__whirl { --era-whirl-size: 34%; transform: translateY(-58%); }
+}
+/* Dazzle pink is 1.09:1 against the orange — on its own it is invisible. Every
+   pink stroke is therefore laid over a darker one of the same path: the dark
+   coat is the legibility, the pink is the signal. Do not remove the coat. */
+/* ---------------------------------------------------------------------------
+   THE WIND IS PAINTED IN THE MARKUP NOW, NOT HERE.
+
+   Fourteen rules used to live at this spot:
+
+     .era__wind .w-coat path  { stroke: var(--gm-green-deep); ... }
+     .era__wind .w-blow path  { stroke: var(--gm-pink); ... }
+     .era__wind .w-blow .w1   { stroke-width: 14px; }        (x6)
+     .era__wind .w-coat .w1   { stroke-width: 22px; }        (x6)
+     .era__wind .w-spark .sp-coat { fill: var(--gm-green-deep); }
+     .era__wind .w-spark .sp-core { fill: var(--gm-pink); }
+
+   The wind block was inlined four times, 140 KB of the page. It is now one
+   <g id="gm-wind"> in a <defs> at the top of genealogy.html, referenced four
+   times with <use>.
+
+   A CSS selector does not reach into a <use> shadow tree. Inherited properties
+   and custom properties do. So the two stroke colours moved onto the groups as
+   inline style using var(--gm-green-deep) / var(--gm-pink), and the twelve
+   stroke-widths moved onto the paths as stroke-width attributes. The values did
+   not change — the rendering was diffed and is pixel-identical.
+
+   IF YOU ADD A RULE HERE IT WILL NOT APPLY. It will also not obviously fail:
+   the geometry still draws, so you get black strokes and a plausible-looking
+   bug report about the wind "going dark". Change the inline style in the defs
+   instead, or the attributes on the paths.
+
+   The rules below this comment still work — they target .era__wind itself,
+   which is a real element in the document, not shadow content.
+   ------------------------------------------------------------------------ */
+
+/* THE RESUMPTION. After the wind has taken the column, the smoke does not
+   snap back on: it re-forms above the cut from a base WIDER than the column
+   and fades in as it climbs. Two layers, because one element cannot mask only
+   part of its own background: the element itself is an orange veil that kills
+   the continuous column where the wind ate it, and ::after redraws smoke at
+   redraws the re-forming smoke: a wide scatter of small puffs at the base
+   that grow and close into the column at the top. Drawn OPAQUE, because a
+   half-transparent dark green over the orange is brown mud; only the lowest
+   third is softened, and only a little. */
+.era__band > .era__resume {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0;
+  width: calc(var(--smoke-w) * 2.15);
+  height: clamp(300px, 34vw, 460px);
+  z-index: 1; pointer-events: none;
+  background: var(--gm-bg);
+}
+.era__band > .era__resume::after {
+  content: ""; position: absolute; inset: 0;
+  background: url("../images/motifs/smoke-cut.svg") no-repeat center center;
+  background-size: 100% 100%;
+  -webkit-mask-image: linear-gradient(to top, #000 0 10%, rgba(0,0,0,0.16) 31%, rgba(0,0,0,0) 40% 50%, rgba(0,0,0,0.24) 60%, rgba(0,0,0,0.82) 80%, #000 92%);
+  mask-image: linear-gradient(to top, #000 0 10%, rgba(0,0,0,0.16) 31%, rgba(0,0,0,0) 40% 50%, rgba(0,0,0,0.24) 60%, rgba(0,0,0,0.82) 80%, #000 92%);
+}
+
+
+.era__node {
+  grid-row: 2; grid-column: 1; justify-self: center;
+  position: relative; z-index: 2;
+  width: clamp(148px, 19vw, 248px);
+}
+/* Stretched to the full row, with the text centred inside it, so the duct can
+   be measured from the row's own top edge: the distance from there to the wind
+   is exactly --era-gap. Centre the box instead and that distance is unknowable
+   in CSS, because it depends on how tall the camera beside it happens to be. */
+.era__dossier {
+  grid-row: 2; grid-column: 3;
+  position: relative; z-index: 2;
+  align-self: stretch;
+  display: flex; flex-direction: column; justify-content: center;
+  padding-left: clamp(18px, 3vw, 44px);
+  max-width: 46ch;
+}
+
+/* THE DUCT. The wind is not weather: it is the counter-technique named in this
+   box, and it has to be seen leaving the box. Coated exactly like the streams —
+   a pink core inside a darker sheath — because pink alone is 1.09:1 on the
+   orange. The top end runs under the wind, which is drawn over it. */
+.era__dossier::before {
+  content: ""; position: absolute;
+  left: 2px; width: 16px; border-radius: 8px;
+  top: calc(-1 * var(--era-gap)); bottom: 12%;
+  background: linear-gradient(to right,
+    var(--gm-green-deep) 0 28%, var(--gm-pink) 28% 72%, var(--gm-green-deep) 72% 100%);
+  z-index: 1;
+}
+
+.era--flip .era__node    { grid-column: 3; justify-self: center; }
+.era--flip .era__dossier { grid-column: 1; padding: 0 clamp(18px, 3vw, 44px) 0 0; text-align: right; justify-self: end; }
+.era--flip .era__dossier::before { left: auto; right: 2px; }
+
+
+/* --- The dossier ----------------------------------------------------------- */
+
+.dossier__years {
+  margin: 0; font-family: var(--mono); font-size: var(--t-small);
+  letter-spacing: 0.16em; color: var(--gm-ink);
+}
+.dossier__title {
+  margin: 6px 0 0; font-family: var(--serif); font-weight: 700; color: var(--gm-ink);
+  font-size: clamp(1.75rem, 1.29rem + 1.85vw, 2.75rem);
+  line-height: 1.02; text-wrap: pretty;
+}
+.dossier__body { margin: 12px 0 0; font-size: var(--t-body); line-height: 1.42; color: var(--gm-text); text-wrap: pretty; }
+.dossier__method {
+  margin: 18px 0 0; font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: clamp(1.25rem, 1.13rem + 0.46vw, 1.625rem);
+  line-height: 1.2; color: var(--gm-ink);
+}
+.dossier__method span {
+  font-family: var(--mono); font-style: normal; font-weight: 400;
+  font-size: var(--t-small); letter-spacing: 0.12em;
+  color: var(--gm-green-deep); white-space: nowrap;
+}
+.dossier__limits { margin: 12px 0 0; font-size: var(--t-small); line-height: 1.45; color: var(--gm-muted); text-wrap: pretty; }
+
+
+/* --- The pyre -------------------------------------------------------------- */
+
+.pyre__strap {
+  position: relative; z-index: 2;
+  display: block; width: max-content;
+  margin: 0 auto;
+  padding: 2px 12px; background: var(--gm-bg);
+  font-family: var(--mono); font-size: var(--t-small);
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--gm-green-deep);
+}
+/* The night ground is drawn INSIDE the tile with a wavy top edge at ~392, so
+   the flames never stand on it and invert into orange silhouettes. The flat
+   fill below has to pick the SAME line, 398, or the join shows as a seam. The pull is on the
+   PYRE, not on the run above it: a negative bottom margin inside .plume
+   collapses out and moves nothing. */
+.pyre {
+  position: relative; z-index: 1;
+  margin-top: calc(96px - var(--tail-h));
+  padding-top: 672px;
+  background:
+    url("../images/motifs/pyre.svg") repeat-x top center,
+    linear-gradient(var(--gm-green-night), var(--gm-green-night)) no-repeat bottom left;
+  background-size: 1200px 660px, 100% calc(100% - 398px);
+}
+.pyre__note {
+  margin: 0 auto; max-width: 62ch; padding: 8px 0 clamp(40px, 6vw, 72px);
+  text-align: center; font-size: var(--t-small); line-height: var(--lh-body);
+  color: rgba(255, 231, 168, 0.72);
+}
+.pyre__note a { color: var(--gm-cream); border-bottom: 1px solid rgba(255, 231, 168, 0.45); }
+.pyre__note a:hover { color: #fff; }
+
+
+/* The 900px block that moved the rule to the band's bottom edge went with the
+   labels: there is no label left to wrap, so the rule stays on the centre line
+   at every width and the bite and the flare stay aligned to it. */
+
+
+/* --- Mobile ---------------------------------------------------------------- */
+
+@media (max-width: 620px) {
+  .era { grid-template-columns: 1fr; justify-items: center; }
+  /* Stacked, the dossier is row 3 and the wind row 1: the duct would reach
+     nothing. It goes rather than point somewhere it no longer connects. */
+  .era__dossier::before,
+  .era--flip .era__dossier::before { display: none; }
+  .era__node,
+  .era--flip .era__node { grid-row: 2; grid-column: 1; justify-self: center; width: clamp(104px, 34vw, 150px); }
+  .era__dossier,
+  .era--flip .era__dossier {
+    grid-row: 3; grid-column: 1; justify-self: center;
+    padding: 18px 6px 0; text-align: center; max-width: 46ch;
+    /* opaque, so the column does not run through the text */
+    background: var(--gm-bg);
+  }
+  .gm-legend__rows { grid-template-columns: 44px 1fr; }
+  .gm-legend__rows .cam { width: 44px; }
+}
+
+
+/* --- Print ----------------------------------------------------------------- */
+
+@media print {
+  .era { break-inside: avoid; }
+}
+
+
+/* The two head cameras drop under the creature before they crowd it. */
+@media (max-width: 620px) {
+  .canopy-cam { width: clamp(112px, 28vw, 168px); bottom: 1%; }
+  .canopy-cam--l { left: 1%; }
+  .canopy-cam--r { right: 1%; }
+}
+.canopy-socket { fill: var(--gm-yellow); }
+.canopy-glint { fill: var(--gm-cream); }
+
+.canopy-lens  { fill: var(--gm-green-deep); }
+.canopy-pupil { fill: var(--gm-pink); }
+.canopy-spark { fill: var(--gm-cream); }

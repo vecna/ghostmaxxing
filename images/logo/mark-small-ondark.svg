@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ghostmaxxing mark: smart glasses and a pole-mounted reader, both still reading">
+  <g transform="translate(1,10) scale(0.45)">
+    <path d="M8,44 L2,32 M92,44 L98,32" fill="none" stroke="#fff1cf" stroke-width="7.5" stroke-linecap="round"/>
+    <path d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z" fill="#2f7a5c" stroke="#fff1cf" stroke-width="7.5" stroke-linejoin="round"/>
+    <circle cx="28" cy="45" r="8" fill="#f0c24a"/>
+    <circle cx="72" cy="45" r="8" fill="#f0c24a"/>
+  </g>
+  <g transform="translate(13,36) scale(0.40)">
+    <path d="M80,26 V84 M80,30 H44 M52,30 V40" fill="none" stroke="#fff1cf" stroke-width="9.0" stroke-linecap="round"/>
+    <rect x="10" y="40" width="72" height="30" rx="7" fill="#2f7a5c" stroke="#fff1cf" stroke-width="9.0"/>
+    <circle cx="32" cy="55" r="11.5" fill="#fff1cf"/>
+    <circle cx="32" cy="55" r="5.6" fill="#f0c24a"/>
+  </g>
+</svg>

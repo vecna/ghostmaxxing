@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createUvRenderer } from '../../scripts/ghostyle3d-uv-renderer.js';
+import { createUvRenderer } from '../../lab-js/ghostyle3d-uv-renderer.js';
 
 function makeCanvasContext() {
   return {

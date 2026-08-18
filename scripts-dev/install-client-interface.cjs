@@ -7,20 +7,21 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..');
 const TARGET = path.resolve(ROOT, '..', 'gstmxx-backend', 'client-interface');
 const KEEP_FILE = '.keep';
+const WEB_FILES_DIR = path.join(ROOT, 'web-files');
 
 // Chosen to match runtime/webroot needs while keeping source and tests out.
 const COPY_DIRS = [
   'images',
   'styles',
-  'scripts',
+  'lab-js',
   'references',
   'ghostyles',
   'docs',
   'data',
+  'codemap',
 ];
 
 const COPY_FILES = [
-  'sitemap.xml',
   'ghostyles.json',
   'index.html',
   'about.html',
@@ -28,8 +29,15 @@ const COPY_FILES = [
   'realtime.html',
   'loader.html',
   'report.html',
+];
+
+const COPY_WEB_FILES = [
+  'CITATION.cff',
+  'llms.txt',
+  'manifest.webmanifest',
   'robots.txt',
-  'llms.txt'
+  'sitemap.xml',
+  'apple-touch-icon.png',
 ];
 
 function cleanTargetDir(targetDir) {
@@ -42,9 +50,11 @@ function cleanTargetDir(targetDir) {
   fs.writeFileSync(path.join(targetDir, KEEP_FILE), '\n', 'utf8');
 }
 
-function copyEntry(relPath) {
-  const from = path.join(ROOT, relPath);
-  const to = path.join(TARGET, relPath);
+function copyEntry(relPath, options = {}) {
+  const fromBase = options.fromBase || ROOT;
+  const toRelPath = options.toRelPath || relPath;
+  const from = path.join(fromBase, relPath);
+  const to = path.join(TARGET, toRelPath);
 
   if (!fs.existsSync(from)) {
     console.warn(`[install] skip missing: ${relPath}`);
@@ -55,13 +65,13 @@ function copyEntry(relPath) {
   if (stat.isDirectory()) {
     fs.mkdirSync(path.dirname(to), { recursive: true });
     fs.cpSync(from, to, { recursive: true });
-    console.log(`[install] copied dir: ${relPath}`);
+    console.log(`[install] copied dir: ${relPath} -> ${toRelPath}`);
     return;
   }
 
   fs.mkdirSync(path.dirname(to), { recursive: true });
   fs.copyFileSync(from, to);
-  console.log(`[install] copied file: ${relPath}`);
+  console.log(`[install] copied file: ${relPath} -> ${toRelPath}`);
 }
 
 function copyTopLevelHtmlFiles() {
@@ -82,7 +92,10 @@ function main() {
   copyTopLevelHtmlFiles();
 
   for (const relPath of COPY_FILES) copyEntry(relPath);
+  for (const relPath of COPY_WEB_FILES) copyEntry(relPath, { fromBase: WEB_FILES_DIR });
   for (const relPath of COPY_DIRS) copyEntry(relPath);
+
+  copyEntry('security.txt', { fromBase: WEB_FILES_DIR, toRelPath: path.join('.well-known', 'security.txt') });
 
   console.log('[install] completed.');
 }

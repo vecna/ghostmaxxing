@@ -12,7 +12,7 @@ import {
   setOverlayMode,
   COLORS,
   OVERLAY_MODE_STORAGE_KEY,
-} from '../../scripts/bbox-overlay.js';
+} from '../../lab-js/bbox-overlay.js';
 
 function makeLandmarks478() {
   return Array.from({ length: 478 }, (_, index) => ({

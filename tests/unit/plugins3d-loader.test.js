@@ -25,14 +25,14 @@ function ensurePluginDom() {
 
 async function freshModules() {
   vi.resetModules();
-  vi.doMock('../../scripts/ghostyle3d-uv-renderer.js', () => ({
+  vi.doMock('../../lab-js/ghostyle3d-uv-renderer.js', () => ({
     createUvRenderer: createUvRendererMock,
   }));
-  vi.doMock('../../scripts/utils.js', () => utilsMock);
-  vi.doMock('../../scripts/dom.js', () => ({
+  vi.doMock('../../lab-js/utils.js', () => utilsMock);
+  vi.doMock('../../lab-js/dom.js', () => ({
     ...domMock,
   }));
-  vi.doMock('../../scripts/i18n.js', () => ({
+  vi.doMock('../../lab-js/i18n.js', () => ({
     t: vi.fn((key, values = {}) => {
       const messages = {
         plugins3d_not_initialized_error: '[plugins3d] initPlugins3dLoader() non chiamato',
@@ -43,11 +43,11 @@ async function freshModules() {
       return messages[key] || key;
     }),
   }));
-  const stateModule = await import('../../scripts/state.js');
-  const rendererModule = await import('../../scripts/ghostyle3d-uv-renderer.js');
-  const utilsModule = await import('../../scripts/utils.js');
-  const domModule = await import('../../scripts/dom.js');
-  const loader = await import('../../scripts/plugins3d-loader.js');
+  const stateModule = await import('../../lab-js/state.js');
+  const rendererModule = await import('../../lab-js/ghostyle3d-uv-renderer.js');
+  const utilsModule = await import('../../lab-js/utils.js');
+  const domModule = await import('../../lab-js/dom.js');
+  const loader = await import('../../lab-js/plugins3d-loader.js');
   return {
     loader,
     state: stateModule.state,
@@ -268,7 +268,6 @@ describe('plugins3d-loader', () => {
 
     const seen = [];
     state.gstmxxEvents.addEventListener('effectChanged', (event) => seen.push(['effectChanged', event.detail]));
-    state.gstmxxEvents.addEventListener('effectChanged3d', (event) => seen.push(['effectChanged3d', event.detail]));
 
     loader.initPlugins3dLoader();
     state.gstmxxEvents.dispatchEvent(new CustomEvent('landmarks3d', {
@@ -281,6 +280,5 @@ describe('plugins3d-loader', () => {
     expect(dom.clearActiveEffect).toHaveBeenCalled();
     expect(loader.getActiveEffect3d()).toBeNull();
     expect(seen).toContainEqual(['effectChanged', { activeEffect: null, previous: 'uv-style' }]);
-    expect(seen).toContainEqual(['effectChanged3d', { active: null, previous: 'uv-style' }]);
   });
 });
