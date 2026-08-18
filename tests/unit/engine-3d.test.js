@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { cosineSimilarity, decideMatchState3d, seekFaceInDb3d, evaluateMatch3d } from '../../scripts/engine-3d.js';
-import { state } from '../../scripts/state.js';
+import { cosineSimilarity, decideMatchState3d, seekFaceInDb3d, evaluateMatch3d } from '../../lab-js/engine-3d.js';
+import { state } from '../../lab-js/state.js';
 
 describe('engine-3d.js biometric pipeline', () => {
   beforeEach(() => {

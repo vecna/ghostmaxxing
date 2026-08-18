@@ -14,7 +14,7 @@ import { t } from './i18n.js';
  * The first time is to extract the metadata, the second time is to import the module.
  * @param {string} url - The URL of the ghostyle script to fetch.
  * @throws {Error} Throws an error if the HTTP request fails or the response is not OK.
- * @see scripts/main.js – loads ghostyle list and calls this function for each URL.
+ * @see lab-js/main.js – loads ghostyle list and calls this function for each URL.
  * @see tests/unit/ghostyles-manager.test.js – unit tests for metadata extraction.
  * @returns {{
  *   id: string,

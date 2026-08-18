@@ -57,7 +57,7 @@ function createEmptyDb3d() {
  * @returns {{faces: Array, modelVersion: string}}
  *   The current 3D DB state. There is no `nextId` field — 3D IDs come from
  *   the 2D DB to keep the two stores aligned.
- * @see scripts/main.js – called once during init to populate `state.db3d`.
+ * @see lab-js/main.js – called once during init to populate `state.db3d`.
  * @see clearDb3d – called from inside this function when the model version
  *   does not match the stored data.
  */
@@ -85,7 +85,7 @@ export function loadDb3d() {
  * Serialise `state.db3d` to `localStorage` under `STORAGE_KEY_3D`. Called
  * after every successful 3D save so the next reload sees the new embedding.
  *
- * @see scripts/engine-3d.js – `saveFace3d()` calls this after pushing a record.
+ * @see lab-js/engine-3d.js – `saveFace3d()` calls this after pushing a record.
  */
 export function persistDb3d() {
    localStorage.setItem(STORAGE_KEY_3D, JSON.stringify(state.db3d));
@@ -113,8 +113,8 @@ export function clearDb3d() {
  * its own counter.
  *
  * @returns {{nextId: number, faces: Array}} The current DB state.
- * @see scripts/main.js – called once during init to populate `state.db`.
- * @see scripts/engine.js – `saveFace()` increments and persists `nextId`.
+ * @see lab-js/main.js – called once during init to populate `state.db`.
+ * @see lab-js/engine.js – `saveFace()` increments and persists `nextId`.
  */
 export function loadDb() {
    try {
@@ -136,7 +136,7 @@ export function loadDb() {
  * happens here so every code path that mutates the DB has consistent UI
  * feedback without having to remember to fire the event itself.
  *
- * @see scripts/engine.js – `saveFace()` calls this after pushing a record.
+ * @see lab-js/engine.js – `saveFace()` calls this after pushing a record.
  * @see clearDb – calls this to persist the empty state and notify listeners.
  * @see tests/unit/db.test.js – verifies persistence and event emission.
  */
@@ -155,7 +155,7 @@ export function persistDb() {
  * the match threshold label, and the badge in the header. Called whenever
  * the DB shape changes or the app starts up.
  *
- * @see scripts/main.js – `init()` calls this once after loading the DBs.
+ * @see lab-js/main.js – `init()` calls this once after loading the DBs.
  * @see clearDb – calls this after wiping the data so the UI shows zero.
  */
 export function renderDbStats() {

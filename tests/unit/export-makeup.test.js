@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { state } from '../../scripts/state.js';
-import { els } from '../../scripts/dom.js';
-import { setLog } from '../../scripts/utils.js';
+import { state } from '../../lab-js/state.js';
+import { els } from '../../lab-js/dom.js';
+import { setLog } from '../../lab-js/utils.js';
 import {
   buildHeaderText,
   canShareFile,
@@ -9,17 +9,17 @@ import {
   collectExportInput,
   exportMakeup,
   makeImageFile,
-} from '../../scripts/export-makeup.js';
+} from '../../lab-js/export-makeup.js';
 
-vi.mock('../../scripts/utils.js', async () => {
-  const actual = await vi.importActual('../../scripts/utils.js');
+vi.mock('../../lab-js/utils.js', async () => {
+  const actual = await vi.importActual('../../lab-js/utils.js');
   return {
     ...actual,
     setLog: vi.fn(),
   };
 });
 
-vi.mock('../../scripts/i18n.js', () => ({
+vi.mock('../../lab-js/i18n.js', () => ({
   t: vi.fn((key) => {
     const messages = {
       image_copied_log: 'Immagine copiata negli appunti.',

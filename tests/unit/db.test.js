@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-vi.mock('../../scripts/main.js', () => ({
+vi.mock('../../lab-js/main.js', () => ({
   els: {
     dbCount: { textContent: '' },
     nextId: { textContent: '' },
@@ -9,18 +9,18 @@ vi.mock('../../scripts/main.js', () => ({
   }
 }));
 
-vi.mock('../../scripts/utils.js', () => ({
+vi.mock('../../lab-js/utils.js', () => ({
   setLog: vi.fn()
 }));
 
-vi.mock('../../scripts/face-thumbnails.js', () => ({
+vi.mock('../../lab-js/face-thumbnails.js', () => ({
   clearAllThumbnails: vi.fn()
 }));
 
-import { state } from '../../scripts/state.js';
-import { setLog } from '../../scripts/utils.js';
-import { clearAllThumbnails } from '../../scripts/face-thumbnails.js';
-import { els } from '../../scripts/dom.js';
+import { state } from '../../lab-js/state.js';
+import { setLog } from '../../lab-js/utils.js';
+import { clearAllThumbnails } from '../../lab-js/face-thumbnails.js';
+import { els } from '../../lab-js/dom.js';
 import {
   STORAGE_KEY,
   STORAGE_KEY_3D,
@@ -32,7 +32,7 @@ import {
   renderDbStats,
   clearDb,
   clearDb3d,
-} from '../../scripts/db.js';
+} from '../../lab-js/db.js';
 
 function defaultDb() {
   return { nextId: 0, faces: [] };

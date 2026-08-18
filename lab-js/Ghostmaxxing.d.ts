@@ -7,7 +7,7 @@
  */
 
 /**
- * @source scripts/utils.js
+ * @source lab-js/utils.js
  */
 export interface GhostmaxxingPoint {
   x: number;
@@ -15,7 +15,7 @@ export interface GhostmaxxingPoint {
 }
 
 /**
- * @source scripts/engine.js
+ * @source lab-js/engine.js
  */
 export interface GhostmaxxingFaceBox {
   x: number;
@@ -25,7 +25,7 @@ export interface GhostmaxxingFaceBox {
 }
 
 /**
- * @source scripts/ghostyle3d-uv-renderer.js
+ * @source lab-js/ghostyle3d-uv-renderer.js
  */
 export interface GhostmaxxingPaintUvParams {
   landmarks3d?: Array<{ x: number; y: number; z?: number }>;
@@ -33,7 +33,7 @@ export interface GhostmaxxingPaintUvParams {
 }
 
 /**
- * @source scripts/ghostyles-manager.js
+ * @source lab-js/ghostyles-manager.js
  */
 export type GhostmaxxingOnDraw = (
   ctx: CanvasRenderingContext2D,
@@ -42,7 +42,7 @@ export type GhostmaxxingOnDraw = (
 ) => void;
 
 /**
- * @source scripts/ghostyles-manager.js
+ * @source lab-js/ghostyles-manager.js
  */
 export type GhostmaxxingPaintUV = (
   ctx: CanvasRenderingContext2D,
@@ -51,7 +51,7 @@ export type GhostmaxxingPaintUV = (
 ) => void;
 
 /**
- * @source scripts/ghostyles-manager.js
+ * @source lab-js/ghostyles-manager.js
  */
 export interface GhostmaxxingPluginModule {
   onInit?: () => string | void;
@@ -71,7 +71,7 @@ export interface GhostmaxxingPluginModule {
 }
 
 /**
- * @source scripts/ghostyles-manager.js
+ * @source lab-js/ghostyles-manager.js
  */
 export interface GhostmaxxingPluginRecord {
   id: string;
@@ -85,38 +85,38 @@ export interface GhostmaxxingPluginRecord {
 }
 
 /**
- * @source scripts/state.js
+ * @source lab-js/state.js
  */
 export interface GhostmaxxingMatchResult {
   [key: string]: unknown;
 }
 
 /**
- * @source scripts/main.js
+ * @source lab-js/main.js
  */
 export interface GhostmaxxingApi {
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   log(message: string, sourcePlugin?: string | null): void;
 
-  /** @source scripts/main.js */
+  /** @source lab-js/main.js */
   clearVisibleLogs(): void;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   distance(a: number[], b: number[]): number;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   avgPoint(points: GhostmaxxingPoint[]): GhostmaxxingPoint;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   lerp(a: GhostmaxxingPoint, b: GhostmaxxingPoint, t: number): GhostmaxxingPoint;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   scaleFrom(center: GhostmaxxingPoint, point: GhostmaxxingPoint, scale: number): GhostmaxxingPoint;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   point(x: number, y: number): GhostmaxxingPoint;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   drawClosedPath(
     ctx: CanvasRenderingContext2D,
     points: GhostmaxxingPoint[],
@@ -125,7 +125,7 @@ export interface GhostmaxxingApi {
     lineWidth?: number
   ): void;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   drawOpenPath(
     ctx: CanvasRenderingContext2D,
     points: GhostmaxxingPoint[],
@@ -134,13 +134,13 @@ export interface GhostmaxxingApi {
     dashed?: boolean
   ): void;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   drawLabel(ctx: CanvasRenderingContext2D, text: string, x: number, y: number): void;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   expandEyePolygon(
     eye: GhostmaxxingPoint[],
     eyebrow: GhostmaxxingPoint[],
@@ -148,7 +148,7 @@ export interface GhostmaxxingApi {
     eyebrowLift?: number
   ): GhostmaxxingPoint[];
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   drawEyeWing(
     ctx: CanvasRenderingContext2D,
     eye: GhostmaxxingPoint[],
@@ -166,7 +166,7 @@ export interface GhostmaxxingApi {
     }
   ): void;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   drawCheekSweep(
     ctx: CanvasRenderingContext2D,
     anchor: GhostmaxxingPoint,
@@ -178,73 +178,73 @@ export interface GhostmaxxingApi {
     stroke: string
   ): void;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   drawContourBand(ctx: CanvasRenderingContext2D, pts: GhostmaxxingPoint[], label: string): void;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   clipLeftHalf(ctx: CanvasRenderingContext2D, landmarks: unknown): boolean;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   clipRightHalf(ctx: CanvasRenderingContext2D, landmarks: unknown): boolean;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   clipLeftHalfUV(ctx: CanvasRenderingContext2D, landmarks3d: unknown): boolean;
 
-  /** @source scripts/utils.js */
+  /** @source lab-js/utils.js */
   clipRightHalfUV(ctx: CanvasRenderingContext2D, landmarks3d: unknown): boolean;
 
-  /** @source scripts/main.js */
+  /** @source lab-js/main.js */
   events: EventTarget;
 
-  /** @source scripts/main.js */
+  /** @source lab-js/main.js */
   getDb(): { [key: string]: unknown };
 
-  /** @source scripts/main.js */
+  /** @source lab-js/main.js */
   getDb3d(): { [key: string]: unknown };
 
-  /** @source scripts/main.js */
+  /** @source lab-js/main.js */
   getActiveEffect(): string | null;
 
-  /** @source scripts/main.js */
+  /** @source lab-js/main.js */
   getLastResult(): GhostmaxxingMatchResult | null;
 
-  /** @source scripts/main.js */
+  /** @source lab-js/main.js */
   getMatchThreshold(): number;
 
-  /** @source scripts/main.js */
+  /** @source lab-js/main.js */
   getMatchThreshold3d(): number;
 
-  /** @source scripts/plugins3d-loader.js */
+  /** @source lab-js/plugins3d-loader.js */
   getActiveEffect3d(): string | null;
 
-  /** @source scripts/plugins3d-loader.js */
+  /** @source lab-js/plugins3d-loader.js */
   activateEffect3d(id: string): boolean;
 
-  /** @source scripts/plugins3d-loader.js */
+  /** @source lab-js/plugins3d-loader.js */
   deactivateEffect3d(): boolean;
 
-  /** @source scripts/plugins3d-loader.js */
+  /** @source lab-js/plugins3d-loader.js */
   toggleEffect3d(id: string): boolean;
 
-  /** @source scripts/plugins3d-loader.js */
+  /** @source lab-js/plugins3d-loader.js */
   reloadPlugins3d(): boolean;
 
-  /** @source scripts/ghostyles-manager.js */
+  /** @source lab-js/ghostyles-manager.js */
   reloadPlugins(): Promise<number>;
 
-  /** @source scripts/main.js */
+  /** @source lab-js/main.js */
   lastLandmarks3d: Array<{ x: number; y: number; z?: number }> | null;
 
-  /** @source scripts/engine.js */
+  /** @source lab-js/engine.js */
   compositeAndDetect(liveResult: unknown): Promise<unknown>;
 
-  /** @source scripts/engine-3d.js */
+  /** @source lab-js/engine-3d.js */
   compositeAndDetect3d(): Promise<unknown>;
 
-  /** @source scripts/config.js */
+  /** @source lab-js/config.js */
   detectorOptions: unknown;
 
-  /** @source scripts/mediapipe-loop.js */
+  /** @source lab-js/mediapipe-loop.js */
   FaceLandmarker?: unknown;
 }
 

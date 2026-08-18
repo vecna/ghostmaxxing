@@ -71,8 +71,8 @@ export const els = {
  *   (defaults to neutral styling). Only 'live' and 'error' apply a CSS class.
  * @param {string} text  Human-readable status text shown to the right of the
  *   dot.
- * @see scripts/camera.js – sets `('live', …)` once the webcam stream starts.
- * @see scripts/main.js – sets `('init', …)` while models load, `('error', …)`
+ * @see lab-js/camera.js – sets `('live', …)` once the webcam stream starts.
+ * @see lab-js/main.js – sets `('init', …)` while models load, `('error', …)`
  *   on failure.
  */
 export function setStatus(kind, text) {
@@ -88,9 +88,9 @@ export function setStatus(kind, text) {
  * timer doesn't fade out a freshly drawn frame. Called between detection
  * passes and on effect changes.
  *
- * @see scripts/engine.js – `detectFaceInCam()` clears the overlay before
+ * @see lab-js/engine.js – `detectFaceInCam()` clears the overlay before
  *   drawing the new detection result.
- * @see scripts/ghostyles-manager.js – `toggleEffect()` uses this indirectly
+ * @see lab-js/ghostyles-manager.js – `toggleEffect()` uses this indirectly
  *   via `clearActiveEffect()` when switching off an effect.
  */
 export function clearOverlay() {
@@ -108,7 +108,7 @@ export function clearOverlay() {
  * and last composited canvas, disable the copy-makeup button, and clear the
  * overlay canvas. Side-effect only — no event is dispatched.
  *
- * @see scripts/ghostyles-manager.js – `toggleEffect()` calls this when the
+ * @see lab-js/ghostyles-manager.js – `toggleEffect()` calls this when the
  *   user deactivates the currently active effect.
  */
 export function clearActiveEffect() {
@@ -140,7 +140,7 @@ export function clearActiveEffect() {
  * callers must set it before invoking this.
  *
  * @param {HTMLButtonElement} button  The button that was just clicked.
- * @see scripts/ghostyles-manager.js – `toggleEffect()` calls this after
+ * @see lab-js/ghostyles-manager.js – `toggleEffect()` calls this after
  *   setting `state.activeEffect`.
  */
 export function effectSelected(button) {

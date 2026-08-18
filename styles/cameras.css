@@ -12,7 +12,7 @@
 
    CHANGED IN THIS PASS
      - --gm-green-deep moved to tokens.css, where it belongs.
-     - ghostutter.css is gone (scripts/ghostutter.js with it), and so is the
+     - ghostutter.css is gone (lab-js/ghostutter.js with it), and so is the
        shard that replaced it. Spent is now an EXTINGUISHED lens, nothing more.
 
    Contents
@@ -169,7 +169,7 @@
 
    The arc is a PROPERTY of the stamp, not a separate species: below the width
    where curved text stops being readable, --arc-mode flips to flat and the
-   same element renders as a straight line. scripts/stamp.js reads --arc-mode
+   same element renders as a straight line. lab-js/stamp.js reads --arc-mode
    and does nothing but restore plain text if the value is "flat".
 
      --arc-mode      arc | flat

@@ -34,7 +34,7 @@ import { state } from './state.js';
  * @param {number[]} a  First vector.
  * @param {number[]} b  Second vector, same length as `a`.
  * @returns {number} Euclidean distance, or `Infinity` if inputs are invalid.
- * @see scripts/engine.js – `seekFaceInDb()` and `computeCompositeMetrics()`
+ * @see lab-js/engine.js – `seekFaceInDb()` and `computeCompositeMetrics()`
  *   use this against 128-D face-api descriptors.
  */
 export function distance(a, b) {
@@ -568,7 +568,7 @@ export function formatRelativeTime(dateLike) {
  * by clicking the log box.
  *
  * @see setLog – calls this after pushing a new entry.
- * @see scripts/main.js – wires the click handler that toggles
+ * @see lab-js/main.js – wires the click handler that toggles
  *   `state.isLogExpanded`.
  */
 export function updateLogDisplay() {

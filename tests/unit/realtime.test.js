@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../../scripts/config.js', () => ({
+vi.mock('../../lab-js/config.js', () => ({
   MODEL_URLS: {
     tiny: 'https://models.test/tiny',
     landmarks: 'https://models.test/landmarks',
@@ -113,7 +113,7 @@ describe('realtime visualizer', () => {
   it('bootstraps models, webcam, equalizer rows, graph canvas, and frame loop on import', async () => {
     const faceapi = installFaceApi(null);
 
-    const { initRealtime } = await import('../../scripts/realtime.js');
+    const { initRealtime } = await import('../../lab-js/realtime.js');
     await flushPromises();
 
     expect(faceapi.nets.tinyFaceDetector.loadFromUri).toHaveBeenCalledWith('https://models.test/tiny');
@@ -146,7 +146,7 @@ describe('realtime visualizer', () => {
     const baseline = new Float32Array(128).fill(0.1);
     installFaceApi(null);
 
-    await import('../../scripts/realtime.js');
+    await import('../../lab-js/realtime.js');
     await flushPromises();
 
     window.gstmxxRealtime.triggerCalibration();
@@ -179,7 +179,7 @@ describe('realtime visualizer', () => {
     const current = new Float32Array(128).fill(0.14);
     const faceapi = installFaceApi(null);
 
-    await import('../../scripts/realtime.js');
+    await import('../../lab-js/realtime.js');
     await flushPromises();
 
     window.gstmxxRealtime.triggerCalibration();
@@ -211,7 +211,7 @@ describe('realtime visualizer', () => {
     installFaceApi(null);
     navigator.mediaDevices.getUserMedia.mockRejectedValueOnce(startupError);
 
-    await import('../../scripts/realtime.js');
+    await import('../../lab-js/realtime.js');
     await flushPromises();
 
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to initialize realtime visualizer:', startupError);

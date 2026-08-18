@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-vi.mock('../../scripts/dom.js', () => ({
+vi.mock('../../lab-js/dom.js', () => ({
   els: {
     video: { readyState: 4 },
     overlay: {
@@ -16,7 +16,7 @@ vi.mock('../../scripts/dom.js', () => ({
   DETECTOR_OPTIONS: { detector: 'opts' }
 }));
 
-vi.mock('../../scripts/utils.js', () => ({
+vi.mock('../../lab-js/utils.js', () => ({
   distance: vi.fn(() => 0.12),
   avgPoint: vi.fn(() => ({ x: 10, y: 20 })),
   drawClosedPath: vi.fn(),
@@ -25,21 +25,21 @@ vi.mock('../../scripts/utils.js', () => ({
   setLog: vi.fn()
 }));
 
-vi.mock('../../scripts/camera.js', () => ({
+vi.mock('../../lab-js/camera.js', () => ({
   resizeCanvas: vi.fn()
 }));
 
-vi.mock('../../scripts/db.js', () => ({
+vi.mock('../../lab-js/db.js', () => ({
   persistDb: vi.fn(),
   renderDbStats: vi.fn()
 }));
 
-import { state } from '../../scripts/state.js';
-import { els, clearOverlay } from '../../scripts/dom.js';
-import { distance, setLog, drawClosedPath, drawOpenPath, roundRect } from '../../scripts/utils.js';
-import { resizeCanvas } from '../../scripts/camera.js';
-import { persistDb, renderDbStats } from '../../scripts/db.js';
-import { view as overlayView } from '../../scripts/bbox-overlay.js';
+import { state } from '../../lab-js/state.js';
+import { els, clearOverlay } from '../../lab-js/dom.js';
+import { distance, setLog, drawClosedPath, drawOpenPath, roundRect } from '../../lab-js/utils.js';
+import { resizeCanvas } from '../../lab-js/camera.js';
+import { persistDb, renderDbStats } from '../../lab-js/db.js';
+import { view as overlayView } from '../../lab-js/bbox-overlay.js';
 import {
   detectFaceInCam,
   compositeAndDetect,
@@ -50,7 +50,7 @@ import {
   evaluateMatch,
   saveFace,
   triggerOverlayFadeout
-} from '../../scripts/engine.js';
+} from '../../lab-js/engine.js';
 
 function createCtx() {
   return {

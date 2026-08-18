@@ -1,6 +1,6 @@
 # tests/unit
 
-This folder contains Vitest unit tests for the browser modules in `scripts/`.
+This folder contains Vitest unit tests for the browser modules in `lab-js/`.
 
 The tests cover camera setup, local storage, DOM helpers, rendering utilities, engine behavior, MediaPipe loop logic, Ghostyle loading, upload consent, export helpers, and TypeScript declaration expectations.
 

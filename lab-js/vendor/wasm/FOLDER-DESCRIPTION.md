@@ -1,4 +1,4 @@
-# scripts/vendor/wasm
+# lab-js/vendor/wasm
 
 This folder contains the WebAssembly runtime support files for MediaPipe Tasks Vision.
 

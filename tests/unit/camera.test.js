@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-vi.mock('../../scripts/dom.js', () => ({
+vi.mock('../../lab-js/dom.js', () => ({
   setStatus: vi.fn(),
   els: {
     video: {
@@ -40,18 +40,18 @@ vi.mock('../../scripts/dom.js', () => ({
   }
 }));
 
-vi.mock('../../scripts/utils.js', () => ({
+vi.mock('../../lab-js/utils.js', () => ({
   setLog: vi.fn()
 }));
 
-vi.mock('../../scripts/engine.js', () => ({
+vi.mock('../../lab-js/engine.js', () => ({
   runEffectPass: vi.fn()
 }));
 
-import { state } from '../../scripts/state.js';
-import { setStatus, els } from '../../scripts/dom.js';
-import { setLog } from '../../scripts/utils.js';
-import { runEffectPass } from '../../scripts/engine.js';
+import { state } from '../../lab-js/state.js';
+import { setStatus, els } from '../../lab-js/dom.js';
+import { setLog } from '../../lab-js/utils.js';
+import { runEffectPass } from '../../lab-js/engine.js';
 import {
   startCamera,
   resizeCanvas,
@@ -60,7 +60,7 @@ import {
   startEffectLoop,
   stopEffectLoop,
   recordOneSecond
-} from '../../scripts/camera.js';
+} from '../../lab-js/camera.js';
 
 describe('camera module', () => {
   beforeEach(() => {

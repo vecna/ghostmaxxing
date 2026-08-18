@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-vi.mock('../../scripts/utils.js', () => ({
+vi.mock('../../lab-js/utils.js', () => ({
   distance: vi.fn(),
   computeMatchState: vi.fn(() => 'unknown'),
   avgPoint: vi.fn(() => ({ x: 0, y: 0 })),
@@ -23,7 +23,7 @@ vi.mock('../../scripts/utils.js', () => ({
   updateLogDisplay: vi.fn()
 }));
 
-vi.mock('../../scripts/db.js', () => ({
+vi.mock('../../lab-js/db.js', () => ({
   loadDb: vi.fn(() => ({ nextId: 0, faces: [] })),
   loadDb3d: vi.fn(() => ({ nextId: 0, faces: [] })),
   persistDb: vi.fn(),
@@ -32,28 +32,28 @@ vi.mock('../../scripts/db.js', () => ({
   clearDb: vi.fn()
 }));
 
-vi.mock('../../scripts/face-thumbnails.js', () => ({
+vi.mock('../../lab-js/face-thumbnails.js', () => ({
   captureThumbnail: vi.fn(async () => null),
   deleteThumbnail: vi.fn(),
   getThumbnail: vi.fn(() => null),
   saveThumbnail: vi.fn()
 }));
 
-vi.mock('../../scripts/engine.js', () => ({
+vi.mock('../../lab-js/engine.js', () => ({
   scanFace: vi.fn(async () => {}),
   saveFace: vi.fn(async () => {}),
   hasActivePlugin: vi.fn(() => false),
   compositeAndDetect: vi.fn(async () => null)
 }));
 
-vi.mock('../../scripts/camera.js', () => ({
+vi.mock('../../lab-js/camera.js', () => ({
   startCamera: vi.fn(async () => {}),
   resizeCanvas: vi.fn(),
   startEffectLoop: vi.fn(),
   recordOneSecond: vi.fn()
 }));
 
-vi.mock('../../scripts/engine-3d.js', () => ({
+vi.mock('../../lab-js/engine-3d.js', () => ({
   loadMobileNet: vi.fn(async () => {}),
   saveFace3d: vi.fn(async () => null),
   findFace3d: vi.fn(async () => null),
@@ -61,7 +61,7 @@ vi.mock('../../scripts/engine-3d.js', () => ({
   compositeAndDetect3d: vi.fn(async () => null)
 }));
 
-vi.mock('../../scripts/config.js', () => ({
+vi.mock('../../lab-js/config.js', () => ({
   MODEL_URLS: {
     tiny: '/tiny',
     landmarks: '/landmarks',
@@ -72,12 +72,12 @@ vi.mock('../../scripts/config.js', () => ({
   DETECTOR_OPTIONS: {}
 }));
 
-vi.mock('../../scripts/ghostyles-manager.js', () => ({
+vi.mock('../../lab-js/ghostyles-manager.js', () => ({
   loadGhostyle: vi.fn(async () => {}),
   reloadPlugins: vi.fn(async () => 0)
 }));
 
-vi.mock('../../scripts/plugins3d-loader.js', () => ({
+vi.mock('../../lab-js/plugins3d-loader.js', () => ({
   initPlugins3dLoader: vi.fn(),
   getActiveEffect3d: vi.fn(() => null),
   activateEffect3d: vi.fn(),
@@ -86,13 +86,13 @@ vi.mock('../../scripts/plugins3d-loader.js', () => ({
   reloadPlugins3d: vi.fn()
 }));
 
-vi.mock('../../scripts/export-makeup.js', () => ({
+vi.mock('../../lab-js/export-makeup.js', () => ({
   exportMakeup: vi.fn()
 }));
 
-import { state } from '../../scripts/state.js';
-import { setBusy } from '../../scripts/main.js';
-import { els } from '../../scripts/dom.js';
+import { state } from '../../lab-js/state.js';
+import { setBusy } from '../../lab-js/main.js';
+import { els } from '../../lab-js/dom.js';
 
 describe('main.setBusy', () => {
   beforeEach(() => {

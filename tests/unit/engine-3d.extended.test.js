@@ -2,22 +2,22 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 // ─── mocks (declared before any import of the tested module) ─────────────────
 
-vi.mock('../../scripts/dom.js', () => ({
+vi.mock('../../lab-js/dom.js', () => ({
   els: {
     video: { tagName: 'VIDEO' },
     overlay: { width: 640, height: 480 }
   }
 }));
 
-vi.mock('../../scripts/db.js', () => ({
+vi.mock('../../lab-js/db.js', () => ({
   persistDb3d: vi.fn()
 }));
 
-vi.mock('../../scripts/utils.js', () => ({
+vi.mock('../../lab-js/utils.js', () => ({
   setLog: vi.fn()
 }));
 
-vi.mock('../../scripts/config.js', () => ({
+vi.mock('../../lab-js/config.js', () => ({
   MEDIAPIPE_IMAGE_EMBEDDER_URL: 'https://cdn.example.com/image_embedder.tflite',
   MEDIAPIPE_TASKS_VISION_URL:   'https://cdn.example.com/vision_tasks.js',
   MEDIAPIPE_WASM_URL:           'https://cdn.example.com/wasm/'
@@ -25,11 +25,11 @@ vi.mock('../../scripts/config.js', () => ({
 
 // ─── imports after mocks ──────────────────────────────────────────────────────
 
-import { state }                                               from '../../scripts/state.js';
-import { setLog }                                             from '../../scripts/utils.js';
-import { persistDb3d }                                        from '../../scripts/db.js';
-import { els }                                                from '../../scripts/dom.js';
-import { loadMobileNet, getFaceEmbedding, saveFace3d, compositeAndDetect3d, findFace3d } from '../../scripts/engine-3d.js';
+import { state }                                               from '../../lab-js/state.js';
+import { setLog }                                             from '../../lab-js/utils.js';
+import { persistDb3d }                                        from '../../lab-js/db.js';
+import { els }                                                from '../../lab-js/dom.js';
+import { loadMobileNet, getFaceEmbedding, saveFace3d, compositeAndDetect3d, findFace3d } from '../../lab-js/engine-3d.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers

@@ -42,7 +42,7 @@ import { t } from './i18n.js';
  * @returns {Promise<void>}
  * @throws {Error} If the page is in an insecure context, or the user denies
  *   camera permission.
- * @see scripts/main.js – called once at the end of `init()` after every
+ * @see lab-js/main.js – called once at the end of `init()` after every
  *   model has been loaded.
  * @see startEffectLoop – kicked off here.
  */
@@ -93,7 +93,7 @@ export async function startCamera() {
  * boot, before camera permissions are granted).
  *
  * @see startCamera – called once after the stream starts.
- * @see scripts/engine.js – `drawGhostyleOverlay()` calls this before
+ * @see lab-js/engine.js – `drawGhostyleOverlay()` calls this before
  *   drawing, in case the window has been resized since the last frame.
  */
 export function resizeCanvas() {
@@ -178,7 +178,7 @@ export function stopEffectLoop() {
  *
  * @returns {Promise<void>}
  * @see RECORDING_CONFIG – controls mode, endpoint, and duration.
- * @see scripts/main.js – wires the `recordBtn` click handler to this.
+ * @see lab-js/main.js – wires the `recordBtn` click handler to this.
  */
 export async function recordOneSecond() {
    if (state.isRecording || state.isSystemBusy) return;

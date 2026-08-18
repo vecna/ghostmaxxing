@@ -1,6 +1,6 @@
 /* Site nav — the "Know more" dropdown. Shared by every page.
  *
- * Was inside scripts/index.js, so the dropdown only existed on the homepage
+ * Was inside lab-js/index.js, so the dropdown only existed on the homepage
  * and every other page shipped a different, flatter nav. Nothing here knows
  * about a page; it binds to whatever .gm-site-nav__trigger it finds.
  *

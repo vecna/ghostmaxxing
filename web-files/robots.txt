@@ -8,7 +8,7 @@ Allow: /
 Disallow: /coverage/
 Disallow: /playwright-report/
 Disallow: /test-results/
-Disallow: /scripts/vendor/
+Disallow: /lab-js/vendor/
 Disallow: /styles/vendor/
 Disallow: /codemap/
 

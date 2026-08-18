@@ -18,7 +18,7 @@ Ghostmaxxing is a static site with no backend. Everything runs client-side and n
 - XSS or injection in any page, particularly `report.html` — a person reading that page may be at risk, and a compromise there is a safety problem, not only a security one.
 - Escape from the Ghostyle plugin sandbox into a scope that could exfiltrate data or persist across sessions.
 - Weaknesses in the reporting channel described on `report.html`, including anything that could deanonymise a submitter or leak submission metadata.
-- Supply-chain issues in vendored assets under `scripts/vendor/` or `styles/vendor/`.
+- Supply-chain issues in vendored assets under `lab-js/vendor/` or `styles/vendor/`.
 
 **Out of scope**
 

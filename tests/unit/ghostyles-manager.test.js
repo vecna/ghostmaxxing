@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-vi.mock('../../scripts/dom.js', () => ({
+vi.mock('../../lab-js/dom.js', () => ({
   els: {
     overlay: {
       getContext: vi.fn(() => ({
@@ -13,7 +13,7 @@ vi.mock('../../scripts/dom.js', () => ({
   effectSelected: vi.fn()
 }));
 
-vi.mock('../../scripts/utils.js', () => ({
+vi.mock('../../lab-js/utils.js', () => ({
   asErrorLabel: vi.fn((err) => (err instanceof Error ? err.name + ': ' + err.message : String(err))),
   setLog: vi.fn(),
   formatRelativeTime: vi.fn((dateLike) => {
@@ -45,10 +45,10 @@ vi.mock('https://example.com/effects/draw-fail.js', () => ({
   onDraw: vi.fn(() => { throw new TypeError('draw boom'); })
 }), { virtual: true });
 
-import { state } from '../../scripts/state.js';
-import { setLog } from '../../scripts/utils.js';
-import { clearActiveEffect, effectSelected, els } from '../../scripts/dom.js';
-import { fetchGhostyleMetadata, importGhostyleModule, loadGhostyle, toggleEffect } from '../../scripts/ghostyles-manager.js';
+import { state } from '../../lab-js/state.js';
+import { setLog } from '../../lab-js/utils.js';
+import { clearActiveEffect, effectSelected, els } from '../../lab-js/dom.js';
+import { fetchGhostyleMetadata, importGhostyleModule, loadGhostyle, toggleEffect } from '../../lab-js/ghostyles-manager.js';
 
 describe('ghostyles-manager', () => {
   beforeEach(() => {

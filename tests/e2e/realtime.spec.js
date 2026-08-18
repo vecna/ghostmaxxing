@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Realtime page', () => {
   test('loads realtime html, css, and js without 404 responses', async ({ page }) => {
-    const targetPaths = new Set(['/realtime.html', '/styles/realtime.css', '/scripts/realtime.js']);
+    const targetPaths = new Set(['/realtime.html', '/styles/realtime.css', '/lab-js/realtime.js']);
     const seen = new Set();
     const failing = [];
 

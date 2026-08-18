@@ -13,7 +13,7 @@ const WEB_FILES_DIR = path.join(ROOT, 'web-files');
 const COPY_DIRS = [
   'images',
   'styles',
-  'scripts',
+  'lab-js',
   'references',
   'ghostyles',
   'docs',

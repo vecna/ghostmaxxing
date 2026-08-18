@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
-import { state } from '../../scripts/state.js';
-import { setLog } from '../../scripts/utils.js';
+import { state } from '../../lab-js/state.js';
+import { setLog } from '../../lab-js/utils.js';
 import {
   createReceiptCode,
   loadUploadReceipts,
@@ -9,17 +9,17 @@ import {
   publicUrlForReceipt,
   RECEIPTS_STORAGE_KEY,
   initUploadConsentFlow
-} from '../../scripts/upload-consent.js';
+} from '../../lab-js/upload-consent.js';
 
-vi.mock('../../scripts/utils.js', async () => {
-  const actual = await vi.importActual('../../scripts/utils.js');
+vi.mock('../../lab-js/utils.js', async () => {
+  const actual = await vi.importActual('../../lab-js/utils.js');
   return {
      ...actual,
      setLog: vi.fn()
   };
 });
 
-vi.mock('../../scripts/i18n.js', () => ({
+vi.mock('../../lab-js/i18n.js', () => ({
   t: vi.fn((key, params) => {
      if (params) {
         return `${key}_${JSON.stringify(params)}`;

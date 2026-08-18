@@ -1,6 +1,6 @@
 # Translation Maintenance
 
-Ghostmaxxing keeps its runtime translation catalog in `scripts/i18n.js`.
+Ghostmaxxing keeps its runtime translation catalog in `lab-js/i18n.js`.
 
 English is the source baseline and default locale. Italian is still included as
 the original app language, but it is no longer the baseline used for gettext
@@ -8,7 +8,7 @@ the original app language, but it is no longer the baseline used for gettext
 
 ## Source Format
 
-Each message entry in `scripts/i18n.js` should include:
+Each message entry in `lab-js/i18n.js` should include:
 
 - `context`: source file and line, using `file:line`.
 - `en`: English source string and gettext `msgid`.
@@ -20,10 +20,10 @@ Keys must stay lowercase with underscores, for example `face_saved_status`.
 
 ## When Adding A New String
 
-1. Add the string to `messages` in `scripts/i18n.js`.
+1. Add the string to `messages` in `lab-js/i18n.js`.
 2. Write the English copy first, because English is the baseline.
 3. Add Italian and Portuguese translations in the same entry.
-4. Add `context` with the best source reference, for example `scripts/main.js:120`.
+4. Add `context` with the best source reference, for example `lab-js/main.js:120`.
 5. Add `notes` if the string contains a technical term, product term, or ambiguous wording.
 6. Replace the hardcoded UI/log/console string with `t('your_key')` in JavaScript, or add `data-i18n="your_key"` / `data-i18n-title="your_key"` / `data-i18n-aria-label="your_key"` / `data-i18n-alt="your_key"` / `data-i18n-content="your_key"` in HTML.
 7. Run:
@@ -38,7 +38,7 @@ Keys must stay lowercase with underscores, for example `face_saved_status`.
 ## When Adding A New Language
 
 1. Choose the locale code, using the short browser language code when possible, for example `fr` or `de`.
-2. Add the locale code to `supportedLocales` in `scripts/i18n.js`.
+2. Add the locale code to `supportedLocales` in `lab-js/i18n.js`.
 3. Add the native language name to `localeNames`, for example `fr: 'Français'`.
 4. Add a flag or compact visual identifier to `localeFlags`.
 5. Add the new locale field to every entry in `messages`.
@@ -50,20 +50,20 @@ Keys must stay lowercase with underscores, for example `face_saved_status`.
    ```
 
 8. Upload the refreshed `translations/ghostmaxxing.pot` to Crowdin.
-9. Export/import completed Crowdin translations back into `scripts/i18n.js` or the future build pipeline.
+9. Export/import completed Crowdin translations back into `lab-js/i18n.js` or the future build pipeline.
 10. Test the language selector in `index.html`, `lab.html`, and `loader.html`.
 
 ## Language Selection Persistence
 
 The language selector is shared by the homepage, the lab, and the video loader.
 
-1. `index.html` loads `scripts/home.js`.
+1. `index.html` loads `lab-js/home.js`.
 2. `lab.html` loads the main lab JavaScript, which also initializes i18n.
-3. `loader.html` loads `scripts/loader.js`, which initializes i18n for the video-loader interface.
-4. All three pages call `setupLocaleSelect()` from `scripts/i18n.js`.
+3. `loader.html` loads `lab-js/loader.js`, which initializes i18n for the video-loader interface.
+4. All three pages call `setupLocaleSelect()` from `lab-js/i18n.js`.
 5. When a user selects a language, `setLocale()` saves the selected locale in browser `localStorage`.
-6. The storage key is `ghostmaxxing-locale`, exported as `LOCALE_STORAGE_KEY` in `scripts/i18n.js`.
-7. When `lab.html` or `loader.html` opens later, `scripts/i18n.js` reads `ghostmaxxing-locale` and applies the same language.
+6. The storage key is `ghostmaxxing-locale`, exported as `LOCALE_STORAGE_KEY` in `lab-js/i18n.js`.
+7. When `lab.html` or `loader.html` opens later, `lab-js/i18n.js` reads `ghostmaxxing-locale` and applies the same language.
 8. If no saved language exists, Ghostmaxxing tries the browser language.
 9. If the browser language is unsupported, Ghostmaxxing falls back to English.
 
@@ -79,7 +79,7 @@ Run:
 npm run i18n:extract
 ```
 
-This custom Node.js extractor reads `scripts/i18n.js` and generates:
+This custom Node.js extractor reads `lab-js/i18n.js` and generates:
 
 - `translations/ghostmaxxing.pot`: gettext template for Crowdin upload.
 - `translations/ghostmaxxing-summary.csv`: review sheet with key, context, English, Italian, and Portuguese.

@@ -3,7 +3,7 @@
  * build-codemap.js — static architecture extractor for the Ghostmaxxing webapp.
  *
  * Produces codemap.json: modules, import edges, event-bus edges, entry points.
- * Ignores scripts-dev/ and scripts/vendor/ by design.
+ * Ignores scripts-dev/ and lab-js/vendor/ by design.
  *
  * Usage: node scripts-dev/build-codemap.js [--out codemap.json]
  */
@@ -14,7 +14,7 @@ const acorn = require('acorn');
 const walk = require('acorn-walk');
 
 const ROOT = path.resolve(__dirname, '..');
-const SCRIPTS = path.join(ROOT, 'scripts');
+const SCRIPTS = path.join(ROOT, 'lab-js');
 const BUS_RECEIVERS = new Set(['gstmxxEvents', 'events', 'bus', 'gstmxxEvents']);
 
 /** Flatten a member expression to dotted text, e.g. state.gstmxxEvents */
@@ -156,7 +156,7 @@ function findEntryPoints() {
          module: /type=["']module["']/.test(m[1]),
       }));
       const own = scripts
-         .filter((s) => s.src.startsWith('scripts/') && !s.src.includes('/vendor/'))
+         .filter((s) => s.src.startsWith('lab-js/') && !s.src.includes('/vendor/'))
          .map((s) => ({ id: s.src.replace(/^scripts\//, ''), module: s.module }));
       const vendor = scripts.filter((s) => s.src.includes('/vendor/')).map((s) => s.src);
       // page-to-page navigation, ignoring commented-out blocks

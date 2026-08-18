@@ -173,10 +173,10 @@ It must not be interpreted as:
 
 ## 9. Implementation Entry Points
 
-- `scripts/camera.js`: records the webcam stream and emits `clipRecorded`.
-- `scripts/upload-consent.js`: owns local clip queue, consent gate, upload,
+- `lab-js/camera.js`: records the webcam stream and emits `clipRecorded`.
+- `lab-js/upload-consent.js`: owns local clip queue, consent gate, upload,
   receipt storage, private receipt import, and revocation.
-- `scripts/lab-ui.js`: reflects the real upload queue count in the Online dock.
+- `lab-js/lab-ui.js`: reflects the real upload queue count in the Online dock.
 - `lab.html`: upload review and receipt-log markup.
 - `styles/lab.css`: upload and receipt tool styling.
 

@@ -9,7 +9,7 @@ const DATE = new Date().toISOString().slice(0, 10);
 const COMMON_NOISE_EXCLUDES = [
   "node_modules/**",
   "package-lock.json",
-  "CODE2PROMPT*.txt",
+  "C2P-*.txt",
   ".DS_Store",
   "**/.DS_Store",
   "docs/**",
@@ -51,7 +51,6 @@ const NAMESPACES = {
       "data/**",
       "references/index.html",
       "references/*.js",
-      "OLD_index.html",
       "styles/vendor/**/*.css"
     ]
   },
@@ -59,12 +58,13 @@ const NAMESPACES = {
     description: "Runtime engine work: MediaPipe, render loop, state, storage, plugins.",
     outputPrefix: "C2P-lab",
     include: [
-      "lab-js/**/*.js",
+      "lab-js/*.js",
+      "lab-js/vendor/*.js",
       "lab.html",
       "loader.html",
       "realtime.html",
       "ghostyle-transfer.html",
-      "ghostyles/**/*.js",
+      "ghostyles/*.js",
       "ghostyles.json",
       "*.d.ts",
       "package.json"
@@ -82,12 +82,11 @@ const NAMESPACES = {
     description: "Lab code plus test files for unit-test authoring and coverage fixes.",
     outputPrefix: "C2P-lab-test",
     include: [
-      "lab-js/**/*.js",
+      "lab-js/**.js",
       "tests/**/*.js",
-      "tests/**/*.cjs",
-      "*.config.js",
-      "*.config.cjs",
-      "package.json"
+      "vitest.config.js",
+      "playwright.config.js",
+      "package.json",
     ],
     exclude: [
       ...COMMON_NOISE_EXCLUDES,
@@ -99,26 +98,16 @@ const NAMESPACES = {
     ]
   },
   "c2p:copy": {
-    description: "Copywriting and localization context: docs, translations, page text.",
+    description: "Copywriting text + USE ALSO `node scripts-dev/extract-text-only.js`",
     outputPrefix: "C2P-copy",
     include: [
-      "tutorials/*.md",
-      "*.md",
-      "translations/*.md",
-      "translations/*.csv",
-      "*.html",
-      "**/*.html"
+    	"tutorials/brand-voice.md",
+    	"tutorials/visual-direction.md",
+    	"translations/*.csv",
+    	"translations/README.md",
+    	"data/camera-facts.json"
     ],
-    exclude: [
-      ...COMMON_NOISE_EXCLUDES,
-      "lab-js/**",
-      "pages-js/**",
-      "styles/**",
-      "images/**",
-      "tests/**",
-      "OLD_index.html",
-      "translations/*.pot"
-    ]
+    exclude: [...COMMON_NOISE_EXCLUDES, "visual-styleguide.html"]
   },
   "c2p:map": {
     description: "Repository map only: folder descriptions, README, top-level metadata.",
@@ -170,16 +159,16 @@ const NAMESPACES = {
       "tests/**/*.js",
       "tests/**/*.jpg",
       "tests/**/*.mjpeg",
-      "scripts/i18n.js",
+      "lab-js/i18n.js",
       "scripts-dev/extract-i18n-pot.cjs",
-      "scripts/vendor/README.md",
-      "scripts/vendor/**/*.js",
-      "scripts/vendor/**/*.json",
-      "scripts/vendor/**/*.wasm",
-      "scripts/vendor/**/*.task",
-      "scripts/vendor/**/*.tflite",
-      "scripts/vendor/**/*-shard*",
-      "scripts/vendor/*.sh",
+      "lab-js/vendor/README.md",
+      "lab-js/vendor/**/*.js",
+      "lab-js/vendor/**/*.json",
+      "lab-js/vendor/**/*.wasm",
+      "lab-js/vendor/**/*.task",
+      "lab-js/vendor/**/*.tflite",
+      "lab-js/vendor/**/*-shard*",
+      "lab-js/vendor/*.sh",
       "styles/vendor/README.md",
       "styles/vendor/**/*.css",
       "styles/vendor/**/*.woff2",

@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 function extractGhostmaxxingKeysFromMain(mainSource) {
   const assignMatch = mainSource.match(/window\.gstmxx\s*=\s*\{([\s\S]*?)\n\};/);
   if (!assignMatch) {
-    throw new Error('window.gstmxx assignment not found in scripts/main.js');
+    throw new Error('window.gstmxx assignment not found in lab-js/main.js');
   }
 
   const block = assignMatch[1];
@@ -36,7 +36,7 @@ function extractGhostmaxxingKeysFromMain(mainSource) {
 function extractGhostmaxxingKeysFromDts(dtsSource) {
   const ifaceMatch = dtsSource.match(/export interface GhostmaxxingApi\s*\{([\s\S]*?)\n\}/);
   if (!ifaceMatch) {
-    throw new Error('GhostmaxxingApi interface not found in scripts/Ghostmaxxing.d.ts');
+    throw new Error('GhostmaxxingApi interface not found in lab-js/Ghostmaxxing.d.ts');
   }
 
   const block = ifaceMatch[1];
@@ -65,8 +65,8 @@ describe('Ghostmaxxing.d.ts smoke', () => {
   it('declares every key exposed on window.gstmxx in main.js', () => {
     const here = path.dirname(fileURLToPath(import.meta.url));
     const root = path.resolve(here, '..', '..');
-    const mainPath = path.join(root, 'scripts', 'main.js');
-    const dtsPath = path.join(root, 'scripts', 'Ghostmaxxing.d.ts');
+    const mainPath = path.join(root, 'lab-js', 'main.js');
+    const dtsPath = path.join(root, 'lab-js', 'Ghostmaxxing.d.ts');
 
     const mainSource = fs.readFileSync(mainPath, 'utf8');
     const dtsSource = fs.readFileSync(dtsPath, 'utf8');

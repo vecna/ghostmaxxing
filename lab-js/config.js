@@ -16,9 +16,9 @@ const VENDOR_ROOT_URL = new URL('./vendor/', import.meta.url).href;
 /**
  * Local URLs for vendored face-api model shards (TinyFaceDetector + landmarks /
  * recognition / age-gender / expressions). Every network fetch stays inside
- * `/scripts/vendor` so pages can run without third-party CDNs.
+ * `/lab-js/vendor` so pages can run without third-party CDNs.
  *
- * @see scripts/main.js – `loadModels()` reads these and calls `faceapi.nets.*.loadFromUri()`.
+ * @see lab-js/main.js – `loadModels()` reads these and calls `faceapi.nets.*.loadFromUri()`.
  */
 export const MODEL_URLS = {
    tiny: VENDOR_ROOT_URL,
@@ -56,23 +56,23 @@ export const THUMBNAIL_JPEG_QUALITY = 0.8;
 /**
  * Vendored tasks-vision ES module path used for dynamic imports.
  *
- * @see scripts/engine-3d.js – `loadMobileNet()` does `await import(MEDIAPIPE_TASKS_VISION_URL)`.
- * @see scripts/mediapipe-loop.js – uses the same package for face landmarks.
+ * @see lab-js/engine-3d.js – `loadMobileNet()` does `await import(MEDIAPIPE_TASKS_VISION_URL)`.
+ * @see lab-js/mediapipe-loop.js – uses the same package for face landmarks.
  */
 export const MEDIAPIPE_TASKS_VISION_URL = new URL('./vendor/tasks-vision@0.10.35.js', import.meta.url).href;
 
 /**
  * Local URL of the MediaPipe WASM directory loaded by `FilesetResolver.forVisionTasks()`.
  *
- * @see scripts/engine-3d.js
- * @see scripts/mediapipe-loop.js
+ * @see lab-js/engine-3d.js
+ * @see lab-js/mediapipe-loop.js
  */
 export const MEDIAPIPE_WASM_URL = new URL('./vendor/wasm', import.meta.url).href;
 
 /**
  * Local URL of the MediaPipe FaceLandmarker `.task` bundle (float16, 478 landmarks).
  *
- * @see scripts/mediapipe-loop.js – passed to `FaceLandmarker.createFromOptions()`.
+ * @see lab-js/mediapipe-loop.js – passed to `FaceLandmarker.createFromOptions()`.
  */
 export const MEDIAPIPE_FACE_LANDMARKER_URL = new URL('./vendor/face_landmarker.task', import.meta.url).href;
 
@@ -80,7 +80,7 @@ export const MEDIAPIPE_FACE_LANDMARKER_URL = new URL('./vendor/face_landmarker.t
  * Local URL of the MediaPipe ImageEmbedder model bundle (MobileNetV3 Small, float32).
  * Produces the embedding vector consumed by the 3D recognition pipeline.
  *
- * @see scripts/engine-3d.js – passed to `ImageEmbedder.createFromOptions()`.
+ * @see lab-js/engine-3d.js – passed to `ImageEmbedder.createFromOptions()`.
  */
 export const MEDIAPIPE_IMAGE_EMBEDDER_URL = new URL('./vendor/mobilenet_v3_small.tflite', import.meta.url).href;
 
@@ -91,7 +91,7 @@ export const MEDIAPIPE_IMAGE_EMBEDDER_URL = new URL('./vendor/mobilenet_v3_small
  * minimum confidence for a face to be reported; `inputSize` is the square
  * input dimension fed to the detector (larger = more accurate, slower).
  *
- * @see scripts/engine.js – `detectFaceInCam`, `runEffectPass`, `compositeAndDetect`.
+ * @see lab-js/engine.js – `detectFaceInCam`, `runEffectPass`, `compositeAndDetect`.
  */
 export const DETECTOR_OPTIONS = new faceapi.TinyFaceDetectorOptions({
    inputSize: 416,
@@ -104,7 +104,7 @@ export const DETECTOR_OPTIONS = new faceapi.TinyFaceDetectorOptions({
  * the upload contract is documented inline so the backend implementer doesn't
  * need to read the recording code.
  *
- * @see scripts/camera.js – `recordOneSecond()` reads `mode`, `uploadEndpoint`, `durationMs`.
+ * @see lab-js/camera.js – `recordOneSecond()` reads `mode`, `uploadEndpoint`, `durationMs`.
  */
 export const RECORDING_CONFIG = {
    // Mode of operation: 'queue' keeps the recorded Blob in the browser so the

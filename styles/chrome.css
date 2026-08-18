@@ -101,7 +101,7 @@
   gap: 0.3rem;
 }
 
-/* The dropdown. Hidden by default and opened by scripts/nav.js, which toggles
+/* The dropdown. Hidden by default and opened by lab-js/nav.js, which toggles
    .is-open. It is NOT hidden with [hidden] or display via the open attribute,
    because the panel has to stay in the layout for the arrow to line up. */
 .gm-site-menu {

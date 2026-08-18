@@ -1,6 +1,6 @@
 Vendor asset inventory for third-party runtime files.
 
-Use `scripts/vendor/fetch-sources.sh` to refresh the assets it manages.
+Use `lab-js/vendor/fetch-sources.sh` to refresh the assets it manages.
 
 ## Library bundles
 
@@ -44,4 +44,4 @@ Source reference for this block is currently `justadudewhohacks/face-api.js-mode
 
 ## Update rule
 
-When any source URL or version segment above changes, re-run `scripts/vendor/fetch-sources.sh` and verify runtime no longer requests third-party hosts.
+When any source URL or version segment above changes, re-run `lab-js/vendor/fetch-sources.sh` and verify runtime no longer requests third-party hosts.
