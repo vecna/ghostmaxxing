@@ -14,11 +14,13 @@ const COPY_DIRS = [
   'images',
   'styles',
   'lab-js',
+  'pages-js',
   'references',
   'ghostyles',
   'docs',
   'data',
   'codemap',
+  'coverage',
 ];
 
 const COPY_FILES = [
@@ -29,6 +31,8 @@ const COPY_FILES = [
   'realtime.html',
   'loader.html',
   'report.html',
+  'workshops.html',
+  'fediverse.html',
 ];
 
 const COPY_WEB_FILES = [
