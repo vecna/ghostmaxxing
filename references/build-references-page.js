@@ -16,7 +16,7 @@
  *     whenever you have a real icon; every star instance updates automatically).
  *   - Everything under {{REFERENCES_BODY}} is generated from REFERENCES.json
  *     every time this runs, grouped by type: peer-reviewed papers, art
- *     initiatives, advocacy efforts, then anything else.
+ *     initiatives, activism efforts, then anything else.
  *
  * Two things are computed here rather than stored in the JSON, on purpose —
  * the JSON schema hasn't changed:
@@ -63,7 +63,7 @@ const LINK_LABELS = [
 // and the order of links in the "Jump to" nav.
 const GROUP_DEFS = [
   { key: 'artistic', label: 'Art initiatives', anchor: 'group-artistic' },
-  { key: 'activism', label: 'Advocacy efforts', anchor: 'group-activism' },
+  { key: 'activism', label: 'Campaigns & collective actions', anchor: 'group-activism' },
   { key: 'research', label: 'Peer-reviewed papers', anchor: 'group-research' },
 ];
 // Anything whose "type" isn't one of the three above lands here. Empty today,
@@ -271,7 +271,7 @@ function main() {
     `${refs.length} references`,
     `${nResearch} peer-reviewed`,
     `${nArtistic} art`,
-    `${nActivism} advocacy`,
+    `${nActivism} activism`,
   ];
   if (nOther > 0) statsParts.push(`${nOther} other`);
   statsParts.push(`${yearMin}&ndash;${yearMax}`);

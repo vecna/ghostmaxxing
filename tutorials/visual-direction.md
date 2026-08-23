@@ -1,690 +1,567 @@
-# (Internal) Ghostmaxxing Visual Direction
+# Ghostmaxxing Visual Direction
+
+Version: 1.2  
+Status: current internal standard  
+Language standard: clear international English; UK and US spelling may coexist  
+Last updated: 22 August 2026
+
+## Authority and scope
+
+This document codifies the current Ghostmaxxing visual system.
+
+The following sources are authoritative:
+
+1. `https://ghostmaxxing.vecna.eu/visual-styleguide.html` for live components, visual grammar and implementation contracts;
+2. `https://ghostmaxxing.vecna.eu/genealogy.html` for the composed expression of the genealogy system;
+3. `styles/tokens.css` for exact colour, type and layout values.
+
+If prose in this document conflicts with a live component, inspect the authoritative page and its source. If a value conflicts with `styles/tokens.css`, the token wins. Page CSS may compose tokens but must not redefine `--gm-*` values.
+
+This version describes the present system only. It is not a decision log and does not document superseded visual directions.
 
 ## Working definition
 
-Privacy activist and investigator meets public-research platform.
+> Activist cultural poster + investigative public lab
 
-This visual language starts from privacy activism, but it does not sound like policy advocacy. It is investigative, cultural, and public-facing. It wants to reveal what is hidden, document what is unclear, and make biometric systems readable without pretending that visibility alone solves power.
+Ghostmaxxing begins with privacy activism but does not adopt the visual language of a policy campaign. It is investigative, cultural, public-facing and technically grounded. It reveals systems, documents uncertainty and makes biometric infrastructure readable without pretending that visibility alone solves power.
 
-The project is not a neutral tech demo.
-It is not a policy campaign.
-It is not a cybersecurity product.
-It is a public-facing investigative lab about face recognition, camouflage, and the normalization of biometric surveillance.
+The project is:
 
-## Ordered identity labels
+- activist first;
+- culturally staged second;
+- editorial third;
+- investigative;
+- public-research oriented;
+- anti-biometric;
+- design-led;
+- technically literate;
+- civic-intelligence oriented.
 
-Use these labels in this order:
+It is not:
 
-1. activist
-2. cultural / exhibition-like
-3. editorial
+- a neutral technology demonstration;
+- a policy campaign;
+- a cybersecurity product;
+- a startup interface;
+- a dark terminal aesthetic;
+- a tactical or military interface;
+- a beauty brand;
+- a meme identity;
+- an academic repository with branding added later.
 
-Secondary labels:
+## Identity
 
-- investigative
-- public-research
-- anti-biometric
-- design-led
-- technically grounded
-- civic-intelligence oriented
+Ghostmaxxing is the project identity.
 
-Avoid leading with:
+Ghostyle is a term introduced within Ghostmaxxing. A Ghostyle is a modular visual intervention and a shareable unit of experiment. It may have its own preview, metadata and state, but it must remain visibly part of the Ghostmaxxing system.
 
-- academic
-- cyberlab
-- advocacy
-- startup
-- security product
-- hacker tool
-- policy campaign
+## Core visual logic
 
-The project can contain academic references, technical tests, and political claims, but the public surface should feel activist first, culturally staged second, editorial third.
+The visual system combines four modes:
 
-## Why not “advocacy”
+1. **Poster:** loud public ground, large editorial headlines and immediate visual claims.
+2. **Archive:** dossiers, dates, labels, references, conditions and limitations.
+3. **Machine:** camera housings, lenses, states, technical overlays and local test interfaces.
+4. **Interruption:** a controlled pink signal that marks a counter-move, cut or consequential action.
 
-Avoid “advocacy” as a primary frame.
+The result should be attractive at first glance and more unsettling on closer reading. The design invites attention, then makes the surveillance system and its limits legible.
 
-The tone should not suggest polite policy mediation, institutional lobbying, or reformist optimism. The project may still be useful to journalists, lawyers, researchers, civil society groups, and policy people, but its voice comes from privacy activism and investigation.
+## The genealogy model
 
-Better words:
+Surveillance is presented as a lineage rather than as one timeless machine.
 
-- investigate
-- reveal
-- document
-- test
-- map
-- contest
-- expose
-- report
-- inspect
-- trace
-- verify
-- archive
-- retest
+Each era has a technical approach, a body of documents and a public claim. A documented intervention may interrupt one era under stated conditions. The next generation can resume above that interruption. At the top of the genealogy, two lenses remain live. They represent the present problem and must not be styled as spent without a corresponding research finding.
 
-Use carefully:
+The genealogy is not a victory timeline. It is a sequence of local, conditional and temporary interruptions.
 
-- campaign
-- public-interest
-- civic
-- rights
-- resistance
+### Semantic elements
 
-Avoid as core identity:
-
-- advocate
-- awareness campaign
-- policy solution
-- compliance
-- responsible innovation
-- trust framework
-
-## Core metaphor
-
-Surveillance is not one machine. It is a lineage.
-
-Every era of face recognition produced its own technology, its own confident
-claim, and its own archive of documents that justified it — procurement
-records, accuracy figures, pilot reports, press releases. Those documents are
-the fuel. They accumulate. They are what makes the next deployment easy to
-approve.
-
-And in each era, something interrupted it. A demonstrated intervention: paint,
-prosthetics, printed patterns, adversarial makeup. In this system that
-interruption is **a gust of pink wind** crossing the column and putting the
-lens out. It is not a victory and it is not permanent — it is a documented
-result, under stated conditions, on the technology of that moment.
-
-Then the technology moved. The counter-move that worked against one generation
-did not survive the next, and the smoke resumed above the cut.
-
-That sequence — documents accumulate, wind interrupts, technology re-emerges —
-repeats up the whole page. At the top, where the column opens out, **two
-lenses are still reading.** They have not been defeated by anything
-demonstrated so far. They are the present tense of the problem.
-
-> A genealogy of interruptions, and the two that have not been interrupted yet.
-
-Ghostmaxxing is what sits at the end of that column: a public lab for testing
-whether the next interruption is possible, in your own browser, under your own
-conditions.
-
-### What each element carries
-
-| Element | Means |
+| Element | Meaning |
 |---|---|
-| The stacked documents / dossiers | What fuelled the surveillance of that era |
-| The smoke column | The technology itself, rising and continuing |
-| The pink wind | A documented intervention that interrupted it |
-| The cut in the column | The moment the lens went out |
-| The smoke resuming above | The next generation, unaffected by the last counter-move |
-| The two lenses at the canopy | The undefeated present. Live irises, no cut |
-| The pyre at the foot | Where the lineage starts — pattern recognition, 1960s |
+| Dossier | Dates, technical approach, documented intervention, source and limits |
+| Stacked documents | The evidence, procurement logic and claims that sustain an era |
+| Smoke or plume | The technical lineage continuing through time |
+| Pink wind | A documented counter-move or interruption |
+| Cut in the plume | The point at which a specific read was interrupted |
+| Smoke resuming | A later generation not addressed by the previous intervention |
+| Live lenses at the canopy | The present systems for which no documented interruption is being claimed |
+| Pyre at the foot | Pattern recognition as the historical ground of the lineage |
 
-### Rules this metaphor imposes
+### Composition contract
 
-- **Pink only ever marks an interruption.** Wind, the cut on a spent lens, the
-  rule under a link. It is never a surface, never body text, and never
-  decoration. Its contrast against the orange is around 1.1:1, so it can never
-  be the only thing carrying a meaning.
-- **The two at the top are never shown defeated.** No cut, no pink ring, live
-  yellow irises. The day one of them is genuinely defeated is a content change,
-  not a style change.
-- **A spent lens is still, and permanent.** No animation. The fact that
-  something was defeated is information, and information has to survive a
-  screenshot, a print, and `prefers-reduced-motion`.
-- **Never claim the wind won.** Every interruption is local, conditional and
-  temporary. The visual language may be triumphant for exactly one era at a
-  time and never about the whole column.
+The responsive genealogy uses four independent pieces:
 
-### What this replaces
+| Piece | Function | Desktop | Mobile |
+|---|---|---|---|
+| Spine | The vertical trunk or smoke column | Fixed centre track | Fixed centre track |
+| Branch | Connects the spine to a camera node | Extends left or right | Removed below the mobile breakpoint |
+| Node | Camera and stamp | Side column | Placed on the spine |
+| Dossier | Dates, title, result and limits | Opposite column | Full width below the node |
 
-The earlier direction was a botanical border at the foot of the page whose
-blossoms were CCTV housings — surveillance naturalized as landscape. It shipped
-as `images/homepage-camera-band.svg` and `.camera-band`.
+Use three tracks on larger viewports: flexible content, a fixed-width spine and flexible content. Do not scale a fixed artboard to fit a small screen. The spine remains centred on mobile so the composition preserves its logic without shrinking text or redrawing the canopy.
 
-It is gone. Both the file and the divs have been removed. The landscape idea
-survives in exactly one place — the scattered camera field in the homepage hero
-— and that is the whole of it. Do not reintroduce the border, and do not
-describe the project as being about naturalization: the argument is now about
-lineage and interruption, which is a claim about time rather than about
-scenery.
+### Genealogy rules
 
-## Short style description
+- Keep every interruption tied to a documented result and stated conditions.
+- Keep live lenses live until the content changes.
+- Keep spent states static and legible in screenshots, print and reduced-motion contexts.
+- Do not imply that a counter-move defeated face recognition as a whole.
+- Use the plume system on pages that make a substantive claim about time, lineage or accumulated evidence.
+- Do not apply the full genealogy composition as generic decoration.
 
-Privacy activist and investigator meets public-research platform.
+## Colour system
 
-A more visual phrase:
+The palette is the Institutional Poster system. Exact values live in `styles/tokens.css`.
 
-Activist cultural poster + investigative public lab.
+### Core tokens
 
-A more refined phrase:
+| Token | Value | Role |
+|---|---:|---|
+| `--gm-bg` | `#f26a1b` | Main page ground, surveillance orange |
+| `--gm-bg-deep` | `#d95a12` | Deeper orange when a composition requires it |
+| `--gm-ink` | `#0a0a08` | Headings, borders and high-contrast structure |
+| `--gm-text` | `#0a2540` | Body copy, dark navy |
+| `--gm-muted` | `#35526e` | Secondary explanatory text |
+| `--gm-green-soft` | `#2f7a5c` | Light machine surface |
+| `--gm-green` | `#0b4a3c` | Machine lines and structural drawing |
+| `--gm-green-deep` | `#072e26` | Lens barrels and dense machine forms |
+| `--gm-green-night` | `#061f1a` | Ground and deepest machine field |
+| `--gm-yellow` | `#f0c24a` | Live iris state |
+| `--gm-cream` | `#fff1cf` | Reading surface and text on dark ground |
+| `--gm-pink` | `#ff5f8f` | Interruption, spent residue and primary consequential action |
+| `--gm-soil` | `#0a2b23` | Dark field beneath cameras and protected surfaces |
 
-Design-led privacy activism with an investigative archive sensibility.
+Use semantic aliases in page CSS when they state intent more clearly:
 
-A more international phrase:
+- `--surface-page`
+- `--surface-panel`
+- `--surface-card`
+- `--text-heading`
+- `--text-body`
+- `--text-muted`
+- `--text-on-dark`
+- `--accent`
+- `--accent-live`
+- `--accent-spent`
 
-An activist, exhibition-like interface for investigating face recognition.
+### Colour meanings
 
-## What this style is
+- **Orange is the public wall.** It reads as a poster, public notice or civic warning. It is warm and institutional, not neon or cyberpunk.
+- **Cream is the reading surface.** Use it for cards, long-form material and high-legibility areas.
+- **Soil and greens are the machine.** They carry housings, lenses, smoke, protected areas and the ground of the system.
+- **Yellow means live.** Use it for an active iris, meaning a system is reading now. Do not spend yellow on unrelated decoration or Fediverse branding.
+- **Pink means interruption.** Use it for the wind, the residue of a spent lens, selected accents and the single consequential CTA.
+- **Ink creates structure.** It carries headings, borders and the edge that makes low-contrast accents perceivable.
+- **Dark navy carries body text.** Do not replace it with pure black in long reading surfaces.
 
-- activist
-- culturally staged
-- investigative
-- editorial
-- public-facing
-- visually composed
-- technically literate
-- symbolic
-- slightly formal
-- direct without being sloganistic
-- beautiful but not decorative-only
-- unsettling without horror aesthetics
+### Pink seating rule
 
-## What this style is not
+Pink has very low contrast against the orange ground. It must be seated on cream, soil or dark green, or bounded by an ink structure that carries the visible edge.
 
-- cyberpunk
-- dark terminal dashboard
-- startup SaaS
-- academic repository
-- policy NGO template
-- hacker conference visual identity
-- corporate cybersecurity
-- beauty brand
-- paranoid survival guide
-- streetwear-only meme aesthetic
-- military/tactical interface
+Use pink for:
 
-## Visual mood
+- the documented interruption in the genealogy;
+- the residue ring of a spent lens;
+- the wind in the project mark;
+- short accents such as rules, tags or link underlines on an appropriate surface;
+- the filled reporting CTA, with ink text and a 2px ink border.
 
-The mood is:
+Never use pink:
 
-- bold
-- warm
-- public
-- theatrical
-- investigative
-- composed
-- slightly dissonant
-- attractive at first glance
-- stranger on second glance
+- as body text;
+- as a page ground;
+- bare on orange when it is the only carrier of meaning;
+- as general decoration detached from interruption or action.
 
-The page should make people feel:
-“this is beautiful”
-then:
-“wait, those flowers are cameras”
-then:
-“this is about how surveillance becomes ordinary”
+### Green order
 
-## Color direction
+Use the green ramp by role, not by visual guesswork:
 
-**The values are not in this document.** They are in `styles/tokens.css`, which
-is the only place a `--gm-*` value may be defined, and this file will drift
-from it the moment anyone edits one and not the other.
+1. `--gm-green-soft` for surfaces;
+2. `--gm-green` for lines;
+3. `--gm-green-deep` for lens barrels and dense machine forms;
+4. `--gm-green-night` for ground.
 
-That is not hypothetical — it already happened. Two `:root` blocks used to sit
-in this document, and they specified the v2 orange with the v1 greens, ink,
-cream and yellow. Anyone implementing from here got a hybrid that matched
-neither stylesheet. Combined with a third copy hiding in `pages.css`, the site
-ran three palettes at once and `about.html` rendered a visibly different orange
-from `index.html`.
-
-Read the swatches off `visual-styleguide.html` §03 instead. That page reads the
-live computed values from the stylesheet at runtime, so it cannot drift.
-
-### The intent, which is what belongs here
-
-- **Orange is the page.** A poster wall, a public notice, a civic warning — not
-  neon, not cyberpunk. It is the loudest thing in the system and it is
-  deliberately flat.
-- **Cream is the surface.** Anything that has to be read at length sits on it.
-- **Soil and the greens are the machine.** Housings, lenses, smoke, the ground
-  the pyre sits in. Four greens ordered light to dark; nothing picks a green by
-  eye.
-- **Yellow is a live iris.** Something is reading, right now.
-- **Pink is an interruption and nothing else.** See the core metaphor. It is
-  reserved, it never carries meaning alone, and it never sits directly on
-  orange without cream or dark green underneath.
-
-### One accepted anomaly
-
-The smoke and pyre motifs bake four greens as literal hex across roughly 2,000
-`<circle>` elements, and they are the pre-consolidation values. They are
-painted files behind `background-image`, so they cannot follow a token.
-Re-exporting them to move four dark greens by a few percent was judged not
-worth the risk. They are declared as `--gm-smoke-1`…`4` so the values are at
-least centralized. Do not use them for anything else.
+The smoke and pyre assets contain their own named smoke ramp. Those values exist to support those assets only. Do not use the smoke tokens as an alternative general palette.
 
 ## Typography
 
-### Headlines
+The system uses three families, each with one job.
 
-Use a strong black serif display face.
+| Role | Family | Use |
+|---|---|---|
+| Display | Newsreader | Poster headlines, section headings, wordmark and pull quotes |
+| Reading and interface | Atkinson Hyperlegible | Body copy, navigation, controls, instructions and labels that must be read |
+| Metadata | JetBrains Mono | Years, tags, section numbers, testability badges and compact technical metadata |
 
-Qualities:
-- high contrast
-- editorial
-- elegant but assertive
-- large enough to dominate
-- more poster than interface
+### Rules
 
-Good feeling:
-- cultural magazine
-- exhibition title
-- public campaign poster
-- manifesto without shouting
+- Use Newsreader for editorial force, not for buttons or body paragraphs.
+- Use Atkinson Hyperlegible at weights 400 and 700 only.
+- Use JetBrains Mono sparingly and never for body copy.
+- Fluid scaling belongs to display sizes. Reading sizes remain stable.
+- Prefer short line lengths on cream reading surfaces.
+- Do not simulate a technical interface by filling the page with monospaced text.
+- Do not use glitch fonts, fake terminal fonts or generic technology sans headlines.
+
+Headline language can be sharp, exuberant and anti-surveillance. Humour may name the social function of a technology, as in "perv glasses", but it must remain accurate, intentional and legible to an international audience.
+
+## Shape and surface
+
+The system is poster and archive, not a software dashboard.
+
+Use:
+
+- square corners on cards and panels;
+- solid 2px ink borders as primary separators;
+- flat orange, cream and soil fields;
+- offset flat blocks if a raised hierarchy is ever needed;
+- generous poster-like spacing;
+- visible composition rather than container decoration.
 
 Avoid:
-- tech sans headlines
-- glitch fonts
-- fake terminal fonts
-- overly nostalgic typewriter styles
 
-### Body text
+- drop shadows;
+- rounded cards or panels;
+- generic coloured side borders;
+- glassmorphism;
+- dashboard card stacks;
+- decorative gradients;
+- a second accent colour with no semantic role.
 
-Use dark navy, not pure black, for body copy.
+The page background is a flat `var(--gm-bg)`. Do not add a radial or linear body gradient.
 
-Qualities:
-- readable
-- contemporary
-- clean
-- structured
-- precise
+The filled CTA is the only rounded component in the content system. Its exception creates its priority. It is not permission to round other elements.
 
-Body text should not feel corporate. It should feel like careful public explanation.
+## The mark
 
-### Metadata
+The primary mark contains:
 
-Small metadata can use a clean sans or monospace sparingly, but avoid letting the whole page become technical-HUD.
+- a top rail with two stems;
+- two live lenses with yellow irises;
+- a pink gust beneath them;
+- one spent lens with a pink residue ring and dark iris;
+- a small green flame above the spent lens.
 
-Use monospace only for:
-- years
-- tags
-- reference metadata
-- short labels
-- testability badges
+The mark compresses the genealogy argument into one object. The live lenses represent the present. The gust represents an intervention. The spent lens represents a documented interruption. The flame connects that interruption to the continuing lineage.
+
+### Mark rules
+
+- Use the full-colour mark at 32px and above when the surface allows it.
+- Use the small cut at approximately 28px and below.
+- Choose painted light or dark variants according to the surface.
+- Preserve clear space equal to one lens radius on every side.
+- Never show the two upper lenses as spent.
+- Never put another mark or sigil inside a camera lens.
+- Never rotate, flip or recolour the live lenses independently.
+- If motion is used, only the gust may move.
+- The static mark must carry the full meaning without motion.
+
+## Camera system
+
+Ghostmaxxing uses one custom fleet of camera drawings. Cameras are machines and evidence objects, not flowers, eyes or generic decorative icons.
+
+The current fleet includes six models associated with the genealogy:
+
+- street pole surveillance camera;
+- outward-facing wearable glasses;
+- depth sensor array;
+- edge AI cube;
+- ceiling dome;
+- bullet CCTV camera.
+
+### Anatomy contract
+
+Camera SVGs use a `0 0 100 100` viewBox and a shared class-driven drawing order:
+
+1. mount;
+2. shell;
+3. lens barrel;
+4. iris;
+5. glint or model-specific detail.
+
+The component defines the camera drawing and lens state. The page defines placement. Do not put page-specific positioning into the camera component.
+
+Iris geometry should be derived from the lens radius rather than adjusted by eye:
+
+- iris radius: `0.44` times the lens radius;
+- glint radius: `0.17` times the lens radius;
+- glint offset: `0.30` times the lens radius, up and left.
+
+### Lens states
+
+| State | Visual treatment | Meaning |
+|---|---|---|
+| Live | Yellow iris, glint visible | Still reading |
+| Reading | Pink iris, no glint | Transient state during a transition |
+| Spent | Dark iris, thin pink residue ring, no glint | A documented interruption exists |
+
+State is set with `data-lens` on the SVG or an ancestor. Do not create separate image files for states.
+
+Lens changes are instant. A spent state is information and must survive print, screenshots and reduced-motion settings.
+
+### Camera captions
+
+Use one caption system, `.gm-stamp`, for camera labels. Curvature is a property of the stamp, not a second label type. On narrow screens, render the same label flat when curved text would reduce legibility.
+
+### SVG delivery
+
+- Use painted SVGs through `<img>` when their colours are intentionally embedded.
+- Inline class-driven camera SVGs so site CSS can reach their parts and states.
+- Do not expect `currentColor` from a host page to enter an SVG loaded through `<img>`.
+- Keep camera IDs unique when a model appears more than once on a page.
+- Use meaningful `aria-label` text when an SVG conveys information. Mark decorative instances appropriately.
 
 ## Image language
 
-The key image language is contrast between:
+The key visual tension is between:
 
-1. machine-readable face
-2. adversarial / ornamental / human intervention
-3. surveillance as naturalized landscape
+1. the machine-readable face;
+2. a human or adversarial intervention;
+3. the infrastructure that performs and normalises the read.
 
-### Face treatment
+### Faces
 
-The face can be split:
+A face composition may contrast a recognition layer with an adversarial intervention. Useful elements include landmarks, a bounding region, confidence or state indicators and the visible intervention itself.
 
-- one side: face-recognition overlay, landmarks, bounding box, confidence markers
-- other side: adversarial makeup, dazzle pattern, organic camouflage
+Keep the treatment elegant and legible. Avoid scanline overload, military targeting graphics, generic HUD decoration and science-fiction surveillance clichés.
 
-Keep it elegant, not sci-fi.
+Where a real person's face is used, consent, context and the right to withdraw take priority over visual continuity.
 
-The recognition overlay should be present enough to be legible, but not dominate the aesthetic. Avoid excessive HUD elements, scanline overload, or military target visuals.
+### Camera fields
 
-### The camera field
+A camera field can represent infrastructure that is installed everywhere and easily overlooked. Use the six established housings on soil, with green and cream forms and semantically correct lens states.
 
-Superseded the botanical border. Same instinct — surveillance as
-something installed everywhere and looked past — but scattered rather than
-botanical, and in the hero rather than the footer.
+A field may be interactive when the interaction makes a research point, such as removing one camera type while leaving the wider infrastructure visible. It should still communicate that point as a static composition.
 
-The homepage builds it at runtime: camera housings of six types, seeded so the
-arrangement is stable between loads, rotated slightly, on soil. Tapping one
-removes every camera of that type and states a fact about it. The interaction
-is the argument — you can clear one kind of camera off the page and the field
-is still full.
+Suitable uses include:
 
-Reusable as: the homepage hero, social cards, stickers and posters.
+- the homepage hero;
+- an explanatory block about deployments;
+- social cards and posters;
+- a reporting-page bridge between observed devices and institutional evidence.
 
-Green and yellow on soil. Never on orange — the housings are cream-shelled and
-they need a dark ground to read against.
+Do not place a camera field on orange if the cream housings lose their structure. Keep every camera recognisable as a specific machine.
 
-### The plume
+### Plume and pyre
 
-The footer and the genealogy both use the smoke column instead: pyre at the
-foot, smoke rising, the wind cutting across it, the two lenses at the canopy.
-That is the lineage argument, and it belongs anywhere the page is making a
-claim about time. See the core metaphor.
+Use the plume, wind, dossiers and pyre when the page is making a claim about time, lineage or evidence accumulating across technical eras.
 
-## Interaction
+Suitable uses include:
 
-No animation is required.
+- the genealogy page;
+- a compact About-page diagram of how evidence feeds later research;
+- a footer transition into the archive;
+- an editorial illustration for a dated research finding.
 
-The mockup proves that the idea works through composition, title, claim, and image.
+Do not use the plume as a generic divider. Its meaning is specific enough that decorative repetition would weaken it.
 
-Use animation only when it clarifies the concept or creates a small intentional gesture. Do not depend on it to make the landing understandable.
+## Interaction and motion
 
-For the landing:
+Every page must work as a static poster. Motion is an enhancement, never the carrier of essential meaning.
 
-Preferred:
-- static, immediate CTA
-- strong hero image
-- clear title
-- optional subtle hover/mouse reveal
-- no mandatory unlock mechanism
+Use interaction when it:
+
+- reveals a test state;
+- compares before and after conditions;
+- exposes supporting evidence;
+- lets a person inspect or remove a class of machine;
+- clarifies the relationship between an intervention and a read.
 
 Avoid:
-- hidden primary link
-- long reveal interaction
-- friction that blocks access
-- interaction needed to understand the page
 
-A small interaction can remain as an enhancement:
-- hover reveals more makeup
-- pointer movement shifts recognition/camouflage balance
-- reduced-motion users see final state immediately
+- hidden primary links;
+- mandatory reveal sequences;
+- long entrance animations;
+- friction before a person can understand the page;
+- smooth decorative movement that implies progress;
+- motion that prevents a state from surviving a screenshot.
 
-But the page should work perfectly as a poster.
+Under `prefers-reduced-motion`, show the final informative state immediately. Preserve visible state markers rather than removing them with the animation.
 
-## Landing page direction
+## Site chrome
 
-### Primary headline
+All content pages use the shared Ghostmaxxing header and footer.
 
-Strong options:
+### Header
 
-- Disrupt the read.
-- Make the read visible.
-- The face is not a truth.
-- Recognition is a system output.
-- Test the face-reading machine.
-- Camouflage the pipeline.
+The shared header contains:
 
-The current strongest option:
+- the Ghostmaxxing lockup;
+- a square Fediverse chip;
+- the Know more navigation group;
+- one pink reporting CTA.
 
-Disrupt the read.
+Commitment rises from left to right:
 
-It is short, technical enough, and visually powerful. It does not overclaim.
+1. follow the public presence;
+2. read more about the project;
+3. share consequential information.
 
-### Supporting claim
+Keep the reporting CTA last. If the navigation grows, preserve it as the terminal and strongest action while reviewing keyboard order and mis-tap risk.
 
-Use:
+### Actions
 
-Ghostmaxxing tests face-recognition camouflage through browser-based overlays and local experiments. Knowledge stays with you.
+| Component | Shape and colour | Use |
+|---|---|---|
+| `.gm-site-chip` | Transparent, square, 2px ink border, ink text, small dot | Secondary destinations such as the Fediverse |
+| `.gm-site-cta` | Filled pink pill, 2px ink border, ink text | One consequential action per page |
 
-For the international version:
+The ink border is structural, not decorative. It gives the pink CTA a perceivable edge against orange. CTA text is ink, not cream.
 
-Ghostmaxxing tests face-recognition camouflage through browser-based overlays, local experiments, and a public archive of anti-biometric techniques.
+### Footer
 
-### CTA hierarchy
+The content-page footer uses a pyre band, a soil edge and a link row with subdued inline camera icons. Keep informational camera graphics inline when their classes or states depend on site CSS.
 
-Primary:
-- Open the lab
+### Tool-page exception
 
-Secondary:
-- Explore references
-- Report a deployment
-- View source
+`lab.html`, `loader.html` and `realtime.html` are full-screen camera surfaces. They use a small fixed back link and scoped dark tool chrome so the poster header does not compete with the camera stage.
 
-Avoid:
-- Become invisible
-- Beat surveillance
-- Protect yourself
-- Hack your face
+The tool chrome is a deliberate functional exception. Do not use it as an alternative theme for content pages.
 
-### Layout
+## Spaces and grounds
 
-- top nav with wordmark
-- large serif headline on the left
-- face image on the right or centered-right
-- body text below headline
-- primary CTA button
-- secondary text link
-- the camera field as the hero, on soil
-- pyre + soil-edge footer anchored at the bottom
-- generous whitespace
-- strong orange field
+Ghostmaxxing distinguishes its public spaces by ground rather than by inventing new accent colours.
 
-The page should feel like a poster that happens to be interactive.
+| Space | Ground | Accent | Meaning |
+|---|---|---|---|
+| Main site | Orange | Pink | Public wall, poster and notice |
+| Reporting node | Soil | Pink | Anonymous, consequential point of interruption |
+| Fediverse infrastructure | Cream | Green-soft | Federated data, updates, reading and exchange |
 
-## References page direction
+Never give the Fediverse presence a yellow identity. Yellow means a live lens and would imply that the social presence is reading the viewer.
 
-The references page should inherit the new style but become more structured.
+Use `rel="me"` on the Fediverse link so the domain can verify the account.
 
-Use:
-- orange or cream background sections
-- black serif titles
-- dark navy explanatory text
-- card layout
-- tags in navy/green/yellow
-- camera-flower motif in header or footer
-- less HUD, more archive
+## Page directions
 
-The references page is not a cyberlab database.
-It is an investigative archive.
+### Homepage
 
-Each card should answer:
-- What is this?
-- What did it demonstrate?
-- Why does it matter?
-- Can Ghostmaxxing/Ghostmaxxing retest it?
-- What are the limitations?
-- Where can I read more?
+Lead with one poster-scale claim, one clear route into the lab and a camera-field composition that makes infrastructure visible. The page should reveal the research loop without turning the hero into an architecture diagram.
 
-## Report / whistleblowing page direction
+Potential interaction: removing one camera type reveals a fact about that device while the wider field remains. Preserve the argument when JavaScript or motion is unavailable.
 
-This page should feel calm, careful, and investigative.
+### About
 
-Use the same color system, but reduce spectacle.
+Use an editorial reading structure with a compact visual account of the theory of change:
 
-Tone:
-- protective
-- precise
-- serious
-- not heroic
-- not paranoid
-- not urgent in a manipulative way
+> Ghostyles and test records -> Fediverse backend -> lab updates and public distribution -> anonymous reporting -> verified evidence -> new tests
 
-Key claim:
+The visual may reuse established components by function:
 
-Seen facial recognition in public space? Help document where it appears, who operates it, what technology is used, and what safeguards or abuses are present.
+- a Ghostyle preview for the experiment;
+- a cream reading surface for the bidirectional Fediverse data layer;
+- a soil reporting panel for consequential contact;
+- a dossier for evidence returning to the archive;
+- a branch or spine relationship when the loop connects to historical research.
 
-Use the camera field more literally here: the deployments a reader is being
-asked to document are the same housings the hero is full of. What the reporting
-node collects becomes the documents at the foot of the next era's column — that
-is the connection worth making visible on this page.
-
-## App / Ghostmaxxing interface direction
-
-The actual lab interface can be more technical than the landing, but should not revert entirely to cyberlab aesthetics.
-
-Use the new visual direction as a layer:
-
-- dark navy panels instead of pure black cyber panels
-- orange/yellow accents
-- serif only for major labels or title areas
-- clean sans for controls
-- recognition overlays can remain technical
-- Ghostyle overlays can be more ornamental
-- status language should stay precise
-
-The lab can still look like a tool.
-But it should belong to the same world as the landing.
-
-## Naming architecture
-
-### Italian context
-
-Use:
-
-Ghòstati
-
-Why:
-- works as a direct imperative in Italian
-- carries the “become ghost / stay ghosted” resonance
-- fits the local NINA context
-- feels rooted and specific
-
-Italian pages can remain more locally contextual and speak to the audience already explored:
-- public-space deployments
-- Italian legal/political context
-- NINA reporting node
-- workshop/festival language
-
-### International context
-
-Use:
-
-Ghostmaxxing
-
-Why:
-- meme-aware and contemporary
-- immediately suggests “becoming more ghost-like”
-- funny and unexpected
-- legible to internet-native audiences
-- less dependent on Italian wordplay
-- can carry a lighter public-entry tone without weakening the technical work
-
-Ghostmaxxing should not become unserious. The meme should open the door; the project should remain rigorous.
-
-### Relationship between names
-
-Recommended architecture:
-
-- Ghòstati: Italian/local name and original project root
-- Ghostmaxxing: international-facing name for the same project universe
-- Ghostyle: plugin/style unit, usable in both contexts
-
-Possible wording:
-
-Ghostmaxxing is the international name for Ghòstati: a browser-based lab for testing face-recognition camouflage and documenting anti-biometric appearance design.
-
-Or:
-
-Ghòstati / Ghostmaxxing is a public lab for testing how faces become machine-readable — and how that reading can be disrupted.
-
-### Avoid confusion
-
-Do not present Ghostmaxxing as a separate fork unless it actually becomes one.
-
-Use:
-- “international name”
-- “international-facing version”
-- “English-language presentation”
-- “same project universe”
-
-Avoid:
-- “rebrand” too early
-- “new project” unless architecture changes
-- “meme project”
-- “funny version”
-
-## Ghostmaxxing tone
-
-Ghostmaxxing can be slightly more internet-native, but not unserious.
-
-It can use:
-- sharper headlines
-- cleaner English
-- clearer CTAs
-- a bit more playfulness
-- stronger visual identity
-
-It should still avoid:
-- anonymity promises
-- overclaiming
-- “beat face recognition”
-- meme overload
-- ironic detachment
-
-Good phrase:
-
-Ghostmaxxing is not about becoming invisible. It is about making face-recognition systems visible enough to test.
-
-## Copy examples
-
-### Landing
-
-Disrupt the read.
-
-Ghostmaxxing tests face-recognition camouflage through browser-based overlays and local experiments. Explore the archive, build a Ghostyle, or report where facial recognition appears in public space.
+Do not introduce a new visual metaphor for the loop. The current components already express experiment, distribution, reporting and evidence.
 
 ### References
 
-The archive maps artistic, technical, and activist work around face obfuscation, adversarial makeup, and physical-world attacks on computer vision systems. Each entry explains what was demonstrated, what remains limited, and whether the idea can be retested in Ghostmaxxing.
+Treat the page as an investigative archive.
 
-### Report page
+Use:
 
-Seen facial recognition in public space? Help document where it appears, who operates it, what technology is used, and what safeguards or abuses are present. Share only what is safe for you to share.
+- cream reading cards on orange or soil sections;
+- square 2px borders;
+- Newsreader titles;
+- dark navy explanatory text;
+- monospace years, tags and testability grades;
+- semantically correct lens states or dossiers when a reference belongs to a genealogy era.
 
-### App disclaimer
+Each card should make the source, demonstration, conditions, limits and retest opportunity scannable.
 
-Local tests are not protection claims. Results depend on model, camera, light, pose, distance, and context.
+### Reporting node
 
-## Design principles
+Use soil as the ground and reduce spectacle. Continue pink from the site-wide CTA to show that this is the point of consequential interruption.
 
-### 1. Beauty first, unease second
+Visual priorities:
 
-The page should attract before it disturbs.
+- calm reading order;
+- clear channel choice;
+- a visible choice between HTTPS access and the Onion Service through Tor Browser;
+- visible safety and data-minimisation guidance;
+- no decorative urgency;
+- no heroic portraiture;
+- a clear source-anonymity statement tied specifically to the GlobaLeaks channel;
+- no anonymity claim that extends beyond the protection provided by GlobaLeaks, Tor and the source's own handling of identifying material.
 
-The flowers should be beautiful. Then the viewer notices they are cameras.
+A small, literal camera-field reference may connect observed devices to the evidence being requested. Dossiers can represent contracts, technical details or verified observations, provided the page never encourages unsafe collection.
 
-### 2. No false safety
+### Workshops
 
-Never imply that a Ghostyle makes someone safe from surveillance.
+Use the poster system for invitation and cream panels for practical details. Visualise activities as methods or materials, not as lifestyle imagery. Clearly separate what participants will do, what is processed locally, what may be documented and what requires consent.
 
-### 3. Make systems visible
+### Fediverse page
 
-The visual language should reveal pipelines, infrastructures, and hidden arrangements.
+Use cream as the primary reading ground with green-soft accents. Keep the Ghostmaxxing mark and typography, but lower the visual pressure so ActivityPub objects, feeds, account verification, follow instructions and data provenance are easy to read.
 
-### 4. Less cyber, more public
+The page must present the target Fediverse infrastructure with two directions:
 
-Avoid the cliché of surveillance represented only through dark screens and green grids.
+1. the lab publishes Ghostyles, test records, references and project updates to the federated backend;
+2. the lab receives updates and candidate research inputs from ActivityPub actors, subject to validation and moderation.
 
-Surveillance is not just in computers. It is in streets, schools, stadiums, shops, airports, phones, buildings, and public administration.
+Use object type, author or actor, publication time, provenance and moderation state as visible metadata when they help a reader understand the data flow. Do not make the page look like a generic social-media feed.
 
-### 5. The archive is part of the interface
+Until both directions are implemented, distinguish live functions from planned ones in copy and interface state. Do not render a planned inbound flow as if data were already being consumed by the lab.
 
-References are not an appendix.
-They are evidence of lineage, repetition, and accumulated knowledge.
+Suitable interactive enhancement: a small explainer that shows how one public update can be followed from different ActivityPub applications. Use real interface labels only when the implementation can keep them current.
 
-### 6. Investigation over advocacy
+### Genealogy
 
-The project should invite people to look, test, report, and verify — not merely agree.
+The genealogy page is the keeper composition for the temporal system. Preserve its central plume, alternating dossiers, camera nodes, live and spent states, pink interruptions and pyre ground. New eras should extend the same data and component contracts rather than introduce a new timeline style.
 
-## Visual checklist
+### Lab and technical tools
+
+Prioritise the camera stage, local state, control clarity and immediate feedback. Use the scoped dark tool chrome. Bring poster-system elements into the tool only when they improve orientation or explain a finding.
+
+## Future-page hypotheses
+
+Future pages should extend established visual grammar rather than invent a page-specific identity.
+
+| Page need | Recommended established elements | Constraint |
+|---|---|---|
+| A dated research result | Dossier, testability grade, lens state | Conditions and limits must remain visible |
+| A new Ghostyle detail page | Face preview, Ghostyle metadata, before and after state | Do not imply protection or universal transfer |
+| A deployment case file | Soil ground, camera housing, cream dossiers | Separate observation from inference |
+| A Fediverse data view | Cream ground, green-soft destination markers, object and provenance metadata | Show both publication and validated inbound updates; do not use yellow as social branding |
+| A theory-of-change explainer | Ghostyle preview, surface shift, reporting panel, returning dossier | Keep the loop readable without animation |
+| A historical or technical timeline | Spine, branches, nodes and dossiers | Use only when lineage is the actual argument |
+| A poster or social card | Headline, mark, one machine or interruption element | Preserve semantic colours and source context |
+
+## Accessibility and resilience
+
+- Maintain a visible `:focus-visible` outline using `--gm-focus-ring`.
+- Do not rely on hue alone to distinguish actions or states. Pair colour with shape, border, label or residue.
+- Keep body text on high-legibility surfaces and use the intended text token.
+- Provide text alternatives for informative graphics.
+- Mark repeated decorative cameras as decorative.
+- Preserve information under `prefers-reduced-motion`.
+- Ensure core content and primary actions work without JavaScript.
+- Do not scale text as part of a fixed illustration.
+- Test layouts at narrow mobile widths and at the `1440px` content maximum.
+- Review keyboard order whenever navigation items change.
+- Treat consent and context as part of the image system when faces or personal evidence appear.
+
+## Implementation checklist
 
 Before publishing a page, check:
 
-- Does it feel activist first?
-- Does it have cultural/exhibition quality?
-- Does it feel editorially composed?
-- Does it avoid old cyberlab tropes?
-- Does it use strong contrast?
-- Does it include the camera-as-landscape metaphor when appropriate?
-- Is the CTA obvious?
-- Is the page readable without animation?
-- Are claims precise and limited?
-- Is the reporting node visible where it matters?
-- Would the design still work as a poster?
-- Would the page make sense to a developer, an investigator, and a curious person?
-
-## Practical CSS direction
-
-Removed. It carried a second verbatim copy of the token block and duplicated
-`styles/tokens.css`, `base.css` and `cameras.css` in prose.
-
-The implementation is:
-
-- `styles/styles.css` — the one stylesheet every page links. Fonts, tokens,
-  reset, components, in that order.
-- `styles/tokens.css` — every colour, type and layout value.
-- `visual-styleguide.html` — every component as the live thing, plus §12 on
-  when an SVG may be an `<img>` and when it must be inlined.
-
-This document says what the system is for. That one says what it is.
-
-## Future tasks
-
-The previous list was eight items, all checked, several describing work that
-has since been undone or redone. Reset to what is actually open:
-
-- [ ] Re-express the era dossiers so the "documents that fuelled it" reading
-      is legible without the caption.
-- [ ] Decide whether the two undefeated lenses get named, or stay anonymous.
-- [ ] Social cards still use the old camera-flower composition.
-- [ ] `styles/lab.css` runs its own scoped dark palette. Deliberate, but it
-      has never been reconciled with the poster system on paper.
-- [ ] The `era__wind` block is inlined four times, 140 KB. Deduplicating it
-      needs a mechanism that keeps CSS reach — it has no fill attributes of
-      its own.
+- Does it use Ghostmaxxing consistently as the project identity?
+- Does it extend the poster, archive, machine or interruption modes already defined?
+- Are exact values coming from `styles/tokens.css`?
+- Are colour meanings preserved?
+- Is pink properly seated and paired with structure?
+- Is yellow used only for a live reading state?
+- Are cards square, flat and free of drop shadows?
+- Is the single rounded CTA the only rounded content component?
+- Are type families confined to their roles?
+- Are camera SVGs using the shared anatomy and state contract?
+- Are informational SVGs inlined when their state depends on CSS?
+- Does the page remain understandable without motion?
+- Are reduced motion, focus visibility, contrast and keyboard order intact?
+- Does any genealogy element make a real claim about time or evidence?
+- Are conditions and limits visible wherever the design presents a research result?
+- Is every camera presented as a specific machine or evidence object?
+- Is the English consistent and free of em dashes?

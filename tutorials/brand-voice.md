@@ -1,73 +1,119 @@
-# (Internal) Ghostmaxxing Brand Voice
+# Ghostmaxxing Brand Voice
+
+Version: 1.2  
+Status: current internal standard  
+Language standard: clear international English; UK and US spelling may coexist  
+Last updated: 22 August 2026
 
 ## Purpose
 
-Ghostmaxxing is a public research lab for testing, explaining, and questioning facial recognition systems through browser-based AR camouflage, adversarial makeup experiments, and curated technical references.
+Ghostmaxxing is a public research lab for testing, explaining and questioning face recognition. It combines browser-based AR camouflage, adversarial makeup experiments, local comparison tests, a curated reference archive, a Fediverse presence and a reporting node.
 
-The project should sound like a tool made by people who understand code, research, public space, and political risk — without overselling protection or turning critique into spectacle.
+The project comes from hacking understood politically: an attitude of subversion, inquiry and freedom, not a product category. It contests the normalisation of face recognition in public life. Use *hacking* when it helps explain the project's position. Do not present Ghostmaxxing as a hacker tool, because that narrows the audience and makes the work sound like a technical subculture rather than a public investigation.
 
-Ghostmaxxing is not a magic invisibility product.
-Ghostmaxxing is a public lab, a visual test bench, and an investigative archive gateway.
+Ghostmaxxing is designed by technologists working in the public interest. Its public voice should show an understanding of code, research, public space, culture and political risk at the same time.
+
+Ghostmaxxing is not an invisibility product. It is a public-facing research lab, a visual test bench and a route into an investigative archive.
+
+## Theory of change
+
+Ghostmaxxing is designed to work as a research loop, not as a collection of unrelated pages. The loop below is the target operating model. Public copy must distinguish capabilities that are already available from integrations that are still being completed.
+
+1. **Local experiments produce Ghostyles and test records.** People use the browser lab to make and test visual interventions under stated conditions.
+2. **The Fediverse becomes the federated data backend.** Ghostyles, public test records, limitations, references and project updates are represented and exchanged through ActivityPub rather than being confined to one website or application.
+3. **The Fediverse distributes the work.** Different communities, applications and instances can follow, question, reproduce and retest the research.
+4. **The lab reads from the same network.** Relevant updates arriving through the Fediverse become new inputs for the lab after validation and moderation. The network is both an output and an input of the research process.
+5. **Public visibility creates routes to private reporting.** The distributed work can reach people who know how face recognition systems are built, bought, operated or experienced.
+6. **Anonymous reports update the investigation.** Evidence from deployments, contracts, operators, affected people and technical insiders informs the archive, the threat model and the next round of tests.
+7. **The lab tests again.** New evidence changes the research questions and may produce new Ghostyles, revised limits or a clear finding that an earlier result no longer transfers.
+
+In compact form:
+
+> Local tests -> Ghostyles and records -> Fediverse backend -> lab updates and public distribution -> anonymous reporting -> verified evidence -> better tests
+
+The loop does not promise that public visibility alone changes institutional power. It creates shared, testable knowledge and a path by which evidence can alter the research.
+
+Confidential reports are never published directly to the Fediverse. Only verified, minimised and appropriately redacted findings may return to the public data layer after editorial and security review.
+
+Until the bidirectional ActivityPub integration is operational, describe it as the project architecture or intended data flow. Do not imply that the lab already consumes federated updates automatically if it does not.
+
+### Requirement for the About page
+
+The About page must explain this theory of change explicitly. It should not describe the lab, Fediverse backend, archive and reporting node as separate features. It should show the bidirectional relationship between the lab and the Fediverse, then show how public research can generate private reports and how verified evidence changes later tests.
+
+The About page should also name the people the reporting node is intended to reach:
+
+- people who build or maintain the technology;
+- people who know where a specific deployment fails;
+- people who have seen contracts, tenders or internal evaluations;
+- people who operate a system day to day;
+- people who approved or funded a deployment;
+- people who noticed face recognition in public space;
+- people who were stopped, flagged or misidentified by it.
+
+Do not ask any of these people to disclose sensitive material casually. The reporting page must provide its own security guidance before asking for information.
+
+## Communication goals
+
+Public copy should help people:
+
+1. understand what Ghostmaxxing tests and what it does not claim;
+2. try a local experiment without mistaking it for protection;
+3. understand a Ghostyle as a testable and shareable intervention;
+4. understand the Fediverse as the project's data backend, public distribution network and source of validated lab updates;
+5. inspect the technical and cultural lineage in the reference archive;
+6. report deployments, evidence or first-hand knowledge through the appropriate channel;
+7. recognise that face recognition is contingent, political and open to investigation.
 
 ## Core voice
 
 Use a tone that is:
 
-- technically precise
-- curious and experimental
-- public-facing but not simplified to the point of being wrong
-- careful with security claims
-- visually imaginative
-- grounded in evidence
-- open to contributors
-- skeptical of biometric inevitability
-- respectful of people whose faces, bodies, and data are affected
+- activist first, culturally staged second and editorial third;
+- technically precise;
+- curious and experimental;
+- direct without becoming sloganistic;
+- public-facing without simplifying the work into false claims;
+- visually imaginative;
+- grounded in evidence;
+- open to contributors and retesting;
+- critical of biometric inevitability;
+- respectful of people whose faces, bodies and data are affected;
+- candid about uncertainty, failure and limits.
 
-The public voice is: activist cultural lab + investigative archive + technically grounded workshop.
+The public voice can be summarised as:
 
-Think:
+> Activist cultural lab + investigative archive + technically grounded workshop
 
-- an activist, exhibition-like interface
-- a workshop table
-- a browser-based adversarial lab that explains its limits
-- an exhibition label that still respects technical detail
-- a software project that knows it lives in political reality
+Think of:
+
+- a public poster that rewards close reading;
+- an exhibition label that respects technical detail;
+- a workshop table where methods are visible;
+- a browser-based adversarial lab that explains its limits;
+- a software project that knows it exists in political reality.
 
 Avoid sounding like:
 
-- a startup promising disruption
-- a cybersecurity product promising safety
-- an academic paper that excludes non-specialists
-- an activist poster with no technical detail
-- a beauty tutorial with no threat model
-- a hacker toy with no ethics
+- a startup promising disruption;
+- a cybersecurity product promising safety;
+- an academic paper written only for specialists;
+- an activist slogan with no technical detail;
+- a beauty tutorial with no threat model;
+- a hacker toy with no ethics;
+- a policy campaign asking only for agreement.
 
-## One-line description
-
-Ghostmaxxing is a public lab for testing face-recognition camouflage and documenting the technical, cultural, and political history of anti-biometric appearance design.
-
-## Short description
-
-Ghostmaxxing lets people experiment with face-recognition camouflage directly in the browser. It combines webcam-based face detection, modular AR “Ghostyles”, local comparison tests, and a curated reference archive on adversarial makeup, CV Dazzle, face obfuscation, and physical-world attacks against computer vision systems.
-
-## Longer description
-
-Ghostmaxxing is a public Web AR lab for developing and testing anti-biometric camouflage. It lets developers, researchers, digital rights groups, artists, and curious people apply modular visual overlays to a face, compare recognition behavior before and after the intervention, and understand where this field comes from through a curated technical and cultural references archive.
-
-It does not guarantee anonymity. It does not defeat all facial recognition systems. It helps make biometric claims testable, visible, and discussable.
-
-## Key messages
+## Editorial principles
 
 ### 1. Test, do not trust
 
-Facial recognition systems should not be accepted as neutral, inevitable, or universally reliable. Ghostmaxxing makes parts of the recognition pipeline visible enough to test and question.
+A face match is a system output, not a truth. Make the pipeline inspectable and the claim testable.
 
-Suggested phrasing:
+Prefer:
 
-- Test the machine before believing the claim.
-- Recognition is not certainty.
-- A face match is a system output, not a truth.
 - Make biometric assumptions inspectable.
+- Test the read under stated conditions.
+- A face match is a system output, not a truth.
 
 Avoid:
 
@@ -75,13 +121,72 @@ Avoid:
 - This defeats surveillance.
 - This makes you anonymous.
 
-### 2. The face is a technical interface
+### 2. State the conditions
 
-Ghostmaxxing treats the face as something computer vision systems parse through landmarks, descriptors, regions, contrast, light, occlusion, and learned representations.
+Any claim about performance must state what materially shaped the result. Depending on the test, this may include the model, task, camera, light, pose, distance, image quality, threshold, environment and sample.
+
+Prefer:
+
+> In this local test, the pattern lowered detection confidence on one open model at close range under even light.
+
+Avoid generalising from a browser test, one model, one face or one environment to deployed systems.
+
+### 3. Publish uncertainty
+
+An open question is a valid research result. Say when transfer to another model or a real deployment is unknown. Do not hide uncertainty below the fold or turn it into vague legal language.
+
+### 4. Treat the archive as evidence
+
+References are part of the public argument. Each entry should help a reader distinguish what was demonstrated, under which conditions, what remains testable and what the limits are.
+
+### 5. Connect technical tests to civic evidence
+
+The lab tests techniques. The Fediverse stores and carries public research objects in both directions. The reporting node gathers private evidence about deployments and institutions. Copy should make these relationships visible wherever they are relevant.
+
+### 6. Do not promise safety
+
+Never imply that a Ghostyle makes someone safe from surveillance. Do not use uncertainty as a theatrical device. State limits plainly and near the relevant claim.
+
+## Claims ladder
+
+Grade consequential claims before publication.
+
+| Grade | Meaning | Example | Publication rule |
+|---|---|---|---|
+| Safe | True independently of test conditions | A face match is a system output, not a truth. | Publish as written. |
+| Conditional | Supported under named conditions | In our local test, this Ghostyle reduced detection confidence on one open model. | Publish only with the conditions and limits. |
+| Research | An explicit open question | Whether this transfers to deployed systems is untested. | Publish as a question or research gap. |
+| Unsafe | A promise or generalisation the evidence cannot support | Ghostmaxxing protects you from facial recognition. | Cut. Do not soften or relocate it. |
+
+The word *defeated* may appear only when it describes a documented, past-tense result involving a specific system under stated conditions. Never use it as a present-tense promise to the reader.
+
+## Standard descriptions
+
+### One-line description
+
+Ghostmaxxing is a public lab for testing face-recognition camouflage and documenting the technical, cultural and political history of anti-biometric appearance design.
+
+### Short description
+
+Ghostmaxxing lets people experiment with face-recognition camouflage in the browser. It combines webcam-based face detection, modular AR interventions called Ghostyles, local comparison tests and a curated archive of adversarial makeup, CV Dazzle, face obfuscation and physical-world attacks against computer vision.
+
+### Longer description
+
+Ghostmaxxing is a public Web AR lab for developing and testing anti-biometric camouflage. Developers, researchers, digital rights groups, artists and curious people can apply modular visual interventions to a face, compare recognition behaviour before and after an intervention and trace the technical and cultural lineage of the field through a curated reference archive.
+
+Many physical countermeasures have already been proposed, including printed glasses, stickers, prosthetics, hats, textiles and makeup. Few claims have been retested as models, sensors and deployment conditions changed. Ghostmaxxing treats each result as local, conditional and temporary until further testing shows otherwise.
+
+The project connects testing, federated data and anonymous reporting. Ghostyles make experiments shareable. The Fediverse is designed to become both the backend for public research objects and a source of updates that the lab can validate and use. The GlobaLeaks reporting node invites private evidence from people who build, buy, operate, observe or experience face recognition systems. Verified evidence can change the archive, the threat model and the next round of tests.
+
+## Key messages
+
+### The face is a technical interface
+
+Face recognition systems parse faces through landmarks, descriptors, regions, contrast, light, occlusion and learned representations.
 
 Suggested phrasing:
 
-- The face is read as data, geometry, texture, and probability.
+- The face is read as data, geometry, texture and probability.
 - A Ghostyle is a visual intervention on the machine-readable face.
 - Makeup becomes a test surface.
 - AR becomes a diagnostic layer.
@@ -92,15 +197,25 @@ Avoid:
 - This hides your identity.
 - Makeup hacks the system, full stop.
 
-### 3. The references matter
+### Ghostyles are shared research objects
 
-The project is part of a longer genealogy: CV Dazzle, HyperFace, adversarial glasses, adversarial makeup, physical-world optical attacks, NIR attacks, public-space performances, and face-obfuscation research.
+A Ghostyle is not a promise and not merely a cosmetic filter. It packages an intervention so that people can apply it, inspect it, test it and describe the conditions under which it produced a result.
 
 Suggested phrasing:
 
-- This field is older, deeper, and more documented than most people think.
-- The references archive maps the technical and cultural lineage of Ghostmaxxing.
-- Each reference asks: what was demonstrated, under what conditions, and what can Ghostmaxxing retest?
+- Build a Ghostyle. State the conditions. Share what happened.
+- A Ghostyle turns a look into a testable intervention.
+- Retest the pattern against another model or environment.
+
+### The genealogy matters
+
+Ghostmaxxing belongs to a longer technical and cultural lineage that includes CV Dazzle, HyperFace, adversarial glasses, adversarial makeup, physical-world optical attacks, near-infrared attacks and public-space performances.
+
+Suggested phrasing:
+
+- This field is older, deeper and better documented than most people think.
+- The archive traces what was demonstrated, what interrupted it and what changed next.
+- Each reference asks what can be retested now.
 
 Avoid:
 
@@ -108,47 +223,54 @@ Avoid:
 - Old techniques still work everywhere.
 - A paper result equals real-world protection.
 
-### 4. The whistleblowing/leaking service is central
+### The Fediverse is research infrastructure
 
-Ghostmaxxing is a demo but also an attractor of attention
-for people working in that industry, in the search for allies within.
+The Fediverse is not a promotional channel added after the research. In the target architecture, it is the federated backend for public Ghostyles, test records, limitations, references and updates. The lab also reads relevant updates from the network, validates them and uses them as inputs for later research.
 
 Suggested phrasing:
 
-- Seen facial recognition in public space? Document it and Report it.
-- The lab tests techniques; the reporting node gathers evidence.
-- Technical experiments and civic reporting belong together.
-- Help map where biometric systems are actually used.
+- Follow the research in the Fediverse.
+- Share a result with its conditions attached.
+- Help a test reach someone who can reproduce or challenge it.
+- Publish once, let different ActivityPub applications read and respond.
+- Let the lab receive new public research inputs from the same network.
 
-Avoid:
+Do not imply that every federated object is trusted automatically. Federation transports and distributes data. Validation, moderation and evidentiary judgement remain Ghostmaxxing responsibilities.
 
-- Report everything suspicious.
+### Reporting closes the loop
+
+The public work is also a signal to people with evidence about real systems. The reporting node uses GlobaLeaks to protect source anonymity and connect technical experiments to civic and institutional knowledge.
+
+Suggested phrasing:
+
+- Seen face recognition in public space? Document what you can safely verify.
+- The lab tests techniques. The reporting node gathers evidence.
+- Technical experiments and civic reporting belong in the same investigation.
+- Know how a deployment works or where it fails? Use our anonymous GlobaLeaks reporting channel.
+- For stronger connection anonymity, use Tor Browser and the designated Onion Service.
+
+Never write:
+
+- Report anything suspicious.
 - Send us private personal data.
 - Upload faces or sensitive material casually.
 
-### 5. No false safety
+### Reporting anonymity and access
 
-This is one of the most important principles.
+Ghostmaxxing may state that its designated GlobaLeaks channel protects source anonymity. The reporting page must explain both access routes:
 
-Suggested phrasing:
+1. the standard HTTPS address, suitable for ordinary access;
+2. the Onion Service v3 address, opened with Tor Browser, for stronger connection anonymity and resistance to selective interception or blocking.
 
-- Ghostmaxxing is a research and education tool, not personal protection advice.
-- A failed match in the browser is not a guarantee in the street.
-- Results depend on model, camera, light, pose, distance, and context.
-- Treat every successful evasion as local, conditional, and temporary.
+The Tor option must be visible before a person starts a submission. Link to the official Tor Browser download and usage guidance, and display the current Onion Service address from maintained configuration rather than duplicating it across static copy.
 
-Avoid:
+Do not extend the anonymity claim beyond the designated reporting system. A source may still reveal identifying information through the content, files, metadata or circumstances of a report. Safety guidance must explain data minimisation and the risks of submitting documents or media.
 
-- Protect yourself with Ghostmaxxing.
-- Become unrecognizable.
-- Beat facial recognition.
-- Guaranteed anti-surveillance makeup.
+Reference: `https://docs.globaleaks.org/en/stable/technical/security/application-security.html`
 
 ## Vocabulary
 
 ### Preferred terms
-
-Use:
 
 - face recognition
 - facial recognition
@@ -167,39 +289,35 @@ Use:
 - local experiment
 - browser-based lab
 - public research
+- public-facing research lab
 - reporting node
 - civic intelligence
+- retest
 - adversarial
 
-### Use carefully
+### Use with context
 
-These can be used, but with context:
+The following terms can be accurate, but should be tied to a specific task, model or result:
 
 - evasion
 - spoofing
 - attack
 - resistance
 - surveillance
-- anonymization
+- anonymisation
 - camouflage
+- hacking
+- defeated
 
-When using these, specify limits. For example:
-
-Good:
-“a local test of face-matching evasion in a browser pipeline”
-
-Risky:
-“face recognition evasion”
+Prefer "a local test of face-matching evasion in a browser pipeline" to "face recognition evasion".
 
 ### Avoid or heavily qualify
 
-Avoid:
-
 - invisibility
-- anonymity guarantee
+- anonymity guarantee outside the designated GlobaLeaks reporting channel
 - protection
 - foolproof
-- defeat
+- defeat, when used as a general or present-tense claim
 - bypass all systems
 - anti-surveillance shield
 - safe in public
@@ -210,387 +328,154 @@ Avoid:
 
 ### Project name
 
-Preferred:
+**Ghostmaxxing is the project identity.** Use it for the lab, site, archive, reporting node, workshops and the wider project. Keep the same name in public copy, code, URLs and filenames.
 
-- Ghòstati
-- Ghostmaxxing, when accents are difficult in filenames, URLs, code, or English-only contexts
+### Ghostyle
 
-Do not over-explain the name every time. Use the accented form in editorial copy and the ASCII-safe form in code contexts.
+**Ghostyle** is a term introduced as part of Ghostmaxxing.
 
-### Ghostyles
-
-A Ghostyle is a modular visual intervention applied to the face.
+A Ghostyle is a modular visual intervention applied to the face through the Ghostmaxxing lab. It is also the unit in which an intervention can be saved, described, tested and shared.
 
 Write:
 
 - Ghostyle
 - Ghostyles
-- Ghostyle plugin
+- Ghostyle plugin, when referring to the technical format
+
+At first mention for a general audience, use a short definition such as "a modular AR intervention called a Ghostyle".
 
 Avoid:
 
-- filter, unless speaking to a broad public and immediately clarifying it is not just a cosmetic filter
-- effect, unless describing rendering
-- makeup hack, unless in informal social copy
+- *filter*, unless immediately clarifying that a Ghostyle is a testable intervention rather than only a cosmetic effect;
+- *effect*, unless describing rendering behaviour;
+- *makeup hack*, except in deliberately informal social copy.
 
-## Tone by page type
+Define Ghostyle through its current role in Ghostmaxxing.
+
+## Tone by page
 
 ### Homepage
 
-Tone:
-direct, visual, inviting, not too dense.
+**Tone:** direct, visual, activist and concise.  
+**Job:** establish the project, the central action and the research loop without front-loading every qualification.  
+**Lead with:** a strong, testable proposition.  
+**Avoid:** dense institutional background, multiple competing CTAs and protection claims.
 
-Goal:
-make people understand what the project is and where to go next.
+Recommended core copy:
 
-Good homepage copy:
+> Test face-recognition camouflage in the browser. Build Ghostyles, compare detection and matching behaviour, and explore the research behind anti-biometric appearance design.
 
-“Test face-recognition camouflage in the browser. Build Ghostyles, compare detection and matching behavior, and explore the research lineage behind anti-biometric appearance design.”
+### About
 
-CTA hierarchy:
+**Tone:** clear, connective and politically explicit.  
+**Job:** explain why the project exists, who it is for and how the theory of change works.  
+**Lead with:** the project as a public investigation, then show the bidirectional loop between Ghostyles, the Fediverse backend, anonymous reporting and new tests.  
+**Avoid:** a feature inventory, a conventional organisation biography or a claim that awareness alone produces change.
 
-1. Open the lab
-2. Explore references
-3. Build a Ghostyle
-4. Report public-space face recognition
+### Lab and tool pages
 
-### README
+**Tone:** operational, calm and exact.  
+**Job:** help a person run a local experiment and understand what the interface can and cannot measure.  
+**Lead with:** the next action, local processing and the current state of the test.  
+**Avoid:** manifesto copy during a task, ambiguous controls and claims that a local result transfers to deployed systems.
 
-Tone:
-technical, precise, contributor-friendly.
+### Ghostyle documentation and transfer pages
 
-Goal:
-help developers understand architecture, run the project, write plugins, run tests, and understand safety limits.
+**Tone:** practical, inspectable and collaborative.  
+**Job:** define the intervention, its components, provenance, test conditions and limits.  
+**Lead with:** what the Ghostyle changes and how to reproduce the test.  
+**Avoid:** presenting a Ghostyle as a finished protection product or stripping results from their conditions.
 
-README should include:
+### References
 
-- what it does
-- what it does not do
-- architecture
-- local privacy notes
-- install/run commands
-- Ghostyle API
-- tests
-- references page
-- reporting node
-- contribution guidelines
+**Tone:** editorial, investigative and evidence-led.  
+**Job:** help readers understand lineage, demonstrations, limits and opportunities for retesting.  
+**Lead with:** what the source is and what it actually demonstrated.  
+**Avoid:** abstract bibliographic language, authority by citation count and implying that a paper result is universal.
 
-### References page
+Each reference entry should answer:
 
-Tone:
-curated evidence lab.
-
-Goal:
-explain the history, techniques, claims, limitations, and Ghostmaxxing relevance of each reference.
-
-Each reference should answer:
-
-1. What is it?
+1. What is this?
 2. What did it demonstrate?
-3. What technique did it use?
-4. What are its limits?
-5. Can Ghostmaxxing retest or approximate it?
-6. Where can people read more?
-
-Use concise but substantial cards. Avoid bibliography-only presentation.
-
-### Report / whistleblowing page
-
-Tone:
-careful, calm, protective.
-
-Goal:
-invite useful reports without encouraging unsafe disclosure.
-
-Use:
-
-- “Seen facial recognition in public space?”
-- “Tell us what you know, only if it is safe for you.”
-- “Do not include unnecessary personal data.”
-- “Use the reporting channel that matches your language and risk context.”
-
-Avoid:
-
-- urgent pressure
-- heroic language
-- requests for risky evidence
-- vague claims about secure handling unless verified
-
-### Social posts
-
-Tone:
-sharp, visual, understandable, never overclaiming.
-
-Good pattern:
-
-1. one striking claim
-2. one technical clarification
-3. one action
-
-Example:
-
-“Facial recognition is not magic. It is a pipeline: detection, landmarks, descriptors, matching. Ghòstati lets you test how visual interventions change that pipeline in the browser. Try it, build a Ghostyle, or report public-space deployments.”
-
-### Workshop copy
-
-Tone:
-participatory, practical, safety-aware.
-
-Use:
-
-- “Bring a laptop and curiosity.”
-- “No biometric data is uploaded by the browser lab.”
-- “We will test local recognition behavior, not promise anonymity.”
-- “Failures are useful results.”
-
-## Claims policy
-
-Every public claim should fit one of these categories:
-
-### Safe claim
-
-“Ghostmaxxing lets users test browser-based face detection and matching behavior with visual overlays.”
-
-### Conditional claim
-
-“Some Ghostyles may reduce detection or matching in specific local test conditions.”
-
-### Research claim
-
-“Prior work has shown that physical-world interventions such as makeup, glasses, light, patches, or textiles can affect specific computer vision systems under documented conditions.”
-
-### Unsafe claim
-
-“Ghostmaxxing protects you from facial recognition.”
-
-Do not publish unsafe claims.
-
-## How to describe limitations
-
-Always make limitations explicit when discussing results.
-
-Useful limitation patterns:
-
-- “in this browser pipeline”
-- “under these lighting conditions”
-- “against this model”
-- “with this camera”
-- “in a local comparison test”
-- “not a guarantee against deployed systems”
-- “not tested against newer commercial systems”
-- “not evidence of real-world anonymity”
-
-Example:
-
-“Using this Ghostyle, the browser demo failed to match the saved face under the test conditions. This is a local result, not a general protection claim.”
-
-## Visual language
-
-**The authority is `visual-styleguide.html`, not this file.** It carries the
-palette, the type scale, every component as the live thing, and §12 on when an
-SVG may be an `<img>` and when it has to be inlined. `tutorials/visual-direction.md`
-carries the reasoning. What follows is only what a writer needs in order to not
-write against the design.
-
-The previous version of this section is worth recording because it was actively
-wrong, and copy was still being written to it: it asked for "dark public lab,
-neon annotations, scanlines, terminal-like labels, subtle glitch." That is the
-cyberlab aesthetic the project deliberately left, and `visual-direction.md` in
-this same folder lists cyberpunk, dark terminal dashboards and hacker-conference
-identity under *what this style is not*. Two internal documents were briefing
-opposite directions.
-
-### What the surface actually is
-
-An institutional poster. Flat orange field, cream reading surfaces, 2px solid
-ink separators, square corners. No gradients, no drop shadows, no glow, no
-scanlines. Closer to a public notice pinned to a wall than to a console.
-
-### The one structural idea a writer needs
-
-The site argues through a **lineage**: each era of face recognition, the
-documents that fuelled it, the intervention that interrupted it, the technology
-that emerged anyway — and two lenses at the top that nothing demonstrated so far
-has defeated. Pink marks an interruption and nothing else.
-
-This constrains copy directly:
-
-- Write about eras and sequence, not about a single "surveillance state".
-- Every claim of a defeat is scoped to one era, one method, one set of stated
-  conditions. Never to the problem as a whole.
-- Never write copy that implies the two undefeated lenses have been beaten. If
-  that ever becomes true it is a research finding and it changes the page, not
-  the adjectives.
-
-### Good motifs
-
-- lineages and timelines
-- documents, dossiers, procurement records — the paper trail that funded a
-  deployment
-- lens states: reading, being interrupted, spent
-- bounding boxes and landmark points, where they are the actual output
-- metadata strips, years, era labels
-- cards as evidence
-
-### Avoid
-
-- horror aesthetics
-- military or tactical framing
-- corporate cybersecurity visuals
-- anonymous-hacker clichés
-- surveillance fetish imagery — the housings are the subject, not the aesthetic
-- beauty branding without critique
-- neon, glitch, scanlines, terminal chrome. The lab interface is the one place
-  a denser technical surface is allowed, and even there it does not revert.
-
-## Accessibility
-
-The project can be visually expressive, but must remain readable.
-
-Rules:
-
-- strong contrast
-- legible font sizes
-- mobile-first layout
-- visible focus states
-- buttons that work without hover
-- no essential information only in color
-- no excessive animation
-- reduced-motion support where possible
-- alt text for preview images
-- clear labels for filters and toggles
-
-## Microcopy examples
-
-### Buttons
-
-Use:
-
-- Open the lab
-- Explore references
-- Build a Ghostyle
-- Read the docs
-- View source
-- Report a deployment
-- Switch to genealogy mode
-- Show newest first
-- Filter references
-- Clear filters
-
-Avoid:
-
-- Become invisible
-- Beat surveillance
-- Protect me
-- Hack my face
-
-### Badges
-
-Use:
-
-- Directly testable
-- Partially testable
-- Contextual reference
-- Physical-world
-- Browser lab
-- Face detection
-- Face recognition
-- Visible light
-- Near-infrared
-- Makeup
-- Glasses
-- Textile
-- Patch
-- Survey
-
-### Warning labels
-
-Use:
-
-- Local test only
-- Not a safety guarantee
-- Conditions matter
-- Model-specific result
-- External deployment unknown
-
-## Editorial structure for reference cards
-
-Recommended card order:
-
-1. Year, type, closeness
-2. Title
-3. Authors
-4. Short description
-5. What it demonstrated
-6. Technique / intervention
-7. Target system
-8. Ghostmaxxing testability
-9. Limitations
-10. Links
-
-Recommended labels:
-
-- Demonstrated
-- Why it matters for Ghostmaxxing
-- Ghostmaxxing testability
-- Limits
-- Technique
-- Target
-- Read more
-
-## Writing examples
-
-### Good README sentence
-
-“Ghostmaxxing runs a local browser pipeline for webcam-based face detection, modular AR overlays, and baseline-vs-modified face matching tests.”
-
-### Good limitation sentence
-
-“A browser result can show that a visual intervention affected one local pipeline; it cannot prove protection against deployed facial recognition systems.”
-
-### Good reference sentence
-
-“Adv-Makeup is relevant to Ghostmaxxing because it treats makeup as a physical-world adversarial surface around the face, but its reported effectiveness remains tied to the models and experimental setup used in the paper.”
-
-### Good report CTA
-
-“Seen facial recognition in a public space? Use the reporting node to share what you know, only if it is safe for you to do so.”
-
-## Editorial checklist
-
-Before publishing a new page or section, check:
-
-- Does it say what Ghostmaxxing does technically?
-- Does it avoid protection guarantees?
-- Does it explain limits?
-- Does it link to the lab, repo, docs, references, and reporting node where relevant?
-- Does it help a developer take action?
-- Does it help a non-specialist understand the stakes?
-- Does it avoid collecting or encouraging unnecessary biometric data?
-- Does it use consistent names: Ghostmaxxing, Ghòstati, Ghostyle?
-- Does it preserve the activist cultural lab + investigative archive tone?
-- Does it make the reporting node visible when discussing real-world deployments?
-
-## Short boilerplate
-
-Use this when space is limited:
-
-“Ghostmaxxing is a browser-based lab for testing face-recognition camouflage. It lets people build and compare AR Ghostyles, explore the research history of anti-biometric appearance design, and report real-world deployments of facial recognition.”
-
-## Safety boilerplate
-
-Use this near demos, workshops, and test results:
-
-“Ghostmaxxing is a research and education tool. Results are local to the tested browser, model, camera, lighting, and conditions. It does not guarantee anonymity or protection against deployed facial recognition systems.”
-
-## References boilerplate
-
-Use this for the references page:
-
-“Ghostmaxxing references archive maps artistic, academic, and activist work around face obfuscation, adversarial makeup, physical-world attacks, and anti-surveillance aesthetics. Each entry documents what was demonstrated, what its limits are, and whether Ghostmaxxing can directly or partially retest the idea.”
-
-## Reporting boilerplate
-
-Use this near the reporting node:
-
-“Technical tests are only one part of the work. If you know of facial recognition being used in public space, the reporting node helps collect evidence about where it is deployed, by whom, with which technology, and under what safeguards or abuses.”
+3. Under which conditions?
+4. Why does it matter?
+5. What are its limitations?
+6. What can Ghostmaxxing retest?
+7. Where is the primary source?
+
+### Genealogy
+
+**Tone:** theatrical at entry, precise in every dossier.  
+**Job:** show successive technical eras, documented interruptions and the live present without turning history into a victory narrative.  
+**Lead with:** the lineage and how to read the lens states.  
+**Avoid:** treating dates as deployment dates when they mark public demonstrations, or implying that one intervention defeated face recognition as a whole.
+
+### Reporting node
+
+**Tone:** calm, serious, specific and non-coercive.  
+**Job:** help a person decide whether, what and how to report.  
+**Lead with:** source anonymity, scope, safety guidance, data minimisation and the choice between HTTPS and the Onion Service through Tor Browser.  
+**Avoid:** urgency theatre, heroic whistleblower language, vague requests for suspicious material and anonymity claims outside the protection actually provided by GlobaLeaks and Tor.
+
+### Workshops
+
+**Tone:** welcoming, concrete and method-led.  
+**Job:** explain what participants will do, what they need and what they will leave with.  
+**Lead with:** activities, learning outcomes, accessibility and consent.  
+**Avoid:** making technical confidence a prerequisite or presenting participants as test subjects.
+
+### Fediverse page and social posts
+
+**Tone:** conversational, observant and concise, while retaining the claims discipline of the site.  
+**Job:** explain the implemented Fediverse functions, the target federated data backend and how the lab will receive validated updates from other ActivityPub actors.  
+**Lead with:** the objects and updates currently available through the network, then identify planned bidirectional functions clearly. Explain how people and compatible applications can follow, respond or contribute.  
+**Avoid:** presenting the Fediverse as a social-media mirror, promotional filler, engagement bait, context-free screenshots and any suggestion that incoming data bypasses moderation.
+
+### Technical documentation
+
+**Tone:** explicit, reproducible and low-ambiguity.  
+**Job:** help contributors understand data flow, files, states, limits and contribution rules.  
+**Lead with:** prerequisites, observable behaviour and exact terminology.  
+**Avoid:** unexplained internal shorthand and persuasive brand language where an implementation rule is needed.
+
+## Calls to action
+
+CTA language should reflect increasing commitment and risk.
+
+| Level | Reader action | Typical wording | Treatment |
+|---|---|---|---|
+| 1 | Follow public updates | Follow in the Fediverse | Secondary chip |
+| 2 | Try or inspect the work | Open the lab | Contextual primary action |
+| 3 | Read the evidence | Explore the references | Navigation or body link |
+| 4 | Share consequential information | Leak to us | Single site-wide primary CTA |
+
+The reporting action is last because it asks the most of the reader, not because it matters least. Never place it where a casual or accidental action could be mistaken for informed contact.
+
+## Style and mechanics
+
+- Write clear international English. UK and US spellings may coexist and should not be normalised merely for consistency.
+- Preserve the spelling used in code identifiers, source titles, quotations and official names.
+- Use the serial comma only where it prevents ambiguity.
+- Prefer short declarative sentences around actions, risks and limits.
+- Use contractions sparingly in conversational surfaces such as the Fediverse.
+- Use sentence case for headings unless a component has another established rule.
+- Do not use emoji in the core site voice.
+- Do not use em dashes. Use a full stop, colon, comma or parentheses instead.
+- Do not use rhetorical questions when a direct statement is clearer.
+- Define specialist terms at first use on public pages.
+- Put limitations beside the claim they limit.
+
+## Publication checklist
+
+Before publishing, ask:
+
+- Is Ghostmaxxing the only current identity named?
+- Is Ghostyle defined on first use for a general audience?
+- Does every consequential claim have the right grade?
+- Are the test conditions and limits close to the result?
+- Does the copy avoid implying safety, invisibility or universal transfer?
+- Does the page make its role in the research loop clear?
+- Is the reporting request proportionate and accompanied by safety guidance?
+- Does the tone match the page type?
+- Is the English consistent and free of em dashes?
+- Can a non-specialist understand the action without losing technical accuracy?
