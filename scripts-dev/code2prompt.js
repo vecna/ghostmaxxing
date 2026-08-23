@@ -105,6 +105,9 @@ const NAMESPACES = {
     	"tutorials/visual-direction.md",
     	"translations/*.csv",
     	"translations/README.md",
+    	"images/FOLDER-DESCRIPTION.md",
+    	"images/*/FOLDER-DESCRIPTION.md",
+    	"web-files/FOLDER-DESCRIPTION.md",
     	"data/camera-facts.json"
     ],
     exclude: [...COMMON_NOISE_EXCLUDES, "visual-styleguide.html"]
