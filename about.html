@@ -1,376 +1,499 @@
 <!doctype html>
 <html lang="en">
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vision & About — Ghostmaxxing</title>
-  <link rel="icon" type="image/svg+xml" href="/images/logo/mark-onlight.svg">
-  <meta name="description"
-    content="Ghostmaxxing is a browser-based public research platform for testing face-recognition camouflage, running workshops, and investigating real-world biometric surveillance." />
-  <meta property="og:title" content="Vision & About - Ghostmaxxing" />
-  <meta property="og:description" content="A public lab for testing face-recognition camouflage." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="/images/social-card.svg" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Vision & About - Ghostmaxxing" />
-  <meta name="twitter:description" content="A public lab for testing face-recognition camouflage." />
-  <meta name="twitter:image" content="/images/social-card.svg" />
-  <link rel="stylesheet" href="/styles/styles.css" />
-  <link rel="stylesheet" href="/styles/pages.css" />
-  <link rel="stylesheet" href="/styles/content-pages.css" />
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vision &amp; About — Ghostmaxxing</title>
+    <meta name="description"
+      content="Ghostmaxxing is a public research lab for testing face-recognition camouflage, documenting what actually works, and investigating the biometric systems installed in public space." />
+    <link rel="canonical" href="https://ghostmaxxing.vecna.eu/about.html" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#14100c" />
+    <link rel="icon" type="image/svg+xml" href="/images/logo/mark-color.svg" />
+    <link rel="icon" type="image/png" sizes="32x32"
+      href="/images/logo/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/images/logo/favicon-180.png" />
 
-<body>
+    <meta property="og:title" content="Vision &amp; About — Ghostmaxxing" />
+    <meta property="og:description"
+      content="A public lab for testing face-recognition camouflage, and the research loop that keeps it honest." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/social-card.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- ===== SITE HEADER — canonical. Byte-identical on every page. =========
-       Only two things may differ per page: aria-current="page" on the link to
-       the current page, and the optional .gm-site-nav__extra slot.
-       Styling: styles/chrome.css. Behaviour: lab-js/nav.js.
-       ==================================================================== -->
-  <header class="gm-site-header">
-    <a class="gm-site-wordmark" href="/" aria-label="Ghostmaxxing homepage">
-      <img class="gm-site-wordmark__mark" src="/images/logo/mark-color.svg" width="40" height="40" alt="" aria-hidden="true" />
-      <span class="gm-site-wordmark__text">
-        <span class="gm-site-wordmark__title">Ghostmaxxing</span>
-        <span class="gm-site-wordmark__sub">A public lab for testing camouflage</span>
-      </span>
-    </a>
-    <nav class="gm-site-nav" aria-label="Primary">
-      <a class="gm-site-chip" href="/fediverse.html">in the Fediverse</a>
-      <div class="gm-site-nav__group">
-        <button class="gm-site-nav__trigger" aria-expanded="false" aria-controls="gmSiteMenu">Know more <span aria-hidden="true">&#9662;</span></button>
-        <div class="gm-site-menu" id="gmSiteMenu">
-          <div>
-            <p class="gm-site-menu__kicker">Informative</p>
-            <ul>
-              <li><a href="/about.html" aria-current="page">Vision &amp; about</a></li>
-              <li><a href="/genealogy.html">The genealogy of the read</a></li>
-              <li><a href="/report.html">Report a deployment</a></li>
-              <li><a href="/workshops.html">Workshops</a></li>
-            </ul>
-          </div>
-          <div>
-            <p class="gm-site-menu__kicker">Technology</p>
-            <ul>
-              <li><a href="/lab.html">Open the lab &#8599;</a></li>
-              <li><a href="/ghostyle-transfer.html">Ghostyle transfer</a></li>
-              <li><a href="/references/">References archive</a></li>
-              <li><a href="/docs/">Docs</a></li>
-              <li><a href="https://github.com/vecna/ghostmaxxing">Code</a></li>
-            </ul>
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/pages.css" />
+    <link rel="stylesheet" href="/styles/content-pages.css" />
+    <link rel="stylesheet" href="/styles/about.css" />
+  </head>
+
+  <body>
+
+    <!-- ===== SITE HEADER — canonical. Byte-identical on every page. =========
+   Only two things may differ per page: aria-current="page" on the link to
+   the current page, and the optional .gm-site-nav__extra slot.
+   Styling: styles/chrome.css. Behaviour: lab-js/nav.js.
+   ==================================================================== -->
+    <header class="gm-site-header">
+      <a class="gm-site-wordmark" href="/" aria-label="Ghostmaxxing homepage">
+        <img class="gm-site-wordmark__mark" src="/images/logo/mark-color.svg"
+          width="40" height="40" alt aria-hidden="true" />
+        <span class="gm-site-wordmark__text">
+          <span class="gm-site-wordmark__title">Ghostmaxxing</span>
+          <span class="gm-site-wordmark__sub">A public lab for testing
+            camouflage</span>
+        </span>
+      </a>
+      <nav class="gm-site-nav" aria-label="Primary">
+        <a class="gm-site-chip" href="/fediverse.html">in the Fediverse</a>
+        <div class="gm-site-nav__group">
+          <button class="gm-site-nav__trigger" aria-expanded="false"
+            aria-controls="gmSiteMenu">Know more <span
+              aria-hidden="true">&#9662;</span></button>
+          <div class="gm-site-menu" id="gmSiteMenu">
+            <div>
+              <p class="gm-site-menu__kicker">Informative</p>
+              <ul>
+                <li><a href="/about.html" aria-current="page">Vision &amp;
+                    about</a></li>
+                <li><a href="/genealogy.html">The genealogy of the read</a></li>
+                <li><a href="/report.html">Report a deployment</a></li>
+                <li><a href="/workshops.html">Workshops</a></li>
+              </ul>
+            </div>
+            <div>
+              <p class="gm-site-menu__kicker">Technology</p>
+              <ul>
+                <li><a href="/lab.html">Open the lab &#8599;</a></li>
+                <li><a href="/ghostyle-transfer.html">Ghostyle transfer</a></li>
+                <li><a href="/references/">References archive</a></li>
+                <li><a href="/docs/">Docs</a></li>
+                <li><a
+                    href="https://github.com/vecna/ghostmaxxing">Code</a></li>
+              </ul>
+            </div>
           </div>
         </div>
+        <a class="gm-site-cta" href="/report.html">Leak to us &#8599;</a>
+      </nav>
+    </header>
+
+    <main class="editorial-homepage content-page">
+      <div class="editorial-homepage__shell">
+
+        <section class="content-page__header-area">
+          <span class="content-page__kicker">Vision &amp; About</span>
+          <h1>Make the machine-readable face <i>contestable</i>.</h1>
+          <p class="content-page__lead">
+            Ghostmaxxing is a public research lab for testing face-recognition
+            camouflage in the browser, documenting what actually works, and
+            investigating the biometric systems already installed in public
+            space.
+          </p>
+          <p class="content-page__deck">
+            It is not an invisibility product and it does not sell protection.
+            It is a test bench, an archive of what has already been tried, and
+            a way for people who know how these systems are built, bought or
+            operated to reach us.
+          </p>
+        </section>
+
+        <section class="content-section about-loop-section gm-prose" id="loop">
+          <h2>What's Ghostmaxxing.</h2>
+          <p>Ghostmaxxing is one research loop, not four features that happen
+            to share a website. Each stage produces the material the next stage
+            needs, and the last stage feeds the first.</p>
+
+          <div class="about-loop">
+
+            <!-- The lab.html Info icon, path-identical, defined once.
+                 Two groups: the single arc used between the blocks, and the
+                 full three-arrow icon used once in the closing strip at its
+                 natural glyph size. Inlined (not <img>) so stroke comes from
+                 tokens via CSS: styleguide 12, and the #gm-wind precedent. -->
+            <svg width="0" height="0" aria-hidden="true" focusable="false"
+              style="position:absolute">
+              <defs>
+                <g id="gm-loop-arc" fill="none" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M12 5 A7 7 0 0 1 18 8.5" />
+                  <path d="M18 8.5 l-2.4 .3 M18 8.5 l.3 -2.4" />
+                </g>
+                <g id="gm-loop-icon" fill="none" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M12 5 A7 7 0 0 1 18 8.5" />
+                  <path d="M18 8.5 l-2.4 .3 M18 8.5 l.3 -2.4" />
+                  <path d="M12 5 A7 7 0 0 1 18 8.5"
+                    transform="rotate(120 12 12)" />
+                  <path d="M18 8.5 l-2.4 .3 M18 8.5 l.3 -2.4"
+                    transform="rotate(120 12 12)" />
+                  <path d="M12 5 A7 7 0 0 1 18 8.5"
+                    transform="rotate(240 12 12)" />
+                  <path d="M18 8.5 l-2.4 .3 M18 8.5 l.3 -2.4"
+                    transform="rotate(240 12 12)" />
+                </g>
+              </defs>
+            </svg>
+
+            <div class="about-loop__step" data-node="01">
+              <h3>People test, and state the conditions.</h3>
+              <p>In the <a href="/lab.html">browser lab</a>, with water-based
+                makeup, printed patterns or anything else worth trying. A result
+                is packaged as a Ghostyle, a modular AR intervention others can
+                apply, inspect and retest. Every result is local, conditional
+                and temporary until someone tests it again.</p>
+            </div>
+
+            <svg class="about-loop__arc" viewBox="11.7 3.45 6.9 6.9"
+              aria-hidden="true" focusable="false">
+              <use href="#gm-loop-arc" />
+            </svg>
+
+            <div class="about-loop__step" data-node="02">
+              <h3>Informed people report what is really deployed.</h3>
+              <p>A browser pipeline is not a deployed system. Evidence from
+                people who build, sell, operate, approve or encounter face
+                recognition tells us which technologies are in circulation, and
+                whether our camouflage is being tested against anything close to
+                them. <a href="/report.html">Leak to us</a> is where that
+                arrives.</p>
+            </div>
+
+            <svg class="about-loop__arc" viewBox="11.7 3.45 6.9 6.9"
+              aria-hidden="true" focusable="false">
+              <use href="#gm-loop-arc" />
+            </svg>
+
+            <div class="about-loop__step" data-node="03">
+              <h3>The Fediverse carries the research outward.</h3>
+              <p>Results, limits and references are published through
+                ActivityPub rather than locked into one website, so other
+                communities and applications can follow, question and reproduce
+                the work. More distribution means more tests, and more routes
+                back to people who know something.
+                <a href="/fediverse.html">Follow it there</a>.</p>
+            </div>
+
+            <div class="about-loop__again">
+              <svg class="about-loop__icon" viewBox="0 0 24 24"
+                aria-hidden="true" focusable="false">
+                <use href="#gm-loop-icon" />
+              </svg>
+              <p>Then the loop closes: verified evidence changes the archive,
+                the threat model and the next round of tests.</p>
+            </div>
+
+          </div>
+
+          <div class="callout">
+            <p>Two honest limits on that diagram. The return arrow, the lab
+              reading validated updates back from the network, is the intended
+              architecture and is not operational yet. And the loop does not
+              claim that public visibility on its own changes institutional
+              power. It builds shared, testable knowledge, and a path by which
+              new evidence can change the research.</p>
+          </div>
+        </section>
+
+        <div class="content-page__layout">
+          <div class="content-page__main gm-prose">
+
+            <section class="content-section" id="sources">
+              <h2>Informed sources welcome.</h2>
+              <p>The <a href="/report.html">reporting node</a> runs on
+                GlobaLeaks and is built for seven positions, because each one
+                sees a different part of the same system. There is a separate
+                questionnaire for each.</p>
+
+              <ul class="about-publics">
+                <li><b>You build or maintain the technology.</b> You know how a
+                  system is assembled, what it covers and who touches the
+                  data.</li>
+                <li><b>You know where a deployment falls apart.</b> A specific
+                  system that is misconfigured, unmaintained or easy to read
+                  from outside.</li>
+                <li><b>You have seen the paperwork.</b> Contracts, tenders,
+                  vendor pitches, internal evaluations.</li>
+                <li><b>You operate a system day to day.</b> You watch the
+                  alerts, override the false matches and log who gets
+                  flagged.</li>
+                <li><b>You approved it, funded it or signed it off.</b> Public
+                  tenders, impact assessments, oversight reports.</li>
+                <li><b>You noticed something in public space.</b> A camera, a
+                  kiosk, a sign, a badge. No inside access needed.</li>
+                <li><b>You were stopped, flagged or misidentified.</b>
+                  Something went wrong on the other side of the lens, and it
+                  happened to you.</li>
+              </ul>
+
+              <div class="callout">
+                <p>None of this is an invitation to disclose sensitive material
+                  casually. Read the safety guidance on the
+                  <a href="/report.html">reporting page</a> before you write
+                  anything, describe what you saw in your own words rather than
+                  uploading originals where you can, and do not continue if
+                  doing so would put you at risk.</p>
+              </div>
+            </section>
+
+            <section class="content-section" id="why">
+              <h2>Why it exists.</h2>
+
+              <div class="about-why">
+                <div>
+                  <p>Face recognition arrived in public space without anyone
+                    being asked, and it is normalised through consumer products
+                    before it is ever debated as infrastructure. Smart glasses
+                    put a camera at eye level with no housing, no notice and no
+                    moment in which you are told a read happened. What is sold
+                    as convenience for the person wearing them is an
+                    unannounced identification system for everyone standing in
+                    front of them.</p>
+                </div>
+
+                <figure class="about-figure">
+                       <img src="/images/various/epstain-would-endorse-meta-perv-glasses.webp"
+                            alt="Meta perv glasses works best for people that stops on others' consent."
+                            loading="lazy">
+                  <figcaption>
+                    Example of Meta's perv glasses, shining their best in people that stop on others' consent, via <a href="https://www.instagram.com/everyonehateselon_/">EveryOneHatesElon</a> (IG).
+                  </figcaption>
+                </figure>
+              </div>
+
+              <div class="callout">
+                <h3>A ban that keeps getting reopened.</h3>
+                <p>In Europe, real-time remote biometric identification in
+                  publicly accessible spaces for law enforcement is treated as
+                  a prohibited AI practice, subject to narrow exceptions. The
+                  <a href="https://reclaimyourface.eu/">Reclaim Your Face</a>
+                  campaign spent years getting that prohibition written, and
+                  reporting from the campaign has documented national
+                  authorities working around the limits rather than complying
+                  with them: carve-outs for major events, "special" cases,
+                  pilot deployments. A prohibition that is quietly reopened by
+                  securitarian framing needs the same public pressure and
+                  evidence-gathering that produced it. That is part of why the
+                  reporting node exists here.</p>
+              </div>
+            </section>
+
+            <section class="content-section" id="who">
+              <h2>Who is behind it.</h2>
+              <p>Ghostmaxxing was developed by Claudio Agosti for the 2026 NINA
+                festival, where it ran as <i>Ghòstati</i> (become a ghost), a
+                workshop held with the participation of
+                <a href="https://michelletylicki.com/">Michelle Tylicki</a>.
+                Tylicki had been running adversarial makeup workshops before
+                us: her installation <a
+                  href="https://michelletylicki.com/dazzle">DAZZLE</a>,
+                developed with Lauri Love, is an art-and-tech piece for
+                teaching Computer Vision Dazzle. We added the application, and
+                learned the workshop from people who had already been doing
+                it.</p>
+              <p>What began as a workshop assistant has since been generalised,
+                internationalised and expanded. The same code now has to work
+                for a facilitator in a city none of us has visited, which
+                changes the research question from "did this look work in this
+                room" to "does anything we found here transfer at all".</p>
+            </section>
+
+            <section class="content-section" id="built">
+              <h2>How it is built.</h2>
+              <p>Two repositories, split by where the code runs.</p>
+
+              <dl class="about-repos">
+                <dt><a
+                    href="https://github.com/vecna/ghostmaxxing">ghostmaxxing</a></dt>
+                <dd>The site and the browser lab. It runs locally: clone it,
+                  serve it, and the whole test bench works on your own machine
+                  with no server involved.</dd>
+
+                <dt><a
+                    href="https://github.com/vecna/gstmxx-backend">gstmxx-backend</a></dt>
+                <dd>The server side running on vecna.eu. It handles the parts
+                  that are online by definition, such as moderated uploads and
+                  the shared gallery.</dd>
+              </dl>
+
+              <p>Workshops run on people, not infrastructure. There is a Signal
+                group for facilitators, and the
+                <a href="/workshops.html">workshops page</a> is meant to grow
+                into a way of matching activists who can facilitate with groups
+                who want a session, anywhere in the world.</p>
+
+              <div class="callout">
+                <p>Ghostmaxxing has no funding. It is volunteer work, and it is
+                  built by technologists working in the public interest rather
+                  than by an organisation with a budget line. Facilitators
+                  should not treat that as a reason to work for free: asking a
+                  host for expenses and hospitality is reasonable, and a small
+                  contribution on top of that is fair.</p>
+              </div>
+            </section>
+
+            <section class="content-section" id="vision">
+              <h2>Vision.</h2>
+              <ul>
+                <li>Make the workshop easier to run.</li>
+                <li>Make adversarial makeup a popular practice, not a niche
+                  one.</li>
+                <li>Collect evidence of what actually works.</li>
+                <li>Support new forms: clothing, 3D-printed objects, and
+                  beyond.</li>
+                <li>Support new research.</li>
+                <li>Use network effects to test everywhere, share results and
+                  keep improving.</li>
+              </ul>
+              <p>Underneath all six sits one research question: how little
+                makeup is needed to disrupt a face-recognition pipeline? Less
+                paint matters because it lowers the barrier to practice. A look
+                that takes two lines instead of a full mask is easier to learn,
+                easier to repeat and easier to move from an exceptional
+                workshop performance into everyday culture. The aim is not to
+                sell invisibility. It is to make adversarial makeup legible
+                enough to become an ordinary thing people do.</p>
+            </section>
+
+            <section class="content-section" id="engage">
+              <h2>How to engage with it.</h2>
+              <p>Follow Ghostmaxxing in the Fediverse: that is where results,
+                limits and updates are published, and where a test can reach
+                someone able to reproduce or challenge it. The largest success
+                available to this project is not a perfect pattern. It is
+                adversarial makeup becoming popular, frequent and fun enough
+                that a face which does not resolve stops being remarkable.</p>
+
+              <div class="resource-grid">
+                <a class="resource-card" href="/lab.html">
+                  <h3>Open the lab</h3>
+                  <p>Run local browser tests and watch a recognition pipeline
+                    react to your face in real time.</p>
+                </a>
+                <a class="resource-card" href="/loader.html">
+                  <h3>Video Loader</h3>
+                  <p>Run pre-recorded MP4 tests to extract and compare face
+                    signatures frame by frame.</p>
+                </a>
+                <a class="resource-card" href="/references/">
+                  <h3>Research references</h3>
+                  <p>Trace the artistic, technical and activist lineage of
+                    face-obfuscation work.</p>
+                </a>
+                <a class="resource-card" href="/docs/">
+                  <h3>Technical documentation</h3>
+                  <p>Inspect modules, plugin logic and implementation
+                    details.</p>
+                </a>
+                <a class="resource-card" href="/workshops.html">
+                  <h3>Workshops</h3>
+                  <p>See how a session runs, or offer to facilitate one where
+                    you are.</p>
+                </a>
+                <a class="resource-card" href="/report.html">
+                  <h3>Leak to us</h3>
+                  <p>Help investigate the real-world pipeline and supply chain
+                    of face recognition.</p>
+                </a>
+              </div>
+            </section>
+
+          </div>
+
+          <aside class="content-page__aside">
+            <h2>On this page</h2>
+            <nav aria-label="Page sections">
+              <a href="#loop">What's Ghostmaxxing</a>
+              <a href="#sources">Informed sources welcome</a>
+              <a href="#why">Why it exists</a>
+              <a href="#who">Who is behind it</a>
+              <a href="#built">How it is built</a>
+              <a href="#vision">Vision</a>
+              <a href="#engage">How to engage with it</a>
+            </nav>
+          </aside>
+        </div>
       </div>
-      <a class="gm-site-cta" href="/report.html">Leak to us &#8599;</a>
-    </nav>
-  </header>
-  <main class="editorial-homepage content-page editorial-homepage--svg-footer-band">
-    <div class="editorial-homepage__shell">
+    </main>
 
-      <section class="content-page__header-area" aria-labelledby="page-title">
-        <span class="content-page__kicker">Vision &amp; About</span>
-        <h1 id="page-title">Make the machine-readable face <i>contestable</i>.</h1>
-        <p class="content-page__lead">
-          Ghostmaxxing is a browser-based workshop assistant and public research platform for testing
-          face-recognition camouflage.
-        </p>
-        <p class="content-page__deck">
-          It grows out of privacy activism, adversarial makeup workshops, and the need to investigate which biometric
-          systems are actually used in public space.
-        </p>
-      </section>
-
-      <div class="content-page__layout">
-        <article class="content-page__main gm-prose">
-          <section class="content-section" id="workshop-assistant">
-            <h2>Workshop assistant.</h2>
-            <p>
-              Designed to support group workshops, where participants play with makeup and learn how different faces
-              read to a recognition model: point a browser camera at your face, record a baseline, then change your
-              look &mdash; paint directly on the tracked face or follow a guided pattern &mdash; and watch how the
-              local recognition pipeline reacts in real time.
-            </p>
-            <p>
-              The goal is to lower the barrier to entry. You don't need a makeup specialist to take part &mdash; only
-              water-based colors, safe enough for kids. The system runs locally: it uses the webcam or a phone
-              camera, keeps everything on-device, and sends nothing anywhere else, except what you choose to share
-              with us.
-            </p>
-            <p>
-              The project is built to run in a phone browser, because makeup is usually applied in front of a mirror,
-              not at a desktop workstation.
-            </p>
-            <div class="callout">
-              <p>
-                Two kinds of success exist: the face stops being detected as a face at all, or the face is still
-                detected but its extracted points differ enough from the clean-face baseline that matching fails.
-              </p>
-            </div>
-            <h3>What can be sent to us?</h3>
-            <p>Three things mostly:</p>
-            <ol>
-              <li>
-                Before/after images of a successful attempt, sent via the
-                <!-- TODO: link/insert the share icon from lab.html once it's finalized -->
-                share icon in the lab.
-              </li>
-              <li>A one-second video of a successful attempt.</li>
-              <li>
-                A camouflage pattern you baked from a look that worked, so others can study and retest it. This is
-                the technical layer &mdash; mostly for people who want to look into how it works; see the
-                <!-- TODO: publish the Ghostyle authoring guide and confirm this link -->
-                <a href="/docs">Ghostyle documentation</a>.
-              </li>
-            </ol>
-          </section>
-
-          <section class="content-section" id="before-after">
-            <h2>Keep what works.</h2>
-            <p>
-              When a look defeats the local match, you can keep that exact state: paint it on the tracked face in the
-              lab and bake it into a reusable pattern others can study and retest. Automatically extracting a pattern
-              from a pair of before/after photos is a much harder research problem, and one we deliberately don't
-              depend on.
-            </p>
-            <div class="callout">
-              <p>
-                These approaches are experimental. We can't guarantee they will work &mdash; and a human reviewing
-                camera footage can often still recognize someone even when they're wearing makeup. A browser result
-                is a local, conditional finding, not a general protection claim.
-              </p>
-            </div>
-          </section>
-
-          <section class="content-section" id="origin">
-            <h2>Where it comes from.</h2>
-            <p>
-              Ghostmaxxing is the international evolution of an experiment run by NINA.watch. As part of the
-              Universal Digital Union, <a href="https://sindacato.nina.watch/it/iniziative/ghostati/">Ghòstati</a>
-              (<i>become a ghost</i>) is a workshop we keep repeating to explore adversarial makeup as a way to
-              resist facial recognition. The project began in May 2026 during the NINA festival, in
-              <a href="https://sindacato.nina.watch/it/blog/ghostati-workshop-maggio-2026/">Milan and Rome</a>. We
-              learned from <a href="https://www.michelletylicki.info/">Michelle Tylicki</a>, an artist who has run
-              this kind of workshop before us &mdash; we added the application development, and now this wider
-              vision.
-            </p>
-            <p class="callout">
-              Tylicki's <a href="https://www.michelletylicki.info/dazzle/">DAZZLE</a>, developed with Lauri Love, is
-              an art-and-tech installation and interactive tool for teaching Computer Vision Dazzle, also known as
-              anti-surveillance makeup. Ghostmaxxing inherits that workshop energy, but turns it into a browser-based
-              system people can run on their own devices.
-            </p>
-          </section>
-
-          <section class="content-section" id="vision">
-            <h2>Vision.</h2>
-            <ul>
-              <li>Make the workshop easier to run.</li>
-              <li>Make adversarial makeup a popular practice, not a niche one.</li>
-              <li>Collect evidence of what actually works.</li>
-              <li>Support new forms &mdash; clothing, 3D-printed objects, and beyond.</li>
-              <li>Support new research.</li>
-              <li>Use network effects to test everywhere, share results, and keep improving.</li>
-            </ul>
-          </section>
-
-          <section class="content-section" id="research-question">
-            <h2>The research question is minimal camouflage.</h2>
-            <p>
-              The core question is simple: how little makeup is needed to disrupt a face-recognition pipeline?
-            </p>
-            <p>
-              Less makeup matters because it lowers the barrier to practice. It makes the technique easier to learn,
-              easier to repeat, and easier to move from exceptional workshop performance toward everyday culture. The
-              hope is not to sell invisibility; it is to make adversarial makeup legible enough to become pop practice.
-            </p>
-            <h3>Success should be shareable.</h3>
-            <p>
-              Ghostmaxxing includes sharing-oriented functions because a successful look is also a teachable pattern.
-              People who want to share a one-second video, a before/after comparison, or a Ghostyle result can help
-              others understand what worked and what still needs to be tested.
-            </p>
-          </section>
-
-          <section class="content-section" id="leaks">
-            <h2>Why leaking matters.</h2>
-            <p>
-              The lab can test browser pipelines, but real-world facial recognition is a supply chain: camera
-              hardware, edge devices, model vendors, watchlists, matching systems, dashboards, alerts, metadata,
-              operators, procurement contracts, and retention rules.
-            </p>
-            <p>
-              <a href="report.html">Leak to us</a> exists to understand that hidden chain. Which technologies are
-              deployed? Who sells them? Who maintains them? What metadata is produced between capture and decision?
-              Where does it go? Who can access it? Tell us what you know, only if it is safe for you to do so &mdash;
-              and please don't include unnecessary personal data.
-            </p>
-            <p>
-              Some allies may be forced to work on or near these systems. If they can safely share information, they
-              may help us understand whether Ghostyles and adversarial makeup are actually affecting real
-              deployments, or whether the resistance needs to change.
-            </p>
-            <div class="callout">
-              <p>
-                In Europe, real-time remote biometric identification in publicly accessible spaces for law
-                enforcement is treated as a prohibited AI practice, subject to narrow exceptions and safeguards. That
-                legal frame still leaves a practical question: what is actually being deployed, and under whose
-                control?
-              </p>
-            </div>
-            <h3>A ban that keeps getting reopened.</h3>
-            <p>
-              The <a href="https://reclaimyourface.eu">Reclaim Your Face</a> campaign has spent years pushing for a
-              ban on biometric mass surveillance, and it helped get real-time remote biometric identification treated
-              as prohibited in EU law. But the fight didn't end with the text of the regulation: national security
-              agendas keep reopening the exceptions, arguing for carve-outs around major events, "special" cases, and
-              pilot deployments. <a
-                href="https://reclaimyourface.eu/biometric-surveillance-in-the-czech-republic-the-ministry-of-the-interior-is-trying-to-circumvent-the-artificial-intelligence-act/">Reporting
-                from the campaign</a>
-              has documented national authorities attempting to work around the AI Act's limits rather than comply
-              with them. A ban that keeps getting quietly worked around by fear-mongering, securitarian framing needs
-              the same kind of public pressure and evidence-gathering that got it written in the first place &mdash;
-              which is part of why the reporting node exists here too.
-            </p>
-          </section>
-
-            <!-- RELEASE: unreleased tools — uncomment on launch of Ghostyle Transfer / Latent Space Visualizer.
-          <section class="content-section" id="internal-tools">
-            <h2>Internal tools &amp; diagnostics.</h2>
-            <p>
-              To support deeper analysis, model testing, and pattern sharing, Ghostmaxxing includes experimental diagnostic tools. These utilities run entirely locally in the browser to examine recorded behavior and transfer designs.
-            </p>
-            <h3>Video Loader</h3>
-            <p>
-              The <a href="loader.html">Video Loader</a> allows users to import local MP4 video files to run against our on-device 2D and 3D face-detection engines. This allows for precise frame-by-frame analysis, face extraction, database recording, and signature comparison without requiring a live camera feed. It is designed to evaluate recorded workshop outcomes or diagnostic video tracks under stable, repeatable conditions.
-               The Video Loader runs local MP4 files through the 2D face-matching pipeline and an experimental visual-embedding path, allowing repeatable frame-by-frame comparison without a live camera.
-            </p>
-            <h3>Ghostyle Transfer</h3>
-            <p>
-              The <a href="ghostyle-transfer.html">Ghostyle Transfer</a> tool extracts painted makeup patterns from a workshop before/after image pair and attaches them to a new target face. When the local face engine detects matching landmarks, the tool aligns the pattern using a 3D face mesh. Otherwise, it scales the pattern using manual bounding boxes, letting researchers visual-test camouflage layouts on different facial structures before physical application.
-            </p>
-            <h3>Latent Space Visualizer</h3>
-            <p>
-              The <a href="realtime.html">Latent Space Visualizer</a> is a real-time visual debugger for analyzing face descriptor drift. By recording a baseline face signature via webcam, it tracks facial embedding alterations and showcases biometric distance thresholds alongside a 128-dimensional descriptor equalizer. It is used to study exactly how specific facial movements, lighting shifts, and makeup strokes skew facial signatures.
-            </p>
-          </section>
-            -->
-            <!-- END RELEASE-gated tools -->
-
-          <section class="content-section" id="resources">
-            <h2>Read, test, report.</h2>
-            <p>
-              Ghostmaxxing is strongest when the lab, the archive, and the reporting channel work together. Test
-              techniques locally, read the lineage of anti-biometric appearance design, and help document the real
-              infrastructure when it appears in the world.
-            </p>
-            <div class="resource-grid">
-              <a class="resource-card" href="lab.html">
-                <h3>Open the lab</h3>
-                <p>Run local browser tests and watch a recognition pipeline react to your face in real time.</p>
-              </a>
-              <a class="resource-card" href="loader.html">
-                <h3>Video Loader</h3>
-                <p>Run pre-recorded MP4 video tests to extract and compare face signatures frame-by-frame.</p>
-              </a>
-              <!-- RELEASE: unreleased tools — uncomment on launch.
-              <a class="resource-card" href="ghostyle-transfer.html">
-                <h3>Ghostyle Transfer</h3>
-                <p>Extract makeup patterns from before/after images and project them onto new target faces.</p>
-              </a>
-              <a class="resource-card" href="realtime.html">
-                <h3>Latent Space Visualizer</h3>
-                <p>Debug biometric distance thresholds and visualize face descriptor drift in real time.</p>
-              </a>
-              -->
-              <a class="resource-card" href="/references/">
-                <h3>Research references</h3>
-                <p>Trace the artistic, technical, and activist lineage of face-obfuscation work.</p>
-              </a>
-              <a class="resource-card" href="/docs/">
-                <h3>Technical documentation</h3>
-                <p>Inspect modules, plugin logic, and implementation details.</p>
-              </a>
-              <a class="resource-card" href="report.html">
-                <h3>Leak to us</h3>
-                <p>Help investigate the real-world pipeline and supply chain of face recognition.</p>
-              </a>
-            </div>
-          </section>
-        </article>
-
-        <aside class="content-page__aside" aria-label="Page sections">
-          <h2>On this page</h2>
-          <nav>
-            <a href="#workshop-assistant">Workshop assistant</a>
-            <a href="#before-after">Gallery of success cases</a>
-            <a href="#origin">Origin</a>
-            <a href="#research-question">Research question</a>
-            <a href="#leaks">Why leaking matters</a>
-            <a href="#internal-tools">Internal tools</a>
-            <a href="#resources">Resources</a>
-          </nav>
-        </aside>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- ===== SITE FOOTER — canonical. Byte-identical on every page. =========
+    <!-- ===== SITE FOOTER — canonical. Byte-identical on every page. =========
        Pyre band, soil edge, link row. Replaces the .camera-band div, which
        pointed at images/homepage-camera-band.svg — not in the repo, so it only
        ever painted a faint gradient. The camera icons are INLINE <svg>: the
        files in images/icons/ are class-driven and render black through <img>.
        ==================================================================== -->
-  <footer class="gm-site-footer">
-    <div class="gm-site-footer__pyre" data-mode="full">
-      <img src="/images/motifs/pyre.svg" alt="" aria-hidden="true" />
-    </div>
-    <img class="gm-site-footer__edge" src="/images/motifs/soil-edge.svg" alt="" aria-hidden="true" />
-    <div class="gm-site-footer__row">
-      <div class="gm-site-footer__cams">
-        <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-          <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
-          <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
-          <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
-          <circle class="cam-iris" id="iris-dome" cx="50" cy="44" r="6.6"></circle>
-          <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
-        </svg>
-        <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-          <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
-          <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
-          <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
-          <rect class="cam-shell" x="10" y="40" width="72" height="30" rx="7"></rect>
-          <rect class="cam-panel" x="54" y="47" width="22" height="16" rx="3"></rect>
-          <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle cx="70" cy="51" r="2"></circle><circle cx="60" cy="59" r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
-          <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
-          <circle class="cam-iris" id="iris-street" cx="32" cy="55" r="5.3"></circle>
-          <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
-        </svg>
-        <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-          <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32" stroke-width="5"></path>
-          <path class="cam-shell" d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z" stroke-linecap="round"></path>
-          <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
-          <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
-          <circle class="cam-iris cam-iris--void" id="iris-glasses-l" cx="28" cy="45" r="9"></circle>
-          <circle class="cam-iris cam-iris--void" id="iris-glasses-r" cx="72" cy="45" r="9"></circle>
-        </svg>
-        <svg class="cam" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-          <path class="cam-mount" d="M45,30 V12 M32,12 H58" stroke-width="5"></path>
-          <rect class="cam-shell" x="16" y="36" width="66" height="34" rx="5"></rect>
-          <path class="cam-mount" d="M12,30 H74 L84,40" stroke-width="5"></path>
-          <circle class="cam-lens" cx="60" cy="51" r="14"></circle>
-          <circle class="cam-iris" id="iris-bullet" cx="60" cy="51" r="6.2"></circle>
-          <circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"></circle>
-        </svg>
+    <footer class="gm-site-footer">
+      <div class="gm-site-footer__pyre" data-mode="full">
+        <img src="/images/motifs/pyre.svg" alt aria-hidden="true" />
       </div>
-      <div class="gm-site-footer__links">
-        <a href="/docs/">Technical documentation</a>
-        <a href="https://github.com/vecna/ghostmaxxing">Code</a>
-        <a href="/loader.html">Video Loader</a>
+      <img class="gm-site-footer__edge" src="/images/motifs/soil-edge.svg" alt
+        aria-hidden="true" />
+      <div class="gm-site-footer__row">
+        <div class="gm-site-footer__cams">
+          <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+            focusable="false">
+            <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
+            <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
+            <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
+            <circle class="cam-iris" id="iris-dome" cx="50" cy="44"
+              r="6.6"></circle>
+            <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
+          </svg>
+          <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+            focusable="false">
+            <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
+            <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
+            <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
+            <rect class="cam-shell" x="10" y="40" width="72" height="30"
+              rx="7"></rect>
+            <rect class="cam-panel" x="54" y="47" width="22" height="16"
+              rx="3"></rect>
+            <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle
+                cx="70" cy="51" r="2"></circle><circle cx="60" cy="59"
+                r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
+            <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
+            <circle class="cam-iris" id="iris-street" cx="32" cy="55"
+              r="5.3"></circle>
+            <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
+          </svg>
+          <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+            focusable="false">
+            <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32"
+              stroke-width="5"></path>
+            <path class="cam-shell"
+              d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z"
+              stroke-linecap="round"></path>
+            <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
+            <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
+            <circle class="cam-iris cam-iris--void" id="iris-glasses-l" cx="28"
+              cy="45" r="9"></circle>
+            <circle class="cam-iris cam-iris--void" id="iris-glasses-r" cx="72"
+              cy="45" r="9"></circle>
+          </svg>
+          <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+            focusable="false">
+            <path class="cam-mount" d="M45,30 V12 M32,12 H58"
+              stroke-width="5"></path>
+            <rect class="cam-shell" x="16" y="36" width="66" height="34"
+              rx="5"></rect>
+            <path class="cam-mount" d="M12,30 H74 L84,40"
+              stroke-width="5"></path>
+            <circle class="cam-lens" cx="60" cy="51" r="14"></circle>
+            <circle class="cam-iris" id="iris-bullet" cx="60" cy="51"
+              r="6.2"></circle>
+            <circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"></circle>
+          </svg>
+        </div>
+        <div class="gm-site-footer__links">
+          <a href="/docs/">Technical documentation</a>
+          <a href="https://github.com/vecna/ghostmaxxing">Code</a>
+          <a href="/loader.html">Video Loader</a>
+        </div>
       </div>
-    </div>
-  </footer>
-</body>
+    </footer>
+
+    <script src="/pages-js/nav.js" defer></script>
+  </body>
 
 </html>

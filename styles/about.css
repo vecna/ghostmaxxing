@@ -1,0 +1,293 @@
+/* ============================================================================
+   ABOUT — page stylesheet. Layer: PAGE, placement only.
+   Link order on about.html:
+     styles.css  pages.css  content-pages.css  about.css
+
+   Composes tokens, never redefines a gm token (visual-styleguide.html, and
+   tokens.css: "a page that redefines a token is a mistake in the layer above
+   it"). Card, eyebrow and rule treatments follow the styleguide's own
+   components: cream fill, 2px ink border, mono-green identifier, serif name.
+   ========================================================================= */
+
+
+/* --- 1. The research loop ------------------------------------------------
+
+   A conveyor, not a ring. Rings fight the web: on a phone they always
+   degenerate into a stack whose last arrow points backwards up the page.
+
+     [ 01 ]  arc>  [ 02 ]  arc>  [ 03 ]
+     [ (icon) then the loop closes: ...  ]      <- the refrain strip
+
+   The recursion is carried by the closing strip: the full three-arrow icon
+   from lab.html, at the glyph size it was drawn for, next to one sentence
+   that says the cycle restarts. No arrow ever points back up. On a phone the
+   blocks stack, the two arcs rotate to point down the page, and the same
+   strip closes the sequence.
+
+   DOM order equals visual order on every viewport: no grid-area placement,
+   no reordering, nothing for a screen reader to untangle. (The previous
+   triangle placed cards via :nth-child while the ring image was child one,
+   which shifted every card by a slot. Structurally impossible here.)
+
+   Blocks, arcs and strip are all cream on the orange ground, no borders:
+   one material, fused, per the poster system. */
+
+.about-loop {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: clamp(0.9rem, 1.8vw, 1.6rem);
+  align-items: stretch;
+  width: 100%;
+  margin-top: clamp(1.6rem, 3vw, 2.4rem);
+}
+
+.about-loop__step {
+  padding: clamp(1rem, 1.6vw, 1.5rem);
+  background: var(--gm-cream);
+}
+
+/* Node identifier: mono, green, wide tracking. The styleguide's .sg-card__id
+   treatment. Metadata, not a heading. */
+.about-loop__step::before {
+  content: attr(data-node);
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--gm-green);
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+.about-loop__step h3 {
+  max-width: none;
+  margin: 0 0 0.45rem;
+  font-family: var(--serif);
+  font-size: var(--t-h3);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0;
+  color: var(--gm-ink);
+}
+
+.about-loop__step p {
+  max-width: none;
+  margin: 0;
+  color: var(--gm-text);
+  font-size: var(--t-small);
+  line-height: 1.5;
+}
+
+/* The connector arc: one arrow of the icon, hopping into the next block.
+   Small on purpose. The icon's own stroke-to-size ratio is designed for
+   glyph scale, and at glyph scale it needs no correction; 1.4 here is a
+   light trim for the slightly larger render. If the line feels wrong, this
+   is the only number to touch. */
+.about-loop__arc {
+  align-self: center;
+  width: clamp(1.9rem, 2.6vw, 2.6rem);
+  height: auto;
+  fill: none;
+  stroke: var(--gm-cream);
+  stroke-width: 1.4;
+  overflow: visible;
+}
+
+/* The refrain strip. The full three-arrow icon at its natural size says
+   "cycle" better than any drawn return path could. */
+.about-loop__again {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.85rem 1.1rem;
+  background: var(--gm-cream);
+}
+
+.about-loop__icon {
+  flex: 0 0 auto;
+  width: 1.7rem;
+  height: 1.7rem;
+  fill: none;
+  stroke: var(--gm-ink);
+  stroke-width: 1.8;
+}
+
+.about-loop__again p {
+  max-width: none;
+  margin: 0;
+  color: var(--gm-text);
+  font-size: var(--t-small);
+  line-height: 1.5;
+}
+
+/* --- 2. Image plate ------------------------------------------------------
+
+   Every rule about the picture lives here. about.html carries an empty frame
+   with a data-placeholder label on it; dropping an <img> inside is the only
+   edit the markup needs, and the frame switches from dashed to solid on its
+   own.
+
+     <div class="about-plate" data-placeholder="images/about/…"></div>
+     <div class="about-plate"><img src="…" alt="…"></div>
+
+   The dashed empty state follows .sg-missing in the styleguide, whose note
+   reads: a broken-image icon is worse than an honest gap.
+
+   Ratio is set once, here. The source plate is 400x800, so 1/2. A replacement
+   of another ratio is cropped by object-fit rather than distorting the frame
+   or reflowing the section. */
+
+.about-plate {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 25rem;
+  aspect-ratio: 1 / 2;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 2px dashed var(--gm-ink);
+  background: var(--gm-soil);
+}
+
+.about-plate::after {
+  content: attr(data-placeholder);
+  max-width: 88%;
+  color: var(--gm-cream);
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  line-height: 1.6;
+  text-align: center;
+  word-break: break-word;
+}
+
+.about-plate img {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Filled state. :has() is the whole mechanism; where it is unsupported the
+   picture still renders correctly and only the border stays dashed. */
+.about-plate:has(img) {
+  border-style: solid;
+}
+
+.about-plate:has(img)::after {
+  content: none;
+}
+
+.about-figure {
+  margin: 0;
+}
+
+.about-figure figcaption {
+  max-width: 25rem;
+  margin: 0.6rem auto 0;
+  color: var(--gm-muted);
+  font-family: var(--mono);
+  font-size: var(--t-small);
+  line-height: 1.5;
+}
+
+
+/* --- 3. Why it exists: copy left, plate right --------------------------- */
+
+.about-why {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(10rem, 20vw, 25rem);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+  margin-top: 1.2rem;
+}
+
+
+/* --- 4. The seven publics -----------------------------------------------
+   Dossier entries, not bullets: each names a position someone occupies in
+   relation to a deployed system. */
+
+.about-publics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem 1.6rem;
+  max-width: 52rem;
+  margin: 1.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-publics li {
+  padding-top: 0.7rem;
+  border-top: 2px solid var(--gm-ink);
+  color: var(--gm-text);
+  font-size: clamp(1.02rem, 0.25vw + 0.98rem, 1.18rem);
+  line-height: 1.42;
+}
+
+.about-publics b {
+  color: var(--gm-ink);
+  font-weight: 700;
+}
+
+
+/* --- 5. Repositories ----------------------------------------------------- */
+
+.about-repos {
+  max-width: 45rem;
+  margin: 1.3rem 0 0;
+}
+
+.about-repos dt {
+  margin-top: 1.1rem;
+  font-family: var(--mono);
+  font-size: var(--t-small);
+  letter-spacing: 0.04em;
+}
+
+.about-repos dt:first-child {
+  margin-top: 0;
+}
+
+.about-repos dd {
+  margin: 0.3rem 0 0;
+  color: var(--gm-text);
+  font-size: clamp(1.02rem, 0.25vw + 0.98rem, 1.18rem);
+  line-height: 1.5;
+}
+
+
+/* --- 6. Responsive ------------------------------------------------------- */
+
+@media (max-width: 980px) {
+  .about-why {
+    grid-template-columns: 1fr;
+  }
+
+  /* Copy first, plate after: the argument reads before the illustration. */
+  .about-figure {
+    order: 2;
+  }
+}
+
+@media (max-width: 860px) {
+  /* Stack. The arcs turn to point down the page (the base arrow runs 30
+     degrees below horizontal, so +60 is straight down) and the refrain strip
+     closes the sequence at the bottom. Nothing points up. */
+  .about-loop {
+    grid-template-columns: 1fr;
+  }
+
+  .about-loop__arc {
+    justify-self: center;
+    width: 2rem;
+    transform: rotate(60deg);
+  }
+}
+
+@media (max-width: 680px) {
+  .about-publics {
+    grid-template-columns: 1fr;
+  }
+}

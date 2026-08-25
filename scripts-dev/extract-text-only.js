@@ -145,7 +145,7 @@ function extractPage(file) {
 function main() {
   const outFlag = process.argv.indexOf("--out");
   const date = new Date().toISOString().slice(0, 10);
-  const out = outFlag > -1 ? process.argv[outFlag + 1] : `C2P-copy-text-${date}.md`;
+  const out = outFlag > -1 ? process.argv[outFlag + 1] : `EXTRACTED-text-${date}.md`;
 
   const parts = [];
   parts.push(`# Ghostmaxxing — reviewable copy\n`);

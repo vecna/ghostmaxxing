@@ -9,23 +9,6 @@
    Order is the architecture and is not negotiable: fonts load, tokens define,
    base resets, components draw, pages place. A component that needs a page
    rule, or a page that redefines a token, is a mistake in the layer above it.
-
-   FIXED IN THIS PASS
-     - Every import pointed at styles/tokens/ and styles/components/, neither of
-       which exists. The file imported NOTHING. visual-styleguide.html was its
-       only consumer and had been rendering with no tokens, no reset and no
-       camera component since the day it was written.
-     - The fonts moved here. typography.css pulled three families from
-       fonts.googleapis.com; self-hosted copies now live in styles/vendor/ and
-       load from the same origin, so there is no third-party request and no
-       flash of fallback text.
-     - tokens.css absorbed colors.css and typography.css. Both are deleted.
-     - chrome.css is new: the site header and footer, which existed three
-       different ways (inline styles on index, .editorial-homepage__header in
-       pages.css, .gm-head in genealogy.css) and are now one component.
-     - prose.css is new: the link treatment for running text, opt-in via
-       class="gm-prose". It replaces a :not() blocklist in content-pages.css
-       that leaked onto the navbar the moment the nav classes were renamed.
    ========================================================================= */
 
 
