@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Ghostmaxxing | Latent Space Visualizer for Face Descriptor Drift</title>
+  <meta
+    name="description"
+    content="Real-time visual debugger for face descriptor drift, equalizer deltas, and biometric distance thresholds."
+  />
+  <meta property="og:title" content="Ghostmaxxing | Latent Space Visualizer for Face Descriptor Drift" />
+  <meta property="og:description" content="Watch live face descriptor drift, equalizer deltas, and distance thresholds in a real-time visual debugging view." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/images/social-card.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ghostmaxxing | Latent Space Visualizer for Face Descriptor Drift" />
+  <meta name="twitter:description" content="Watch live face descriptor drift, equalizer deltas, and distance thresholds in a real-time visual debugging view." />
+  <meta name="twitter:image" content="/images/social-card.svg" />
+  <link rel="icon" type="image/svg+xml" href="/images/logo/mark-onlight.svg">
+
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <link rel="stylesheet" href="/styles/lab.css" />
+  <link rel="stylesheet" href="/styles/realtime.css" />
+</head>
+
+<body>
+  <main id="ui-layer" aria-label="Latent space visualizer">
+
+    <!-- .selector is a real component in lab.css and supplies the pill this
+         link never had. The prototype used .seg--home, which is defined
+         nowhere, leaving a transparent glyph on dark video. -->
+    <div class="selector realtime-home">
+      <a class="seg" href="/" aria-label="Home">
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5 9.5V21h14V9.5" />
+          <path d="M9.5 21v-6h5v6" />
+        </svg>
+      </a>
+    </div>
+
+    <section id="graph-container" aria-label="Descriptor distance over time">
+      <header class="panel-header">
+        <p class="panel-title">Distance</p>
+        <p class="panel-value"><span id="distance-value">0.000</span></p>
+      </header>
+
+      <div class="panel-body">
+        <div id="graph-scroll" class="graph-scroll" tabindex="0" aria-label="Distance history, scroll up for earlier measurements">
+          <div id="graph-spacer" class="graph-spacer">
+            <canvas id="distance-graph" aria-label="Distance history plot"></canvas>
+          </div>
+        </div>
+        <button id="graph-follow" class="graph-follow" type="button" hidden>Jump to now</button>
+      </div>
+
+      <!-- Only two lines on this plot make a claim, and they are different
+           kinds of claim. Said plainly so neither is mistaken for the other. -->
+      <div class="panel-note" id="graph-legend">
+        <div class="legend-row">
+          <span class="legend-swatch legend-swatch--noise" aria-hidden="true"></span>
+          <span>Noise floor <span class="legend-value" id="legend-noise">—</span></span>
+        </div>
+        <div class="legend-row">
+          <span class="legend-swatch legend-swatch--threshold" aria-hidden="true"></span>
+          <span>Match threshold <span class="legend-value">0.60</span></span>
+        </div>
+        <span class="legend-note" id="legend-explainer">
+          The noise floor is measured from your own baseline capture: below it,
+          nothing changed. 0.60 is dlib's default on the LFW benchmark — a
+          benchmark's number, not a property of your face. The space between
+          them is not calibrated.
+        </span>
+      </div>
+    </section>
+
+    <section id="center-view" aria-label="Webcam, baseline capture and controls">
+      <video id="webcam" autoplay muted playsinline></video>
+      <div class="video-scrim"></div>
+      <div id="status-pill" aria-live="polite">Loading models…</div>
+
+      <div id="calibration-ui">
+        <div id="capture-ring" class="capture-ring" role="progressbar" aria-valuemin="0" aria-valuemax="12" aria-valuenow="0" aria-label="Baseline samples collected">
+          <svg viewBox="0 0 116 116" aria-hidden="true">
+            <circle class="capture-ring__track" cx="58" cy="58" r="54" />
+            <circle class="capture-ring__arc" id="capture-ring-arc" cx="58" cy="58" r="54" />
+          </svg>
+          <span class="capture-ring__count" id="capture-ring-count">0</span>
+        </div>
+        <p class="capture-hint" id="capture-hint">Capture a reference of your bare face before you start.</p>
+        <button id="btn-baseline-start" class="stage-btn" type="button">Set baseline</button>
+      </div>
+
+      <div id="photo-viewer" class="viewer-overlay" role="dialog" aria-modal="true" aria-label="Saved capture" hidden>
+        <div class="viewer-stage">
+          <img id="viewer-image" alt="Saved capture" />
+        </div>
+        <div class="viewer-actions">
+          <span class="viewer-meta" id="viewer-meta"></span>
+          <button id="viewer-copy" class="sb-btn" type="button">Copy</button>
+          <button id="viewer-download" class="sb-btn" type="button">Download</button>
+          <button id="viewer-delete" class="sb-btn sb-btn--warn" type="button">Delete</button>
+          <button id="viewer-close" class="sb-btn" type="button">Close</button>
+        </div>
+      </div>
+
+      <div id="settings-bar" class="settingsbar" aria-label="View and capture controls">
+        <div class="sb-group">
+          <label class="sb-label" for="brightness-input">View</label>
+          <input
+            id="brightness-input"
+            type="range"
+            min="0.4"
+            max="1.4"
+            step="0.05"
+            value="0.85"
+            title="Display brightness only. This does not reach the detector and cannot change a measurement."
+          />
+          <span class="sb-value" id="brightness-value">0.85</span>
+        </div>
+
+        <div class="sb-group">
+          <span class="sb-label" id="equalizer-label">Equalizer</span>
+          <button
+            id="toggle-equalizer"
+            class="switch"
+            type="button"
+            role="switch"
+            aria-checked="true"
+            aria-labelledby="equalizer-label"
+          ></button>
+        </div>
+
+        <div class="sb-spacer"></div>
+
+        <div class="sb-group">
+          <button id="btn-shutter" class="sb-btn" type="button" disabled>Capture now</button>
+          <span class="sb-count" id="gallery-count" aria-label="Saved captures">0</span>
+          <button id="btn-download-all" class="sb-btn" type="button" disabled>Download all</button>
+          <button id="btn-delete-all" class="sb-btn sb-btn--warn" type="button" disabled>Delete all</button>
+        </div>
+
+        <div class="sb-group">
+          <button id="btn-baseline" class="sb-btn sb-btn--warn" type="button" hidden>Delete baseline</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="embedding-panel" aria-label="128-dimensional descriptor equalizer">
+      <header class="panel-header">
+        <p class="panel-title">Descriptor Delta</p>
+        <p class="panel-value"><span id="tracking-state">NO BASELINE</span></p>
+      </header>
+      <div class="panel-body">
+        <div id="embedding-bar" aria-label="128 descriptor rows"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/lab-js/vendor/face-api.js"></script>
+  <script type="module" src="/lab-js/realtime/realtime.js"></script>
+</body>
+
+</html>
