@@ -261,6 +261,50 @@ body {
     .cam-finale { bottom: 5%; }
 }
 
+/* ---- "How it works" steps -----------------------------------------------
+   Icon, title, a square image (placeholder until real captures are dropped
+   in), then the explanatory line. Icons are UI glyphs borrowed from the lab
+   dock, not the illustrative .cam cameras above, so they get their own,
+   simpler treatment. */
+.gm-how-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.gm-how-icon {
+    display: block;
+    width: 32px;
+    margin-bottom: .6rem;
+    color: var(--gm-green-soft);
+}
+
+.gm-how-icon svg {
+    display: block;
+    width: 100%;
+}
+
+.gm-how-title {
+    font-weight: 700;
+    margin: 0 0 .6rem;
+}
+
+.gm-how-image {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    max-width: 220px;
+    margin: 0 0 .6rem;
+    background: var(--gm-panel);
+    border: 1px dashed var(--gm-border-strong);
+    border-radius: 6px;
+}
+
+.gm-how-text {
+    font-size: .92rem;
+    margin: 0;
+    opacity: .85;
+}
+
 /* Everything above communicates through position and opacity, so removing the
    motion removes nothing. The ground still crosses to cream, instantly. */
 @media (prefers-reduced-motion: reduce) {

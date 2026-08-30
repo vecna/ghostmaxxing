@@ -197,68 +197,50 @@
       <p
         style="font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;opacity:.72;margin:1.5rem 0 1.2rem">How
         it works</p>
-      <div
-        style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem">
-        <div>
-          <svg class="cam" viewBox="0 0 100 100"
-            style="width:42px;margin-bottom:.6rem" aria-hidden="true"
-            focusable="false">
-            <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
-            <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
-            <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
-            <rect class="cam-shell" x="10" y="40" width="72" height="30"
-              rx="7"></rect>
-            <rect class="cam-panel" x="54" y="47" width="22" height="16"
-              rx="3"></rect>
-            <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle
-                cx="70" cy="51" r="2"></circle><circle cx="60" cy="59"
-                r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
-            <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
-            <circle class="cam-iris" id="iris-street-s1" cx="32" cy="55"
-              r="5.3"></circle>
-            <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
-          </svg>
-          <p style="font-weight:700;margin:0 0 .3rem">1. Detect</p>
-          <p style="font-size:.92rem;margin:0;opacity:.85">A local pipeline
-            reads your face the way a deployed system would — landmarks,
-            descriptors, a baseline match.</p>
+      <div class="gm-how-grid">
+        <div class="gm-how-step">
+          <span class="gm-how-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </span>
+          <p class="gm-how-title">1. Save</p>
+          <div class="gm-how-image" role="img"
+            aria-label="Placeholder image: save your face while it's clean"></div>
+          <p class="gm-how-text">Save your face while it's clean — a private
+            baseline, kept on your device, to test camouflage against.</p>
         </div>
-        <div>
-          <svg class="cam" viewBox="0 0 100 100"
-            style="width:42px;margin-bottom:.6rem" aria-hidden="true"
-            focusable="false">
-            <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32"
-              stroke-width="5"></path>
-            <path class="cam-shell"
-              d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z"
-              stroke-linecap="round"></path>
-            <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
-            <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
-            <circle class="cam-iris cam-iris--void" id="iris-glasses-l-s1"
-              cx="28" cy="45" r="9"></circle>
-            <circle class="cam-iris cam-iris--void" id="iris-glasses-r-s2"
-              cx="72" cy="45" r="9"></circle>
-          </svg>
-          <p style="font-weight:700;margin:0 0 .3rem">2. Camouflage</p>
-          <p style="font-size:.92rem;margin:0;opacity:.85">Apply a Ghostyle or
-            your own intervention — makeup, an overlay, a physical change to the
-            face.</p>
+        <div class="gm-how-step">
+          <span class="gm-how-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 2a8 8 0 0 0-8 8v10.2c0 .9 1 1.4 1.7.8l1.6-1.2 1.7 1.3c.4.3.9.3 1.2 0l1.8-1.3 1.8 1.3c.3.3.8.3 1.2 0l1.7-1.3 1.6 1.2c.7.6 1.7.1 1.7-.8V10a8 8 0 0 0-8-8z"></path>
+              <circle cx="9.2" cy="10.5" r="1.4" fill="var(--gm-ink)"></circle>
+              <circle cx="14.8" cy="10.5" r="1.4" fill="var(--gm-ink)"></circle>
+            </svg>
+          </span>
+          <p class="gm-how-title">2. Paint</p>
+          <div class="gm-how-image" role="img"
+            aria-label="Placeholder image: apply a Ghostyle or your own intervention"></div>
+          <p class="gm-how-text">Apply a Ghostyle or your own intervention —
+            makeup, an overlay, a physical change to the face.</p>
         </div>
-        <div>
-          <svg class="cam" viewBox="0 0 100 100"
-            style="width:42px;margin-bottom:.6rem" aria-hidden="true"
-            focusable="false">
-            <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
-            <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
-            <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
-            <circle class="cam-iris" id="iris-dome-s2" cx="50" cy="44"
-              r="6.6"></circle>
-            <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
-          </svg>
-          <p style="font-weight:700;margin:0 0 .3rem">3. Retest</p>
-          <p style="font-size:.92rem;margin:0;opacity:.85">Compare the match, in
-            your browser, under your own conditions. A local result, not a
-            protection guarantee.</p>
+        <div class="gm-how-step">
+          <span class="gm-how-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 16V4"></path>
+              <path d="M8 8l4-4 4 4"></path>
+              <path d="M4 20h16"></path>
+            </svg>
+          </span>
+          <p class="gm-how-title">3. Upload</p>
+          <div class="gm-how-image" role="img"
+            aria-label="Placeholder image: share your result or generate a report"></div>
+          <p class="gm-how-text">Share your result to the gallery or generate
+            a report — entirely optional, and always your call.</p>
         </div>
       </div>
     </section>
