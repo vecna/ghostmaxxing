@@ -78,6 +78,41 @@
   margin-top: 1rem;
 }
 
+/* A step heading inside a walkthrough (see workshops.html): needs to read as
+   a heading, not a headline, so it can sit between a paragraph and a
+   full-width image without dominating the page like h1/h2 do. */
+.content-page__step {
+  max-width: none;
+  padding-top: 3.95rem;
+  font-family: var(--sans);
+  font-size: clamp(1.1rem, 0.3vw + 1.02rem, 1.32rem);
+  line-height: 1.35;
+  letter-spacing: normal;
+  font-weight: 600;
+}
+
+.content-page__figure {
+  max-width: none;
+  margin: 1.1rem 0 0;
+}
+
+.content-page__figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Sits under its image, not beside it — <small> is inline and was wrapping
+   onto the picture's line. Sized just under body copy, not "small" small. */
+.content-page__caption {
+  max-width: none;
+  margin: 0.6rem 0 0;
+  color: var(--gm-muted);
+  font-size: clamp(0.92rem, 0.2vw + 0.88rem, 1.05rem);
+  line-height: 1.45;
+  text-align: center;
+}
+
 .content-page__lead {
   max-width: 52rem !important;
   margin-top: 1.35rem !important;
