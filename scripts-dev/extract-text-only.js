@@ -26,7 +26,6 @@ const PAGES = [
   "report.html",
   "workshops.html",
   "genealogy.html",
-  "ghostyle-transfer.html",
   "lab.html",
   "loader.html",
   "realtime.html",

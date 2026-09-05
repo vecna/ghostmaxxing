@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Ghostmaxxing 0.1.0\n"
-"POT-Creation-Date: 2026-07-22\n"
+"POT-Creation-Date: 2026-09-05\n"
 "Language-Team: NotYetExisting <translators at vecna dot eu>\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 
@@ -458,6 +458,192 @@ msgstr ""
 msgid "{count} clip(s) ready to send."
 msgstr ""
 
+#. key: upload_record_first_help
+#. it: Registra una breve clip con il volto truccato dalla barra laterale, poi rivedila qui prima di consentire l'upload.
+#: lab.html:179
+msgid "Record a short painted-face clip from the rail, then review it here before consenting to upload."
+msgstr ""
+
+#. key: upload_clip_list_label
+#. it: Clip registrate
+#: lab.html:183
+msgid "Recorded clips"
+msgstr ""
+
+#. key: upload_note_label
+#. it: Nota per i moderatori
+#: lab.html:186
+msgid "Note for moderators"
+msgstr ""
+
+#. key: upload_note_placeholder
+#. it: Cosa mostra questa clip?
+#: lab.html:187
+msgid "What is this clip showing?"
+msgstr ""
+
+#. key: upload_consent_copy
+#. it: Acconsento a inviare questa clip con volto truccato al server Ghostmaxxing per archiviazione, moderazione umana, possibile pubblicazione web/feed/ActivityPub dopo approvazione, e cancellazione tramite ricevuta privata.
+#: lab.html:191
+msgid "I consent to send this painted-face clip to the Ghostmaxxing server for storage, human moderation, possible public web/feed/ActivityPub publication after approval, and deletion by private receipt token."
+msgstr ""
+
+#. key: upload_submit_button
+#. it: Invia in moderazione
+#: lab.html:194
+msgid "Submit to moderation"
+msgstr ""
+
+#. key: upload_discard_button
+#. it: Scarta clip
+#: lab.html:195
+msgid "Discard clip"
+msgstr ""
+
+#. key: upload_meta_recorded_label
+#. it: Registrata
+#: lab-js/upload-consent.js
+msgid "Recorded"
+msgstr ""
+
+#. key: upload_meta_size_label
+#. it: Dimensione
+#: lab-js/upload-consent.js
+msgid "Size"
+msgstr ""
+
+#. key: upload_meta_ghostyle_label
+#. it: Ghostyle
+#: lab-js/upload-consent.js
+msgid "Ghostyle"
+msgstr ""
+
+#. key: upload_meta_result_label
+#. it: Risultato
+#: lab-js/upload-consent.js
+msgid "Result"
+msgstr ""
+
+#. key: upload_clip_ready_status
+#. it: Clip pronta nel browser. Nessun upload finche non dai consenso.
+#: lab-js/upload-consent.js
+msgid "Clip ready in the browser. Nothing uploads until you consent."
+msgstr ""
+
+#. key: upload_clip_discarded_status
+#. it: Clip scartata.
+#: lab-js/upload-consent.js
+msgid "Clip discarded."
+msgstr ""
+
+#. key: upload_receipt_created_status
+#. it: Upload ricevuto. La ricevuta privata è nel log.
+#: lab-js/upload-consent.js
+msgid "Upload received. The private receipt is in the log."
+msgstr ""
+
+#. key: receipt_log_title
+#. it: Log ricevute
+#: lab.html:201
+msgid "Receipt log"
+msgstr ""
+
+#. key: receipt_log_description
+#. it: Ricevute private da questo browser. Conservale per raggiungere il futuro URL pubblico e revocare l'upload con il delete token.
+#: lab.html:202
+msgid "Private receipts from this browser. Keep them to reach the future public URL and revoke the upload with the delete token."
+msgstr ""
+
+#. key: receipt_log_empty
+#. it: Nessuna ricevuta salvata in questo browser.
+#: lab-js/upload-consent.js
+msgid "No receipts saved in this browser."
+msgstr ""
+
+#. key: receipt_status_pending
+#. it: in moderazione
+#: lab-js/upload-consent.js
+msgid "pending"
+msgstr ""
+
+#. key: receipt_status_deleted
+#. it: revocata
+#: lab-js/upload-consent.js
+msgid "revoked"
+msgstr ""
+
+#. key: receipt_status_delete_failed
+#. it: revoca fallita
+#: lab-js/upload-consent.js
+msgid "revoke failed"
+msgstr ""
+
+#. key: receipt_status_imported
+#. it: importata
+#: lab-js/upload-consent.js
+msgid "imported"
+msgstr ""
+
+#. key: receipt_upload_id_label
+#. it: Upload ID
+#: lab-js/upload-consent.js
+msgid "Upload ID"
+msgstr ""
+
+#. key: receipt_consent_label
+#. it: Consenso
+#: lab-js/upload-consent.js
+msgid "Consent"
+msgstr ""
+
+#. key: receipt_open_public_button
+#. it: Apri URL pubblico
+#: lab-js/upload-consent.js
+msgid "Open public URL"
+msgstr ""
+
+#. key: receipt_copy_private_button
+#. it: Copia ricevuta privata
+#: lab-js/upload-consent.js
+msgid "Copy private receipt"
+msgstr ""
+
+#. key: receipt_revoke_button
+#. it: Revoca
+#: lab-js/upload-consent.js
+msgid "Revoke"
+msgstr ""
+
+#. key: receipt_copied_status
+#. it: Ricevuta privata copiata.
+#: lab-js/upload-consent.js
+msgid "Private receipt copied."
+msgstr ""
+
+#. key: receipt_copy_failed_status
+#. it: Impossibile copiare la ricevuta privata.
+#: lab-js/upload-consent.js
+msgid "Could not copy the private receipt."
+msgstr ""
+
+#. key: receipt_revoke_working_status
+#. it: Revoca in corso...
+#: lab-js/upload-consent.js
+msgid "Revoking..."
+msgstr ""
+
+#. key: receipt_revoke_done_status
+#. it: Upload revocato.
+#: lab-js/upload-consent.js
+msgid "Upload revoked."
+msgstr ""
+
+#. key: receipt_revoke_failed_status
+#. it: Revoca non riuscita: {message}
+#: lab-js/upload-consent.js
+msgid "Revoke failed: {message}"
+msgstr ""
+
 #. Glossary: deployment.
 #. key: report_deployment_title
 #. it: Segnala un deployment
@@ -866,6 +1052,12 @@ msgstr ""
 #. it: Registrazione avviata...
 #: lab-js/camera.js:198
 msgid "Recording started..."
+msgstr ""
+
+#. key: recording_queued_log
+#. it: Registrazione pronta nel browser: {filename}
+#: lab-js/camera.js:248
+msgid "Recording ready in the browser: {filename}"
 msgstr ""
 
 #. key: video_uploading_log
@@ -1927,7 +2119,7 @@ msgstr ""
 #. key: homepage_subtitle
 #. it: Un laboratorio pubblico per testare il camouflage contro il riconoscimento facciale
 #: index.html:32
-msgid "A public lab for testing camouflage"
+msgid "A public lab for testing face-recognition camouflage"
 msgstr ""
 
 #. key: prototype_navigation_label
@@ -1998,6 +2190,24 @@ msgstr ""
 #. it: Codice
 #: index.html:58
 msgid "Code"
+msgstr ""
+
+#. key: internal_tools_label
+#. it: Strumenti interni
+#: index.html
+msgid "Internal tools"
+msgstr ""
+
+#. key: video_loader_link
+#. it: Video Loader
+#: index.html
+msgid "Video Loader"
+msgstr ""
+
+#. key: realtime_visualizer_link
+#. it: Visualizzatore spazio latente
+#: index.html
+msgid "Latent Space Visualizer"
 msgstr ""
 
 #. Glossary: face recognition, overlay, adversarial camouflage.

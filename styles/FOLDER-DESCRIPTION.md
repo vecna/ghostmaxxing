@@ -7,7 +7,7 @@ The architecture is described in the header comment of `styles/styles.css`: ever
 ## Shared architecture
 
 - `styles.css` — root import list. This is the main shared stylesheet the site loads on most pages. It imports the fonts, tokens, reset, and reusable component styles. It is the canonical layer-order file.
-  - Included directly by: `index.html`, `genealogy.html`, `about.html`, `ghostyle-transfer.html`, `lab.html`, `loader.html`, `references/index.html`, `report.html`, `workshops.html`, `visual-styleguide.html`
+  - Included directly by: `index.html`, `genealogy.html`, `about.html`, `lab.html`, `loader.html`, `references/index.html`, `report.html`, `workshops.html`, `visual-styleguide.html`
 
 - `tokens.css` — design tokens for the palette, type scale, spacing, border, and shared CSS custom properties. This is the source of the site-wide theme values.
   - Loaded by: `styles.css`
@@ -41,10 +41,10 @@ These files are linked directly by HTML pages and provide page layout or unique 
   - Included by: `genealogy.html`
 
 - `pages.css` — shared layout layer for content-style pages such as the editorial landing, about, report, transfer, references, workshops, and loader variants.
-  - Included by: `about.html`, `ghostyle-transfer.html`, `lab.html`, `loader.html`, `references/index.html`, `report.html`, `workshops.html`
+  - Included by: `about.html`, `lab.html`, `loader.html`, `references/index.html`, `report.html`, `workshops.html`
 
 - `content-pages.css` — shared content-page styling for long-form editorial pages and generated reference pages.
-  - Included by: `about.html`, `ghostyle-transfer.html`, `report.html`, `references/index.html`, `references/templates/references.template.html`, `workshops.html`
+  - Included by: `about.html`, `report.html`, `references/index.html`, `references/templates/references.template.html`, `workshops.html`
 
 - `lab.css` — lab and live-analysis page styling; used for full-screen camera surfaces and tooling chrome.
   - Included by: `lab.html`

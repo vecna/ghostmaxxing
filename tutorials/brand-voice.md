@@ -379,7 +379,7 @@ Recommended core copy:
 **Lead with:** the next action, local processing and the current state of the test.  
 **Avoid:** manifesto copy during a task, ambiguous controls and claims that a local result transfers to deployed systems.
 
-### Ghostyle documentation and transfer pages
+### Ghostyle documentation
 
 **Tone:** practical, inspectable and collaborative.  
 **Job:** define the intervention, its components, provenance, test conditions and limits.  

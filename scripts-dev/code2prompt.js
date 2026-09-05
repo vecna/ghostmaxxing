@@ -63,7 +63,6 @@ const NAMESPACES = {
       "lab.html",
       "loader.html",
       "realtime.html",
-      "ghostyle-transfer.html",
       "ghostyles/*.js",
       "ghostyles.json",
       "*.d.ts",

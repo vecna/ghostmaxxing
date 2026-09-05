@@ -31,10 +31,6 @@ Use it when you need live feedback or are developing an effect that follows the 
 
 Use it when exact media time matters more than a live webcam.
 
-### Ghostyle Transfer
-
-`ghostyle-transfer.html` loads `lab-js/transfer.js`. It derives a visible difference mask from a Before and After pair and previews that intervention on a Target image.
-
 Use it to explore appearance transfer. A visually successful transfer is not evidence that the target image evades recognition.
 
 `realtime.html` is not part of the initial released documentation set.
@@ -56,8 +52,6 @@ lab.html
 loader.html
   └─ lab-js/loader.js
 
-ghostyle-transfer.html
-  └─ lab-js/transfer.js
 ```
 
 ### Core state and lifecycle

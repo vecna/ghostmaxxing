@@ -21,14 +21,8 @@ const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_OUTPUT = path.join(ROOT, 'docs', 'assets', 'screenshots');
 const FAKE_CAMERA = path.join(ROOT, 'tests', 'fixtures', 'mock-face.y4m');
 const LOADER_VIDEO = path.join(ROOT, 'tests', 'fixtures', 'my-moving-face.mp4');
-const TRANSFER_FIXTURES = {
-   before: path.join(ROOT, 'tests', 'fixtures', 'docs-transfer', 'before.jpg'),
-   after: path.join(ROOT, 'tests', 'fixtures', 'docs-transfer', 'after.jpg'),
-   target: path.join(ROOT, 'tests', 'fixtures', 'docs-transfer', 'target.jpg'),
-};
-
 const SUPPORTED_LOCALES = ['en', 'it', 'pt'];
-const PAGE_GROUPS = ['lab', 'loader', 'transfer'];
+const PAGE_GROUPS = ['lab', 'loader'];
 const VIEWPORTS = {
    desktop: { width: 1440, height: 1000 },
    mobile: { width: 390, height: 844 },
@@ -43,18 +37,13 @@ Options:
   --locale <value>      en, it, pt, comma-separated values, or all (default: all)
   --viewport <value>    desktop, mobile, comma-separated values, or all
                         (default: desktop)
-  --only <value>        lab, loader, transfer, comma-separated values, or all
+  --only <value>        lab, loader, comma-separated values, or all
                         (default: all)
   --loader-time <sec>   Loader frame timestamp in seconds (default: 3)
   --include-brush       Add the optional scripted Face Brush capture
   --base-url <url>      Use an already-running site instead of starting a server
   --headed              Show the browser while capturing
   --help                Show this help
-
-Optional transfer fixtures:
-  tests/fixtures/docs-transfer/before.jpg
-  tests/fixtures/docs-transfer/after.jpg
-  tests/fixtures/docs-transfer/target.jpg
 `;
 }
 
@@ -495,61 +484,6 @@ async function captureLoader(context, run) {
    }
 }
 
-async function drawFaceBox(page, slot) {
-   const canvas = page.locator(`#stage-${slot} canvas`).last();
-   await canvas.waitFor({ state: 'visible' });
-   const box = await canvas.boundingBox();
-   if (!box) throw new Error(`Unable to determine ${slot} canvas dimensions.`);
-   await page.mouse.move(box.x + box.width * 0.2, box.y + box.height * 0.12);
-   await page.mouse.down();
-   await page.mouse.move(box.x + box.width * 0.8, box.y + box.height * 0.9, { steps: 12 });
-   await page.mouse.up();
-}
-
-async function captureTransfer(context, run) {
-   const page = await preparePage(context, run.baseUrl, 'ghostyle-transfer.html', run.locale);
-   try {
-      await page.waitForFunction(() => {
-         const text = document.getElementById('engineText')?.textContent || '';
-         return !text.includes('loading') && !text.includes('caricamento') && !text.includes('carregando');
-      }, undefined, { timeout: 90000 });
-      await run.capture(page, 'transfer-01-workbench', {
-         page: 'ghostyle-transfer.html',
-         purpose: 'The complete before/after/target workbench before images are selected.',
-         locator: '.tool-workbench',
-      });
-
-      const missing = Object.entries(TRANSFER_FIXTURES)
-         .filter(([, file]) => !fs.existsSync(file))
-         .map(([slot]) => slot);
-      if (missing.length) {
-         run.manifest.skipped.push({
-            id: 'transfer-02-result',
-            page: 'ghostyle-transfer.html',
-            locale: run.locale,
-            viewport: run.viewport,
-            reason: `Missing optional docs-transfer fixtures: ${missing.join(', ')}`,
-         });
-         return;
-      }
-
-      for (const [slot, file] of Object.entries(TRANSFER_FIXTURES)) {
-         await page.setInputFiles(`input[data-slot="${slot}"]`, file);
-         await drawFaceBox(page, slot);
-      }
-      await page.locator('#run').waitFor({ state: 'visible' });
-      await page.locator('#run').click();
-      await page.waitForFunction(() => !document.getElementById('download')?.disabled, undefined, { timeout: 90000 });
-      await run.capture(page, 'transfer-02-result', {
-         page: 'ghostyle-transfer.html',
-         purpose: 'The transferred Ghostyle, extracted matte, and alignment mode.',
-         locator: '.tool-workbench',
-      });
-   } finally {
-      await page.close();
-   }
-}
-
 function writeOutputs(output, manifest) {
    fs.mkdirSync(output, { recursive: true });
    fs.writeFileSync(path.join(output, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
@@ -592,7 +526,6 @@ async function main() {
       fixtures: {
          fakeCamera: relativeFromRoot(FAKE_CAMERA),
          loaderVideo: relativeFromRoot(LOADER_VIDEO),
-         transfer: Object.fromEntries(Object.entries(TRANSFER_FIXTURES).map(([key, file]) => [key, relativeFromRoot(file)])),
       },
       screenshots: [],
       skipped: [],
@@ -645,7 +578,6 @@ async function main() {
                try {
                   if (group === 'lab') await captureLab(context, run);
                   if (group === 'loader') await captureLoader(context, run);
-                  if (group === 'transfer') await captureTransfer(context, run);
                } catch (error) {
                   const failure = { group, locale, viewport, message: cleanErrorMessage(error) };
                   manifest.errors.push(failure);

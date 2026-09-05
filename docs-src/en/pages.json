@@ -22,13 +22,6 @@
     "section": "tools"
   },
   {
-    "source": "ghostyle-transfer.body.html",
-    "output": "docs/guides/ghostyle-transfer.html",
-    "title": "Transfer a Ghostyle between images | Ghostmaxxing",
-    "description": "Extract a visible intervention from a before and after pair, then preview it on another face.",
-    "section": "tools"
-  },
-  {
     "source": "face-brush.body.html",
     "output": "docs/guides/face-brush.html",
     "title": "Sketch a Ghostyle with Face Brush | Ghostmaxxing",

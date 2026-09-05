@@ -9,7 +9,7 @@
 
      index.html              inline style="" on every element, ~20 of them
      about / report /        .editorial-homepage__header + .wordmark, in
-       ghostyle-transfer     pages.css
+                             pages.css
      genealogy.html          .gm-head + .gm-wordmark + .gm-nav, in genealogy.css
 
      footer                  index.html only — the pyre band. Every other page
@@ -219,8 +219,7 @@
   background: var(--gm-cream);
 }
 
-/* Optional slot after the CTA — ghostyle-transfer.html puts its locale select
-   here. Anything in it must survive the nav wrapping on a narrow screen. */
+/* Optional slot after the CTA for controls that share the nav row. */
 .gm-site-nav__extra {
   display: flex;
   align-items: center;

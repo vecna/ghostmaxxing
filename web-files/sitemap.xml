@@ -56,12 +56,6 @@
 
    <!-- RELEASE: unreleased tools — uncomment on launch (see docs/index.html RELEASE TOGGLE).
    <url>
-      <loc>https://ghostmaxxing.vecna.eu/ghostyle-transfer.html</loc>
-      <lastmod>2026-07-29</lastmod>
-      <changefreq>monthly</changefreq>
-      <priority>0.5</priority>
-   </url>
-   <url>
       <loc>https://ghostmaxxing.vecna.eu/realtime.html</loc>
       <lastmod>2026-07-29</lastmod>
       <changefreq>monthly</changefreq>

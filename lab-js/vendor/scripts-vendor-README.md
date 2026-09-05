@@ -6,7 +6,7 @@ Use `lab-js/vendor/fetch-sources.sh` to refresh the assets it manages.
 
 | Local file | Source URL | Upstream version/reference | Notes |
 |---|---|---|---|
-| `face-api.js` | `https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js` | floating (no `@x.y.z` in URL) | Main `faceapi` browser bundle used by pages and transfer tool. |
+| `face-api.js` | `https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js` | floating (no `@x.y.z` in URL) | Main `faceapi` browser bundle used by the Lab pages. |
 | `tasks-vision@0.10.35.js` | `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35` | `0.10.35` | ESM bundle imported by 3D/embedder paths. |
 
 ## URLs synced by `fetch-sources.sh`

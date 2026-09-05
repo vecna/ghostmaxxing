@@ -12,19 +12,13 @@
   ],
   "pageGroups": [
     "lab",
-    "loader",
-    "transfer"
+    "loader"
   ],
   "loaderTimestampSeconds": 1,
   "includeBrush": true,
   "fixtures": {
     "fakeCamera": "tests/fixtures/mock-face.y4m",
-    "loaderVideo": "tests/fixtures/my-moving-face.mp4",
-    "transfer": {
-      "before": "tests/fixtures/docs-transfer/before.jpg",
-      "after": "tests/fixtures/docs-transfer/after.jpg",
-      "target": "tests/fixtures/docs-transfer/target.jpg"
-    }
+    "loaderVideo": "tests/fixtures/my-moving-face.mp4"
   },
   "screenshots": [
     {
@@ -283,28 +277,6 @@
       "stateSource": "live interface with committed fixtures"
     },
     {
-      "id": "transfer-01-workbench",
-      "page": "ghostyle-transfer.html",
-      "locale": "en",
-      "viewport": "desktop",
-      "file": "en/desktop/transfer-01-workbench.png",
-      "widthPx": 1392,
-      "heightPx": 1224,
-      "aspectRatio": 1.1373,
-      "fileSizeBytes": 59370,
-      "capture": {
-        "kind": "element",
-        "selector": ".tool-workbench"
-      },
-      "sourceViewport": {
-        "widthCssPx": 1440,
-        "heightCssPx": 1000,
-        "deviceScaleFactor": 1
-      },
-      "purpose": "The complete before/after/target workbench before images are selected.",
-      "stateSource": "live interface with committed fixtures"
-    },
-    {
       "id": "lab-01-camera",
       "page": "lab.html",
       "locale": "it",
@@ -558,45 +530,8 @@
       },
       "purpose": "A frame-level Record face result with timestamped diagnostic metadata.",
       "stateSource": "live interface with committed fixtures"
-    },
-    {
-      "id": "transfer-01-workbench",
-      "page": "ghostyle-transfer.html",
-      "locale": "it",
-      "viewport": "desktop",
-      "file": "it/desktop/transfer-01-workbench.png",
-      "widthPx": 1392,
-      "heightPx": 1224,
-      "aspectRatio": 1.1373,
-      "fileSizeBytes": 65769,
-      "capture": {
-        "kind": "element",
-        "selector": ".tool-workbench"
-      },
-      "sourceViewport": {
-        "widthCssPx": 1440,
-        "heightCssPx": 1000,
-        "deviceScaleFactor": 1
-      },
-      "purpose": "The complete before/after/target workbench before images are selected.",
-      "stateSource": "live interface with committed fixtures"
     }
   ],
-  "skipped": [
-    {
-      "id": "transfer-02-result",
-      "page": "ghostyle-transfer.html",
-      "locale": "en",
-      "viewport": "desktop",
-      "reason": "Missing optional docs-transfer fixtures: before, after, target"
-    },
-    {
-      "id": "transfer-02-result",
-      "page": "ghostyle-transfer.html",
-      "locale": "it",
-      "viewport": "desktop",
-      "reason": "Missing optional docs-transfer fixtures: before, after, target"
-    }
-  ],
+  "skipped": [],
   "errors": []
 }

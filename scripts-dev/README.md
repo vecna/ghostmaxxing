@@ -142,7 +142,7 @@ node scripts-dev/extract-text-only.js
 node scripts-dev/extract-text-only.js --out /tmp/ghostmaxxing-copy.md
 ```
 
-Input paths are relative to the current working directory. The fixed page list includes the homepage, About, reporting, workshops, genealogy, Transfer, Lab, Loader, realtime, `docs/index.html` and `references/index.html`. It also reads `data/camera-facts.json`. Missing files are silently skipped.
+Input paths are relative to the current working directory. The fixed page list includes the homepage, About, reporting, workshops, genealogy, Lab, Loader, realtime, `docs/index.html` and `references/index.html`. It also reads `data/camera-facts.json`. Missing files are silently skipped.
 
 Output is Markdown containing text, source line numbers and locator hints. The default filename uses the current UTC date. The file is overwritten if it already exists.
 
