@@ -1,8 +1,8 @@
 # Ghostmaxxing
-
 <!-- coverage-badge:start -->
-[![Unit Test Coverage](https://img.shields.io/badge/coverage-66.96%25-yellow)](coverage/)
+[![Unit Test Coverage](https://img.shields.io/badge/coverage-77.21%25-yellow)](coverage/)
 <!-- coverage-badge:end -->
+
 [![CI](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml/badge.svg)](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-JSDoc-blue)](https://ghostmaxxing.vecna.eu/docs/)
 [![Source](https://img.shields.io/badge/source-GitHub-black)](https://github.com/vecna/ghostmaxxing)
