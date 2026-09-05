@@ -1,0 +1,85 @@
+      <section class="content-page__header-area gm-prose" aria-labelledby="brush-guide-title">
+        <span class="content-page__kicker">Optional guide · Face Brush</span>
+        <h1 id="brush-guide-title">Sketch digitally. Test physically.</h1>
+        <p class="content-page__lead">Paint a face-anchored pattern in the Lab, observe the local matcher, then use the digital state as a proposal for a real makeup experiment.</p>
+        <p class="content-page__deck">Face Brush is an authoring instrument. It can help locate a promising intervention, but it cannot predict how pigment, skin, light, camera processing, or another model will reproduce the digital composite.</p>
+        <div class="content-page__actions">
+          <a class="docs-link docs-link--primary" href="/lab.html">Open the Lab &#8599;</a>
+          <a class="docs-link" href="/docs/guides/lab.html">Lab fundamentals</a>
+        </div>
+      </section>
+
+      <div class="docs-reader">
+        <article class="docs-article gm-prose">
+          <section id="idea">
+            <span class="docs-eyebrow">The workflow</span>
+            <h2>Use the screen as a sketchbook, not an oracle.</h2>
+            <div class="docs-pipeline">
+              <div class="docs-pipeline__stage"><strong>1 · Baseline</strong><span>Save a clean face under controlled conditions.</span></div>
+              <div class="docs-pipeline__stage"><strong>2 · Paint</strong><span>Draw a small intervention around selected facial regions.</span></div>
+              <div class="docs-pipeline__stage"><strong>3 · Observe</strong><span>Watch the composite distance over several updates.</span></div>
+              <div class="docs-pipeline__stage"><strong>4 · Reproduce</strong><span>Translate the promising digital pattern into real makeup.</span></div>
+              <div class="docs-pipeline__stage"><strong>5 · Retest</strong><span>Run the physically painted face as a new experiment.</span></div>
+            </div>
+            <p>The digital and physical results are separate evidence. Preserve that separation in notes, screenshots, filenames, and claims.</p>
+          </section>
+
+          <section id="procedure">
+            <span class="docs-eyebrow">Minimum procedure</span>
+            <h2>Paint with a baseline active.</h2>
+            <div class="docs-step-list">
+              <div class="docs-step"><span class="docs-step__number">01</span><div><h3>Save the clean face</h3><p>Use the same camera, pose, and light you intend to keep during the digital sketch.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">02</span><div><h3>Activate Brush</h3><p>Select Face Brush from the Ghostyles. The control bar exposes colour, size, opacity, Undo, Clear, Copy state, and Bake Ghostyle.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">03</span><div><h3>Reduce the brush size</h3><p>Start with marks that remain local to a feature. Work around eyes, brows, cheeks, the bridge and sides of the nose, and the mouth rather than hiding the whole face under three broad strokes.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">04</span><div><h3>Hold and paint</h3><p>The plugin stores samples relative to nearby 68-point face-api landmarks and an eye-based frame. Marks follow translation, in-plane rotation, and scale while the face remains detectable.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">05</span><div><h3>Observe a series</h3><p>Wait for several composite analyses after each small change. Keep a note of the baseline, threshold, brush settings, and regions changed.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">06</span><div><h3>Save a proposal</h3><p><strong>Copy state</strong> preserves the stroke data. <strong>Bake Ghostyle</strong> downloads a standalone plugin proposal. Neither action validates a physical result.</p></div></div>
+            </div>
+          </section>
+
+          <section id="figure">
+            <span class="docs-eyebrow">Image under revision</span>
+            <h2>The automated example needs finer marks.</h2>
+            <div class="docs-placeholder">
+              <p>Planned figure: a small brush traced from the current 68-point landmark positions around the eyes, cheeks, nose, and mouth. The existing three-stripe capture is intentionally excluded from this guide.</p>
+            </div>
+            <p>The current plugin and browser harness expose enough information to automate this accurately. Playwright can read <code>window.gstmxx.getLastResult()</code>, obtain the 68 landmark positions, set a smaller brush size, and generate pointer paths derived from those points. The 3D mesh is available too, but the current Brush stores its anchors against the 2D face-api landmarks, so the 68-point geometry is the correct source for this specific capture.</p>
+          </section>
+
+          <section id="physical">
+            <span class="docs-eyebrow">Physical translation</span>
+            <h2>Make the second experiment explicit.</h2>
+            <ul>
+              <li>Photograph or record the digital proposal before clearing it.</li>
+              <li>Write down colour, approximate width, opacity, side of the face, and relationship to visible features.</li>
+              <li>Use skin-safe materials and an appropriate removal method.</li>
+              <li>Reproduce the pattern as closely as practical, then begin a new run with the real painted face.</li>
+              <li>Compare digital and physical observations without implying that one caused or guaranteed the other.</li>
+            </ul>
+            <div class="docs-warning"><p>A digitally opaque cyan mark and a layer of real cosmetic pigment have different optics. The camera, light, compression, skin texture, and material finish can change the machine-readable image.</p></div>
+          </section>
+
+          <section id="limits">
+            <span class="docs-eyebrow">Limits</span>
+            <h2>Do not optimise for a label alone.</h2>
+            <p>Broad occlusion can make a detector lose the face, but it may also produce an impractical or misleading design. A useful authoring session records where the pattern sits, how visible it is, whether the face remains trackable, and how stable the result is across frames.</p>
+            <p>The Lab is not a liveness detector and the Brush is not an adversarial optimisation algorithm. It lets a person explore a local response through direct manipulation.</p>
+          </section>
+
+          <nav class="docs-next" aria-label="Continue reading">
+            <a class="docs-link" href="/docs/guides/ghostyle-transfer.html">&#8592; Ghostyle Transfer</a>
+            <a class="docs-link" href="/docs/understand/">Next: understand the results &#8594;</a>
+          </nav>
+        </article>
+
+        <aside class="docs-toc">
+          <h2>On this page</h2>
+          <nav>
+            <a href="#idea">The workflow</a>
+            <a href="#procedure">Minimum procedure</a>
+            <a href="#figure">Image under revision</a>
+            <a href="#physical">Physical translation</a>
+            <a href="#limits">Limits</a>
+          </nav>
+        </aside>
+      </div>

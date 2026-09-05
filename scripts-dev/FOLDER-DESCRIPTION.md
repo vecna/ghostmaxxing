@@ -10,9 +10,13 @@ Most files here are intended to be included in code2prompt or used by maintainer
 
 - `build-codemap-html.js` — wraps the generated codemap JSON into the standalone HTML viewer under `codemap/`. It injects the JSON into the codemap template so the architecture map can be opened in a browser without extra setup.
 
+- `build-functional-docs.cjs` — builds the hand-authored, translatable functional documentation from `docs-src/en/`. It supplies shared public-site chrome and documentation navigation, writes the static pages under `docs/`, and maintains the `docs.html` compatibility redirect. It does not generate the separate JSDoc reference under `docs/jsdoc/`.
+
 - `build-logo.py` — regenerates the logo and favicon set from one geometry source in Python. It emits the SVG and PNG assets used in `images/logo/` and updates the Apple touch icon and favicon variants from the canonical SVG mark.
 
 - `code2prompt.js` — generates filtered prompt bundles for AI tooling. It defines namespace-based include/exclude rules for design work, lab/runtime work, testing, copy review, repo map summaries, and a full snapshot safety-net export.
+
+- `capture-doc-screenshots.cjs` — drives the released Lab, Video Loader, and Ghostyle Transfer interfaces with Playwright and committed media fixtures. It writes localized, repeatable screenshots plus `manifest.json` and a Markdown index under `docs/assets/screenshots/`. Each manifest entry records the PNG dimensions, aspect ratio, byte size, capture crop, and source viewport. Transfer-result captures become available when the optional `tests/fixtures/docs-transfer/` image trio is present. Pass `--include-brush` to add a separate, scripted Face Brush example; it is excluded from the default documentation run because it demonstrates an optional authoring workflow rather than a core result.
 
 - `extract-i18n-pot.cjs` — extracts the translation strings from `lab-js/i18n.js` and writes the POT and CSV summary files into `translations/`. It is intentionally excluded from the main prompt bundles because it operates on the localization catalog and translation-maintenance artifacts, not on the live app logic.
 
@@ -31,6 +35,7 @@ Most files here are intended to be included in code2prompt or used by maintainer
 This folder supports the repo's operational lifecycle:
 
 - generate architecture views and map the codebase,
+- capture localized interface states for the functional documentation,
 - validate plugin compliance,
 - update generated branding assets,
 - export text for review,
@@ -38,4 +43,3 @@ This folder supports the repo's operational lifecycle:
 - and prepare outputs for backend/client deployment.
 
 In short, `scripts-dev/` is the operational support layer behind the app: it turns source files, translations, and generated assets into maintainable, reviewable, and deployable outputs.
-

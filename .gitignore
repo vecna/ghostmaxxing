@@ -1,5 +1,4 @@
 .DS_Store
-C2P-*.*
 node_modules
 playwright-report/*
 !playwright-report/FOLDER-DESCRIPTION.md
@@ -7,6 +6,20 @@ test-results/*
 !test-results/FOLDER-DESCRIPTION.md
 coverage/*
 !coverage/FOLDER-DESCRIPTION.md
-docs/*
 !docs/FOLDER-DESCRIPTION.md
 codemap/*
+
+C2P-*.*
+EXTRACTED-text-*.md
+
+# Generated functional documentation
+/docs/index.html
+/docs/develop/
+/docs/glossary/
+/docs/guides/
+/docs/maintain/
+/docs/understand/
+
+# Generated technical reference
+/docs/jsdoc/
+

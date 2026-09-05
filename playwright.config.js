@@ -34,7 +34,7 @@ export default defineConfig({
           args: [
             '--use-fake-ui-for-media-stream',
             '--use-fake-device-for-media-stream',
-            `--use-file-for-fake-video-capture=${require('path').join(__dirname, 'tests/fixtures/mock-face.mjpeg')}`,
+            `--use-file-for-fake-video-capture=${require('path').join(__dirname, 'tests/fixtures/mock-face.y4m')}`,
             '--autoplay-policy=no-user-gesture-required',
             '--use-angle=swiftshader',
             '--use-gl=angle',

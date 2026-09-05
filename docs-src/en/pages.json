@@ -1,0 +1,73 @@
+[
+  {
+    "source": "index.body.html",
+    "output": "docs/index.html",
+    "title": "Documentation | Ghostmaxxing",
+    "description": "Use the Ghostmaxxing tools, understand local face-matching results, extend the lab, and maintain the project.",
+    "section": "tools",
+    "mainClass": "docs-main--landing"
+  },
+  {
+    "source": "lab.body.html",
+    "output": "docs/guides/lab.html",
+    "title": "Run a local face-matching experiment | Ghostmaxxing",
+    "description": "Save a baseline, apply a Ghostyle, and read the local face-matching result in the Ghostmaxxing Lab.",
+    "section": "tools"
+  },
+  {
+    "source": "video-loader.body.html",
+    "output": "docs/guides/video-loader.html",
+    "title": "Compare frames from a recorded video | Ghostmaxxing",
+    "description": "Use a local MP4 and exact timestamps to record and compare faces with the Ghostmaxxing Video Loader.",
+    "section": "tools"
+  },
+  {
+    "source": "ghostyle-transfer.body.html",
+    "output": "docs/guides/ghostyle-transfer.html",
+    "title": "Transfer a Ghostyle between images | Ghostmaxxing",
+    "description": "Extract a visible intervention from a before and after pair, then preview it on another face.",
+    "section": "tools"
+  },
+  {
+    "source": "face-brush.body.html",
+    "output": "docs/guides/face-brush.html",
+    "title": "Sketch a Ghostyle with Face Brush | Ghostmaxxing",
+    "description": "Paint a face-anchored digital intervention, observe the local matcher, and turn a promising state into a physical makeup test.",
+    "section": "tools"
+  },
+  {
+    "source": "understand-results.body.html",
+    "output": "docs/understand/index.html",
+    "title": "Understand the results | Ghostmaxxing",
+    "description": "Read detection, baseline, distance, threshold, and match states without turning a local test into a protection claim.",
+    "section": "understand"
+  },
+  {
+    "source": "face-recognition.body.html",
+    "output": "docs/understand/face-recognition.html",
+    "title": "How face recognition works | Ghostmaxxing",
+    "description": "A functional explanation of detection, landmarks, alignment, embeddings, and comparison in the Ghostmaxxing Lab.",
+    "section": "understand"
+  },
+  {
+    "source": "glossary.body.html",
+    "output": "docs/glossary/index.html",
+    "title": "Face-recognition glossary | Ghostmaxxing",
+    "description": "Technical terms connected to what Ghostmaxxing shows in the Lab and what those results cannot prove.",
+    "section": "glossary"
+  },
+  {
+    "source": "develop.body.html",
+    "output": "docs/develop/index.html",
+    "title": "Build and inspect | Ghostmaxxing",
+    "description": "Author a Ghostyle, inspect the runtime architecture, browse the code map, and enter the generated API reference.",
+    "section": "develop"
+  },
+  {
+    "source": "maintain.body.html",
+    "output": "docs/maintain/index.html",
+    "title": "Maintain the project | Ghostmaxxing",
+    "description": "Commands, inputs, outputs, overwrite behaviour, and failure conditions for the Ghostmaxxing maintenance scripts.",
+    "section": "maintain"
+  }
+]

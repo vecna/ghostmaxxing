@@ -1,0 +1,117 @@
+      <section class="content-page__header-area gm-prose" aria-labelledby="develop-title">
+        <span class="content-page__kicker">Build and inspect</span>
+        <h1 id="develop-title">Enter through the contract, then follow the runtime.</h1>
+        <p class="content-page__lead">For Ghostyle authors, researchers, and contributors who need more than the functional guides.</p>
+        <p class="content-page__deck">Ghostmaxxing is a static browser application. The production interface loads HTML, CSS, JavaScript modules, model assets, and the Ghostyle manifest directly. Node scripts support tests, documentation, validation, and project maintenance.</p>
+        <div class="content-page__actions">
+          <a class="docs-link docs-link--primary" href="/docs/jsdoc/">Browse generated API</a>
+          <a class="docs-link" href="/codemap/codemap.html">Open code map</a>
+          <a class="docs-link" href="https://github.com/vecna/ghostmaxxing">Browse source</a>
+        </div>
+      </section>
+
+      <div class="docs-reader">
+        <article class="docs-article gm-prose">
+          <section id="routes">
+            <span class="docs-eyebrow">Choose a route</span>
+            <h2>Different questions need different documents.</h2>
+            <table>
+              <thead><tr><th>If you need to</th><th>Start with</th><th>Then inspect</th></tr></thead>
+              <tbody>
+                <tr><td>Create or modify a Ghostyle</td><td><a href="/docs/jsdoc/tutorial-ghostyle-authoring.html">Ghostyle Authoring Guide</a></td><td><a href="https://github.com/vecna/ghostmaxxing/blob/main/ghostyles/00-template.js"><code>ghostyles/00-template.js</code></a></td></tr>
+                <tr><td>Call or integrate a runtime module</td><td><a href="/docs/jsdoc/">Generated JSDoc</a></td><td><a href="https://github.com/vecna/ghostmaxxing/tree/main/lab-js"><code>lab-js/</code> source</a></td></tr>
+                <tr><td>Understand imports, pages, and events</td><td><a href="/codemap/codemap.html">Code map</a></td><td>Module headers and event-bus source</td></tr>
+                <tr><td>Use the public browser API</td><td><a href="https://github.com/vecna/ghostmaxxing/blob/main/lab-js/Ghostmaxxing.d.ts"><code>Ghostmaxxing.d.ts</code></a></td><td><code>window.gstmxx</code> in <code>main.js</code></td></tr>
+                <tr><td>Regenerate or package the project</td><td><a href="/docs/maintain/">Maintainer guide</a></td><td><a href="https://github.com/vecna/ghostmaxxing/tree/main/scripts-dev"><code>scripts-dev/</code></a></td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="entry-points">
+            <span class="docs-eyebrow">Released interfaces</span>
+            <h2>Three entry points, one shared vocabulary.</h2>
+            <table>
+              <thead><tr><th>Page</th><th>Controller</th><th>Functional role</th></tr></thead>
+              <tbody>
+                <tr><td><code>lab.html</code></td><td><code>lab-js/main.js</code></td><td>Live camera, local baseline, 2D and mesh views, Ghostyles, composite analysis.</td></tr>
+                <tr><td><code>loader.html</code></td><td><code>lab-js/loader.js</code></td><td>Repeatable comparison of frames from a local MP4.</td></tr>
+                <tr><td><code>ghostyle-transfer.html</code></td><td><code>lab-js/transfer.js</code></td><td>Difference mask from Before and After, transferred to a Target image.</td></tr>
+              </tbody>
+            </table>
+            <div class="docs-note"><p><code>realtime.html</code> is not part of the initial released documentation set. Add it only when its release contract and user guide are ready.</p></div>
+          </section>
+
+          <section id="lab-runtime">
+            <span class="docs-eyebrow">Lab runtime</span>
+            <h2>The controller coordinates specialised modules.</h2>
+            <table>
+              <thead><tr><th>Area</th><th>Primary modules</th><th>Responsibility</th></tr></thead>
+              <tbody>
+                <tr><td>State and lifecycle</td><td><code>main.js</code>, <code>state.js</code>, <code>config.js</code></td><td>Initialisation, thresholds, shared state, public API, <code>gstmxxReady</code>.</td></tr>
+                <tr><td>Camera and persistence</td><td><code>camera.js</code>, <code>db.js</code></td><td>Media stream, short recording, local saved-face records.</td></tr>
+                <tr><td>2D analysis</td><td><code>engine.js</code>, <code>landmark-analysis.js</code></td><td>Detection, 68 landmarks, face descriptors, distance, result classification.</td></tr>
+                <tr><td>Mesh and visual embedding</td><td><code>mediapipe-loop.js</code>, <code>engine-3d.js</code></td><td>478-point geometry and the separate experimental ImageEmbedder path.</td></tr>
+                <tr><td>Composite feedback</td><td><code>auto-find-loop.js</code>, <code>bbox-overlay.js</code>, <code>analyze-panel.js</code></td><td>Slower modified-image pass, live scaffold, status, metrics, report text.</td></tr>
+                <tr><td>Extensions</td><td><code>ghostyles-manager.js</code>, <code>plugins3d-loader.js</code>, <code>ghostyle3d-uv-renderer.js</code></td><td>Load 2D, UV, and hybrid Ghostyles and expose their controls.</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="plugin-contract">
+            <span class="docs-eyebrow">Ghostyle plugin contract</span>
+            <h2>Capabilities come from exports.</h2>
+            <p>A Ghostyle is an ES module listed in <code>ghostyles.json</code>. Runtime capability is detected from exported functions, not from descriptive header tags.</p>
+            <table>
+              <thead><tr><th>Export</th><th>Capability</th><th>Runtime constraint</th></tr></thead>
+              <tbody>
+                <tr><td><code>onDraw(ctx, landmarks, box)</code></td><td>2D canvas intervention anchored to face-api geometry.</td><td>Runs on the rendering hot path. Keep it synchronous and guard missing landmarks.</td></tr>
+                <tr><td><code>paintUV(...)</code></td><td>Texture painting for the MediaPipe mesh and UV renderer.</td><td>Use the renderer contract documented by the template and generated API.</td></tr>
+                <tr><td><code>onInit()</code></td><td>Optional setup.</td><td>Pair resource allocation with cleanup.</td></tr>
+                <tr><td><code>onClear(ctx)</code></td><td>Optional cleanup when the effect is cleared.</td><td>Remove listeners and reset owned state.</td></tr>
+                <tr><td><code>params</code></td><td>Optional parameter controls for supported plugin paths.</td><td>Keep defaults deterministic and labels intelligible.</td></tr>
+              </tbody>
+            </table>
+            <p>The header between <code>==Ghostyle==</code> and <code>==/Ghostyle==</code> records name, description, authorship, version, licence, technique, supported paths, regions, evidence, and references. The current validator checks only part of that editorial policy. Passing validation is not proof that every recommended field is present.</p>
+            <div class="docs-command"><code>npm run validate:ghostyle -- ghostyles/your-ghostyle.js</code></div>
+          </section>
+
+          <section id="two-detectors">
+            <span class="docs-eyebrow">Architecture invariant</span>
+            <h2>Keep live tracking and composite evidence separate.</h2>
+            <p>The live scaffold follows the unmodified camera frame for responsive visual feedback. The auto-find loop re-runs analysis on the Ghostyle composite at a slower cadence. Pointing both displays at one image would conflate two questions: “where is the face now?” and “what did the modified image do to the comparison?”</p>
+            <p>When changing either path, test the no-Ghostyle baseline, one 2D effect, one UV effect, detector absence, a matched descriptor, and a disagreement between the face-api and experimental ImageEmbedder paths.</p>
+          </section>
+
+          <section id="documentation-layers">
+            <span class="docs-eyebrow">Documentation contract</span>
+            <h2>Write intent by hand. Generate symbol detail.</h2>
+            <table>
+              <thead><tr><th>Layer</th><th>Source</th><th>Audience</th></tr></thead>
+              <tbody>
+                <tr><td>Functional guides</td><td><code>docs-src/en/*.body.html</code></td><td>People using a released interface. Translatable.</td></tr>
+                <tr><td>Technical orientation</td><td><code>JSDOC_index.md</code> and JSDoc tutorials</td><td>Contributors choosing an entry point or learning a contract.</td></tr>
+                <tr><td>API reference</td><td>JSDoc comments in source</td><td>Developers inspecting modules, functions, parameters, and events.</td></tr>
+                <tr><td>Maintainer operations</td><td><code>scripts-dev/README.md</code></td><td>People regenerating, validating, or packaging the project.</td></tr>
+              </tbody>
+            </table>
+            <p>Do not place functional instructions only inside generated API pages. Do not duplicate complete symbol reference in the functional guide. Link across layers using stable terms and routes.</p>
+          </section>
+
+          <nav class="docs-next" aria-label="Continue reading">
+            <a class="docs-link" href="/docs/glossary/">&#8592; Technical glossary</a>
+            <a class="docs-link" href="/docs/maintain/">Next: maintain the project &#8594;</a>
+          </nav>
+        </article>
+
+        <aside class="docs-toc">
+          <h2>On this page</h2>
+          <nav>
+            <a href="#routes">Choose a route</a>
+            <a href="#entry-points">Released interfaces</a>
+            <a href="#lab-runtime">Lab runtime</a>
+            <a href="#plugin-contract">Plugin contract</a>
+            <a href="#two-detectors">Architecture invariant</a>
+            <a href="#documentation-layers">Documentation layers</a>
+          </nav>
+        </aside>
+      </div>

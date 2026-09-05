@@ -103,6 +103,10 @@ const NAMESPACES = {
     include: [
     	"tutorials/brand-voice.md",
     	"tutorials/visual-direction.md",
+	    "docs-src/**/*.html",
+	    "docs-src/**/*.json",
+	    "JSDOC_index.md",
+	    "scripts-dev/README.md",
     	"translations/*.csv",
     	"translations/README.md",
     	"images/FOLDER-DESCRIPTION.md",

@@ -1,0 +1,105 @@
+      <section class="content-page__header-area gm-prose" aria-labelledby="docs-title">
+        <span class="content-page__kicker">Documentation</span>
+        <h1 id="docs-title">Use the tools. Understand the results. Extend the lab.</h1>
+        <p class="content-page__lead">Choose an interface by the task you want to complete. Then follow the result into the concepts, code, or maintenance workflow behind it.</p>
+        <p class="content-page__deck">Ghostmaxxing runs local experiments against browser-based models. It makes a machine read visible and repeatable. It does not promise invisibility or protection from deployed systems.</p>
+        <span class="docs-language">English source · ready for editorial review</span>
+      </section>
+
+      <section class="content-section gm-prose" id="tools" aria-labelledby="tools-title">
+        <span class="docs-eyebrow">01 · Start with a task</span>
+        <h2 id="tools-title">Use the tools</h2>
+        <p>Each guide follows the controls you can see, the result you can observe, the data that stays on the device, and the limits of the test.</p>
+
+        <div class="docs-grid">
+          <article class="docs-card">
+            <span class="docs-card__number">Tool 01</span>
+            <h3>Browser Lab</h3>
+            <p>Save a face as a local baseline, apply a modular AR intervention called a Ghostyle, and watch the face-matching pipeline react.</p>
+            <div class="docs-card__actions">
+              <a class="docs-link docs-link--primary" href="/lab.html">Open the Lab &#8599;</a>
+              <a class="docs-link" href="/docs/guides/lab.html">Read the guide</a>
+            </div>
+          </article>
+
+          <article class="docs-card">
+            <span class="docs-card__number">Tool 02</span>
+            <h3>Video Loader</h3>
+            <p>Load an MP4 from your device, choose exact timestamps, record a baseline, and compare another frame without relying on a live webcam.</p>
+            <div class="docs-card__actions">
+              <a class="docs-link docs-link--primary" href="/loader.html">Open the Loader &#8599;</a>
+              <a class="docs-link" href="/docs/guides/video-loader.html">Read the guide</a>
+            </div>
+          </article>
+
+          <article class="docs-card">
+            <span class="docs-card__number">Tool 03</span>
+            <h3>Ghostyle Transfer</h3>
+            <p>Extract visible paint from a before and after pair, then preview it on another face with mesh alignment or a manually marked fallback.</p>
+            <div class="docs-card__actions">
+              <a class="docs-link docs-link--primary" href="/ghostyle-transfer.html">Open Transfer &#8599;</a>
+              <a class="docs-link" href="/docs/guides/ghostyle-transfer.html">Read the guide</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="docs-note">
+          <p><strong>Also inside the Lab:</strong> <a href="/docs/guides/face-brush.html">Face Brush</a> lets you sketch a face-anchored digital intervention before attempting a physical makeup version. It is an optional authoring workflow, not a required first step.</p>
+        </div>
+      </section>
+
+      <section class="content-section gm-prose" id="understand" aria-labelledby="understand-title">
+        <span class="docs-eyebrow">02 · Read what happened</span>
+        <h2 id="understand-title">Understand the results</h2>
+        <p>Detection, landmarks, distance, and threshold answer different questions. The guides below connect those terms to the Lab without turning one local output into a general claim.</p>
+        <div class="docs-grid">
+          <article class="docs-card docs-card--compact">
+            <span class="docs-card__number">Guide</span>
+            <h3>Read the Lab</h3>
+            <p>Learn what the top readout means, why a missing face is not the same as a failed match, and what changes when a Ghostyle is active.</p>
+            <div class="docs-card__actions"><a class="docs-link" href="/docs/understand/">Understand the readout</a></div>
+          </article>
+          <article class="docs-card docs-card--compact">
+            <span class="docs-card__number">Explainer</span>
+            <h3>How face recognition works</h3>
+            <p>Follow the pipeline from pixels to a face box, landmarks, an embedding, and a distance-based decision.</p>
+            <div class="docs-card__actions"><a class="docs-link" href="/docs/understand/face-recognition.html">Follow the pipeline</a></div>
+          </article>
+          <article class="docs-card docs-card--compact">
+            <span class="docs-card__number">Reference</span>
+            <h3>Glossary</h3>
+            <p>Short definitions linked to the exact UI elements and implementation boundaries that matter in Ghostmaxxing.</p>
+            <div class="docs-card__actions"><a class="docs-link" href="/docs/glossary/">Browse the terms</a></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section gm-prose" id="technical" aria-labelledby="technical-title">
+        <span class="docs-eyebrow">03 · Go deeper</span>
+        <h2 id="technical-title">Build, inspect, maintain</h2>
+        <p>The functional guides stay separate from generated API documentation. Contributors can move from an observable behaviour to architecture, source symbols, and operational scripts without forcing every reader through that depth.</p>
+        <div class="docs-grid">
+          <article class="docs-card docs-card--compact">
+            <span class="docs-card__number">Develop</span>
+            <h3>Build and inspect</h3>
+            <p>Author a Ghostyle, inspect runtime modules and events, open the code map, or browse the generated JSDoc reference.</p>
+            <div class="docs-card__actions"><a class="docs-link" href="/docs/develop/">Developer routes</a></div>
+          </article>
+          <article class="docs-card docs-card--compact">
+            <span class="docs-card__number">Operate</span>
+            <h3>Maintain the project</h3>
+            <p>Find every script in <code>scripts-dev/</code>, its command, inputs, outputs, overwrite behaviour, and known limits.</p>
+            <div class="docs-card__actions"><a class="docs-link" href="/docs/maintain/">Maintainer routes</a></div>
+          </article>
+          <article class="docs-card docs-card--compact">
+            <span class="docs-card__number">API · English</span>
+            <h3>Generated reference</h3>
+            <p>Module and symbol documentation generated from source comments. This technical layer is not translated.</p>
+            <div class="docs-card__actions"><a class="docs-link" href="/docs/jsdoc/">Open JSDoc &#8599;</a></div>
+          </article>
+        </div>
+      </section>
+
+      <div class="docs-warning">
+        <p><strong>Keep the claim local.</strong> A result depends on the model, camera, light, pose, distance, image quality, thresholds, and sample. A Ghostyle that changes this browser pipeline may not transfer to another model or a real deployment.</p>
+      </div>

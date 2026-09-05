@@ -1,0 +1,106 @@
+      <section class="content-page__header-area gm-prose" aria-labelledby="recognition-title">
+        <span class="content-page__kicker">Technical explainer</span>
+        <h1 id="recognition-title">A face becomes a measurement before it becomes a match.</h1>
+        <p class="content-page__lead">Ghostmaxxing lets you inspect several stages that commercial interfaces often compress into one verdict.</p>
+        <p class="content-page__deck">This page follows the current implementation. Historical detection methods and adversarial research appear as context, not as claims about the models running in the Lab.</p>
+        <div class="content-page__actions">
+          <a class="docs-link docs-link--primary" href="/docs/guides/lab.html">Run the Lab guide</a>
+          <a class="docs-link" href="/docs/glossary/">Look up a term</a>
+        </div>
+      </section>
+
+      <div class="docs-reader">
+        <article class="docs-article gm-prose">
+          <section id="pipeline">
+            <span class="docs-eyebrow">Primary 2D path</span>
+            <h2>Pixels, geometry, descriptor, decision.</h2>
+            <div class="docs-pipeline">
+              <div class="docs-pipeline__stage"><strong>Image</strong><span>A frame from the camera, video, or composite canvas.</span></div>
+              <div class="docs-pipeline__stage"><strong>Detection</strong><span>TinyFaceDetector proposes one face box above its score threshold.</span></div>
+              <div class="docs-pipeline__stage"><strong>Landmarks</strong><span>face-api estimates 68 points used to locate facial structure.</span></div>
+              <div class="docs-pipeline__stage"><strong>Descriptor</strong><span>The recognition network produces a vector of 128 values.</span></div>
+              <div class="docs-pipeline__stage"><strong>Comparison</strong><span>Euclidean distance to saved baselines becomes a local match state.</span></div>
+            </div>
+            <p>Each stage depends on the previous one. If detection returns no face, the current 2D path cannot produce landmarks or a face descriptor. A missing result is therefore different from a descriptor that exists but falls beyond the match threshold.</p>
+          </section>
+
+          <section id="detection">
+            <span class="docs-eyebrow">Stage 01</span>
+            <h2>Detection asks where a face might be.</h2>
+            <p>The current Lab uses face-api's TinyFaceDetector with an input size of <code>416</code> and a normal score threshold of <code>0.5</code>. A <a href="/docs/glossary/#bounding-box">bounding box</a> means that the detector found a candidate. It does not establish identity.</p>
+            <p>For analysis of a modified composite, the implementation may retry a failed detection at <code>0.1</code>. That relaxed pass can recover diagnostic measurements, but it is more permissive and should not be presented as equivalent evidence.</p>
+            <div class="docs-note"><p><strong>Historical context:</strong> Haar cascades and the high-contrast T-zone are useful for understanding early CV Dazzle tactics. They are not the detector used by the current Lab.</p></div>
+          </section>
+
+          <section id="geometry">
+            <span class="docs-eyebrow">Stage 02</span>
+            <h2>Landmarks estimate structure, not identity.</h2>
+            <p>The 2D path estimates <a href="/docs/glossary/#landmarks">68 face landmarks</a>. The Face Brush and 2D Ghostyles can use them to place marks around eyes, brows, nose, mouth and the outline of the face. The separate MediaPipe FaceLandmarker supplies 478 normalised landmarks for mesh and UV effects.</p>
+            <p>These points are model estimates. Pose, occlusion, expression, blur and lighting can move them or make them unstable. When a hidden feature receives an estimated position, that estimate is not direct evidence that the feature was observed.</p>
+            <figure class="docs-figure">
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/lab-04-2d-points.png" width="1440" height="1000" alt="The Lab 2D points view showing estimated face landmarks" /></div>
+              <figcaption>The 2D view exposes the geometry used by face-api and landmark-anchored tools.<span class="docs-figure__provenance">Observed interface state · deterministic webcam fixture</span></figcaption>
+            </figure>
+          </section>
+
+          <section id="identity">
+            <span class="docs-eyebrow">Stages 03 and 04</span>
+            <h2>The descriptor is compared, not read as a name.</h2>
+            <p>A <a href="/docs/glossary/#face-descriptor">face descriptor</a> is a 128-value representation produced from the detected face. The Lab stores a descriptor as a local baseline, then measures the <a href="/docs/glossary/#euclidean-distance">Euclidean distance</a> from a new descriptor to the saved records.</p>
+            <table>
+              <thead><tr><th>Rule</th><th>Current value</th><th>Interpretation</th></tr></thead>
+              <tbody>
+                <tr><td>Distance is at or below threshold</td><td><code>&lt;= 0.58</code></td><td>The nearest saved baseline is classified as a match.</td></tr>
+                <tr><td>Distance is above threshold</td><td><code>&gt; 0.58</code></td><td>A descriptor exists, but it is classified outside the current match boundary.</td></tr>
+                <tr><td>No descriptor</td><td>None</td><td>The pipeline did not reach a comparable identity representation.</td></tr>
+              </tbody>
+            </table>
+            <p>The distance is not a probability. A result of <code>0.40</code> does not mean “40% the same person”, and a result beyond <code>0.58</code> does not demonstrate invisibility to other systems.</p>
+          </section>
+
+          <section id="parallel">
+            <span class="docs-eyebrow">Parallel experimental path</span>
+            <h2>The 3D label combines two different functions.</h2>
+            <p>MediaPipe FaceLandmarker produces 478 landmarks for geometry. Separately, MediaPipe ImageEmbedder with MobileNetV3 Small produces a general visual embedding. Ghostmaxxing compares those image embeddings with cosine similarity and currently uses <code>0.85</code> as its threshold.</p>
+            <p>This ImageEmbedder is sensitive to global image content, including colour and background. It is not a dedicated ArcFace-style face-recognition descriptor. The documentation therefore calls it an <strong>experimental visual embedding</strong>, even where the current interface uses the shorter “3D” label.</p>
+            <div class="docs-warning"><p>Do not compare <code>0.58</code> and <code>0.85</code> directly. Face-api uses distance, where lower is closer. ImageEmbedder uses cosine similarity, where higher is closer.</p></div>
+          </section>
+
+          <section id="ghostyle-pass">
+            <span class="docs-eyebrow">Testing an intervention</span>
+            <h2>A Ghostyle creates a second image to inspect.</h2>
+            <p>The live detector follows the original camera image so the effect can remain attached to the face. On a slower loop, the Lab draws the Ghostyle onto a composite image and analyses that modified image. Keeping these paths separate makes the overlay responsive while allowing the intervention to affect the measured result.</p>
+            <p>An experiment can therefore change at several points: the composite detector may stop returning a box, landmarks may shift, the face descriptor may move beyond its threshold, or the two comparison paths may disagree. Record which event occurred.</p>
+          </section>
+
+          <section id="security">
+            <span class="docs-eyebrow">Security boundary</span>
+            <h2>This is a local experiment, not an authentication system.</h2>
+            <ul>
+              <li>The Lab tests model behaviour under current conditions. It does not establish performance against a named external deployment.</li>
+              <li>The current comparison is not presentation-attack detection and includes no liveness challenge.</li>
+              <li>A saved baseline is a local experimental reference, not proof of civil identity.</li>
+              <li>One favourable frame does not establish repeatable evasion. Test pose, light, distance, motion and multiple frames.</li>
+              <li>Face templates are sensitive biometric-derived data. Keep them local and do not publish raw descriptors.</li>
+            </ul>
+          </section>
+
+          <nav class="docs-next" aria-label="Continue reading">
+            <a class="docs-link" href="/docs/understand/">&#8592; Understand the results</a>
+            <a class="docs-link" href="/docs/glossary/">Next: technical glossary &#8594;</a>
+          </nav>
+        </article>
+
+        <aside class="docs-toc">
+          <h2>On this page</h2>
+          <nav>
+            <a href="#pipeline">Recognition pipeline</a>
+            <a href="#detection">Detection</a>
+            <a href="#geometry">Landmarks</a>
+            <a href="#identity">Descriptor and distance</a>
+            <a href="#parallel">Experimental path</a>
+            <a href="#ghostyle-pass">Ghostyle pass</a>
+            <a href="#security">Security boundary</a>
+          </nav>
+        </aside>
+      </div>

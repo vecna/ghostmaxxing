@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * extract-copy.js — pull the reviewable TEXT out of the HTML.
+ * extract-text-only.js: pull the reviewable text out of the HTML.
  *
  * Why this exists: only about 21% of the bytes in this project's HTML is text.
  * genealogy.html is 3.5% — the rest is inline SVG geometry. Sending whole HTML
@@ -30,9 +30,24 @@ const PAGES = [
   "lab.html",
   "loader.html",
   "realtime.html",
-  "docs/index.html", 	  // same as below
   "references/index.html" // looks at the generated result!
 ];
+
+function discoverFunctionalDocs(dir = "docs") {
+  if (!fs.existsSync(dir)) { return []; }
+  const found = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const file = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name !== "jsdoc" && entry.name !== "assets") {
+        found.push(...discoverFunctionalDocs(file));
+      }
+    } else if (entry.isFile() && entry.name.endsWith(".html")) {
+      found.push(file.split(path.sep).join("/"));
+    }
+  }
+  return found.sort();
+}
 
 /* Copy that lives outside the HTML and gets forgotten every single time. */
 const DATA_FILES = ["data/camera-facts.json"];
@@ -148,8 +163,8 @@ function main() {
   const out = outFlag > -1 ? process.argv[outFlag + 1] : `EXTRACTED-text-${date}.md`;
 
   const parts = [];
-  parts.push(`# Ghostmaxxing — reviewable copy\n`);
-  parts.push(`Extracted ${date} by scripts-dev/extract-copy.js.\n`);
+  parts.push(`# Ghostmaxxing: reviewable copy\n`);
+  parts.push(`Extracted ${date} by scripts-dev/extract-text-only.js.\n`);
   parts.push(
     `Every string carries the line it lives on, so a revision can come back as\n` +
     `\`index.html:147 -> new wording\` and be applied without hunting.\n\n` +
@@ -158,7 +173,8 @@ function main() {
   );
 
   let strings = 0;
-  for (const file of PAGES) {
+  const reviewPages = [...new Set([...PAGES, ...discoverFunctionalDocs()])];
+  for (const file of reviewPages) {
     if (!fs.existsSync(file)) { continue; }
     const rows = extractPage(file);
     if (!rows.length) { continue; }

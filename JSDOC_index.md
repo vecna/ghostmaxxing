@@ -1,179 +1,165 @@
-# Ghostmaxxing — Technical Documentation
+# Ghostmaxxing technical reference
 
-> **Version:** 1.0.0
-> **Last updated:** July 2026
+> Version 1.0.0  
+> Functional documentation: [use the tools and understand the results](/docs/)
 
-This is the technical reference for Ghostmaxxing, a static browser lab for
-developing and real-time testing of anti-biometric face-recognition camouflage.
-It is the developer-and-agent layer of the documentation: the [public site](https://ghostmaxxing.vecna.eu/)
-speaks to workshop and research audiences, the [README](https://github.com/vecna/ghostmaxxing)
-covers cloning and running, and this document (plus the generated JSDoc reference
-in the sidebar) is the implementation depth.
+Ghostmaxxing is a static browser lab for testing how selected face-analysis models respond to visible interventions. This site is the generated developer reference. It documents runtime modules, functions, parameters, events, and the Ghostyle extension contract.
 
-The rest of this page is generated as the JSDoc site's home. Explore the sidebar
-for per-module symbol reference.
+If you want to operate an interface, begin with the functional guides. If you are changing code, use this page to choose an entry point, then follow the generated module reference in the sidebar.
 
-## Start here if you are building a Ghostyle
+## Choose the right layer
 
-1. **[Ghostyle Authoring Guide](tutorial-ghostyle-authoring.html)** — the practical
-   contract, file shape, review expectations, and current project decisions.
-   Read this before the generated API reference.
-2. **[`ghostyles/00-template.js`](module-ghostyles_00-template.html)** — the
-   canonical, heavily commented template. Executable documentation.
-3. This page and the sidebar — the API reference for every module.
+| Question | Documentation |
+|---|---|
+| How do I use the Lab, Video Loader, Transfer, or Face Brush? | [Functional guides](/docs/) |
+| What does a match state, threshold, descriptor, or landmark mean? | [Understand the results](/docs/understand/) and [technical glossary](/docs/glossary/) |
+| How do I create a Ghostyle? | [Ghostyle Authoring Guide](tutorial-ghostyle-authoring.html), then [`ghostyles/00-template.js`](module-ghostyles_00-template.html) |
+| Which module, function, parameter, or event do I need? | Generated API reference in this site's sidebar |
+| How do I regenerate, validate, inspect, or package the project? | [Maintainer guide](/docs/maintain/) and [`scripts-dev/README.md`](https://github.com/vecna/ghostmaxxing/blob/main/scripts-dev/README.md) |
 
-## Frontend architecture
+## Released interfaces
 
-Ghostmaxxing is a static web app. There is no production build step: the browser
-loads HTML, CSS, ES modules, model assets, and the Ghostyle manifest directly.
-Node tooling exists only for tests, docs, validation, and i18n extraction.
+### Browser Lab
+
+`lab.html` loads `lab-js/main.js`, the application controller. It coordinates the camera, local baselines, face-api analysis, MediaPipe geometry, Ghostyles, composite checks, UI, and the public `window.gstmxx` API.
+
+Use it when you need live feedback or are developing an effect that follows the face.
+
+### Video Loader
+
+`loader.html` loads `lab-js/loader.js`. It lets a maintainer load a local MP4, record a baseline at one frame, seek to another frame, and inspect repeatable 2D and experimental visual-embedding comparisons.
+
+Use it when exact media time matters more than a live webcam.
+
+### Ghostyle Transfer
+
+`ghostyle-transfer.html` loads `lab-js/transfer.js`. It derives a visible difference mask from a Before and After pair and previews that intervention on a Target image.
+
+Use it to explore appearance transfer. A visually successful transfer is not evidence that the target image evades recognition.
+
+`realtime.html` is not part of the initial released documentation set.
+
+## Runtime architecture
+
+Ghostmaxxing has no production bundling step. The browser loads HTML, CSS, ES modules, vendored libraries, model assets, and `ghostyles.json` directly. Node tooling supports tests, documentation, validation, inspection, and packaging.
 
 ```text
 lab.html
-  ├─ face-api.js (Vladmandic) + MediaPipe Tasks Vision
-  ├─ lab-js/main.js                — application controller; exposes window.gstmxx
-  │   ├─ camera.js                  — webcam stream lifecycle, 2s recording
-  │   ├─ engine.js                  — face-api 2D detection / landmarks / descriptors / matching
-  │   ├─ engine-3d.js               — MediaPipe ImageEmbedder experimental visual-embedding path
-  │   ├─ mediapipe-loop.js          — MediaPipe FaceLandmarker loop
-  │   ├─ auto-find-loop.js          — periodic composite re-detection (~2s tick)
-  │   ├─ db.js                      — IndexedDB persistence for face records
-  │   ├─ dom.js                     — DOM handles and bindings
-  │   ├─ ghostyles-manager.js       — 2D plugin loading and UI
-  │   └─ plugins3d-loader.js        — 3D/UV plugin loading and parameter UI
-  ├─ ghostyles.json                 — manifest of available Ghostyles ({ id, url })
-  └─ ghostyles/*.js                 — overlay modules rendered on top of the canvas/video layer
+  └─ lab-js/main.js
+       ├─ camera.js + db.js
+       ├─ engine.js + landmark-analysis.js
+       ├─ mediapipe-loop.js + engine-3d.js
+       ├─ auto-find-loop.js + bbox-overlay.js + analyze-panel.js
+       ├─ ghostyles-manager.js
+       └─ plugins3d-loader.js + ghostyle3d-uv-renderer.js
+
+loader.html
+  └─ lab-js/loader.js
+
+ghostyle-transfer.html
+  └─ lab-js/transfer.js
 ```
 
-Two parallel recognition pipelines run side by side:
+### Core state and lifecycle
 
-- **2D face-api** — descriptor distance, `MATCH_THRESHOLD = 0.58`, *lower is more
-  similar*. This is the primary matching path.
-- **Experimental 3D / visual embedding** — MediaPipe ImageEmbedder similarity,
-  `MATCH_THRESHOLD_3D = 0.85`, *higher is more similar*. User-facing copy must
-  call this *experimental visual embedding*, never "reliable face recognition".
+- `main.js` initialises the Lab, dispatches `gstmxxReady`, and exposes `window.gstmxx`.
+- `state.js` owns shared mutable state and the `gstmxxEvents` bus.
+- `config.js` owns model locations, detector options, and recording configuration.
+- `dom.js`, `lab-ui.js`, and `mobile-ui.js` bind the interface to that state.
 
-The result model is `unknown / matched / eluded / partial-elusion / no-baseline`.
+### Camera and local records
 
-### Two-detector overlay architecture (do not "fix")
+- `camera.js` manages webcam lifecycle, facing mode, and short recordings.
+- `db.js` stores face-api descriptors and experimental ImageEmbedder vectors locally under related record IDs.
+- `face-thumbnails.js` renders saved records.
+- `upload-consent.js` is an in-progress client contract. Do not document the end-to-end upload flow as released until the backend and consent milestone are complete.
 
-The bounding-box overlay uses **two different detectors on two different images**,
-on purpose:
+### 2D face-api path
 
-- the **live scaffold** tracks the raw webcam frame for responsive, per-frame
-  feedback;
-- the **composite readout** re-runs detection on the composited (overlay-applied)
-  image on the slower auto-find tick, to report whether the *modified* face still
-  matches.
+- `engine.js` runs TinyFaceDetector, 68-point landmarks, 128-value face descriptors, and identity comparison.
+- `landmark-analysis.js` turns metrics into the 2D result state.
+- `MATCH_THRESHOLD` defaults to `0.58`. Face-api uses Euclidean distance, so lower is more similar and a distance at or below the threshold is a match.
 
-They are intentionally not unified. Pointing the live scaffold at the composite
-image would make the overlay feel laggy and would conflate "is a face visible"
-with "does the modified face still match". This split is documented in the
-`bbox-overlay` module header — do not regress it.
+### MediaPipe geometry and experimental image embedding
 
-## Module map
+- `mediapipe-loop.js` runs FaceLandmarker and publishes 478 normalised landmarks for mesh and UV work.
+- `engine-3d.js` runs MediaPipe ImageEmbedder with MobileNetV3 Small and compares general visual embeddings with cosine similarity.
+- `MATCH_THRESHOLD_3D` defaults to `0.85`. Higher is more similar and a value at or above the threshold is a match.
 
-### Core scripts (`lab-js/`)
+The FaceLandmarker and ImageEmbedder paths serve different purposes. User-facing technical copy should call the latter an **experimental visual embedding**, not reliable 3D face recognition. It responds to global image content and is not a dedicated ArcFace-style face descriptor.
 
-- **`main.js`** — application entry point; initialises subsystems, dispatches the
-  `gstmxxReady` lifecycle event, and exposes the public API on `window.gstmxx`.
-- **`config.js`** — CDN/model URLs and recording configuration.
-- **`state.js`** — central mutable state and the `gstmxxEvents` bus; holds
-  `MATCH_THRESHOLD` (0.58) and `MATCH_THRESHOLD_3D` (0.85).
-- **`camera.js`** — webcam setup, front/back switching (`facingMode`), and 2-second
-  recording.
-- **`engine.js`** — face-api 2D detection, landmarks, descriptors, and match
-  orchestration.
-- **`engine-3d.js`** — experimental MediaPipe ImageEmbedder visual-embedding path.
-- **`mediapipe-loop.js`** — MediaPipe FaceLandmarker loop.
-- **`auto-find-loop.js`** — periodic composite re-detection loop (~2s tick). Keep
-  this tick light; it is on the hot path.
-- **`bbox-overlay.js`** — detection/match visual overlay (live scaffold vs
-  composite readout — see the two-detector note above).
-- **`landmark-analysis.js`** — landmark-derived metrics.
-- **`analyze-panel.js`** — user-facing result explanation panel and "Copy report"
-  text export.
-- **`face-thumbnails.js`** — saved-face thumbnail rendering.
-- **`db.js`** — IndexedDB wrapper for local face records.
-- **`dom.js`** — DOM handles and event bindings.
-- **`lab-ui.js`** — lab screens, settings drawer, and threshold controls
-  (`setMatchThreshold`).
-- **`ghostyles-manager.js`** — loads and switches 2D Ghostyles from
-  `ghostyles.json`; drives `onDraw()`.
-- **`plugins3d-loader.js`** — loads UV/3D Ghostyles; drives `paintUV()` and the
-  exported `params` UI.
-- **`ghostyle3d-uv-renderer.js`** — UV rendering and mesh-warp support.
-- **`export-makeup.js`** — "Copy makeup" PNG export (clipboard-first, Web Share
-  fallback).
-- **`home.js`** — homepage behaviour.
-- **`mobile-ui.js`** — mobile navigation shell and touch interactions.
-- **`loader.js`** — internal MP4 loader (`loader.html`) for repeatable 2D/3D tests.
-- **`utils.js`** — geometry / canvas / plugin helpers (also reachable by plugins
-  through the public API).
-- **`upload-consent.js`** — *in progress.* Client contract for the two-step
-  record → consent → upload flow. See the **Consent And Ownership** tutorial; the
-  end-to-end flow is not enabled yet (tracked in the upload-consent milestone).
-- **`Ghostmaxxing.d.ts`** — TypeScript declarations for editor support.
+## The two-pass Ghostyle contract
 
-### Ghostyles (`ghostyles/`)
+The Lab intentionally analyses two images at different cadences:
 
-- **`00-template.js`** — canonical template for 2D + UV callbacks (heavily
-  commented).
-- **`beauty-2d.js`** — 2D beauty style.
-- **`brush.js`** — landmark-anchored hold-to-paint brush with live scoring, **Bake
-  Ghostyle** (standalone `.js` download), and stroke-state serialization. This is
-  the interactive authoring path.
-- **`cv-dazzle-1.js`** — CV Dazzle style 1.
-- **`maximalism.js`** — dazzle maximalist patterns.
-- **`smokey-eyes.js`** — eye shadow / contouring.
-- **`soft-contour.js`** — cheek / jaw / forehead contouring.
-- **`uv-stripes.js`** — forehead / nose / eyes UV-warped stripes (UV example).
+1. The live scaffold tracks the original webcam frame for responsive positioning.
+2. The selected Ghostyle draws onto a composite image.
+3. `auto-find-loop.js` analyses that modified composite on a slower interval.
+4. `bbox-overlay.js` and `analyze-panel.js` expose the resulting state and metrics.
 
-## Ghostyle plugin API
+Do not merge the original and composite paths as a cleanup. A visible live box answers “where is the face now?” The composite result answers “what did the modified image do to this local comparison?” Keeping both is necessary to interpret an intervention.
 
-A Ghostyle is an ES module. Capability is detected by which functions it exports,
-**not** by header metadata:
+The combined state can be `matched`, `eluded`, `partial-elusion`, or `unknown`. The public word “Escaped” is an interface label, not a universal security result. Preserve raw per-path measurements wherever the distinction matters.
 
-- exports `onDraw(ctx, landmarks, box)` → treated as a **2D** Ghostyle;
-- exports `paintUV(...)` → treated as a **UV/3D** Ghostyle;
-- may export both (hybrid), plus optional `onInit()` / `onClear(ctx)`.
+## Ghostyle extension contract
 
-Header metadata is documentation, never a runtime switch. Do not access
-`landmarks[0]` without a guard, and never make `onDraw` async or `await` inside it
-— it runs on the render hot path (the validator warns about these).
+A Ghostyle is an ES module referenced by `ghostyles.json`. Capability comes from exports, not from header metadata:
 
-### Header metadata policy
+- `onDraw(ctx, landmarks, box)` supplies a 2D canvas effect;
+- `paintUV(...)` supplies a UV or mesh effect;
+- a hybrid module may export both;
+- `onInit()` and `onClear(ctx)` are optional lifecycle hooks;
+- `params` can expose supported controls.
 
-Every Ghostyle carries a header block between `==Ghostyle==` and `==/Ghostyle==`.
-The tiers below are the project policy; the validator (`npm run validate:ghostyles`)
-currently enforces the **required** minimum and format-checks `@release_date`.
+`onDraw()` is on a rendering hot path. Keep it synchronous, guard absent or partial landmarks, and avoid allocating persistent resources without cleanup.
 
-| Tag | Tier | Why |
-|---|---|---|
-| `@name` `@description` | **required** | UI display + card text; enforced by the validator today |
-| `@slug` | **required** | stable id; enforced once every Ghostyle carries it (see note) |
-| `@version` `@author` `@license` | **required** | baked Ghostyles circulate outside git — version, attribution, and license are the only provenance an exported file carries |
-| `@technique` `@supports` `@regions` `@evidence` | **recommended** | the future archive filter vocabulary and the `@evidence` celebration framing; `@supports` doubles as capability documentation. Never read at runtime — which is exactly why they are not required |
-| `@release_date` | **optional** | archive-card freshness only; duplicates git metadata for in-repo files and goes stale on edits. Format-checked if present |
-| `@references` `@workshop` | **optional** | ties a Ghostyle to the references dataset and workshop-tested evidence level |
+### Metadata and provenance
 
-> **Implementation note (July 2026):** `@release_date` is already optional in the
-> validator (format-checked only). Of the shipped Ghostyles, only `brush.js`
-> carries the full recommended set; the others carry
-> `@name @description @author @version @release_date` but not `@slug`/`@license`.
-> The validator therefore does not yet hard-require `@slug`/`@license`, so
-> `npm run validate:ghostyles` stays green. Tighten the validator to enforce the
-> full required tier only after backfilling those tags across `ghostyles/`, or
-> when the archive track (Roadmap §9) begins.
+Each module contains a block between `==Ghostyle==` and `==/Ghostyle==`. The project policy distinguishes:
 
-## Generating this documentation
+- required identity and provenance fields: name, description, stable slug, version, author, licence;
+- recommended technique fields: supported path, regions, evidence, and technique;
+- optional archive fields: release date, references, and workshop provenance.
 
-```bash
-npm run docs          # builds the JSDoc site into docs/jsdoc/
-npm run docs:rebuild  # wipes docs/jsdoc/ and rebuilds
+The current validator enforces only the implemented minimum and format checks. Passing `npm run validate:ghostyle` does not prove that every policy field is present. Read the authoring tutorial and canonical template before tightening validation or publishing an exported Ghostyle.
+
+## Public browser API
+
+`window.gstmxx` is exposed for plugins, tests, and integrations after the `gstmxxReady` event. Use [`lab-js/Ghostmaxxing.d.ts`](https://github.com/vecna/ghostmaxxing/blob/main/lab-js/Ghostmaxxing.d.ts) as the typed index and the generated symbols in this site as the detailed reference.
+
+Important groups include:
+
+- latest analysis and thresholds, including `getLastResult()`;
+- detector, model, and FaceLandmarker access required by supported extensions;
+- active Ghostyle and composite helpers;
+- utility functions deliberately surfaced to plugins.
+
+Treat everything else in module state as internal. If an integration needs a new stable function, add it to the public object, type declaration, JSDoc, and a test together.
+
+## Generated and hand-authored documentation
+
+The documentation is deliberately split:
+
+- `docs-src/en/*.body.html` contains hand-authored, translatable functional documentation;
+- `scripts-dev/build-functional-docs.cjs` wraps it in shared site chrome and writes `/docs/`;
+- `JSDOC_index.md`, tutorials, and source comments feed the technical site under `/docs/jsdoc/`;
+- `scripts-dev/README.md` is the detailed operational source for maintainers.
+
+```sh
+npm run docs:functional  # build the public functional pages
+npm run docs             # generate JSDoc into docs/jsdoc/
+npm run docs:rebuild     # remove only docs/jsdoc/ and regenerate it
 ```
 
-The site is served under `/docs/jsdoc/`. The `/docs/` landing page
-(`docs/index.html`) is hand-authored and routes readers to the three
-documentation layers; it is not part of the JSDoc build and is not removed by
-`docs:rebuild`.
+The JSDoc cleanup must remain scoped to `docs/jsdoc/`. It must not delete the functional pages or screenshot assets.
+
+## Before changing a contract
+
+1. Read the functional guide so you know which user-visible promise depends on the code.
+2. Inspect the source module and its generated reference.
+3. Check `Ghostmaxxing.d.ts`, event consumers, tests, and the codemap.
+4. Change source documentation and functional copy where the behaviour changes.
+5. Run the narrow tests, then the relevant end-to-end path.
+6. Regenerate only the outputs whose sources changed and inspect their diffs.
+
+Continue with [Build and inspect](/docs/develop/) for an annotated module map or [Maintain the project](/docs/maintain/) for operational commands and overwrite behaviour.

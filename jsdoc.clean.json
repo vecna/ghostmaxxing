@@ -1,19 +1,26 @@
 {
-  "plugins": ["plugins/markdown"],
+  "plugins": [
+    "plugins/markdown"
+  ],
   "source": {
-    "include": ["lab-js", "ghostyles"],
+    "include": [
+      "lab-js",
+      "ghostyles"
+    ],
     "includePattern": ".+\\.js(doc|x)?$",
     "excludePattern": "(^|\\/|\\\\)_",
-    "exclude": ["lab-js/vendor/**"]
+    "exclude": [
+      "lab-js/vendor/**"
+    ]
   },
   "opts": {
+    "theme_opts": {
+      "footer": "<div style='text-align: center; padding: 1rem 0;'>Ghostmaxxing v0.9.0 | Last updated: September 2026</div>"
+    },
     "template": "node_modules/clean-jsdoc-theme/dist",
     "tutorials": "./tutorials",
-    "basePath": "/docs/",
-    "theme_opts": {
-      "footer": "<div style='text-align: center; padding: 1rem 0;'>Ghostmaxxing v0.1.0 | Last updated: July 2026</div>"
-    },
-    "destination": "./docs",
+    "basePath": "/docs/jsdoc/",
+    "destination": "./docs/jsdoc",
     "recurse": true,
     "readme": "./JSDOC_index.md"
   },

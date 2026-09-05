@@ -1,0 +1,116 @@
+      <section class="content-page__header-area gm-prose" aria-labelledby="results-title">
+        <span class="content-page__kicker">Understand the results</span>
+        <h1 id="results-title">Read the state before reading the claim.</h1>
+        <p class="content-page__lead">The Lab separates face detection, geometry, and identity comparison. Each can succeed, fail, or become unstable for a different reason.</p>
+        <p class="content-page__deck">The top readout reports the current face-api comparison. It is a local decision derived from a distance and threshold. It is not a probability that the person is who the system says they are.</p>
+        <div class="content-page__actions">
+          <a class="docs-link docs-link--primary" href="/docs/understand/face-recognition.html">Follow the pipeline</a>
+          <a class="docs-link" href="/docs/glossary/">Open the glossary</a>
+        </div>
+      </section>
+
+      <div class="docs-reader">
+        <article class="docs-article gm-prose">
+          <section id="anatomy">
+            <span class="docs-eyebrow">Readout anatomy</span>
+            <h2>One number, one threshold, one state.</h2>
+            <table>
+              <thead><tr><th>Element</th><th>What it means</th><th>What it does not mean</th></tr></thead>
+              <tbody>
+                <tr><td>MATCH</td><td>The current face-api identity-comparison readout.</td><td>It is not a combined confidence score for every model in the Lab.</td></tr>
+                <tr><td>Number</td><td>The nearest Euclidean distance between the current 128-value descriptor and a saved baseline. Lower is closer.</td><td>It is not a percentage and cannot be read as “91% escaped”.</td></tr>
+                <tr><td>/ 0.58</td><td>The current 2D match threshold. A distance at or below it is classified as a match.</td><td>It is not the detector confidence threshold, which controls whether a face box exists.</td></tr>
+                <tr><td>Status</td><td>A label derived from baseline availability, detection, the active Ghostyle, distance, and threshold.</td><td>It is not a guarantee about other systems or the next frame.</td></tr>
+                <tr><td>Sparkline</td><td>A short history of recent distances and the threshold reference.</td><td>It is not a statistical summary or calibrated uncertainty interval.</td></tr>
+              </tbody>
+            </table>
+
+            <figure class="docs-figure">
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/lab-02-recognised.png" width="1440" height="1000" alt="Lab with a saved baseline and a recognised state in the top face-api match readout" /></div>
+              <figcaption>A real fixture capture after one baseline was saved. Read the number together with the threshold and status.<span class="docs-figure__provenance">Observed state · same local fixture and baseline</span></figcaption>
+            </figure>
+          </section>
+
+          <section id="states">
+            <span class="docs-eyebrow">Visible states</span>
+            <h2>Do not collapse different absences.</h2>
+            <div class="docs-statuses">
+              <div class="docs-status"><span class="docs-status__label">Save your face</span><h3>No baseline</h3><p>The camera may be working and a face may be detected, but there is no saved identity reference to compare with.</p></div>
+              <div class="docs-status"><span class="docs-status__label">Measuring</span><h3>Waiting for a fresh comparison</h3><p>A baseline exists, but the interface has not received a new result for the current state.</p></div>
+              <div class="docs-status"><span class="docs-status__label">No face in frame</span><h3>No usable live descriptor</h3><p>The current pass did not return a face. This may reflect the input, threshold, model, or timing.</p></div>
+              <div class="docs-status"><span class="docs-status__label">Recognised</span><h3>Distance within threshold</h3><p>The nearest descriptor is close enough to a saved baseline under the current 2D rule.</p></div>
+              <div class="docs-status"><span class="docs-status__label">Escaped</span><h3>Distance beyond threshold</h3><p>The detector still returned a face, but the composite descriptor crossed the current match boundary.</p></div>
+              <div class="docs-status"><span class="docs-status__label">No face found</span><h3>Composite detection absent</h3><p>With a Ghostyle active, the modified-image pass did not return a descriptor. This is detection failure, not a measured identity distance.</p></div>
+            </div>
+          </section>
+
+          <section id="two-passes">
+            <span class="docs-eyebrow">Original and composite</span>
+            <h2>The visible box and the match can come from different passes.</h2>
+            <p>The Lab keeps a live path for tracking the original camera frame. When a Ghostyle is active, it also draws the intervention into a composite and runs another detection and comparison on that modified image.</p>
+            <div class="docs-pipeline">
+              <div class="docs-pipeline__stage"><strong>Camera frame</strong><span>The original pixels supplied by the webcam.</span></div>
+              <div class="docs-pipeline__stage"><strong>Live detection</strong><span>Finds the face and landmarks used for tracking.</span></div>
+              <div class="docs-pipeline__stage"><strong>Ghostyle</strong><span>Draws a visible intervention from the current geometry.</span></div>
+              <div class="docs-pipeline__stage"><strong>Composite pass</strong><span>Runs detection and descriptor extraction on the modified image.</span></div>
+              <div class="docs-pipeline__stage"><strong>Readout</strong><span>Shows the composite face-api result while the Ghostyle is active.</span></div>
+            </div>
+            <p>A face can therefore remain visibly tracked while the composite pass returns a larger distance or no face. The box does not, by itself, tell you which image produced the identity result.</p>
+          </section>
+
+          <section id="thresholds">
+            <span class="docs-eyebrow">Two thresholds</span>
+            <h2>Detection and matching answer different questions.</h2>
+            <table>
+              <thead><tr><th>Threshold</th><th>Current default</th><th>Question</th><th>Direction</th></tr></thead>
+              <tbody>
+                <tr><td><a href="/docs/glossary/#detection-threshold">Detection score threshold</a></td><td><code>0.5</code></td><td>Does TinyFaceDetector report a face candidate?</td><td>Higher requires stronger detector confidence.</td></tr>
+                <tr><td><a href="/docs/glossary/#match-threshold">2D match threshold</a></td><td><code>0.58</code></td><td>Is the descriptor close enough to a saved baseline?</td><td>Distance at or below the threshold is a match.</td></tr>
+                <tr><td>Experimental image-similarity threshold</td><td><code>0.85</code></td><td>Is the image embedding similar enough to the saved image embedding?</td><td>Similarity at or above the threshold is a match.</td></tr>
+              </tbody>
+            </table>
+            <p>The top Lab readout currently renders the face-api section. The Loader records both the 2D distance and experimental image-embedding similarity in its activity details. These raw values should not be combined or compared directly.</p>
+          </section>
+
+          <section id="evidence">
+            <span class="docs-eyebrow">Evidence discipline</span>
+            <h2>Keep illustration separate from observation.</h2>
+            <p>A screenshot may document a control, an observed model output, or a simulated interface state. Those are different kinds of evidence and must be labelled accordingly.</p>
+            <div class="docs-warning">
+              <p><strong>The current synthetic “Escaped 0.91” full-screen capture is excluded from these guides.</strong> It combines an unchanged visible face with an injected status, which can imply an experiment that did not occur.</p>
+              <p>A cropped status bar could illustrate how the interface looks, if captioned as synthetic. A stronger replacement uses separate controlled clean-face and painted-face inputs and publishes the state actually returned for each.</p>
+            </div>
+          </section>
+
+          <section id="report">
+            <span class="docs-eyebrow">Record a useful result</span>
+            <h2>State enough conditions to retest it.</h2>
+            <ul>
+              <li>Tool and application revision.</li>
+              <li>Input file or camera, resolution, frame rate, and controlled timestamp where available.</li>
+              <li>Model files, browser, and inference environment.</li>
+              <li>Baseline identity within the test, without publishing the raw biometric descriptor.</li>
+              <li>Ghostyle, parameters, pose, distance, light, and threshold.</li>
+              <li>Whether detection returned a face and which pass produced the displayed value.</li>
+              <li>A series or range of observations, not only one favourable frame.</li>
+            </ul>
+          </section>
+
+          <nav class="docs-next" aria-label="Continue reading">
+            <a class="docs-link" href="/docs/guides/lab.html">&#8592; Browser Lab guide</a>
+            <a class="docs-link" href="/docs/understand/face-recognition.html">Next: how recognition works &#8594;</a>
+          </nav>
+        </article>
+
+        <aside class="docs-toc">
+          <h2>On this page</h2>
+          <nav>
+            <a href="#anatomy">Readout anatomy</a>
+            <a href="#states">Visible states</a>
+            <a href="#two-passes">Original and composite</a>
+            <a href="#thresholds">Thresholds</a>
+            <a href="#evidence">Evidence discipline</a>
+            <a href="#report">Record a result</a>
+          </nav>
+        </aside>
+      </div>

@@ -1,0 +1,79 @@
+      <section class="content-page__header-area gm-prose" aria-labelledby="glossary-title">
+        <span class="content-page__kicker">Technical glossary</span>
+        <h1 id="glossary-title">Name the stage. Then read its failure.</h1>
+        <p class="content-page__lead">Terms from face recognition, adversarial practice, and the Ghostmaxxing interface, connected to what you can actually observe in the Lab.</p>
+        <p class="content-page__deck">A term can describe a general field without naming the exact mechanism used here. Each entry separates the concept, the current implementation, and its limit.</p>
+      </section>
+
+      <div class="docs-reader">
+        <article class="docs-article gm-prose">
+          <section id="detection-group">
+            <span class="docs-eyebrow">Detection</span>
+            <h2>The first gate.</h2>
+            <div class="docs-terms">
+              <article class="docs-term" id="detection"><h2>Face detection</h2><p>The task of locating a probable face in an image. Detection normally happens before identity comparison.</p><span class="docs-term__ui">In the Lab</span><p>TinyFaceDetector analyses the 2D path. MediaPipe FaceLandmarker also performs its own face localisation for the mesh path. Detection does not identify a person.</p></article>
+              <article class="docs-term" id="bounding-box"><h2>Bounding box</h2><p>A rectangle, represented by position and dimensions, around a region that a detector considers a face candidate.</p><span class="docs-term__ui">In the Lab</span><p>The visible scaffold tracks the live camera frame. A Ghostyle composite is analysed separately, so a visible live box does not prove that the modified image produced a face descriptor.</p></article>
+              <article class="docs-term" id="detection-threshold"><h2>Detection score threshold</h2><p>The minimum detector score required to report a candidate. Raising it rejects weaker candidates; lowering it accepts more uncertain candidates.</p><span class="docs-term__ui">In the Lab</span><p>The normal TinyFaceDetector threshold is <code>0.5</code>. A failed composite may be retried at <code>0.1</code> for diagnostics. This is separate from the <code>0.58</code> identity match threshold.</p></article>
+              <article class="docs-term" id="t-zone"><h2>T-zone</h2><p>A descriptive pattern of light and dark facial regions around the forehead, nose, eyes, and mouth. It helped explain why high-contrast styling disrupted some early detectors.</p><span class="docs-term__ui">Historical context</span><p>Useful for discussing CV Dazzle's visual genealogy. It is not a formal input exposed by the current Lab and should not be presented as TinyFaceDetector's explicit rule.</p></article>
+              <article class="docs-term" id="haar-cascade"><h2>Haar cascade</h2><p>A classical detector that combines many simple contrast features in a cascade of decisions. It predates modern neural face detectors.</p><span class="docs-term__ui">Historical context</span><p>Early CV Dazzle work is often discussed against this family of detectors. Ghostmaxxing currently uses TinyFaceDetector and MediaPipe, not an OpenCV Haar cascade.</p></article>
+              <article class="docs-term" id="false-positive"><h2>False positive</h2><p>A system reports a face or match when the target condition is absent.</p><span class="docs-term__ui">In an experiment</span><p>Record whether the error belongs to detection or identity comparison. A permissive threshold can increase one kind of false positive while changing other trade-offs.</p></article>
+              <article class="docs-term" id="false-negative"><h2>False negative</h2><p>A system fails to report a face or match when the target condition is present.</p><span class="docs-term__ui">In an experiment</span><p>An intervention may contribute to a false negative, but a single absence can also come from pose, light, blur, timing, or model instability.</p></article>
+            </div>
+          </section>
+
+          <section id="geometry-group">
+            <span class="docs-eyebrow">Geometry</span>
+            <h2>Estimated structure.</h2>
+            <div class="docs-terms">
+              <article class="docs-term" id="landmarks"><h2>Face landmarks</h2><p>Estimated coordinates for facial features such as eyes, brows, nose, mouth, and outline.</p><span class="docs-term__ui">In the Lab</span><p>Face-api supplies 68 points for the 2D path. MediaPipe FaceLandmarker supplies 478 points for the mesh and UV path. Point count does not by itself indicate identity accuracy.</p></article>
+              <article class="docs-term" id="face-alignment"><h2>Face alignment</h2><p>The geometric normalisation of a detected face so that identity features can be compared across pose and position.</p><span class="docs-term__ui">In the pipeline</span><p>Landmarks support the face-api recognition pipeline. The Lab does not expose alignment as a user control or an independent confidence score.</p></article>
+              <article class="docs-term" id="tracking"><h2>Tracking</h2><p>Maintaining a useful estimate of a face's location or geometry across frames.</p><span class="docs-term__ui">In the Lab</span><p>The live scaffold and mesh update continuously, while the composite identity check runs on a slower interval. A stable overlay and a fresh identity result are not the same event.</p></article>
+              <article class="docs-term" id="jitter"><h2>Jitter</h2><p>Visible frame-to-frame movement in estimated points or overlays even when the physical subject appears nearly still.</p><span class="docs-term__ui">What to observe</span><p>Occlusion, poor light, motion and uncertain geometry can increase jitter. It can expose instability that one still screenshot hides.</p></article>
+              <article class="docs-term" id="smoothing"><h2>Smoothing</h2><p>A temporal filter that reduces rapid changes by combining recent values or coordinates.</p><span class="docs-term__ui">Implementation note</span><p>Smoothing is a general technique, not a documented guarantee of the current Ghostmaxxing landmark loops. It may improve presentation while also hiding short-lived uncertainty.</p></article>
+            </div>
+          </section>
+
+          <section id="recognition-group">
+            <span class="docs-eyebrow">Identity comparison</span>
+            <h2>Representations and boundaries.</h2>
+            <div class="docs-terms">
+              <article class="docs-term" id="baseline"><h2>Baseline</h2><p>A saved reference captured before the intervention and used for later comparison.</p><span class="docs-term__ui">In the Lab</span><p>“Save” stores local face-api and experimental image embeddings under a shared record ID. A baseline is an experimental reference, not verified civil identity.</p></article>
+              <article class="docs-term" id="embedding"><h2>Embedding</h2><p>A numeric vector that represents features learned by a model. Nearby vectors are intended to encode some form of similarity defined by the model and its training.</p><span class="docs-term__ui">In the project</span><p>Face-api produces a dedicated face descriptor. MediaPipe ImageEmbedder produces a general visual embedding. They should not be treated as interchangeable.</p></article>
+              <article class="docs-term" id="face-descriptor"><h2>Face descriptor</h2><p>The 128-value identity representation returned by the current face-api recognition model for a detected face.</p><span class="docs-term__ui">In the Lab</span><p>The descriptor is compared with locally saved descriptors. It is biometric-derived data and should not be published or logged casually.</p></article>
+              <article class="docs-term" id="latent-space"><h2>Latent space</h2><p>An abstract multidimensional space formed by a learned representation. Inputs with features the model treats as similar tend to occupy nearby regions.</p><span class="docs-term__ui">Practical limit</span><p>“Nearby” depends on the model. It does not mean visually or socially identical, and the dimensions are not simple named facial traits.</p></article>
+              <article class="docs-term" id="euclidean-distance"><h2>Euclidean distance</h2><p>The straight-line distance between two numeric vectors.</p><span class="docs-term__ui">In the 2D readout</span><p>Face-api distances are compared with <code>0.58</code> by default. Lower means closer. The number is not a percentage.</p></article>
+              <article class="docs-term" id="cosine-similarity"><h2>Cosine similarity</h2><p>A comparison based on the angle between two vectors rather than their straight-line distance.</p><span class="docs-term__ui">In the experimental path</span><p>ImageEmbedder similarities are compared with <code>0.85</code> by default. Higher means closer. This direction is opposite to face-api distance.</p></article>
+              <article class="docs-term" id="match-threshold"><h2>Match threshold</h2><p>A boundary that turns a continuous comparison value into a category.</p><span class="docs-term__ui">In the Lab</span><p>A face-api distance at or below <code>0.58</code> is a match. Changing this value changes the decision rule, not the pixels or descriptor.</p></article>
+            </div>
+          </section>
+
+          <section id="intervention-group">
+            <span class="docs-eyebrow">Intervention and evasion</span>
+            <h2>What changes, and where.</h2>
+            <div class="docs-terms">
+              <article class="docs-term" id="ghostyle"><h2>Ghostyle</h2><p>A Ghostmaxxing visual intervention implemented as an ES module. It may draw in 2D from face-api landmarks, paint a UV texture for the mesh path, or expose both capabilities.</p><span class="docs-term__ui">In the Lab</span><p>A digital Ghostyle is a probe for the local models. A physical makeup test is a separate experiment affected by material, light, pose, camera and movement.</p></article>
+              <article class="docs-term" id="composite-pass"><h2>Composite pass</h2><p>A second analysis performed on an image that combines the camera frame with the active Ghostyle.</p><span class="docs-term__ui">In the Lab</span><p>The composite pass can produce a different box, descriptor or match state from the original camera path. Its slower cadence is intentional.</p></article>
+              <article class="docs-term" id="matte"><h2>Matte</h2><p>A mask that indicates where an image operation should apply. White or opaque regions usually mean “apply”; black or transparent regions mean “leave unchanged”.</p><span class="docs-term__ui">In Ghostyle Transfer</span><p>The matte is derived from the visible difference between Before and After. Player controls, captions, cursors or overlays baked into a screenshot can contaminate it and then be transferred to the Target.</p></article>
+              <article class="docs-term" id="adversarial-example"><h2>Adversarial example</h2><p>An input intentionally modified to cause a model to behave differently while preserving some meaning for a human observer.</p><span class="docs-term__ui">Evidence limit</span><p>A visually unusual result is not automatically adversarial. Establish the target model, intended change, baseline, repeated measurement and relevant conditions.</p></article>
+              <article class="docs-term" id="adversarial-patch"><h2>Adversarial patch</h2><p>A localised, often optimised pattern designed to influence a model when placed within its view.</p><span class="docs-term__ui">Relation to makeup</span><p>Modern patches can be model-specific and need not resemble CV Dazzle. Performance against one pipeline does not transfer automatically to another.</p></article>
+              <article class="docs-term" id="escaped"><h2>Escaped</h2><p>A Ghostmaxxing interface label for a local comparison that crossed the current rule while an intervention was active.</p><span class="docs-term__ui">Do not overread it</span><p>It is not a standard security certification and does not mean anonymous, invisible or safe. State whether the result was detector absence or descriptor distance beyond threshold.</p></article>
+              <article class="docs-term" id="liveness-pad"><h2>Liveness and presentation-attack detection</h2><p>Methods intended to distinguish a live authorised presentation from photos, screens, masks or other presentation attacks. Some use motion, depth, texture, sensors or a challenge-response action.</p><span class="docs-term__ui">Not implemented here</span><p>Ghostmaxxing does not currently perform liveness or presentation-attack detection. Expression analysis alone would not establish liveness.</p></article>
+            </div>
+          </section>
+
+          <nav class="docs-next" aria-label="Continue reading">
+            <a class="docs-link" href="/docs/understand/face-recognition.html">&#8592; How recognition works</a>
+            <a class="docs-link" href="/docs/develop/">Next: build and inspect &#8594;</a>
+          </nav>
+        </article>
+
+        <aside class="docs-toc">
+          <h2>Term groups</h2>
+          <nav>
+            <a href="#detection-group">Detection</a>
+            <a href="#geometry-group">Geometry</a>
+            <a href="#recognition-group">Identity comparison</a>
+            <a href="#intervention-group">Intervention and evasion</a>
+          </nav>
+        </aside>
+      </div>

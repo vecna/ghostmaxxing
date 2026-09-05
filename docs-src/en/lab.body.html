@@ -1,0 +1,160 @@
+      <section class="content-page__header-area gm-prose" aria-labelledby="lab-guide-title">
+        <span class="content-page__kicker">Functional guide · Browser Lab</span>
+        <h1 id="lab-guide-title">Run a local face-matching experiment.</h1>
+        <p class="content-page__lead">Save a baseline, apply a Ghostyle, and compare how the local browser pipeline reads the original and modified face.</p>
+        <p class="content-page__deck">The Lab processes the camera locally until you deliberately record and consent to an upload. A local result describes this pipeline under the current conditions. It is not a safety claim.</p>
+        <div class="content-page__actions">
+          <a class="docs-link docs-link--primary" href="/lab.html">Open the Lab &#8599;</a>
+          <a class="docs-link" href="/docs/understand/">Read the result first</a>
+        </div>
+      </section>
+
+      <div class="docs-reader">
+        <article class="docs-article gm-prose">
+          <section id="before">
+            <span class="docs-eyebrow">Before you start</span>
+            <h2>Prepare one readable test.</h2>
+            <ul>
+              <li>Use an evenly lit face, a stable camera position, and a simple background for the first run.</li>
+              <li>Allow camera access. The models are served from this site and may take time to initialise.</li>
+              <li>Keep pose, distance, light, and camera as similar as possible when comparing states.</li>
+              <li>Use one face in frame. The current Lab is not a controlled evaluation of a crowd or multiple identities.</li>
+            </ul>
+            <div class="docs-note">
+              <p><strong>Baseline</strong> means the saved face descriptor used as the comparison reference. It stays in the browser on this device. See <a href="/docs/glossary/#baseline">baseline</a>.</p>
+            </div>
+          </section>
+
+          <section id="procedure">
+            <span class="docs-eyebrow">Minimum procedure</span>
+            <h2>From camera to comparison.</h2>
+            <div class="docs-step-list">
+              <div class="docs-step">
+                <span class="docs-step__number">01</span>
+                <div><h3>Wait for the camera and models</h3><p>The live stage should replace the loading message. Before a face is saved, the readout asks you to save one. This is not yet a match result.</p></div>
+              </div>
+              <div class="docs-step">
+                <span class="docs-step__number">02</span>
+                <div><h3>Select Save</h3><p>Keep your face steady and use <strong>Save</strong> in the bottom bar. The saved-face count should become one. The same face is now the active local baseline.</p></div>
+              </div>
+              <div class="docs-step">
+                <span class="docs-step__number">03</span>
+                <div><h3>Read the unmodified state</h3><p>Leave the Camera view active. The number beside <strong>MATCH</strong> is a descriptor distance. In the current 2D pipeline, smaller means closer to the saved baseline.</p></div>
+              </div>
+              <div class="docs-step">
+                <span class="docs-step__number">04</span>
+                <div><h3>Inspect landmarks</h3><p>Switch between <strong>2D points</strong> and <strong>3D mesh</strong>. These views show geometry estimated from the frame. They are not identity scores.</p></div>
+              </div>
+              <div class="docs-step">
+                <span class="docs-step__number">05</span>
+                <div><h3>Choose a Ghostyle</h3><p>Open <strong>Settings</strong>, review the current threshold, and select a Ghostyle. The overlay is rendered on the face and the composite image is analysed separately.</p></div>
+              </div>
+              <div class="docs-step">
+                <span class="docs-step__number">06</span>
+                <div><h3>Compare the result</h3><p>Watch the distance and status over several updates. Record the Ghostyle, threshold, camera, light, pose, and any instability. Do not keep only the highest or lowest transient value.</p></div>
+              </div>
+            </div>
+
+            <figure class="docs-figure">
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/lab-01-camera.png" width="1440" height="1000" alt="Ghostmaxxing Lab before a baseline is saved, with the camera view and top match readout visible" /></div>
+              <figcaption>The initial camera workspace. The readout has no meaningful comparison until a baseline exists.<span class="docs-figure__provenance">Fixture capture · full Lab viewport</span></figcaption>
+            </figure>
+
+            <figure class="docs-figure">
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/lab-02-recognised.png" width="1440" height="1000" alt="Ghostmaxxing Lab after saving one baseline, with a recognised state in the match readout" /></div>
+              <figcaption>After Save, the browser compares incoming descriptors with the active baseline stored on this device.<span class="docs-figure__provenance">Observed fixture result · full Lab viewport</span></figcaption>
+            </figure>
+          </section>
+
+          <section id="views">
+            <span class="docs-eyebrow">What the views show</span>
+            <h2>Geometry is not identity.</h2>
+            <div class="docs-statuses">
+              <div class="docs-status"><span class="docs-status__label">Camera</span><h3>Original frame plus active Ghostyle</h3><p>The cleanest view for following the visible intervention and the top readout.</p></div>
+              <div class="docs-status"><span class="docs-status__label">2D points</span><h3>68 face-api landmarks</h3><p>Points used to locate facial regions and anchor compatible 2D Ghostyles.</p></div>
+              <div class="docs-status"><span class="docs-status__label">3D mesh</span><h3>478 MediaPipe landmarks</h3><p>A dense normalised face mesh used by the 3D path and UV-capable interventions.</p></div>
+              <div class="docs-status"><span class="docs-status__label">MATCH</span><h3>Distance against a baseline</h3><p>A separate comparison output. Read it with the current threshold and state.</p></div>
+            </div>
+
+            <figure class="docs-figure">
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/lab-04-2d-points.png" width="1440" height="1000" alt="Lab 2D points view showing face-api landmarks over the test face" /></div>
+              <figcaption>The 2D view exposes the landmark geometry used by face-api and face-anchored 2D drawing.<span class="docs-figure__provenance">Observed fixture state</span></figcaption>
+            </figure>
+
+            <figure class="docs-figure">
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/lab-05-3d-mesh.png" width="1440" height="1000" alt="Lab 3D mesh view showing a dense MediaPipe face mesh over the test face" /></div>
+              <figcaption>The 3D mesh is denser, but more points do not turn the view into a stronger identity claim.<span class="docs-figure__provenance">Observed fixture state</span></figcaption>
+            </figure>
+          </section>
+
+          <section id="ghostyles">
+            <span class="docs-eyebrow">Apply an intervention</span>
+            <h2>Change one condition at a time.</h2>
+            <p>A <a href="/docs/glossary/#ghostyle">Ghostyle</a> is a modular visual intervention. Some Ghostyles draw from the 68-point geometry, some use the 3D mesh or UV texture, and command Ghostyles such as Face Brush add their own controls.</p>
+            <p>The Lab keeps tracking the original camera image while it also builds a composited image containing the Ghostyle. That distinction explains why a face box can remain visible while the result of the modified-image pass changes.</p>
+
+            <figure class="docs-figure">
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/lab-06-settings-and-ghostyles.png" width="1440" height="1000" alt="Lab Settings screen showing Ghostyles, camera controls, threshold, analysis frequency, and saved-face information" /></div>
+              <figcaption>Settings contains both experiment variables and the available Ghostyles. Note the threshold before comparing results.<span class="docs-figure__provenance">Observed fixture state</span></figcaption>
+            </figure>
+
+            <figure class="docs-figure">
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/lab-07-ghostyle-active.png" width="1440" height="1000" alt="Lab camera view with a Ghostyle visibly rendered over the test face" /></div>
+              <figcaption>An active Ghostyle is a test input. Its visible presence does not establish that detection or matching changed.<span class="docs-figure__provenance">Observed interface state · result must be read separately</span></figcaption>
+            </figure>
+          </section>
+
+          <section id="data">
+            <span class="docs-eyebrow">Data and consent</span>
+            <h2>Local until you choose otherwise.</h2>
+            <ul>
+              <li>Saved baselines and their thumbnails persist in browser storage on this device.</li>
+              <li><strong>Delete all</strong> in Settings removes the saved face records from this browser.</li>
+              <li><strong>Record</strong> creates a short clip and places it in the browser workflow for review.</li>
+              <li>An upload is a separate action. It requires review and explicit consent before the clip is sent to the configured server endpoint.</li>
+              <li>Copying or downloading an image exports data from the page to your device or clipboard.</li>
+            </ul>
+
+            <figure class="docs-figure">
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/lab-08-saved-faces.png" width="1440" height="1000" alt="Saved Faces screen containing one local face baseline" /></div>
+              <figcaption>Saved Faces lists baselines stored by this browser. The active record is the comparison reference.<span class="docs-figure__provenance">Observed fixture state · local browser data</span></figcaption>
+            </figure>
+          </section>
+
+          <section id="problems">
+            <span class="docs-eyebrow">Common problems</span>
+            <h2>Separate absence from failure.</h2>
+            <table>
+              <thead><tr><th>What you see</th><th>Likely meaning</th><th>What to check</th></tr></thead>
+              <tbody>
+                <tr><td>Loading message remains</td><td>Models or camera did not become ready.</td><td>Local model files, browser console, camera permission, and secure origin.</td></tr>
+                <tr><td>No face in frame</td><td>The detector produced no usable face for that pass.</td><td>Light, angle, occlusion, distance, and whether the video frame is valid.</td></tr>
+                <tr><td>Save your face</td><td>No active baseline exists.</td><td>Select Save while one readable face is present.</td></tr>
+                <tr><td>Distance changes rapidly</td><td>Frame-by-frame predictions or input conditions are unstable.</td><td>Hold position, improve light, and observe a series rather than one value.</td></tr>
+                <tr><td>2D and 3D disagree</td><td>The two pipelines use different representations and decision directions.</td><td>Record both outputs and treat the result as partial or unresolved.</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <div class="docs-warning">
+            <p><strong>Do not read “Escaped” as “safe”.</strong> It means the current comparison crossed the configured local threshold, or that the modified-image detector did not return a face. It says nothing by itself about another model, camera, deployment, or future frame.</p>
+          </div>
+
+          <nav class="docs-next" aria-label="Continue reading">
+            <a class="docs-link" href="/docs/">&#8592; Documentation home</a>
+            <a class="docs-link" href="/docs/understand/">Next: understand the results &#8594;</a>
+          </nav>
+        </article>
+
+        <aside class="docs-toc">
+          <h2>On this page</h2>
+          <nav>
+            <a href="#before">Before you start</a>
+            <a href="#procedure">Minimum procedure</a>
+            <a href="#views">Camera, points, mesh</a>
+            <a href="#ghostyles">Apply a Ghostyle</a>
+            <a href="#data">Data and consent</a>
+            <a href="#problems">Common problems</a>
+          </nav>
+        </aside>
+      </div>

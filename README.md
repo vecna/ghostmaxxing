@@ -78,6 +78,7 @@ npm run validate:ghostyles # validate every ghostyle in ghostyles/
 npm run validate:ghostyle -- ghostyles/your-slug.js   # validate one
 npm run update:references  # rebuild references/index.html from REFERENCES.json
 npm run i18n:extract       # regenerate the .pot / summary CSV for translation
+npm run docs:screenshots -- --locale en,it --loader-time 3 # regenerate screenshots for functionality docs, also with --include-brush
 ```
 
 New to contributing a Ghostyle? See **[CONTRIBUTING.md](CONTRIBUTING.md)** and the

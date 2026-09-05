@@ -1,0 +1,110 @@
+      <section class="content-page__header-area gm-prose" aria-labelledby="maintain-title">
+        <span class="content-page__kicker">Maintain the project</span>
+        <h1 id="maintain-title">Know what each command reads, writes, and replaces.</h1>
+        <p class="content-page__lead">An operational index for documentation, tests, validation, source exports, generated assets, and packaging.</p>
+        <p class="content-page__deck">Run these commands from the repository root. Review generated diffs. A successful exit proves only that the script completed its own checks.</p>
+        <div class="content-page__actions">
+          <a class="docs-link docs-link--primary" href="https://github.com/vecna/ghostmaxxing/blob/main/scripts-dev/README.md">Full scripts-dev guide</a>
+          <a class="docs-link" href="https://github.com/vecna/ghostmaxxing/tree/main/scripts-dev">Browse scripts</a>
+        </div>
+      </section>
+
+      <div class="docs-reader">
+        <article class="docs-article gm-prose">
+          <section id="routine">
+            <span class="docs-eyebrow">Routine commands</span>
+            <h2>Choose the smallest operation that proves the change.</h2>
+            <table>
+              <thead><tr><th>Task</th><th>Command</th><th>Output or effect</th></tr></thead>
+              <tbody>
+                <tr><td>Build functional pages</td><td><code>npm run docs:functional</code></td><td>Writes the public pages under <code>docs/</code> plus <code>docs.html</code>.</td></tr>
+                <tr><td>Capture guide screenshots</td><td><code>npm run docs:screenshots -- --locale en,it</code></td><td>Overwrites stable PNGs, manifest, and index under <code>docs/assets/screenshots/</code>.</td></tr>
+                <tr><td>Build API reference</td><td><code>npm run docs</code></td><td>Writes generated JSDoc under <code>docs/jsdoc/</code>.</td></tr>
+                <tr><td>Clean and rebuild API</td><td><code>npm run docs:rebuild</code></td><td>Deletes only <code>docs/jsdoc/</code>, then regenerates it.</td></tr>
+                <tr><td>Validate all Ghostyles</td><td><code>npm run validate:ghostyles</code></td><td>Reports errors and warnings; stops on the first failed file.</td></tr>
+                <tr><td>Run fast checks</td><td><code>npm run check</code></td><td>Validates Ghostyles, then runs unit tests.</td></tr>
+                <tr><td>Run all tests</td><td><code>npm test</code></td><td>Runs unit tests, then Playwright end-to-end tests.</td></tr>
+                <tr><td>Build architecture map</td><td><code>npm run codemap</code></td><td>Writes the JSON graph and standalone HTML viewer.</td></tr>
+                <tr><td>Extract translations</td><td><code>npm run i18n:extract</code></td><td>Overwrites POT and pipe-delimited summary files.</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="documentation">
+            <span class="docs-eyebrow">Documentation workflow</span>
+            <h2>Functional HTML and JSDoc are separate outputs.</h2>
+            <div class="docs-step-list">
+              <div class="docs-step"><span class="docs-step__number">01</span><div><h3>Edit source</h3><p>Update <code>docs-src/en/*.body.html</code> for functional pages, <code>JSDOC_index.md</code> for the technical home, or source comments and tutorials for API detail.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">02</span><div><h3>Generate</h3><p>Run <code>npm run docs:functional</code>. Run <code>npm run docs:rebuild</code> when JSDoc inputs changed.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">03</span><div><h3>Capture only when needed</h3><p>Use committed deterministic fixtures. The default screenshot run excludes the optional Face Brush sequence. A Transfer result requires the optional Before, After, and Target trio.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">04</span><div><h3>Review evidence</h3><p>Inspect dimensions, capture region, and provenance in <code>manifest.json</code>. Do not publish synthetic states as observed experiments.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">05</span><div><h3>Verify routes and copy</h3><p>Open the landing page, every changed guide, one JSDoc module, mobile layout, and missing-image behaviour. Extract visible text for editorial review.</p></div></div>
+            </div>
+            <div class="docs-warning"><p><strong>Current screenshot backlog:</strong> replace the injected full-screen “Escaped” example with clean and physically painted fixtures. Replace the broad Face Brush strokes with small landmark-guided paths before that optional figure enters the public guide.</p></div>
+          </section>
+
+          <section id="scripts">
+            <span class="docs-eyebrow">scripts-dev inventory</span>
+            <h2>Every support script has a boundary.</h2>
+            <div class="docs-maintenance-list">
+              <article class="docs-maintenance-item"><h3>build-functional-docs.cjs</h3><p>Wraps English body fragments in shared site chrome and documentation navigation. Writes ten static pages under <code>docs/</code> and the <code>docs.html</code> compatibility redirect. It does not translate content or generate JSDoc.</p></article>
+              <article class="docs-maintenance-item"><h3>capture-doc-screenshots.cjs</h3><p>Drives Lab, Video Loader, and Ghostyle Transfer with Playwright fixtures. Writes stable screenshots and records pixel dimensions, aspect ratio, crop, viewport, and provenance in the manifest. Transfer results and Brush are optional paths.</p></article>
+              <article class="docs-maintenance-item"><h3>build-codemap.js</h3><p>Parses top-level <code>lab-js/*.js</code>, imports, exports, events, and root HTML entries into <code>codemap/codemap.json</code>. It is a static heuristic, not a runtime trace.</p></article>
+              <article class="docs-maintenance-item"><h3>build-codemap-html.js</h3><p>Injects the JSON map into <code>codemap/codemap-template.html</code> and writes a standalone viewer. Check that the template marker was actually replaced.</p></article>
+              <article class="docs-maintenance-item"><h3>validate-plugin.js</h3><p>Checks one Ghostyle header and supported export patterns without executing the module. Its regular-expression checks cover only a subset of the full authoring policy.</p></article>
+              <article class="docs-maintenance-item"><h3>extract-i18n-pot.cjs</h3><p>Evaluates the translation catalogue and overwrites the POT and summary files. It extracts interface strings, not functional documentation prose.</p></article>
+              <article class="docs-maintenance-item"><h3>extract-text-only.js</h3><p>Extracts reviewable visible copy, metadata, and accessibility attributes from public HTML and structured data. It is an editorial aid, not a complete DOM or localisation audit.</p></article>
+              <article class="docs-maintenance-item"><h3>code2prompt.js</h3><p>Builds filtered source bundles for design, runtime, tests, copy, map, or broad review. Its include and exclude rules are executable configuration; inspect the produced bundle instead of relying only on the estimated tree.</p></article>
+              <article class="docs-maintenance-item"><h3>update-coverage-badge.js</h3><p>Reads Vitest JSON statement coverage and rewrites the marked badge block in <code>README.md</code>. Run coverage first and inspect for an <code>UNKNOWN</code> result.</p></article>
+              <article class="docs-maintenance-item"><h3>install-client-interface.cjs</h3><p>Clears and repopulates the fixed sibling backend client-interface directory. This is the destructive support command: verify the resolved target before running it.</p></article>
+              <article class="docs-maintenance-item"><h3>test-upload-consent-post.cjs</h3><p>Sends an actual multipart clip to the configured backend endpoint and prints response data. It is not a dry run, does not test the browser consent UI, and does not delete the upload.</p></article>
+              <article class="docs-maintenance-item"><h3>build-logo.py</h3><p>Overwrites the named SVG logo set and, when CairoSVG works, PNG icon variants. Reconcile its current geometry and touch-icon output path with the live brand system before regeneration.</p></article>
+            </div>
+          </section>
+
+          <section id="risks">
+            <span class="docs-eyebrow">Known operational risks</span>
+            <h2>A green command is not the whole review.</h2>
+            <table>
+              <thead><tr><th>Area</th><th>Known constraint</th><th>Maintainer action</th></tr></thead>
+              <tbody>
+                <tr><td>Client installer</td><td>Recursively clears a fixed sibling destination.</td><td>Resolve and inspect the exact path before execution.</td></tr>
+                <tr><td>Web client setup</td><td>The npm sequence stops if references or either documentation layer fails to build.</td><td>Keep required stages chained with <code>&amp;&amp;</code>.</td></tr>
+                <tr><td>Code map</td><td>HTML entry IDs and module IDs can use different path forms, leaving reachability incomplete.</td><td>Do not treat an empty page association as proof that a module is unused.</td></tr>
+                <tr><td>Logo generator</td><td>Generated geometry and packaging paths may not match current site assets.</td><td>Review the generator and rendered asset diff before overwriting.</td></tr>
+                <tr><td>Coverage badge</td><td>Missing or empty coverage data can still produce a completed rewrite.</td><td>Check the report timestamp and percentage, not only exit status.</td></tr>
+                <tr><td>Screenshots</td><td>Stable filenames are overwritten; fixture timing can select an unhelpful frame.</td><td>Use controlled frame inputs and review every manifest entry and image.</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="release-check">
+            <span class="docs-eyebrow">Before hand-off</span>
+            <h2>Check the surfaces people will actually receive.</h2>
+            <ul>
+              <li>Run the relevant unit and end-to-end tests, not only <code>npm run check</code>.</li>
+              <li>Validate every Ghostyle and inspect warnings.</li>
+              <li>Generate functional docs, JSDoc, references, and the codemap when their sources changed.</li>
+              <li>Check English copy and translation catalogues separately.</li>
+              <li>Open Lab, Loader, Transfer, the docs landing, one guide, and one API page through the same server path used for deployment.</li>
+              <li>Inspect the packaged client directory and all “skip missing” messages before deployment.</li>
+            </ul>
+          </section>
+
+          <nav class="docs-next" aria-label="Continue reading">
+            <a class="docs-link" href="/docs/develop/">&#8592; Build and inspect</a>
+            <a class="docs-link" href="/docs/">Return to documentation home &#8594;</a>
+          </nav>
+        </article>
+
+        <aside class="docs-toc">
+          <h2>On this page</h2>
+          <nav>
+            <a href="#routine">Routine commands</a>
+            <a href="#documentation">Documentation workflow</a>
+            <a href="#scripts">Script inventory</a>
+            <a href="#risks">Operational risks</a>
+            <a href="#release-check">Before hand-off</a>
+          </nav>
+        </aside>
+      </div>

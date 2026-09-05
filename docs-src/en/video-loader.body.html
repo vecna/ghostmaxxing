@@ -1,0 +1,97 @@
+      <section class="content-page__header-area gm-prose" aria-labelledby="loader-guide-title">
+        <span class="content-page__kicker">Functional guide · Video Loader</span>
+        <h1 id="loader-guide-title">Compare faces at exact video times.</h1>
+        <p class="content-page__lead">Load a local MP4, save a face at one timestamp, and compare the face visible at another timestamp.</p>
+        <p class="content-page__deck">The Loader is the most reproducible way to revisit a frame. It records the playhead time when an action is pressed, but model outputs may still vary across browsers, hardware, and inference backends.</p>
+        <div class="content-page__actions">
+          <a class="docs-link docs-link--primary" href="/loader.html">Open the Loader &#8599;</a>
+          <a class="docs-link" href="/docs/glossary/#baseline">What is a baseline?</a>
+        </div>
+      </section>
+
+      <div class="docs-reader">
+        <article class="docs-article gm-prose">
+          <section id="purpose">
+            <span class="docs-eyebrow">Purpose</span>
+            <h2>Replace webcam timing with a playhead.</h2>
+            <p>The fake webcam used for automated Lab screenshots loops continuously and cannot be seeked by the page. The Video Loader exposes a timeline, so you can pause on a recognisable moment and repeat the same action at the same displayed timestamp.</p>
+            <div class="docs-note"><p>The file stays local to the browser. Selecting a video does not upload it.</p></div>
+          </section>
+
+          <section id="procedure">
+            <span class="docs-eyebrow">Minimum procedure</span>
+            <h2>Record once, seek later.</h2>
+            <div class="docs-step-list">
+              <div class="docs-step"><span class="docs-step__number">01</span><div><h3>Wait for Ready</h3><p>The status indicates when the local face-api models and the experimental image embedder have loaded.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">02</span><div><h3>Select Load MP4</h3><p>Choose a video from your device. The duration and millisecond timeline become available when the browser decodes its metadata.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">03</span><div><h3>Choose a baseline frame</h3><p>Pause the video and move the timeline to a clear face. Note the displayed time, then select <strong>Record face</strong>.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">04</span><div><h3>Choose a comparison frame</h3><p>Move to another time. Keep the variable you want to study clear, such as pose, expression, occlusion, or visible makeup.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">05</span><div><h3>Select Seek face</h3><p>The Loader detects the current face and compares it with the saved 2D and 3D records. A new activity entry is added at the time where you pressed the button.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">06</span><div><h3>Read the log, not only the label</h3><p>Record the timestamp, nearest ID, 2D distance, 3D similarity, thresholds, and whether each pipeline returned a face.</p></div></div>
+            </div>
+
+            <figure class="docs-figure">
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/loader-01-empty.png" width="1400" height="397" alt="Empty Ghostmaxxing Video Loader stage with the Load MP4 control and disabled timeline" /></div>
+              <figcaption>The Loader before a file is selected. Face actions remain unavailable until the models and video are ready.<span class="docs-figure__provenance">Element capture · loader stage</span></figcaption>
+            </figure>
+
+            <figure class="docs-figure">
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/loader-02-video-loaded.png" width="1400" height="397" alt="Video Loader with a local MP4 visible at two seconds and the timeline enabled" /></div>
+              <figcaption>A local MP4 at a controlled playhead time. The documentation fixture uses 00:02.000; choose times appropriate to your own test.<span class="docs-figure__provenance">Element capture · requested timestamp 2 seconds</span></figcaption>
+            </figure>
+          </section>
+
+          <section id="actions">
+            <span class="docs-eyebrow">Two different actions</span>
+            <h2>Record creates the reference. Seek compares with it.</h2>
+            <table>
+              <thead><tr><th>Action</th><th>What it does</th><th>What appears in the log</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Record face</strong></td><td>Saves a 128-value face-api descriptor, a thumbnail when available, and an experimental image embedding under the same ID.</td><td>Saved ID, detection score, 2D landmark count, embedding length, and video position.</td></tr>
+                <tr><td><strong>Seek face</strong></td><td>Detects the face in the current frame and compares it with the faces already in memory.</td><td>Nearest 2D distance, nearest 3D similarity, faces compared, thresholds, and structured details.</td></tr>
+              </tbody>
+            </table>
+            <p>The 2D and 3D numbers have opposite directions. A lower face-api Euclidean distance is closer. A higher image-embedding cosine similarity is closer. Do not compare the raw numbers as if they used the same scale.</p>
+
+            <figure class="docs-figure">
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/loader-03-record-result.png" width="1400" height="288" alt="Video Loader activity log containing a Record face entry and diagnostic metadata" /></div>
+              <figcaption>Every button action produces a timestamped entry. Use the structured details when documenting a result.<span class="docs-figure__provenance">Element capture · activity log</span></figcaption>
+            </figure>
+          </section>
+
+          <section id="repeatability">
+            <span class="docs-eyebrow">Repeatability</span>
+            <h2>Control the frame. Record the environment.</h2>
+            <ul>
+              <li>Pause before pressing an action. Confirm the playhead after the seek completes.</li>
+              <li>Use the same file and timestamp when comparing revisions of the application.</li>
+              <li>Record browser, model files, hardware backend, and thresholds for consequential comparisons.</li>
+              <li>Do not treat the wall-clock time in the log as the video timestamp. The video position chip is the relevant one.</li>
+              <li>A frame with no detected face is a valid observation, but it does not produce an identity comparison.</li>
+            </ul>
+          </section>
+
+          <section id="limits">
+            <span class="docs-eyebrow">Limits</span>
+            <h2>A debugger is not a benchmark.</h2>
+            <p>The Loader makes a sequence repeatable, but it does not provide a representative dataset, ground-truth identity labels, attack success rates, or statistical uncertainty. The experimental 3D path uses a general image embedder. It is not equivalent to a dedicated, validated face-recognition model.</p>
+            <div class="docs-warning"><p>A close result in one frame does not prove stable identification. A distant result does not prove anonymity. Compare a series of controlled frames and describe the exact pipeline.</p></div>
+          </section>
+
+          <nav class="docs-next" aria-label="Continue reading">
+            <a class="docs-link" href="/docs/guides/lab.html">&#8592; Browser Lab guide</a>
+            <a class="docs-link" href="/docs/guides/ghostyle-transfer.html">Next: Ghostyle Transfer &#8594;</a>
+          </nav>
+        </article>
+
+        <aside class="docs-toc">
+          <h2>On this page</h2>
+          <nav>
+            <a href="#purpose">Purpose</a>
+            <a href="#procedure">Minimum procedure</a>
+            <a href="#actions">Record and Seek</a>
+            <a href="#repeatability">Repeatability</a>
+            <a href="#limits">Limits</a>
+          </nav>
+        </aside>
+      </div>
