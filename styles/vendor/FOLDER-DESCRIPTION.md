@@ -2,6 +2,6 @@
 
 This folder contains locally mirrored Google Fonts CSS and `.woff2` font files.
 
-The assets come from Google Fonts manifests for Atkinson Hyperlegible and Newsreader. `styles/pages.css`, `specimen.html`, and `genealogy.html` import the local CSS so development and demos do not need to fetch font files from third-party hosts.
+The assets come from Google Fonts manifests for Atkinson Hyperlegible, Newsreader, and the local display/code families. The page styles and public pages import the local CSS so development and demos do not need to fetch font files from third-party hosts.
 
 The font binaries and mirrored CSS are excluded from code2prompt because they are vendor assets. The repository copy keeps the app self-hostable; this summary is enough context for chatbot review.
