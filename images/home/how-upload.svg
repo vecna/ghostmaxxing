@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="220"
+   height="220"
+   viewBox="0 0 220 220"
+   role="img"
+   aria-labelledby="title desc"
+   version="1.1"
+   id="svg9"
+   sodipodi:docname="how-upload.svg"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs9" />
+  <sodipodi:namedview
+     id="namedview9"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="3.6181818"
+     inkscape:cx="110"
+     inkscape:cy="110"
+     inkscape:window-width="1683"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g5" />
+  <title
+     id="title">Choose whether to upload a result</title>
+  <desc
+     id="desc">A stylised face card below an upload arrow and an explicit checked consent control.</desc>
+  <rect
+     width="220"
+     height="220"
+     fill="#fff1cf"
+     id="rect1" />
+  <path
+     d="M0 162h220v58H0z"
+     fill="#f26a1b"
+     id="path1" />
+  <g
+     transform="translate(49 67)"
+     id="g5">
+    <rect
+       x="0"
+       y="0"
+       width="122"
+       height="119"
+       fill="#fff1cf"
+       stroke="#0a0a08"
+       stroke-width="3"
+       id="rect2" />
+    <g
+       id="g13"
+       transform="matrix(0.5813036,0,0,0.52102368,-0.54318036,-1.4256807)">
+      <path
+         d="m 78,51 c -15,12 -22,35 -20,65 3,39 23,68 50,68 27,0 47,-29 50,-68 C 160,86 153,63 138,51 123,38 93,38 78,51 Z"
+         fill="#fff1cf"
+         stroke="#0a0a08"
+         stroke-width="3"
+         id="path2" />
+      <path
+         d="m 73,58 c 8,-20 27,-30 50,-25 18,4 31,17 35,38 C 144,60 126,55 108,55 95,55 83,57 73,62 Z"
+         fill="#072e26"
+         stroke="#0a0a08"
+         stroke-width="3"
+         id="path3" />
+      <path
+         d="m 64,84 38,-10 8,26 -43,13 z"
+         fill="#f26a1b"
+         stroke="#0a0a08"
+         stroke-width="2.5"
+         id="path4" />
+      <path
+         d="m 116,80 34,6 -5,25 -31,-11 z"
+         fill="#f0c24a"
+         stroke="#0a0a08"
+         stroke-width="2.5"
+         id="path5" />
+      <path
+         d="m 122,116 34,9 -17,27 -27,-12 z"
+         fill="#0b4a3c"
+         stroke="#0a0a08"
+         stroke-width="2.5"
+         id="path6-3" />
+      <path
+         d="m 88,143 c 12,-8 27,-8 40,1 -4,12 -12,18 -20,18 -9,0 -16,-6 -20,-19 z"
+         fill="#ff5f8f"
+         stroke="#0a0a08"
+         stroke-width="2.5"
+         id="path7-6" />
+      <path
+         d="m 72,96 c 8,-7 19,-7 27,0 -8,6 -19,6 -27,0 z m 47,0 c 8,-7 19,-7 27,0 -8,6 -19,6 -27,0 z"
+         fill="#fff1cf"
+         stroke="#0a0a08"
+         stroke-width="2.5"
+         id="path8-7" />
+      <circle
+         cx="86"
+         cy="96"
+         r="3.5"
+         fill="#0a0a08"
+         id="circle8" />
+      <circle
+         cx="133"
+         cy="96"
+         r="3.5"
+         fill="#0a0a08"
+         id="circle9-5" />
+      <path
+         d="m 109,101 -5,24 10,2"
+         fill="none"
+         stroke="#0a0a08"
+         stroke-width="3"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         id="path9-3" />
+    </g>
+  </g>
+  <path
+     d="M110 71V22M91 42l19-20 19 20"
+     fill="none"
+     stroke="#0b4a3c"
+     stroke-width="5"
+     stroke-linecap="square"
+     stroke-linejoin="miter"
+     id="path6" />
+  <path
+     d="M76 53H48v43"
+     fill="none"
+     stroke="#0b4a3c"
+     stroke-width="3"
+     stroke-dasharray="6 6"
+     id="path7" />
+  <path
+     d="M144 53h28v43"
+     fill="none"
+     stroke="#0b4a3c"
+     stroke-width="3"
+     stroke-dasharray="6 6"
+     id="path8" />
+  <g
+     transform="translate(149 157)"
+     id="g9">
+    <rect
+       width="45"
+       height="38"
+       fill="#061f1a"
+       stroke="#0a0a08"
+       stroke-width="3"
+       id="rect8" />
+    <rect
+       x="8"
+       y="9"
+       width="18"
+       height="18"
+       fill="#fff1cf"
+       id="rect9" />
+    <path
+       d="M11 18l5 5 9-11"
+       fill="none"
+       stroke="#2f7a5c"
+       stroke-width="3"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path9" />
+    <circle
+       cx="35"
+       cy="19"
+       r="4"
+       fill="#f0c24a"
+       id="circle9" />
+  </g>
+</svg>

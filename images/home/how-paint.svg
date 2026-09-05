@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220" role="img" aria-labelledby="title desc">
+  <title id="title">Paint a face intervention</title>
+  <desc id="desc">A stylised face with asymmetric marks around the eyes, cheek and mouth, beside a small brush.</desc>
+  <rect width="220" height="220" fill="#fff1cf"/>
+  <path d="M162 0h58v220h-58z" fill="#2f7a5c"/>
+  <path d="M78 51c-15 12-22 35-20 65 3 39 23 68 50 68s47-29 50-68c2-30-5-53-20-65-15-13-45-13-60 0z" fill="#fff1cf" stroke="#0a0a08" stroke-width="3"/>
+  <path d="M73 58c8-20 27-30 50-25 18 4 31 17 35 38-14-11-32-16-50-16-13 0-25 2-35 7z" fill="#072e26" stroke="#0a0a08" stroke-width="3"/>
+
+  <path d="M64 84l38-10 8 26-43 13z" fill="#f26a1b" stroke="#0a0a08" stroke-width="2.5"/>
+  <path d="M116 80l34 6-5 25-31-11z" fill="#f0c24a" stroke="#0a0a08" stroke-width="2.5"/>
+  <path d="M122 116l34 9-17 27-27-12z" fill="#0b4a3c" stroke="#0a0a08" stroke-width="2.5"/>
+  <path d="M88 143c12-8 27-8 40 1-4 12-12 18-20 18-9 0-16-6-20-19z" fill="#ff5f8f" stroke="#0a0a08" stroke-width="2.5"/>
+
+  <path d="M72 96c8-7 19-7 27 0-8 6-19 6-27 0zM119 96c8-7 19-7 27 0-8 6-19 6-27 0z" fill="#fff1cf" stroke="#0a0a08" stroke-width="2.5"/>
+  <circle cx="86" cy="96" r="3.5" fill="#0a0a08"/>
+  <circle cx="133" cy="96" r="3.5" fill="#0a0a08"/>
+  <path d="M109 101l-5 24 10 2" fill="none" stroke="#0a0a08" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <path d="M28 179l26-53 13 7-31 50z" fill="#f0c24a" stroke="#0a0a08" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M54 126l6-13 13 7-6 13z" fill="#fff1cf" stroke="#0a0a08" stroke-width="3"/>
+  <path d="M60 113c3-13 8-20 14-23 4 8 3 17-1 30z" fill="#ff5f8f" stroke="#0a0a08" stroke-width="3" stroke-linejoin="round"/>
+
+  <path d="M171 31c13 11 20 23 21 36M176 74l16-7-7-16" fill="none" stroke="#fff1cf" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

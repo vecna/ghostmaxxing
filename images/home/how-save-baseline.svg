@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220" role="img" aria-labelledby="title desc">
+  <title id="title">Save a local face baseline</title>
+  <desc id="desc">A stylised face inside a detection frame, with a small saved-record card.</desc>
+  <rect width="220" height="220" fill="#fff1cf"/>
+  <path d="M0 0h58v220H0z" fill="#f26a1b"/>
+  <path d="M16 20h34M16 20v34M204 20h-34M204 20v34M16 200h34M16 200v-34M204 200h-34M204 200v-34" fill="none" stroke="#0b4a3c" stroke-width="4"/>
+
+  <path d="M80 51c-15 12-22 35-20 65 3 39 23 68 50 68s47-29 50-68c2-30-5-53-20-65-15-13-45-13-60 0z" fill="#fff1cf" stroke="#0a0a08" stroke-width="3"/>
+  <path d="M75 58c8-20 27-30 50-25 18 4 31 17 35 38-14-11-32-16-50-16-13 0-25 2-35 7z" fill="#072e26" stroke="#0a0a08" stroke-width="3"/>
+  <path d="M72 96c8-7 19-7 27 0-8 6-19 6-27 0zM121 96c8-7 19-7 27 0-8 6-19 6-27 0z" fill="#f0c24a" stroke="#0a0a08" stroke-width="2.5"/>
+  <circle cx="86" cy="96" r="3.5" fill="#0a0a08"/>
+  <circle cx="134" cy="96" r="3.5" fill="#0a0a08"/>
+  <path d="M110 100l-5 25 10 2M92 145c12 9 24 9 36 0" fill="none" stroke="#0a0a08" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g fill="#2f7a5c">
+    <circle cx="72" cy="83" r="2.5"/><circle cx="99" cy="83" r="2.5"/>
+    <circle cx="121" cy="83" r="2.5"/><circle cx="148" cy="83" r="2.5"/>
+    <circle cx="86" cy="96" r="2.5"/><circle cx="134" cy="96" r="2.5"/>
+    <circle cx="110" cy="127" r="2.5"/><circle cx="92" cy="145" r="2.5"/>
+    <circle cx="128" cy="145" r="2.5"/><circle cx="110" cy="157" r="2.5"/>
+  </g>
+
+  <g transform="translate(138 151)">
+    <rect x="0" y="0" width="58" height="48" fill="#061f1a" stroke="#0a0a08" stroke-width="3"/>
+    <circle cx="18" cy="20" r="9" fill="#fff1cf"/>
+    <path d="M6 39c1-9 6-13 12-13s11 4 12 13" fill="#fff1cf"/>
+    <path d="M38 15l5 5 9-11" fill="none" stroke="#f0c24a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

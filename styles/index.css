@@ -262,8 +262,8 @@ body {
 }
 
 /* ---- "How it works" steps -----------------------------------------------
-   Icon, title, a square image (placeholder until real captures are dropped
-   in), then the explanatory line. Icons are UI glyphs borrowed from the lab
+   Icon, title, a square process illustration, then the explanatory line.
+   Icons are UI glyphs borrowed from the lab
    dock, not the illustrative .cam cameras above, so they get their own,
    simpler treatment. */
 .gm-how-grid {
@@ -290,13 +290,15 @@ body {
 }
 
 .gm-how-image {
+    display: block;
     aspect-ratio: 1 / 1;
     width: 100%;
     max-width: 220px;
     margin: 0 0 .6rem;
-    background: var(--gm-panel);
-    border: 1px dashed var(--gm-border-strong);
-    border-radius: 6px;
+    object-fit: cover;
+    background: var(--gm-cream);
+    border: 2px solid var(--gm-ink);
+    border-radius: 0;
 }
 
 .gm-how-text {
