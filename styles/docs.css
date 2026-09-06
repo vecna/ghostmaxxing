@@ -512,6 +512,13 @@
   width: 2rem;
 }
 
+.docs-footer-meta {
+  margin: 0;
+  color: var(--gm-cream);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}
+
 @media (max-width: 1050px) {
   .docs-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

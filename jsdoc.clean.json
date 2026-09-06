@@ -15,7 +15,7 @@
   },
   "opts": {
     "theme_opts": {
-      "footer": "<div style='text-align: center; padding: 1rem 0;'>Ghostmaxxing v0.9.0 | Last updated: September 2026</div>"
+      "footer": "<div style='text-align: center; padding: 1rem 0;'>Ghostmaxxing v0.9.9 | Last updated: September 2026</div>"
     },
     "template": "node_modules/clean-jsdoc-theme/dist",
     "tutorials": "./tutorials",

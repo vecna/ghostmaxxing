@@ -1,5 +1,8 @@
 # Functional documentation source
 
+Version: 0.9.9  
+Last updated: September 2026
+
 The public functional documentation is hand-authored here and generated into `docs/` by `npm run docs:functional`.
 
 `en/pages.json` is the page index. Each record declares a body fragment, output path, page title, description, and active documentation-navigation section. Body fragments contain only the content inserted inside the shared page shell.

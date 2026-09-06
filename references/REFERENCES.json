@@ -1,5 +1,7 @@
 {
   "schema_version": "2.1",
+  "version": "0.9.9",
+  "last_updated": "September 2026",
   "project_scope": "anti-surveillance / face-obfuscation / makeup-adjacent artistic, research, and activism references",
   "ordering_definition": "Default rendering order is newest first. Primary key year descending; secondary key closeness descending; tertiary key title ascending. The HTML page also exposes a genealogy mode that reverses the year order.",
   "language": "en",

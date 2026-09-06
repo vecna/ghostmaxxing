@@ -5,6 +5,8 @@
   "type": "object",
   "required": [
     "schema_version",
+    "version",
+    "last_updated",
     "project_scope",
     "ordering_definition",
     "language",
@@ -14,6 +16,8 @@
   ],
   "properties": {
     "schema_version": { "type": "string", "pattern": "^2\\.[0-9]+$" },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "last_updated": { "type": "string", "pattern": "^(January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{4}$" },
     "project_scope": { "type": "string", "minLength": 1 },
     "ordering_definition": { "type": "string", "minLength": 1 },
     "language": { "type": "string", "const": "en" },

@@ -32,6 +32,8 @@ function validateReferences(data) {
   assert(data && typeof data === 'object', 'REFERENCES.json must contain an object.', errors);
   assert(Array.isArray(data.references), 'references must be an array.', errors);
   assert(data.language === 'en', 'language must be "en".', errors);
+  assert(typeof data.version === 'string' && /^\d+\.\d+\.\d+$/.test(data.version), 'version must be a semantic version.', errors);
+  assert(typeof data.last_updated === 'string' && /^(January|February|March|April|May|June|July|August|September|October|November|December) \d{4}$/.test(data.last_updated), 'last_updated must use "Month YYYY".', errors);
 
   const tagDefs = data.tag_definitions || {};
   const allowed = {

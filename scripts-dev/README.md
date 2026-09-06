@@ -1,6 +1,6 @@
 # Development and maintenance scripts
 
-Version 1.0 · 4 September 2026
+Version 0.9.9 · Last updated: September 2026
 
 This guide describes the 10 executable scripts, together with the relevant commands in `package.json`. Commands and side effects were checked against those sources. They were not run against the complete application or a backend.
 
@@ -129,7 +129,7 @@ The English text becomes the gettext `msgid`. Context, notes, keys and Italian t
 
 The extractor locates the literal `export const messages = ` and the following newline plus `};`, then evaluates the extracted object in a VM context. A formatting or catalog-shape change can produce `messages export not found`, `messages object terminator not found` or an evaluation error.
 
-The command creates `translations/` if necessary and overwrites both outputs. It does not import completed translations, call Crowdin, translate new strings or extract documentation prose. The POT header currently contains a hardcoded project version of `0.1.0`, while the supplied package declares `1.0.0`.
+The command creates `translations/` if necessary and overwrites both outputs. It does not import completed translations, call Crowdin, translate new strings or extract documentation prose. The POT header and package both declare project version `0.9.9`.
 
 Review the resulting diff, string count and language columns before using the files in the translation workflow. Functional documentation needs a separate prose translation workflow.
 
@@ -263,7 +263,7 @@ Example for a local test endpoint; substitute the endpoint, fixture path and ver
 UPLOAD_ENDPOINT='http://localhost:3000/api/uploads' \
 CLIP_PATH='./tmp/test-clip.mp4' \
 CONSENT_VERSION='2026-07-v1' \
-APP_VERSION='1.0.0' \
+APP_VERSION='0.9.9' \
 node scripts-dev/test-upload-consent-post.cjs
 ```
 

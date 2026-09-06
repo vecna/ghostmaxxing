@@ -279,6 +279,8 @@ function main() {
 
   let html = fs.readFileSync(TEMPLATE_PATH, 'utf8');
   html = html
+    .replace(/{{REFERENCES_VERSION}}/g, esc(data.version))
+    .replace(/{{REFERENCES_LAST_UPDATED}}/g, esc(data.last_updated))
     .replace(/{{REFERENCE_COUNT}}/g, String(refs.length))
     .replace(/{{YEAR_MIN}}/g, String(yearMin))
     .replace(/{{YEAR_MAX}}/g, String(yearMax))

@@ -1,6 +1,6 @@
 {
   "name": "ghostmaxxing",
-  "version": "1.0.0",
+  "version": "0.9.9",
   "description": "Web AR laboratory for testing adversarial makeup and anti-biometric facial camouflage in the browser.",
   "license": "AGPL-3.0-or-later",
   "private": true,

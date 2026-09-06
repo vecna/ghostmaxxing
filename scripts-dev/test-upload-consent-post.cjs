@@ -21,7 +21,7 @@
  * - UPLOAD_ENDPOINT   Backend URL (example: http://localhost:3000/api/uploads)
  * - CLIP_PATH         Path to local video file used as clip.blob equivalent
  * - CONSENT_VERSION   Example: 2026-07-v1
- * - APP_VERSION       Example: 0.1.0
+ * - APP_VERSION       Example: 0.9.9
  *
  * Optional environment variables:
  * - CLIP_FILENAME     Multipart filename (default: basename(CLIP_PATH))
@@ -35,7 +35,7 @@
  *   UPLOAD_ENDPOINT=http://localhost:3000/api/uploads \
  *   CLIP_PATH=./tmp/ghostati-recording-123.mp4 \
  *   CONSENT_VERSION=2026-07-v1 \
- *   APP_VERSION=0.1.0 \
+ *   APP_VERSION=0.9.9 \
  *   node scripts-dev/test-upload-consent-post.cjs
  */
 

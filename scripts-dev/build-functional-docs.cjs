@@ -16,6 +16,8 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..');
 const SOURCE_ROOT = path.join(ROOT, 'docs-src', 'en');
 const PAGE_INDEX = path.join(SOURCE_ROOT, 'pages.json');
+const PROJECT_VERSION = '0.9.9';
+const LAST_UPDATED = 'September 2026';
 
 function escapeAttribute(value) {
   return String(value)
@@ -100,6 +102,7 @@ function siteFooter() {
         <a href="https://github.com/vecna/ghostmaxxing">Code</a>
         <a href="/loader.html">Video Loader</a>
       </div>
+      <p class="docs-footer-meta">Version ${PROJECT_VERSION} · Last updated: ${LAST_UPDATED}</p>
     </div>
   </footer>`;
 }
