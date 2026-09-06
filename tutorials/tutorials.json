@@ -16,5 +16,8 @@
   },
   "globaleaks-submission-channels": {
     "title": "(internal) Leaking channels"
+  },
+  "receiving-submissions": {
+    "title": "(internal) Receiving submissions"
   }
 }

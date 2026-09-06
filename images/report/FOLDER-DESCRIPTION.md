@@ -1,7 +1,20 @@
 # images/report
 
-This folder contains SVG illustrations used by `report.html` and related report-page styling.
+SVG line icons (24x24, `currentColor`, stroke 1.6) used by `report.html` in the
+audience-card icon slots. One per questionnaire, in the order of
+`tutorials/globaleaks-submission-channels.md`:
 
-The assets depict report concepts such as public sightings, countermeasures, procurement officials, system overview, affected individuals, weak spots, control panels, and contracts/market pressure. `report.html` places them in the audience-card icon slots.
+| Card | File |
+|---|---|
+| You were stopped, flagged or misidentified | `affected-individuals.svg` |
+| You build, integrate or test the technology | `builders-testers.svg` (chip with a flask) |
+| You operate it, day to day | `control-panel.svg` |
+| You bought it, sold it or signed it off | `paperwork-signoff.svg` (document, signature, seal) |
+| You noticed something, or none of the above fits | `public-sightings.svg` |
 
-The SVG files are excluded from code2prompt because they are visual assets rather than source logic. This folder description is included so reviewers understand what the omitted report art represents.
+`system-overview.svg`, `test-countermeasures.svg`, `weak-spots.svg`,
+`contracts-market.svg` and `procurement-officials.svg` belonged to the eight-
+channel version and are no longer referenced; kept for now, safe to delete.
+
+The SVG files are excluded from code2prompt because they are visual assets
+rather than source logic.
