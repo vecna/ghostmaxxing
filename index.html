@@ -75,7 +75,7 @@
 
   <body>
 
-    <!-- ===== SITE HEADER — canonical. Byte-identical on every page. =========
+    <!-- ===== SITE HEADER: canonical. Byte-identical on every page. =========
        Only two things may differ per page: aria-current="page" on the link to
        the current page, and the optional .gm-site-nav__extra slot.
        Styling: styles/chrome.css. Behaviour: lab-js/nav.js.
@@ -125,7 +125,7 @@
        THE STAGE. Six camera types, six steps.
 
        Tap a type: every camera of it leaves the field, and a fact appears with
-       the camera beside it — drawn LIVE, because the sentence is about
+       the camera beside it, drawn LIVE, because the sentence is about
        something it does now. Nothing here is defeated by being tapped.
 
        Behind the field, visible from the first paint, is the plume head. It
@@ -137,11 +137,11 @@
        still true.
 
        plume-head.svg and whirlwind.svg are PAINTED files, so <img> is correct.
-       The cam-*.svg below are class-driven and must stay templates — through
+       The cam-*.svg below are class-driven and must stay templates: through
        <img> they render solid black.
        =================================================================== -->
     <section id="camStage" class="cam-stage" data-cleared="0"
-      aria-label="Surveillance landscape — tap a camera to read a fact about it">
+      aria-label="Surveillance landscape: tap a camera to read a fact about it">
 
       <img id="camPlume" class="cam-plume" src="/images/motifs/plume-head.svg"
         alt aria-hidden="true" />
@@ -210,7 +210,7 @@
             src="/images/home/how-save-baseline.svg"
             alt="Stylised face framed as a saved local baseline" width="220"
             height="220" />
-          <p class="gm-how-text">Save your face while it's clean — a private
+          <p class="gm-how-text">Save your face while it's clean. A private
             baseline, kept on your device, to test camouflage against.</p>
         </div>
         <div class="gm-how-step">
@@ -226,7 +226,7 @@
           <img class="gm-how-image" src="/images/home/how-paint.svg"
             alt="Stylised face with asymmetric paint around the eyes, cheek and mouth"
             width="220" height="220" />
-          <p class="gm-how-text">Apply a Ghostyle or your own intervention —
+          <p class="gm-how-text">Apply a Ghostyle or your own intervention:
             makeup, an overlay, a physical change to the face.</p>
         </div>
         <div class="gm-how-step">
@@ -243,7 +243,7 @@
             alt="Stylised face card with an upload arrow and an explicit optional consent control"
             width="220" height="220" />
           <p class="gm-how-text">Share your result to the gallery or generate
-            a report — entirely optional, and always your call.</p>
+            a report. Optional, and always your call.</p>
         </div>
       </div>
     </section>
@@ -260,7 +260,7 @@
             longer lineage than most people think</p>
           <p style="font-size:.92rem;margin:0 0 1rem;opacity:.85">CV Dazzle,
             adversarial makeup, physical-world attacks, face-obfuscation
-            research — each entry names what was demonstrated and what remains
+            research. Each entry names what was demonstrated and what remains
             limited.</p>
           <a href="/references/"
             style="text-decoration:none;font-weight:700;font-size:.9rem">Explore
@@ -282,9 +282,9 @@
       </div>
     </section>
 
-    <!-- ===== SITE FOOTER — canonical. Byte-identical on every page. =========
+    <!-- ===== SITE FOOTER: canonical. Byte-identical on every page. =========
        Pyre band, soil edge, link row. Replaces the .camera-band div, which
-       pointed at images/homepage-camera-band.svg — not in the repo, so it only
+       pointed at images/homepage-camera-band.svg, not in the repo, so it only
        ever painted a faint gradient. The camera icons are INLINE <svg>: the
        files in images/icons/ are class-driven and render black through <img>.
        ==================================================================== -->
@@ -363,7 +363,7 @@
        (class="cam-shell", no fill attribute), so an <img src="…"> of one has no
        stylesheet and every shape falls back to black. Cloned into the document
        they are ordinary nodes and cameras.css paints them. Geometry here is a
-       verbatim copy of images/icons/ — that directory stays the source. -->
+       verbatim copy of images/icons/. That directory stays the source. -->
     <template id="camtpl-dome">
       <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
         focusable="false">
