@@ -19,5 +19,14 @@
   },
   "receiving-submissions": {
     "title": "(internal) Receiving submissions"
+  },
+  "abuse-dossier-live-lenses": {
+    "title": "(internal) List of abuses w/ cameras"
+  },
+  "github-actions": {
+    "title": "(internal) GitHub actions"
   }
 }
+
+
+
