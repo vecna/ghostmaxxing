@@ -12,6 +12,10 @@ audience-card icon slots. One per questionnaire, in the order of
 | You bought it, sold it or signed it off | `paperwork-signoff.svg` (document, signature, seal) |
 | You noticed something, or none of the above fits | `public-sightings.svg` |
 
+`https-access.svg` and `tor-onion.svg` identify the two access links shown on
+every card. They are reusable 24x24 line icons following the same stroke and
+`currentColor` convention as the questionnaire icons.
+
 `system-overview.svg`, `test-countermeasures.svg`, `weak-spots.svg`,
 `contracts-market.svg` and `procurement-officials.svg` belonged to the eight-
 channel version and are no longer referenced; kept for now, safe to delete.
