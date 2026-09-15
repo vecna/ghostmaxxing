@@ -6,7 +6,9 @@ The scripts here are loaded directly by the HTML pages without a bundling step, 
 
 ## Files
 
-- `index.js` — homepage camera-field interaction. It builds the animated field of camera icons, loads fact copy from `/data/camera-facts.json`, reveals camera facts as each type is cleared, updates the progress state, and triggers the finale when all camera types are found.
+- `camera-stage.js` — the camera-field interaction, formerly `index.js` and formerly on the homepage. It now runs on `about.html`, between who is behind the project and the vision. It builds the animated field of camera icons, loads fact copy from `/data/camera-facts.json`, reveals camera facts as each type is cleared, updates the progress state, and triggers the finale when all camera types are found. Its stylesheet is `styles/camera-stage.css` and it clones the camera `<template>` elements that live in the same page.
+
+- `story.js` — homepage story carousel. Eight hand-picked cards on the browser's own horizontal scroller: it builds the dots and arrows, opens on the second card rather than the first, and keeps the current card in step with the scroll position. It adds no motion of its own and the carousel never advances by itself. Without it the track is still an ordinary horizontal scroller carrying every card, so the story stays readable.
 
 - `nav.js` — shared site navigation menu behavior for the "Know more" dropdown. It toggles the menu, handles outside clicks and Escape key dismissal, and closes the menu when focus leaves the nav.
 

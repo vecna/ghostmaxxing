@@ -100,7 +100,7 @@
               <p class="gm-site-menu__kicker">Informative</p>
               <ul>
                 <li><a href="/about.html">Vision &amp; about</a></li>
-                <li><a href="/genealogy.html">The genealogy of the read</a></li>
+                <li><a href="/genealogy.html">Genealogy</a></li>
                 <li><a href="/report.html">Report a deployment</a></li>
                 <li><a href="/workshops.html">Workshops</a></li>
               </ul>
@@ -122,52 +122,199 @@
     </header>
 
     <!-- ======================================================================
-       THE STAGE. Six camera types, six steps.
+       THE STORY. One Ghostyle, three faces, and what happened to it.
 
-       Tap a type: every camera of it leaves the field, and a fact appears with
-       the camera beside it, drawn LIVE, because the sentence is about
-       something it does now. Nothing here is defeated by being tapped.
+       This replaced the camera stage, which moved to /about.html. The stage
+       named six kinds of camera; this says what the lab is for, which is the
+       homepage's job.
 
-       Behind the field, visible from the first paint, is the plume head. It
-       does not appear as you clear types; it stops being hidden. The cameras
-       were the noise.
+       The argument is the order of the cards: a Ghostyle works on the face it
+       was drawn on, fails differently on two others, and comes back as a new
+       Ghostyle. It is not a gallery of successes, and it must not become one.
+       The two cream cards are the Ghostyle as an object, leaving and
+       returning: they are the loop, not decoration.
 
-       At six of six the ground crosses soil -> cream over two seconds and the
-       whirlwind arrives. It is not a win screen. The closing line says what is
-       still true.
+       EVERY NUMBER IN THE CAPTIONS BELOW IS A PLACEHOLDER. They describe the
+       shape of the story, not a measurement, and they must be replaced before
+       this page is published. Produce the real ones with
 
-       plume-head.svg and whirlwind.svg are PAINTED files, so <img> is correct.
-       The cam-*.svg below are class-driven and must stay templates: through
-       <img> they render solid black.
+         node scripts-dev/lab-capture.cjs render --image <photo> --ghostyle <id>
+
+       which prints the distance and the threshold, and type them in here by
+       hand. There is no data file behind this and there should not be one:
+       the cards are chosen, not generated.
+
+       Measure first and write the captions afterwards. If a Ghostyle does not
+       cross on the face you picked, the caption says so and the story changes
+       shape; it does not keep the sentence and swap the number. One real
+       reading already contradicts a placeholder here. Against the repo's own
+       fixtures, cv-dazzle-1 measured:
+
+         figure1-clean   0.54 against 0.58   still matched
+         figure3-clean   0.59 against 0.58   crossed
+
+       which is the opposite of the order below, and the opposite of the
+       reason card 4 gives for its own failure. Either pick faces and
+       Ghostyles whose readings tell this story, or write the story the
+       readings tell. Do not keep the sentence and change the number.
+
+       The pictures are placeholders too. Cards 1, 2 and 4 are genuine lab
+       output from the command above; cards 5 to 7 are crops of the synthetic
+       fixtures, standing in until the real pairs are chosen. Replace a card by
+       overwriting the file of the same name in images/home/story/.
+
+       For a card that shows a pattern, render it with --layers ghostyle on its
+       own. The clean pass of that same run comes back carrying the detection
+       scaffold, which is card 1, so one command produces both halves of a
+       pair from one photograph and one frame.
+
+       The carousel opens on card 2, so a reader who never swipes still gets
+       the whole proposition, and one who swipes twice gets the failure and
+       the repair. See pages-js/story.js.
        =================================================================== -->
-    <section id="camStage" class="cam-stage" data-cleared="0"
-      aria-label="Surveillance landscape: tap a camera to read a fact about it">
-
-      <img id="camPlume" class="cam-plume" src="/images/motifs/plume-head.svg"
-        alt aria-hidden="true" />
-
-      <div id="camField" style="position:absolute;inset:0;z-index:2"></div>
-
-      <!-- <img class="cam-whirl" src="/images/motifs/whirlwind.svg" alt="" aria-hidden="true" /> -->
-
-      <div id="camHalfTop" class="cam-half top" aria-live="polite"></div>
-      <div id="camHalfBottom" class="cam-half bottom" aria-live="polite"></div>
-
-      <div id="camFinale" class="cam-finale" hidden>
-        <p class="cam-finale__line gm-prose">
-          <span class="cam-finale__padded">
-            Six cameras named
-          </span>
-          <span class="cam-finale__padded">
-            Two are still <a href="genealogy.html">reading</a>
-          </span>
-        </p>
-        <div class="cam-finale__actions">
-          <a class="gm-site-cta" href="/lab.html">Open the lab &#8599;</a>
-          <button type="button" id="camReset" class="cam-reset">Put them
-            back</button>
-        </div>
+    <section class="story" aria-labelledby="storyTitle">
+      <div class="story__head">
+        <p class="story__kicker">What the lab is for</p>
+        <h2 class="story__title" id="storyTitle">One Ghostyle, three faces.</h2>
       </div>
+
+      <div class="story__viewport">
+        <ol class="story__track" id="storyTrack">
+          <li class="story__card" id="story-card-1">
+            <figure class="story__figure">
+              <img class="story__image" src="/images/home/story/card-01-baseline.jpg"
+                alt="A face in the lab with the detection box and the 68-point scaffold drawn over it."
+                width="1024" height="1280" decoding="async" />
+              <figcaption class="story__caption">
+                <p class="story__state">Baseline</p>
+                <p class="story__text">Saved as the identity. Every distance
+                  after this is measured against this frame.</p>
+              </figcaption>
+            </figure>
+          </li>
+
+          <li class="story__card" id="story-card-2">
+            <figure class="story__figure">
+              <img class="story__image" src="/images/home/story/card-02-ghostyle1.jpg"
+                alt="The same face and the same frame, with the Ghostyle 1 pattern drawn across it."
+                width="1024" height="1280" decoding="async" />
+              <figcaption class="story__caption">
+                <p class="story__state">Ghostyle 1, same frame</p>
+                <p class="story__text">Distance 0.71 against a 0.55 threshold.
+                  The lab stopped matching this face to the saved identity.</p>
+              </figcaption>
+            </figure>
+          </li>
+
+          <li class="story__card story__card--object" id="story-card-3">
+            <figure class="story__figure">
+              <img class="story__image" src="/images/home/story/ghostyle-1.svg"
+                alt="The pattern of Ghostyle 1 alone, laid over the outline of a face on a cream ground."
+                width="800" height="1000" decoding="async" />
+              <figcaption class="story__caption">
+                <p class="story__state">This pattern is a Ghostyle</p>
+                <p class="story__text">A file, not a look. It can be sent to
+                  someone else and applied to their face.</p>
+              </figcaption>
+            </figure>
+          </li>
+
+          <li class="story__card" id="story-card-4">
+            <figure class="story__figure">
+              <img class="story__image" src="/images/home/story/card-04-face2-ghostyle1.jpg"
+                alt="A second face carrying the same Ghostyle 1 pattern, still inside the detection box."
+                width="1024" height="1280" loading="lazy" decoding="async" />
+              <figcaption class="story__caption">
+                <p class="story__state">The same Ghostyle, a second face</p>
+                <p class="story__text">Distance 0.19. Still matched. The
+                  pattern depends on contrast it does not get on darker skin,
+                  so it has to be redrawn rather than copied.</p>
+              </figcaption>
+            </figure>
+          </li>
+
+          <li class="story__card" id="story-card-5">
+            <figure class="story__figure">
+              <img class="story__image" src="/images/home/story/card-05-face2-ghostyle2.jpg"
+                alt="The second face with a redrawn pattern, Ghostyle 2, in lighter pigments."
+                width="1024" height="1280" loading="lazy" decoding="async" />
+              <figcaption class="story__caption">
+                <p class="story__state">Redrawn as Ghostyle 2</p>
+                <p class="story__text">Different pigments, same geometry.
+                  Distance 0.68. Crossed, on this face, on this model.</p>
+              </figcaption>
+            </figure>
+          </li>
+
+          <li class="story__card" id="story-card-6">
+            <figure class="story__figure">
+              <img class="story__image" src="/images/home/story/card-06-face3-ghostyle1.jpg"
+                alt="A third face carrying Ghostyle 1, still inside the detection box."
+                width="1024" height="1280" loading="lazy" decoding="async" />
+              <figcaption class="story__caption">
+                <p class="story__state">Ghostyle 1 again, a third face</p>
+                <p class="story__text">Distance 0.44. It moved and still
+                  matched. A partial effect is not a result.</p>
+              </figcaption>
+            </figure>
+          </li>
+
+          <li class="story__card" id="story-card-7">
+            <figure class="story__figure">
+              <img class="story__image" src="/images/home/story/card-07-face3-ghostyle3.jpg"
+                alt="The third face with a trimmed pattern, Ghostyle 3, using fewer and harder-edged shapes."
+                width="1024" height="1280" loading="lazy" decoding="async" />
+              <figcaption class="story__caption">
+                <p class="story__state">Trimmed to Ghostyle 3</p>
+                <p class="story__text">Less paint, harder edges. Distance 0.63.
+                  Crossed.</p>
+              </figcaption>
+            </figure>
+          </li>
+
+          <li class="story__card story__card--object" id="story-card-8">
+            <figure class="story__figure">
+              <img class="story__image" src="/images/home/story/ghostyle-3.svg"
+                alt="The pattern of Ghostyle 3 alone, laid over the outline of a face on a cream ground."
+                width="800" height="1000" loading="lazy" decoding="async" />
+              <figcaption class="story__caption">
+                <p class="story__state">Ghostyle 3 goes back to the archive</p>
+                <p class="story__text">Someone else will find where it fails.
+                  <a href="/lab.html">Open the lab</a> and draw the next one.</p>
+              </figcaption>
+            </figure>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Built by pages-js/story.js. Without JavaScript the track is still an
+         ordinary horizontal scroller, so the story stays readable; only the
+         dots, the arrows and the opening position are lost. -->
+      <div class="story__controls" id="storyControls" hidden>
+        <button type="button" class="story__arrow" data-story-step="-1"
+          aria-label="Previous card">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"
+            fill="none" stroke="currentColor" stroke-width="2.4"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 5 8 12l7 7" />
+          </svg>
+        </button>
+        <ol class="story__dots" id="storyDots"></ol>
+        <button type="button" class="story__arrow" data-story-step="1"
+          aria-label="Next card">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"
+            fill="none" stroke="currentColor" stroke-width="2.4"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      <p class="story__conditions">Distances are measured in the browser lab
+        against its own face-recognition model, on frontal frames in even
+        light. A distance past the threshold means that model stopped matching
+        that frame. It is not protection, and it does not transfer to other
+        systems. The faces are synthetic and carry the AI Gen label.</p>
     </section>
 
     <section class="gm-prose"
@@ -359,106 +506,8 @@
       </div>
     </footer>
 
-    <!-- Camera icon source, cloned by pages-js/index.js into the hero field.
-       These are TEMPLATES, not <img>: images/icons/cam-*.svg are class-driven
-       (class="cam-shell", no fill attribute), so an <img src="…"> of one has no
-       stylesheet and every shape falls back to black. Cloned into the document
-       they are ordinary nodes and cameras.css paints them. Geometry here is a
-       verbatim copy of images/icons/. That directory stays the source. -->
-    <template id="camtpl-dome">
-      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
-        focusable="false">
-        <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
-        <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
-        <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
-        <circle class="cam-iris" id="iris-dome" cx="50" cy="44"
-          r="6.6"></circle>
-        <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
-      </svg>
-    </template>
-    <template id="camtpl-cube">
-      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
-        focusable="false">
-        <path class="cam-mount" d="M50,16 V6 M38,6 H62" stroke-width="5"></path>
-        <rect class="cam-shell" x="16" y="16" width="68" height="68"
-          rx="19"></rect>
-        <circle class="cam-dot cam-dot--ring" cx="73" cy="26" r="3.4"></circle>
-        <circle class="cam-lens" cx="50" cy="50" r="17"></circle>
-        <circle class="cam-iris" id="iris-cube" cx="50" cy="50"
-          r="7.5"></circle>
-        <circle class="cam-glint" cx="44.9" cy="44.9" r="2.9"></circle>
-      </svg>
-    </template>
-    <template id="camtpl-glasses">
-      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
-        focusable="false">
-        <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32"
-          stroke-width="5"></path>
-        <path class="cam-shell"
-          d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z"
-          stroke-linecap="round"></path>
-        <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
-        <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
-        <circle class="cam-iris cam-iris--void" id="iris-glasses-l" cx="28"
-          cy="45" r="9"></circle>
-        <circle class="cam-iris cam-iris--void" id="iris-glasses-r" cx="72"
-          cy="45" r="9"></circle>
-      </svg>
-    </template>
-    <template id="camtpl-pill">
-      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
-        focusable="false">
-        <path class="cam-mount" d="M40,36 V22 M28,22 H52"
-          stroke-width="5"></path>
-        <rect class="cam-shell" x="6" y="36" width="88" height="28"
-          rx="14"></rect>
-        <g class="cam-dot cam-dot--dark"><circle cx="62" cy="44"
-            r="2"></circle><circle cx="70" cy="50" r="2"></circle><circle
-            cx="62" cy="56" r="2"></circle><circle cx="78" cy="45"
-            r="2"></circle><circle cx="80" cy="55" r="2"></circle><circle
-            cx="86" cy="50" r="2"></circle></g>
-        <circle class="cam-lens" cx="30" cy="50" r="12"></circle>
-        <circle class="cam-iris" id="iris-pill" cx="30" cy="50"
-          r="5.3"></circle>
-        <circle class="cam-glint" cx="26.4" cy="46.4" r="2"></circle>
-      </svg>
-    </template>
-    <template id="camtpl-street">
-      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
-        focusable="false">
-        <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
-        <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
-        <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
-        <rect class="cam-shell" x="10" y="40" width="72" height="30"
-          rx="7"></rect>
-        <rect class="cam-panel" x="54" y="47" width="22" height="16"
-          rx="3"></rect>
-        <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle
-            cx="70" cy="51" r="2"></circle><circle cx="60" cy="59"
-            r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
-        <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
-        <circle class="cam-iris" id="iris-street" cx="32" cy="55"
-          r="5.3"></circle>
-        <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
-      </svg>
-    </template>
-    <template id="camtpl-bullet">
-      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
-        focusable="false">
-        <path class="cam-mount" d="M45,30 V12 M32,12 H58"
-          stroke-width="5"></path>
-        <rect class="cam-shell" x="16" y="36" width="66" height="34"
-          rx="5"></rect>
-        <path class="cam-mount" d="M12,30 H74 L84,40" stroke-width="5"></path>
-        <circle class="cam-lens" cx="60" cy="51" r="14"></circle>
-        <circle class="cam-iris" id="iris-bullet" cx="60" cy="51"
-          r="6.2"></circle>
-        <circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"></circle>
-      </svg>
-    </template>
-
     <script src="/pages-js/nav.js" defer></script>
-    <script src="/pages-js/index.js"></script>
+    <script src="/pages-js/story.js" defer></script>
 
   </body>
 </html>

@@ -264,3 +264,28 @@
     grid-template-columns: 1fr;
   }
 }
+
+.btn-final {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1.35rem;
+  background: var(--gm-cream);
+  font-size: 0.85rem;
+  font-weight: 700;
+  justify-content: center;
+  box-shadow: 0 14px 32px rgba(7, 26, 51, 0.16);
+}
+
+/* The camera field was a full-height hero on the homepage. Here it is a block
+   inside the prose column, so it takes the column's width and a shorter
+   height. It is not bled to the viewport edges: this column is one side of a
+   two-column layout, so a 100vw break-out lands off-centre and slides under
+   the sticky contents list. */
+.content-page__main .cam-stage {
+    width: 100%;
+    height: 62vh;
+    min-height: 420px;
+    margin: 1.25rem 0 0;
+    border: 2px solid var(--gm-ink);
+}

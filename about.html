@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="/styles/pages.css" />
     <link rel="stylesheet" href="/styles/content-pages.css" />
     <link rel="stylesheet" href="/styles/about.css" />
+    <link rel="stylesheet" href="/styles/camera-stage.css" />
   </head>
 
   <body>
@@ -57,7 +58,7 @@
               <ul>
                 <li><a href="/about.html" aria-current="page">Vision &amp;
                     about</a></li>
-                <li><a href="/genealogy.html">The genealogy of the read</a></li>
+                <li><a href="/genealogy.html">Genealogy</a></li>
                 <li><a href="/report.html">Report a deployment</a></li>
                 <li><a href="/workshops.html">Workshops</a></li>
               </ul>
@@ -140,43 +141,108 @@
               </div>
             </section>
 
-            <section class="content-section" id="vision">
-              <h2>Dreamy Vision.</h2>
-              <ul>
-                <li>Make adversarial makeup <b>a popular practice</b>.</li>
-                <li>Make <a href="/workshops.html">workshops</a> easier to run.</li>
-                <li>Support and test any forms: clothing, 3D-printed objects, hats, lights and
-                  beyond.</li>
-                <li>Make a worldwide scoreboard of the most successful and
-                  subtle tactics.</li>
-                <li>Find the weak spots in every face-recognition system.</li>
-              </ul>
-
-            </section>
-
             <section class="content-section" id="who">
               <h2>Who is behind it.</h2>
               <p>Ghostmaxxing is developed by <a
-                  href="https://me.vecna.eu">Claudio Agosti</a>. Started for the 2026
+                  href="https://me.vecna.eu">Claudio Agosti</a>. Started for the
+                2026
                 <a href="https://nina.watch">NINA</a>
-                festival, where it ran as <a href="https://sindacato.nina.watch/it/iniziative/ghostati/" target="_blank"><i>Ghòstati</i> (become a ghost)</a>, a
+                festival, where it ran as <a
+                  href="https://sindacato.nina.watch/it/iniziative/ghostati/"
+                  target="_blank"><i>Ghòstati</i> (become a ghost)</a>, a
                 workshop held with the participation of
                 <a href="https://michelletylicki.com/">Michelle Tylicki</a>.
-                (Michelle had previous experience in adversarial makeup, and has hosted the installation <a
+                (Michelle had previous experience in adversarial makeup, and has
+                hosted the installation <a
                   href="https://michelletylicki.com/dazzle">DAZZLE</a>).
-                </p>
+              </p>
               <p>It started as a tool to support experimental
                 <a href="/workshops.html">workshops</a>, but then I reframed it
                 as Ghostmaxxing in an attempt to make the personal experiment
                 part of a collective one. I added the
                 <a href="/report.html">submission platform</a>, the
                 <a href="/fediverse.html">Fediverse</a> integration, the
-                <a href="/references/">cultural references</a>, and <a href="/projects/">complementary projects</a> selection. </p>
-                <p>
+                <a href="/references/">cultural references</a>, and <a
+                  href="/projects/">complementary projects</a> selection. </p>
+              <p>
                 Ghostmaxxing has now the ambition of making it a worldwide
-                archive of effective camouflage, be an hub to find new technology, testing them, and report if and how they work. <br>
-                So it became a standalone project, though the whistleblowing processing and workshop execution are organized by <b>NINA</b>.
+                archive of effective camouflage, be an hub to find new
+                technology, testing them, and report if and how they work. <br>
+                So it became a standalone project, though the whistleblowing
+                processing and workshop execution are organized by <b>NINA</b>.
               </p>
+            </section>
+
+            <!-- ======================================================================
+           THE STAGE. Six camera types, six steps.
+
+           Tap a type: every camera of it leaves the field, and a fact appears with
+           the camera beside it, drawn LIVE, because the sentence is about
+           something it does now. 
+
+           Behind the field, visible from the first paint, is the plume head. 
+
+           At six of six the ground crosses soil -> cream over two seconds and the
+           whirlwind arrives. It is not a win screen. The closing line says what is
+           still true.
+
+           plume-head.svg is a PAINTED files, so <img> is correct.
+           The cam-*.svg below are class-driven and must stay templates: through
+           <img> they render solid black.
+           =================================================================== -->
+            <section id="camStage" class="cam-stage" data-cleared="0"
+              aria-label="Surveillance landscape: tap a camera to read a fact about it">
+
+              <img id="camPlume" class="cam-plume"
+                src="/images/motifs/plume-head.svg"
+                alt aria-hidden="true" />
+
+              <div id="camField"
+                style="position:absolute;inset:0;z-index:2"></div>
+
+              <!-- <img class="cam-whirl" src="/images/motifs/whirlwind.svg" alt="" aria-hidden="true" /> -->
+
+              <div id="camHalfTop" class="cam-half top"
+                aria-live="polite"></div>
+              <div id="camHalfBottom" class="cam-half bottom"
+                aria-live="polite"></div>
+
+              <div id="camFinale" class="cam-finale" hidden>
+                <p class="cam-finale__line gm-prose">
+                  <a type="button" class="btn btn-final" href="/genealogy.html">
+                    <span class="about-route__kicker">Genealogy</span>
+                  </a>
+                  <a type="button" class="btn btn-final" href="/projects/">
+                    <span class="about-route__kicker">Complementary projects</span>
+                  </a>
+                  <a type="button" class="btn btn-final" href="/references/">
+                    <span class="about-route__kicker">Papers and culture</span>
+                  </a>
+                </p>
+                <div class="cam-finale__actions">
+                  <a class="gm-site-cta" href="/lab.html">Open the lab
+                    &#8599;</a>
+                  <button type="button" id="camReset" class="cam-reset">Put them
+                    back
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <section class="content-section" id="vision">
+              <h2>wishful vision</h2>
+              <ul>
+                <li>Make adversarial makeup <b>a popular practice</b>.</li>
+                <li>Make <a href="/workshops.html">workshops</a> easier to
+                  run.</li>
+                <li>Point at existing projects and test their effectiveness: clothing, 3D-printed objects,
+                  hats, lights and
+                  beyond.</li>
+                <li>Make a worldwide scoreboard of the most successful and
+                  subtle tactics.</li>
+                <li>Collect the weak spots in every face-recognition system deployed.</li>
+              </ul>
+
             </section>
 
             <section class="content-section about-loop-section" id="loop">
@@ -188,13 +254,15 @@
                   <h3>Play with Faces</h3>
                   <p>
                     With water-based makeup, with privacy-clotches brands,
-                    or anything else worth trying. A result can be shared, 
-                    so others can try to replicate and check if works for them too!
+                    or anything else worth trying. A result can be shared,
+                    so others can try to replicate and check if works for them
+                    too!
                     <br>
-                    <i>Every result is local: you share it only if you want to.</i>
+                    <i>Every result is local: you share it only if you want
+                      to.</i>
                   </p>
                   <h3><br><a href="lab.html">Check out the lab</a>
-                   </h3>
+                  </h3>
                 </div>
 
                 <svg class="about-loop__arc" viewBox="11.7 3.45 6.9 6.9"
@@ -205,13 +273,15 @@
                 <div class="about-loop__step" data-node="02">
                   <h3>Open Ears</h3>
                   <p>This lab uses open-source components, and it <i>alone</i>
-                    cannot tell us if the techniques works out there. <b>But, if you build,
-                    sell, operate, encounter face recognition</b>, you know it! And if you don't? 
+                    cannot tell us if the techniques works out there. <b>But, if
+                      you build,
+                      sell, operate, encounter face recognition</b>, you know
+                    it! And if you don't?
                     suggest to who might do it to:
                     <h3>
                       <br>
                       <a href="/report.html">Leak to us safely</a>
-                    </h3>                    
+                    </h3>
                   </p>
                 </div>
 
@@ -226,9 +296,10 @@
                     recognition.
                     A federated social network is the natural environment for
                     sharing results, inviting replications and learning more.
-                    Everything this project touches gets reported there. The projects
+                    Everything this project touches gets reported there. The
+                    projects
                     is natively integrated in the Fediverse:
-          
+
                     <h3><br>
                       <a href="/fediverse.html">Follow it there</a>
                     </h3>
@@ -290,15 +361,15 @@
 
             </section>
 
-
           </div>
 
           <aside class="content-page__aside">
             <h2>About the project</h2>
             <nav aria-label="Page sections">
               <a href="#why">Why Ghostmaxxing</a>
-              <a href="#vision">Dreamy vision</a>
               <a href="#who">Who is behind it</a>
+              <a href="#camField">Camera field</a>
+              <a href="#vision">Dreamy vision</a>
               <a href="#loop">How does it work?</a>
               <a href="#sources">What we need</a>
               <a href="#built">Fork the code</a>
@@ -384,7 +455,106 @@
       </div>
     </footer>
 
+    <!-- Camera icon source, cloned by pages-js/index.js into the hero field.
+       These are TEMPLATES, not <img>: images/icons/cam-*.svg are class-driven
+       (class="cam-shell", no fill attribute), so an <img src="…"> of one has no
+       stylesheet and every shape falls back to black. Cloned into the document
+       they are ordinary nodes and cameras.css paints them. Geometry here is a
+       verbatim copy of images/icons/. That directory stays the source. -->
+    <template id="camtpl-dome">
+      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+        focusable="false">
+        <path class="cam-mount" d="M6,29 H94" stroke-width="7"></path>
+        <path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"></path>
+        <circle class="cam-lens" cx="50" cy="44" r="15"></circle>
+        <circle class="cam-iris" id="iris-dome" cx="50" cy="44"
+          r="6.6"></circle>
+        <circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"></circle>
+      </svg>
+    </template>
+    <template id="camtpl-cube">
+      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+        focusable="false">
+        <path class="cam-mount" d="M50,16 V6 M38,6 H62" stroke-width="5"></path>
+        <rect class="cam-shell" x="16" y="16" width="68" height="68"
+          rx="19"></rect>
+        <circle class="cam-dot cam-dot--ring" cx="73" cy="26" r="3.4"></circle>
+        <circle class="cam-lens" cx="50" cy="50" r="17"></circle>
+        <circle class="cam-iris" id="iris-cube" cx="50" cy="50"
+          r="7.5"></circle>
+        <circle class="cam-glint" cx="44.9" cy="44.9" r="2.9"></circle>
+      </svg>
+    </template>
+    <template id="camtpl-glasses">
+      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+        focusable="false">
+        <path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32"
+          stroke-width="5"></path>
+        <path class="cam-shell"
+          d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z"
+          stroke-linecap="round"></path>
+        <path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"></path>
+        <path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"></path>
+        <circle class="cam-iris cam-iris--void" id="iris-glasses-l" cx="28"
+          cy="45" r="9"></circle>
+        <circle class="cam-iris cam-iris--void" id="iris-glasses-r" cx="72"
+          cy="45" r="9"></circle>
+      </svg>
+    </template>
+    <template id="camtpl-pill">
+      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+        focusable="false">
+        <path class="cam-mount" d="M40,36 V22 M28,22 H52"
+          stroke-width="5"></path>
+        <rect class="cam-shell" x="6" y="36" width="88" height="28"
+          rx="14"></rect>
+        <g class="cam-dot cam-dot--dark"><circle cx="62" cy="44"
+            r="2"></circle><circle cx="70" cy="50" r="2"></circle><circle
+            cx="62" cy="56" r="2"></circle><circle cx="78" cy="45"
+            r="2"></circle><circle cx="80" cy="55" r="2"></circle><circle
+            cx="86" cy="50" r="2"></circle></g>
+        <circle class="cam-lens" cx="30" cy="50" r="12"></circle>
+        <circle class="cam-iris" id="iris-pill" cx="30" cy="50"
+          r="5.3"></circle>
+        <circle class="cam-glint" cx="26.4" cy="46.4" r="2"></circle>
+      </svg>
+    </template>
+    <template id="camtpl-street">
+      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+        focusable="false">
+        <path class="cam-mount" d="M80,26 V92" stroke-width="6"></path>
+        <path class="cam-mount" d="M80,30 H44" stroke-width="6"></path>
+        <path class="cam-mount" d="M52,30 V40" stroke-width="5"></path>
+        <rect class="cam-shell" x="10" y="40" width="72" height="30"
+          rx="7"></rect>
+        <rect class="cam-panel" x="54" y="47" width="22" height="16"
+          rx="3"></rect>
+        <g class="cam-dot"><circle cx="60" cy="51" r="2"></circle><circle
+            cx="70" cy="51" r="2"></circle><circle cx="60" cy="59"
+            r="2"></circle><circle cx="70" cy="59" r="2"></circle></g>
+        <circle class="cam-lens" cx="32" cy="55" r="12"></circle>
+        <circle class="cam-iris" id="iris-street" cx="32" cy="55"
+          r="5.3"></circle>
+        <circle class="cam-glint" cx="28.4" cy="51.2" r="2"></circle>
+      </svg>
+    </template>
+    <template id="camtpl-bullet">
+      <svg class="cam" viewBox="0 0 100 100" aria-hidden="true"
+        focusable="false">
+        <path class="cam-mount" d="M45,30 V12 M32,12 H58"
+          stroke-width="5"></path>
+        <rect class="cam-shell" x="16" y="36" width="66" height="34"
+          rx="5"></rect>
+        <path class="cam-mount" d="M12,30 H74 L84,40" stroke-width="5"></path>
+        <circle class="cam-lens" cx="60" cy="51" r="14"></circle>
+        <circle class="cam-iris" id="iris-bullet" cx="60" cy="51"
+          r="6.2"></circle>
+        <circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"></circle>
+      </svg>
+    </template>
+
     <script src="/pages-js/nav.js" defer></script>
+    <script src="/pages-js/camera-stage.js"></script>
   </body>
 
 </html>

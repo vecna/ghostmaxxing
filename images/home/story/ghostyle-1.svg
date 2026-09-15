@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img" aria-label="A face drawn as an outline on cream, with the angular blocks of Ghostyle 1 across one brow, the nose bridge and one cheek. The other side of the face is left bare.">
+  <title>Ghostyle 1</title>
+  <desc>A face drawn as an outline on cream, with the angular blocks of Ghostyle 1 across one brow, the nose bridge and one cheek. The other side of the face is left bare.</desc>
+  <rect width="800" height="1000" fill="#fff1cf"/>
+  <g>
+    <path d="M404,258 L596,178 L640,286 L440,374 Z" fill="#ff5f8f"/>
+    <path d="M196,372 L404,300 L404,446 L256,538 Z" fill="#072e26"/>
+    <path d="M404,446 L404,300 L540,372 L516,504 Z" fill="#f0c24a"/>
+    <path d="M256,538 L404,446 L390,640 L296,610 Z" fill="#0b4a3c"/>
+    <path d="M142,236 L280,170 L316,252 L176,318 Z" fill="#f0c24a"/>
+  </g>
+
+  <g fill="none" stroke="#072e26" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M400,142 C280,142 188,238 188,370 C188,454 210,538 246,598 C294,676 348,718 400,718 C452,718 506,676 554,598 C590,538 612,454 612,370 C612,238 520,142 400,142 Z"/>
+    <path d="M214,312 C242,192 316,146 400,146 C484,146 558,192 586,312"/>
+    <path d="M328,690 L328,800 M472,690 L472,800"/>
+    <path d="M150,952 C200,842 272,806 322,800 L478,800 C528,806 600,842 650,952"/>
+    <ellipse cx="316" cy="398" rx="42" ry="23"/>
+    <ellipse cx="484" cy="398" rx="42" ry="23"/>
+    <path d="M268,344 C296,322 342,322 362,336"/>
+    <path d="M532,344 C504,322 458,322 438,336"/>
+    <path d="M400,382 L389,472 C384,494 400,504 418,496"/>
+    <path d="M344,586 C378,566 422,566 456,586 C422,610 378,610 344,586 Z"/>
+  </g>
+  <text x="56" y="960" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="28" font-weight="600" letter-spacing="4" fill="#072e26">GHOSTYLE 1</text>
+</svg>

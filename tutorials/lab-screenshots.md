@@ -7,6 +7,21 @@ browser with a synthetic face in place of the webcam. The commands live in
 recognition distance". This page covers why the harness exists and how to read
 what it produces.
 
+## Two harnesses
+
+`measure` and `shots` drive the **built fixtures**: `figureN-clean.y4m` and `figureN-painted.y4m`, two separately generated pictures of the same synthetic person. That is the right shape for measuring a set.
+
+`render` drives **one arbitrary photograph**, and it is what the homepage story cards are made with:
+
+```sh
+node scripts-dev/lab-capture.cjs render --image shots/candidate.jpg \
+  --ghostyle cv-dazzle-1 --layers box,ghostyle
+```
+
+The difference that matters is not the input format. A Ghostyle is an overlay drawn on the video by the lab, so `render`'s clean pass and Ghostyle pass are the same frame: same crop, same light, same pose, guaranteed by the renderer rather than by the subject holding still. Two pictures that differ only in the thing being tested are comparable; two photographs of a person who moved between them are not, and the difference gets attributed to the framing.
+
+It writes cropped images into `scratch/story/` and prints the distance, the threshold and the crop it used. It writes no data file: the numbers that reach a page are typed in by hand.
+
 ## The method
 
 Chromium can be handed a video file as its webcam. The lab then runs its full

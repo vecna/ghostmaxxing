@@ -18,6 +18,7 @@ Run the commands below from the `ghostmaxxing` repository root. Most scripts res
 | Validate complementary projects | `npm run validate:projects` | Checks JSON, URLs, categories and local images |
 | Build complementary projects | `npm run update:projects` | Overwrites `projects/index.html` |
 | Redraw the genealogy chart | `npm run update:genealogy` | Overwrites `genealogy.html` and `styles/genealogy.css` (needs `python3`) |
+| Put a photograph through the lab | `node scripts-dev/lab-capture.cjs render --image <file>` | Cropped PNG or JPEG in `scratch/story/`, numbers on stdout (needs `ffmpeg`) |
 | Generate a code map and viewer | `npm run codemap` | `codemap/codemap.json`, `codemap/codemap.html` |
 | Export UI translations | `npm run i18n:extract` | POT and pipe-delimited CSV under `translations/` |
 | Extract public copy | `node scripts-dev/extract-text-only.js` | `EXTRACTED-text-YYYY-MM-DD.md` |
@@ -85,6 +86,33 @@ npm run update:genealogy
 `validate:projects` checks `projects/PROJECTS.json`, its single primary strategy per entry, absolute URLs, duplicate identifiers, image metadata, and the presence of every local image under `images/projects/`. `update:projects` validates first and then fills `projects/templates/projects.template.html`, overwriting `projects/index.html`. It never downloads media or establishes permission to republish third-party images. Follow `projects/CONTRIBUTING-PROJECTS.md` when adding an entry.
 
 `update:references` runs `references/build-references-page.js`, which validates `references/REFERENCES.json` and fills `references/templates/references.template.html`, overwriting `references/index.html`. The references dataset remains the larger cultural and technical archive; do not move papers or articles into the complementary-project catalogue merely because they describe a possible intervention.
+
+## Pick a picture for the homepage story
+
+```sh
+node scripts-dev/lab-capture.cjs render --image shots/candidate.jpg \
+  --ghostyle cv-dazzle-1 --layers box,ghostyle
+```
+
+`render` is the picture-picking tool. `measure` runs the built fixtures and reports numbers; `render` takes any still, turns it into a fake webcam feed with `ffmpeg`, opens the lab against it, turns on the layers you asked for, and writes a cropped image you can drop into a page.
+
+The clean pass and the Ghostyle pass are **the same frame**. A Ghostyle is an overlay drawn on the video, so nobody has to hold a pose between two photographs: crop, light, distance and expression are identical by construction and the only thing that differs is the thing being tested. That is what makes two cards comparable, and it is why the story carousel does not need a photographer.
+
+| Option | Meaning |
+|---|---|
+| `--image <file>` | Any JPEG or PNG with one frontal face. Required. |
+| `--ghostyle <id>` | An id from `ghostyles.json`. Omitted, only the clean pass is written. |
+| `--layers <list>` | From `none`, `box`, `landmarks`, `mesh`, `ghostyle`. Default `box`. `landmarks` is the box plus the face-api 68-point scaffold, which is the "recognised" look. |
+
+For a card that shows a Ghostyle, pass `--layers ghostyle` on its own. That keeps the lab in its Camera view, which is where the effect is painted; the clean pass of the same run still comes back carrying the detection scaffold, so one command gives you both the "this face is being read" picture and the "this is the pattern on it" picture. Adding `box` or `landmarks` moves the lab into a points view, where the overlay canvas is given over to the scaffold and the pattern does not appear.
+| `--pad <n>` | Crop padding as a fraction of the face box, default `0.6`. A fraction rather than a pixel count, so the head fills the same share of every card whatever the source resolution. |
+| `--aspect <w:h>` | Crop aspect, default `4:5`. |
+| `--width <px>` | Output width, default `1024`. |
+| `--name <stem>` | Output file stem, default the image file name. |
+| `--no-measure` | Skip saving a baseline and reading the distance. |
+| `--output <path>` | Destination, default `scratch/story/`. |
+
+It writes images and prints numbers, and it writes no data file. The numbers are for choosing between candidates; the ones you publish are typed into the page by hand, because the story cards are chosen rather than generated. If face-api finds no face it stops and says so rather than writing an unannotated picture.
 
 `update:genealogy` runs `scripts-dev/build-genealogy.py` (Python 3, standard library only). It reads `references/REFERENCES.json` and `projects/PROJECTS.json`, places every reference and every project on the genealogy chart by year and by the row its `target` tags select, and overwrites `genealogy.html` and `styles/genealogy.css`. It stops with a message when an entry carries a target the row table does not know, so run it after adding to either dataset. The row table and the access-to-kind mapping for projects live at the top of the script.
 

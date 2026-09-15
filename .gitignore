@@ -26,3 +26,7 @@ EXTRACTED-text-*.md
 # Fake-webcam fixtures and measurements built by scripts-dev/build-face-fixtures.cjs
 /tests/fixtures/synthetic-faces/y4m/
 /tests/fixtures/synthetic-faces/lab-measurements.json
+
+# scripts-dev/lab-capture.cjs render writes candidate pictures here. They are
+# things to look through, not deliverables: move the keepers into images/.
+scratch/

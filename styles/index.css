@@ -13,11 +13,23 @@
     box-sizing: border-box;
 }
 
+html {
+    overflow-x: hidden;
+}
+
 body {
     margin: 0;
     font-family: var(--sans);
     background: var(--gm-bg);
     color: var(--gm-ink);
+
+    /* Below about 360px the header's "Leak to us" chip pushes the page about
+       57px wider than the viewport. That is a chrome.css problem and it is
+       older than this file; every other page hides it with
+       .gm-page { overflow-x: hidden } and the homepage has no .gm-page. It
+       matters more here than elsewhere, because a page that slides sideways
+       under a horizontal carousel makes both of them feel broken. */
+    overflow-x: hidden;
 }
 
 /* The bare `a { color: var(--gm-pink) }` that was here is removed. Pink on
@@ -25,241 +37,314 @@ body {
    reserves pink so that it is never text. Prose links now come from
    styles/prose.css via class="gm-prose"; component links style themselves. */
 
-.cam-spot {
-    position: absolute;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    line-height: 0;
+/* ---- The story carousel -------------------------------------------------
+   Eight cards on the browser's own horizontal scroller. Replaces the camera
+   stage, which moved to /about.html.
+
+   Two rules shape everything below.
+
+   The bed is soil, not cream. Two of the eight cards ARE cream, because they
+   are the Ghostyle as a portable object rather than a photograph of a face,
+   and those two are the turns in the story. On a cream bed they would lose
+   their edge and stop being special. Photographs also sit better on a dark
+   ground than on the orange.
+
+   Vertical scroll belongs to the page. This carousel only ever moves
+   sideways, so it cannot trap a reader the way a pinned scroll sequence does.
+   Nothing here advances on its own. */
+
+.story {
+    background: var(--gm-soil);
+    padding: clamp(1.5rem, 4vw, 2.75rem) 0 clamp(1.75rem, 4vw, 3rem);
+    color: var(--gm-cream);
+
+    /* The peek. Ten per cent of the track on each side, so a slice of the
+       previous and the next card is visible and the row reads as a row.
+       Capped, or on a wide screen the peek becomes a third card. */
+    --story-peek: clamp(16px, 10%, 84px);
+    --story-gap: 14px;
+    /* The old stage was 82vh. Three fifths of it, which is what the media box
+       gets; the caption sits under that. */
+    --story-media: 49vh;
 }
 
-/* The hero cameras are inline <svg> cloned from the templates in index.html,
-   not <img>. Both are matched so the rule survives either. */
-.cam-spot img,
-.cam-spot svg {
+.story__head {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 clamp(18px, 4vw, 40px) clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.story__kicker {
+    margin: 0 0 .35rem;
+    font-family: var(--mono);
+    font-size: var(--t-meta);
+    font-weight: 600;
+    letter-spacing: var(--ls-meta);
+    text-transform: uppercase;
+    color: var(--gm-yellow);
+}
+
+.story__title {
+    margin: 0;
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: var(--t-h2);
+    line-height: var(--lh-heading);
+    letter-spacing: -.02em;
+    color: var(--gm-cream);
+}
+
+/* ---- Track --------------------------------------------------------------
+   scroll-snap-stop: always is the load-bearing line. Without it one flick on
+   a phone carries three or four cards, and the reader goes from "it worked"
+   straight to the end without ever seeing it fail, which is the story. */
+
+.story__viewport {
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+.story__track {
+    display: flex;
+    align-items: stretch;
+    gap: var(--story-gap);
+    margin: 0;
+    padding: 0 var(--story-peek);
+    list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--story-peek);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.story__track::-webkit-scrollbar {
+    display: none;
+}
+
+.story__card {
+    flex: 0 0 calc(100% - (2 * var(--story-peek)) - var(--story-gap));
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    display: flex;
+}
+
+/* align-items: stretch on the track plus a full-height figure means every
+   card is as tall as the tallest one. Captions differ in length, and a track
+   whose height changes as you swipe moves the page under your thumb. */
+.story__figure {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    background: var(--gm-green-night);
+    border: 2px solid var(--gm-ink);
+}
+
+.story__image {
     display: block;
     width: 100%;
-    height: 100%;
-    opacity: .85;
-    transition: opacity .15s ease, transform .15s ease;
-    position: relative;
+    height: var(--story-media);
+    object-fit: cover;
+    object-position: center 38%;
+    background: var(--gm-green-deep);
 }
 
-.cam-spot:hover img,
-.cam-spot:focus-visible img,
-.cam-spot:hover svg,
-.cam-spot:focus-visible svg {
-    transform: scale(1.08);
-}
-
-.cam-half {
-    position: absolute;
-    left: 0;
-    right: 0;
-    z-index: 5;
+/* The two Ghostyle-object cards are drawings on cream, not photographs:
+   nothing to crop into, so they are shown whole. */
+.story__card--object .story__figure {
     background: var(--gm-cream);
+}
+
+.story__card--object .story__image {
+    object-fit: contain;
+    background: var(--gm-cream);
+}
+
+.story__caption {
+    flex: 1 1 auto;
+    padding: .85rem 1rem 1rem;
+    border-top: 2px solid var(--gm-ink);
+    background: var(--gm-green-night);
+}
+
+.story__card--object .story__caption {
+    background: var(--gm-cream);
+}
+
+.story__state {
+    margin: 0 0 .3rem;
+    font-family: var(--mono);
+    font-size: var(--t-meta);
+    font-weight: 600;
+    letter-spacing: var(--ls-meta);
+    text-transform: uppercase;
+    color: var(--gm-yellow);
+}
+
+.story__card--object .story__state {
+    color: var(--gm-green);
+}
+
+.story__text {
+    margin: 0;
+    font-size: var(--t-small);
+    line-height: 1.5;
+    color: var(--gm-cream);
+}
+
+.story__card--object .story__text {
     color: var(--gm-ink);
+}
+
+.story__text a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: .15em;
+}
+
+/* ---- Controls ----------------------------------------------------------- */
+
+/* display:flex in an author rule outranks the user-agent's [hidden] rule, so
+   the controls need to be told to stay hidden until story.js reveals them.
+   Without this line they sit there, inert, for anyone without JavaScript. */
+.story__controls[hidden] {
+    display: none;
+}
+
+.story__controls {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(1rem, 3vw, 2.2rem);
-    text-align: center;
-    padding: 2rem 3rem;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .18s ease;
-    z-index: 4;
+    gap: .75rem;
+    max-width: 1080px;
+    margin: 1rem auto 0;
+    padding: 0 clamp(18px, 4vw, 40px);
 }
 
-.cam-half.show {
-    opacity: 1;
-    pointer-events: auto;
+.story__arrow {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    padding: 0;
+    border: 2px solid var(--gm-cream);
+    border-radius: 0;
+    background: transparent;
+    color: var(--gm-cream);
     cursor: pointer;
 }
 
-.cam-half.top {
-    top: 0;
-    height: 50%;
+.story__arrow svg {
+    width: 20px;
+    height: 20px;
 }
 
-.cam-half.bottom {
-    bottom: 0;
-    height: 50%;
-}
-
-
-/* ===========================================================================
-   THE HERO STAGE — the six-step arc.
-
-   Ground is soil while the field is full. Behind the cameras, and visible from
-   the first paint at 14% opacity, is the plume head. Clearing a type raises it.
-   At six of six the ground crosses to cream over two seconds and the whirlwind
-   arrives.
-
-   The crossing is a colour transition, not a flash: 2s ease, and the whole
-   thing is a plain opacity/background change so prefers-reduced-motion can cut
-   it to an instant swap without losing any information.
-   ======================================================================== */
-
-.cam-stage {
-    position: relative;
-    height: 82vh;
-    min-height: 520px;
-    overflow: hidden;
-    background: var(--gm-soil);
-    transition: background-color 2s ease;
-}
-
-.cam-stage.is-finale {
+.story__arrow:hover {
     background: var(--gm-cream);
-}
-
-/* Painted files, so <img> is correct here — unlike images/icons/, which are
-   class-driven and must be inlined. */
-.cam-plume {
-    position: absolute;
-    left: 50%;
-    top: 52%;
-    width: min(46rem, 82vw);
-    max-height: 86%;
-    transform: translate(-50%, -50%) scale(0.86);
-    opacity: 0.14;
-    z-index: 1;
-    pointer-events: none;
-    transition: opacity 900ms ease, transform 900ms ease;
-}
-
-.cam-stage.is-finale .cam-whirl {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1) rotate(0deg);
-}
-
-/* ---- the closing line ---------------------------------------------------
-   The honest half of the finale. It is not a congratulation and must never
-   become one: two of them are still reading, and the page says so. */
-.cam-finale {
-    position: absolute;
-    left: 50%;
-    bottom: 8%;
-    transform: translateX(-50%);
-    z-index: 4;
-    width: min(46rem, 88vw);
-    text-align: center;
-    opacity: 0;
-    transition: opacity 900ms ease 1.2s;
-}
-
-.cam-finale.show {
-    opacity: 1;
-}
-
-.cam-finale__line {
-    font-family: var(--serif);
-    font-size: var(--t-h3);
-    line-height: 1.2;
     color: var(--gm-ink);
-    /* margin: 0 0 1rem; */
 }
 
-.cam-finale__actions {
+.story__dots {
     display: flex;
-    gap: 0.9rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    pointer-events: auto;
+    align-items: center;
+    gap: .45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
-.cam-finale__padded {
-    padding-left: 0;
-    padding-right: 0;
+.story__dot {
+    display: block;
+    width: 11px;
+    height: 11px;
+    padding: 0;
+    border: 2px solid var(--gm-cream);
+    border-radius: 0;
+    background: transparent;
+    cursor: pointer;
 }
 
-@media (min-width: 600px) {
-    .cam-finale__padded {
-        padding-left: 10%;
-        padding-right: 10%;
+.story__dot.is-current {
+    background: var(--gm-yellow);
+    border-color: var(--gm-yellow);
+}
+
+.story__conditions {
+    max-width: 62ch;
+    margin: clamp(1.25rem, 3vw, 2rem) auto 0;
+    padding: 0 clamp(18px, 4vw, 40px);
+    font-size: var(--t-meta);
+    line-height: 1.6;
+    color: var(--gm-cream);
+    opacity: .82;
+}
+
+/* ---- Wide ---------------------------------------------------------------
+   The card turns horizontal rather than growing. A portrait photograph in a
+   1080px-wide box would be small and marooned in the middle of it, so the
+   image takes the left and the caption the right, and the card keeps the
+   height the narrow layout gave it. */
+
+@media (min-width: 62rem) {
+    .story {
+        --story-peek: 6%;
+        --story-media: 46vh;
+    }
+
+    .story__figure {
+        display: grid;
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+        align-items: stretch;
+    }
+
+    .story__image {
+        height: 100%;
+        min-height: var(--story-media);
+    }
+
+    .story__caption {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 1.75rem 2rem;
+        border-top: 0;
+        border-inline-start: 2px solid var(--gm-ink);
+    }
+
+    .story__state {
+        margin-bottom: .5rem;
+    }
+
+    .story__text {
+        max-width: 34ch;
+        font-size: var(--t-lead);
+        line-height: 1.45;
     }
 }
 
-.cam-reset {
-    background: transparent;
-    border: 2px solid var(--gm-ink);
-    color: var(--gm-ink);
-    font: inherit;
-    font-size: 0.82rem;
-    font-weight: 700;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
+/* A short window makes a 46vh media box shorter than the caption beside it,
+   which reads as a broken card. Give it a floor. */
+@media (min-width: 62rem) and (max-height: 46rem) {
+    .story {
+        --story-media: 320px;
+    }
 }
 
-.cam-reset:hover {
-    background: var(--gm-cream);
+/* ---- Reduced motion -----------------------------------------------------
+   Nothing here animates by itself; story.js only asks for smooth scrolling
+   when a dot or an arrow is used, and it skips that under this query. The
+   rule below covers the browser's own snap animation. */
+
+@media (prefers-reduced-motion: reduce) {
+    .story__track {
+        scroll-behavior: auto;
+    }
 }
 
-/* ---- the fact panel -----------------------------------------------------
-   The camera sits beside its own fact, drawn LIVE — yellow iris, glint. It has
-   not been defeated by being tapped, it has been named, and the sentence is
-   about something it does now. */
-.cam-fact__art {
-    flex: none;
-    width: clamp(64px, 12vw, 104px);
-}
-
-.cam-fact__art .cam {
-    width: 100%;
-}
-
-.cam-fact__body {
-    max-width: 52ch;
-    text-align: left;
-}
-
-.cam-fact__kicker {
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    letter-spacing: var(--ls-meta);
-    text-transform: uppercase;
-    color: var(--gm-green);
-    margin: 0 0 0.5rem;
-}
-
-/* H typography, p semantics. A real heading here would inject a stray level
-   into the document outline and land in every screen reader's heading list. */
-.cam-fact__text {
-    font-family: var(--serif);
-    font-size: var(--t-h3);
-    line-height: 1.25;
-    margin: 0;
-}
-
-/* The prose rule from prose.css, restated because the panel is not .gm-prose
-   and the link is not a bare anchor. */
-.cam-fact__link {
-    color: var(--gm-ink);
-    text-decoration: none;
-    padding-bottom: 2px;
-    background-image: linear-gradient(var(--gm-pink), var(--gm-pink));
-    background-size: 100% 2px;
-    background-repeat: no-repeat;
-    background-position: 0 100%;
-    transition: background-color 120ms ease;
-}
-
-.cam-fact__link:hover,
-.cam-fact__link:focus-visible {
-    background-color: var(--gm-bg);
-}
-
-.cam-fact__ext {
-    color: var(--gm-pink);
-}
-
-@media (max-width: 720px) {
-    .cam-fact__art { width: 56px; }
-    .cam-fact__body { text-align: center; }
-    .cam-finale { bottom: 5%; }
-}
 
 /* ---- "How it works" steps -----------------------------------------------
    Icon, title, a square process illustration, then the explanatory line.
@@ -305,16 +390,4 @@ body {
     font-size: .92rem;
     margin: 0;
     opacity: .85;
-}
-
-/* Everything above communicates through position and opacity, so removing the
-   motion removes nothing. The ground still crosses to cream, instantly. */
-@media (prefers-reduced-motion: reduce) {
-    .cam-stage,
-    .cam-plume,
-    .cam-whirl,
-    .cam-finale {
-        transition-duration: 1ms;
-        transition-delay: 0ms;
-    }
 }

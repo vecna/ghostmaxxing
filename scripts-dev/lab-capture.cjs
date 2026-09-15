@@ -24,7 +24,9 @@
  */
 
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
+const { spawnSync } = require('node:child_process');
 const httpServer = require('http-server');
 const { chromium } = require('@playwright/test');
 
@@ -32,7 +34,10 @@ const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_FIXTURES = path.join(ROOT, 'tests', 'fixtures', 'synthetic-faces', 'y4m');
 const DEFAULT_SHOT_OUTPUT = path.join(ROOT, 'images', 'workshops');
 const DEFAULT_MEASURE_OUTPUT = path.join(ROOT, 'tests', 'fixtures', 'synthetic-faces');
-const COMMANDS = ['measure', 'shots', 'probe'];
+// render writes to scratch on purpose: these are candidates to look through,
+// not deliverables. Move the keepers into images/home/ yourself.
+const DEFAULT_RENDER_OUTPUT = path.join(ROOT, 'scratch', 'story');
+const COMMANDS = ['measure', 'shots', 'probe', 'render'];
 
 function usage() {
    return `
@@ -40,9 +45,23 @@ Drive lab.html with a fake webcam to measure distances and capture screenshots.
 
 Usage:
   node scripts-dev/lab-capture.cjs <measure|shots|probe> --figure <list> [options]
+  node scripts-dev/lab-capture.cjs render --image <file> [options]
 
 Options:
-  --figure <list>      Figure numbers, comma-separated, or all (required)
+  --figure <list>      Figure numbers, comma-separated, or all
+                       (required for measure, shots and probe)
+  --image <file>       render: any JPEG or PNG with one frontal face (required)
+  --ghostyle <id>      render: Ghostyle id from ghostyles.json. Omitted, only
+                       the clean pass is written
+  --layers <list>      render: comma-separated, from none, box, landmarks, mesh,
+                       ghostyle (default: box). "landmarks" is the box plus the
+                       face-api 68-point scaffold, the "recognised" look
+  --pad <n>            render: crop padding as a fraction of the face box
+                       (default: 0.6)
+  --aspect <w:h>       render: crop aspect (default: 4:5)
+  --width <px>         render: output width (default: 1024)
+  --name <stem>        render: output file stem (default: the image file name)
+  --no-measure         render: skip saving a baseline and reading the distance
   --fixtures <path>    Y4M folder
                        (default: tests/fixtures/synthetic-faces/y4m)
   --output <path>      measure: JSON destination folder
@@ -65,10 +84,20 @@ Options:
   --keep-open <sec>    Leave the browser open after each run, for debugging
   --help               Show this help
 
+  --output <path>      render: destination folder (default: scratch/story)
+
 Notes:
   measure needs figureN-pair.y4m. shots needs figureN-clean.y4m and
   figureN-painted.y4m. Build them first:
     npm run capture:fixtures -- --figure 9,10
+
+  render takes an ordinary photograph instead, and needs ffmpeg on PATH. The
+  clean pass and the Ghostyle pass are the same frame, because a Ghostyle is an
+  overlay: nobody has to hold a pose between two pictures. It writes images and
+  prints numbers, and writes no data file. Example:
+
+    node scripts-dev/lab-capture.cjs render --image shots/candidate.jpg \\
+      --ghostyle cv-dazzle-1 --layers box,ghostyle
 `;
 }
 
@@ -97,6 +126,14 @@ function parseArgs(argv) {
       prefix: 'ws-lab',
       headed: false,
       keepOpen: 0,
+      image: null,
+      ghostyle: null,
+      layers: ['box'],
+      pad: 0.6,
+      aspect: [4, 5],
+      width: 1024,
+      name: null,
+      measure: true,
    };
 
    for (let index = 0; index < argv.length; index += 1) {
@@ -126,6 +163,36 @@ function parseArgs(argv) {
          continue;
       }
       if (arg === '--prefix') { options.prefix = requireValue(argv, index, arg); index += 1; continue; }
+      if (arg === '--image') { options.image = path.resolve(ROOT, requireValue(argv, index, arg)); index += 1; continue; }
+      if (arg === '--ghostyle') { options.ghostyle = requireValue(argv, index, arg); index += 1; continue; }
+      if (arg === '--name') { options.name = requireValue(argv, index, arg); index += 1; continue; }
+      if (arg === '--no-measure') { options.measure = false; continue; }
+      if (arg === '--layers') {
+         const value = requireValue(argv, index, arg).split(',').map((item) => item.trim()).filter(Boolean);
+         const unknown = value.filter((item) => !LAYER_NAMES.includes(item));
+         if (unknown.length) throw new Error(`--layers: unknown layer(s) ${unknown.join(', ')}. Expected ${LAYER_NAMES.join(', ')}.`);
+         options.layers = value;
+         index += 1;
+         continue;
+      }
+      if (arg === '--aspect') {
+         const value = requireValue(argv, index, arg);
+         const parts = value.split(':').map(Number);
+         if (parts.length !== 2 || parts.some((part) => !Number.isFinite(part) || part <= 0)) {
+            throw new Error('--aspect must look like 4:5.');
+         }
+         options.aspect = parts;
+         index += 1;
+         continue;
+      }
+      if (arg === '--pad' || arg === '--width') {
+         const value = Number(requireValue(argv, index, arg));
+         if (!Number.isFinite(value) || value < 0) throw new Error(`${arg} must be a non-negative number.`);
+         if (arg === '--pad') options.pad = value;
+         if (arg === '--width') options.width = Math.max(64, Math.round(value));
+         index += 1;
+         continue;
+      }
       if (arg === '--format') {
          const value = requireValue(argv, index, arg).toLowerCase();
          if (!['jpg', 'jpeg', 'png'].includes(value)) throw new Error('--format must be jpg or png.');
@@ -150,9 +217,19 @@ function parseArgs(argv) {
    }
 
    if (!options.command) throw new Error(`A subcommand is required: ${COMMANDS.join(', ')}.`);
-   if (!options.figures) throw new Error('--figure is required. Pass numbers such as 9,10 or the word all.');
+   if (options.command === 'render') {
+      if (!options.image) throw new Error('--image is required for render. Pass any JPEG or PNG with one frontal face.');
+      if (options.ghostyle && !options.layers.includes('ghostyle')) options.layers = [...options.layers, 'ghostyle'];
+      if (options.layers.includes('ghostyle') && !options.ghostyle) {
+         throw new Error('--layers includes ghostyle but no --ghostyle id was given.');
+      }
+   } else if (!options.figures) {
+      throw new Error('--figure is required. Pass numbers such as 9,10 or the word all.');
+   }
    if (!options.output) {
-      options.output = options.command === 'shots' ? DEFAULT_SHOT_OUTPUT : DEFAULT_MEASURE_OUTPUT;
+      if (options.command === 'shots') options.output = DEFAULT_SHOT_OUTPUT;
+      else if (options.command === 'render') options.output = DEFAULT_RENDER_OUTPUT;
+      else options.output = DEFAULT_MEASURE_OUTPUT;
    }
    return options;
 }
@@ -241,6 +318,15 @@ async function openLab(y4mFile, options, baseUrl, viewport) {
       permissions: ['camera'],
       deviceScaleFactor: 2,
    });
+   // The lab reads its overlay mode from localStorage on boot
+   // (bbox-overlay.js, OVERLAY_MODE_STORAGE_KEY). Seeding it here is the only
+   // way in from outside: setOverlayMode is a module import, not a global, and
+   // the button that cycles it is one of the controls render hides.
+   if (options.overlayMode) {
+      await context.addInitScript((mode) => {
+         try { window.localStorage.setItem('ghostati-overlay-mode-v1', mode); } catch (error) { /* private mode */ }
+      }, options.overlayMode);
+   }
    const page = await context.newPage();
    const logs = [];
    page.on('console', (message) => logs.push(`[${message.type()}] ${message.text()}`.slice(0, 240)));
@@ -522,6 +608,408 @@ async function probeFigure(figure, options, baseUrl) {
    }
 }
 
+// ---------------------------------------------------------------------------
+// render — put one arbitrary photograph through the lab and save what the lab
+// draws on it.
+//
+// This is the picture-picking tool, not a measurement harness. `measure` runs
+// the built fixtures and reports numbers; `render` takes any still you point
+// it at, feeds it to the lab as a fake webcam, turns on the layers you ask
+// for, and writes a cropped PNG or JPEG you can drop straight into a page.
+//
+// The clean pass and the Ghostyle pass are the SAME FRAME. The Ghostyle is an
+// overlay drawn on the video, so nobody has to hold a pose between the two
+// pictures: crop, light, distance and expression are identical by
+// construction, and the only thing that differs is the thing being tested.
+// ---------------------------------------------------------------------------
+
+/** `--layers` names to the lab's own overlay modes. `ghostyle` is not an
+ *  overlay mode: it toggles the effect, so it is handled separately. */
+const LAYER_OVERLAY = {
+   none: null,
+   box: 'bbox',        // the face box plus its metric labels
+   landmarks: '2d',    // the box AND the face-api 68-point scaffold: "recognised"
+   mesh: 'mesh',       // MediaPipe mesh dots
+};
+const LAYER_NAMES = [...Object.keys(LAYER_OVERLAY), 'ghostyle'];
+
+/** Lab chrome that must not appear inside a crop. */
+const LAB_CHROME = [
+   '.viewbar', '.rail', '.rec-dot', '.bottombar', '.scrim-top', '.scrim-bottom',
+   '.status-pill', '#placeholder', '.screen', '#gm-pluginbar', '.locale-control',
+];
+
+function ffmpegAvailable() {
+   const probe = spawnSync('ffmpeg', ['-version'], { stdio: 'ignore' });
+   return !probe.error && probe.status === 0;
+}
+
+/**
+ * Turn a still into the Y4M the fake webcam wants.
+ *
+ * Same recipe as tutorials/lab-screenshots.md. The still is fitted to a
+ * 640x480 frame and padded rather than stretched, because face-api's landmark
+ * positions are only meaningful if the face keeps its aspect ratio. A 4:3
+ * source fills the frame exactly and gets no bars; anything else is centred,
+ * and the bars are then inside the crop unless --pad is lowered.
+ */
+function stillToY4m(imageFile, workDir) {
+   if (!ffmpegAvailable()) {
+      throw new Error('ffmpeg is not on PATH. render needs it to turn a still into a fake webcam feed.');
+   }
+   const y4mFile = path.join(workDir, 'render-source.y4m');
+   const result = spawnSync('ffmpeg', [
+      '-y', '-loglevel', 'error',
+      '-loop', '1', '-i', imageFile, '-t', '6', '-r', '15',
+      '-vf', 'scale=640:480:force_original_aspect_ratio=decrease,pad=640:480:(ow-iw)/2:(oh-ih)/2:color=0x9a938c,format=yuv420p',
+      '-pix_fmt', 'yuv420p', y4mFile,
+   ], { encoding: 'utf8' });
+   if (result.status !== 0) {
+      throw new Error(`ffmpeg could not read ${displayPath(imageFile)}: ${String(result.stderr || '').trim()}`);
+   }
+   return y4mFile;
+}
+
+/** Hide the lab's own interface so a wide crop cannot catch a button. */
+async function hideLabChrome(page) {
+   await page.addStyleTag({
+      content: `${LAB_CHROME.join(', ')} { display: none !important; }
+                html, body { background: #000 !important; }
+                /* The lab fades the Ghostyle out two seconds after each pass
+                   (engine.js clearOverlay), which is right for a live tool and
+                   wrong for a still. The canvas is repainted every pass, so
+                   pinning the opacity shows the current drawing rather than a
+                   stale one. An inline style without !important loses to this. */
+                #overlay { opacity: 1 !important; transition: none !important; }`,
+   }).catch(() => {});
+}
+
+/** Which view tab a `--layers` list needs, and the overlay mode inside it.
+ *
+ * The lab hides the whole overlay canvas in the Camera view
+ * (lab-ui.js: bbox.classList.toggle('gm-canvas-hidden', v === 'off')), so a
+ * box or a scaffold is only reachable through the 2D or 3D tab. Within a tab
+ * the mode can still be cycled, which is how box-only is reached: the 2D tab
+ * would otherwise draw the full 68-point scaffold as well.
+ */
+function viewPlanFor(layers) {
+   const wanted = layers.filter((layer) => layer !== 'ghostyle');
+   const has = (name) => wanted.includes(name);
+   if (!wanted.length || (wanted.length === 1 && has('none'))) return { view: 'off', mode: null };
+   if (has('box') && has('mesh')) return { view: '3d', mode: 'entrambi' };
+   if (has('mesh')) return { view: '3d', mode: 'mesh' };
+   if (has('landmarks')) return { view: '2d', mode: '2d' };
+   return { view: '2d', mode: 'bbox' };
+}
+
+/**
+ * Put the lab into the view the requested layers need.
+ *
+ * Everything here is done by clicking the lab's own controls, because
+ * setOverlayMode is a module import rather than a global: the view tabs are
+ * the supported way in, and #overlayModeBtn (hidden in the page, but present)
+ * cycles the mode within a view.
+ */
+async function applyLayers(page, options) {
+   const plan = viewPlanFor(options.layers);
+   await clickAction(page, `.seg[data-view="${plan.view}"]`, `the ${plan.view} view tab`);
+   await page.waitForTimeout(1500);
+   if (!plan.mode) return 'none';
+
+   for (let attempt = 0; attempt < 5; attempt += 1) {
+      const current = await withTimeout(page.evaluate(() => {
+         const button = document.getElementById('overlayModeBtn');
+         return button ? button.dataset.overlayMode || null : null;
+      }), 8000).catch(() => null);
+      if (current === plan.mode) break;
+      // A null reading means the button has not been clicked yet and carries no
+      // mode, not that the mode is unreachable: click and look again.
+      await clickAction(page, '#overlayModeBtn', 'the overlay mode button').catch(() => {});
+      await page.waitForTimeout(900);
+   }
+   return plan.mode;
+}
+
+/**
+ * Where the face is, in page pixels.
+ *
+ * face-api reports the box in the overlay canvas's own coordinate space, so it
+ * has to be scaled by the canvas's on-screen size and offset by its position.
+ * The lab mirrors the canvas with a CSS transform when the camera is a selfie
+ * camera, and a mirrored box has to be flipped back or the crop lands on the
+ * wrong cheek.
+ */
+async function faceBoxOnPage(page) {
+   return withTimeout(page.evaluate(() => {
+      const overlay = document.getElementById('overlay');
+      const result = window.gstmxx && window.gstmxx.getLastResult && window.gstmxx.getLastResult();
+      if (!overlay || !result) return null;
+      const raw = (result.detection && result.detection.box) || result.box || null;
+      if (!raw) return null;
+
+      const rect = overlay.getBoundingClientRect();
+      const intrinsicW = overlay.width || rect.width;
+      const intrinsicH = overlay.height || rect.height;
+      const scaleX = rect.width / intrinsicW;
+      const scaleY = rect.height / intrinsicH;
+
+      const transform = window.getComputedStyle(overlay).transform || 'none';
+      const mirrored = transform !== 'none' && Number((transform.match(/matrix\(([-\d.]+)/) || [])[1]) < 0;
+
+      const x = mirrored ? intrinsicW - (raw.x + raw.width) : raw.x;
+      return {
+         x: rect.left + x * scaleX,
+         y: rect.top + raw.y * scaleY,
+         width: raw.width * scaleX,
+         height: raw.height * scaleY,
+         viewer: { x: rect.left, y: rect.top, width: rect.width, height: rect.height },
+         mirrored,
+      };
+   }), 10000).catch(() => null);
+}
+
+/**
+ * Grow the face box into the crop that is actually saved.
+ *
+ * Padding is a fraction of the box, so the head fills the same proportion of
+ * every card whatever the source resolution or how close the person stood.
+ * That is what makes two cards comparable; a fixed pixel pad does not.
+ */
+function cropFromBox(box, options) {
+   const [aw, ah] = options.aspect;
+   const padded = {
+      width: box.width * (1 + options.pad * 2),
+      height: box.height * (1 + options.pad * 2),
+   };
+   const centreX = box.x + box.width / 2;
+   const centreY = box.y + box.height / 2;
+
+   let width = padded.width;
+   let height = (width / aw) * ah;
+   if (height < padded.height) {
+      height = padded.height;
+      width = (height / ah) * aw;
+   }
+
+   // Clamp to the frame by scaling BOTH sides, never one: clamping them
+   // independently silently changes the aspect, and two cards cropped to
+   // different shapes stop being comparable.
+   const bounds = box.viewer;
+   const fit = Math.min(1, bounds.width / width, bounds.height / height);
+   width *= fit;
+   height *= fit;
+   let x = centreX - width / 2;
+   // Faces sit high in a portrait crop: the chin needs less room than the hair
+   // and the shoulders, so the box is nudged up rather than centred.
+   let y = centreY - height * 0.46;
+   x = Math.max(bounds.x, Math.min(x, bounds.x + bounds.width - width));
+   y = Math.max(bounds.y, Math.min(y, bounds.y + bounds.height - height));
+   return { x, y, width, height };
+}
+
+/**
+ * Screenshot one region.
+ *
+ * The default 30s budget is not enough here. The lab runs face-api and
+ * MediaPipe on the render loop, headless Chromium starves requestAnimationFrame
+ * under swiftshader, and Playwright's own stability wait then outlives its
+ * timeout on a page that is in fact fine. A longer budget and one retry is the
+ * same lesson waitFor learned further up this file.
+ */
+async function captureClip(page, clip) {
+   const shot = () => page.screenshot({ clip, timeout: 90000, animations: 'disabled', caret: 'initial', scale: 'css' });
+   try {
+      return await shot();
+   } catch (error) {
+      await page.waitForTimeout(2000);
+      return shot();
+   }
+}
+
+/** Resize a screenshot buffer to the requested width and write it. */
+async function writeImage(buffer, file, options) {
+   const { createCanvas, loadImage } = require('canvas');
+   const image = await loadImage(buffer);
+   const width = options.width;
+   const height = Math.round((width / image.width) * image.height);
+   const surface = createCanvas(width, height);
+   surface.getContext('2d').drawImage(image, 0, 0, width, height);
+   const out = options.format === 'png'
+      ? surface.toBuffer('image/png')
+      : surface.toBuffer('image/jpeg', { quality: options.quality / 100 });
+   fs.mkdirSync(path.dirname(file), { recursive: true });
+   fs.writeFileSync(file, out);
+   return { file, width, height, bytes: out.length };
+}
+
+/** The match readout, retried: one starved frame should not lose the number. */
+async function readoutWithRetry(page, attempts = 4) {
+   for (let attempt = 0; attempt < attempts; attempt += 1) {
+      const reading = await readout(page);
+      if (reading && reading.num) return reading;
+      await page.waitForTimeout(1500);
+   }
+   return readout(page);
+}
+
+async function renderImage(options, baseUrl) {
+   const imageFile = options.image;
+   if (!fs.existsSync(imageFile)) throw new Error(`No such image: ${displayPath(imageFile)}`);
+
+   const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'gstmxx-render-'));
+   const extension = options.format === 'png' ? 'png' : 'jpg';
+   const stem = options.name || path.basename(imageFile).replace(/\.[^.]+$/, '');
+   const written = [];
+   const notes = [];
+
+   try {
+      const y4mFile = stillToY4m(imageFile, workDir);
+      const { browser, page, logs, detected } = await openLab(y4mFile, options, baseUrl, { width: 1280, height: 960 });
+      try {
+         if (!detected) {
+            throw new Error(
+               `face-api found no face in ${displayPath(imageFile)}.\n` +
+               '  The lab cannot draw a box, landmarks or a Ghostyle on a frame it has not detected.\n' +
+               '  Try a frontal, evenly lit photograph where the head is a reasonable share of the frame.\n' +
+               `  Browser log: ${logs.slice(-3).join(' | ') || 'empty'}`,
+            );
+         }
+         // The baseline is saved first, while the lab's own controls are still
+         // visible: saveIdentity waits for the saved-faces badge, and that
+         // badge is one of the things hideLabChrome removes.
+         let baseline = null;
+         if (options.measure) {
+            const save = await saveIdentity(page, options);
+            baseline = await readoutWithRetry(page);
+            // saveIdentity watches the saved-faces badge, which a busy frame can
+            // leave unread. The readout is the better witness: if the lab is
+            // reporting a state and a number, an identity is stored.
+            const stored = save.registered
+               || Boolean(baseline && baseline.num && baseline.state && !/save your face/i.test(baseline.state));
+            notes.push(`baseline : ${stored ? `saved, lab reports "${baseline.state}"` : 'NOT SAVED, the distance below is meaningless'}`);
+         }
+
+         await hideLabChrome(page);
+         const mode = await applyLayers(page, options);
+         notes.push(`overlay  : ${mode}`);
+         await page.waitForTimeout(1800);
+
+         const box = await faceBoxOnPage(page);
+         if (!box) {
+            throw new Error(
+               `a face was detected in ${displayPath(imageFile)} but the lab reported no box for it, ` +
+               'so there is nothing to crop to. Re-run with --headed to watch what the lab does.',
+            );
+         }
+         const clip = cropFromBox(box, options);
+         notes.push(`face box : ${Math.round(box.width)}x${Math.round(box.height)} at ` +
+                    `${Math.round(box.x)},${Math.round(box.y)}${box.mirrored ? ' (mirrored, flipped back)' : ''}`);
+         notes.push(`crop     : ${Math.round(clip.width)}x${Math.round(clip.height)} at ` +
+                    `${Math.round(clip.x)},${Math.round(clip.y)}, pad ${options.pad}, aspect ${options.aspect.join(':')}`);
+
+         // --- clean pass: the frame as the lab sees it, before any Ghostyle.
+         await freezeUi(page);
+         const cleanFile = path.join(options.output, `${stem}-clean.${extension}`);
+         written.push(await writeImage(await captureClip(page, clip), cleanFile, options));
+
+         // --- Ghostyle pass: the same frame, with the effect on.
+         let painted = null;
+         if (options.ghostyle) {
+            // 2D Ghostyles are activated through their own button, not through
+            // window.gstmxx: only the 3D helpers are exposed there. The button
+            // lives in a drawer this command has already hidden, so the click
+            // is dispatched rather than performed.
+            const selector = `.preview-btn[data-effect="${options.ghostyle}"]`;
+            const present = await waitFor(
+               page, (sel) => Boolean(document.querySelector(sel)), 20000, selector,
+            );
+            if (!present) {
+               const known = await withTimeout(page.evaluate(() => Array.from(
+                  document.querySelectorAll('.preview-btn[data-effect]'),
+               ).map((button) => button.dataset.effect)), 8000).catch(() => []);
+               throw new Error(
+                  `no Ghostyle called "${options.ghostyle}" in the lab.\n` +
+                  `  Loaded ids: ${known.join(', ') || 'none'}\n` +
+                  '  Ids come from ghostyles.json.',
+               );
+            }
+            // Saving an identity puts the lab in its busy state, which disables
+            // every Ghostyle button. A disabled button swallows the click
+            // silently, so wait for the controls to come back first.
+            const ready = await waitFor(
+               page, (sel) => { const button = document.querySelector(sel); return Boolean(button) && !button.disabled; },
+               30000, selector,
+            );
+            if (!ready) throw new Error(`the lab left Ghostyle "${options.ghostyle}" disabled; it is still busy.`);
+            // The click is retried, not trusted once. Under a headless browser
+            // the lab can still be finishing the work the save started when
+            // the button is pressed, and a press that lands then is dropped
+            // without any error: the button is simply not listening yet.
+            let active = null;
+            for (let round = 0; round < 3 && active !== options.ghostyle; round += 1) {
+               if (round) await page.waitForTimeout(3000);
+               await clickAction(page, selector, `Ghostyle ${options.ghostyle}`);
+               await page.waitForTimeout(options.settle * 1000);
+               for (let attempt = 0; attempt < 8; attempt += 1) {
+                  active = await withTimeout(page.evaluate(() => window.gstmxx.getActiveEffect()), 10000).catch(() => null);
+                  if (active === options.ghostyle) break;
+                  await page.waitForTimeout(1500);
+               }
+            }
+            if (active !== options.ghostyle) {
+               throw new Error(
+                  `Ghostyle "${options.ghostyle}" did not become active after three attempts ` +
+                  `(active: ${active || 'none'}). Re-run with --headed to watch the lab.`,
+               );
+            }
+            notes.push(`ghostyle : ${options.ghostyle} active`);
+            await freezeUi(page);
+            const paintedFile = path.join(options.output, `${stem}-${options.ghostyle}.${extension}`);
+            written.push(await writeImage(await captureClip(page, clip), paintedFile, options));
+            painted = await readoutWithRetry(page);
+         }
+
+         return { image: imageFile, written, notes, baseline, painted, logs };
+      } finally {
+         if (options.keepOpen) await page.waitForTimeout(options.keepOpen * 1000);
+         await browser.close();
+      }
+   } finally {
+      fs.rmSync(workDir, { recursive: true, force: true });
+   }
+}
+
+/** Everything render learned, on stdout. None of it is written to a data file:
+ *  the page carries these numbers as hand-written HTML. */
+function printRenderReport(result, options) {
+   const distance = (readingValue) => {
+      const value = Number.parseFloat(String(readingValue == null ? '' : readingValue).replace(/[^\d.]/g, ''));
+      return Number.isFinite(value) ? value : null;
+   };
+   process.stdout.write('\n');
+   process.stdout.write(`source   : ${displayPath(result.image)}\n`);
+   process.stdout.write(`layers   : ${options.layers.join(', ')}${options.ghostyle ? ` + ghostyle ${options.ghostyle}` : ''}\n`);
+   for (const note of result.notes) process.stdout.write(`${note}\n`);
+
+   const threshold = distance((result.painted || result.baseline || {}).threshold);
+   const paintedDistance = distance((result.painted || {}).num);
+   if (result.painted) {
+      const verdict = threshold === null || paintedDistance === null
+         ? 'no reading'
+         : paintedDistance >= threshold
+            ? `crossed the threshold (${paintedDistance} against ${threshold})`
+            : `still matched (${paintedDistance} against ${threshold})`;
+      process.stdout.write(`distance : ${verdict}\n`);
+      process.stdout.write(`readout  : ${JSON.stringify(result.painted)}\n`);
+   } else if (options.measure) {
+      process.stdout.write('distance : no Ghostyle applied, nothing to compare against the baseline\n');
+   }
+   for (const file of result.written) {
+      process.stdout.write(`wrote    : ${displayPath(file.file)}  ${file.width}x${file.height}  ${Math.round(file.bytes / 1024)} KB\n`);
+   }
+   process.stdout.write('\nThese numbers are for picking a picture. Put the ones you publish into the page by hand.\n');
+}
+
 function printMeasureTable(results, options) {
    const width = { figure: 10, saved: 22, min: 7, peak: 7 };
    process.stdout.write('\n');
@@ -547,7 +1035,7 @@ function printMeasureTable(results, options) {
 
 async function main() {
    const options = parseArgs(process.argv.slice(2));
-   const figures = resolveFigures(options);
+   const figures = options.command === 'render' ? [] : resolveFigures(options);
 
    let server = null;
    let baseUrl = options.baseUrl;
@@ -589,6 +1077,11 @@ async function main() {
             for (const note of result.notes) process.stdout.write(`  ${note}\n`);
             for (const file of result.written) process.stdout.write(`  wrote ${displayPath(file)}\n`);
          }
+      }
+
+      if (options.command === 'render') {
+         const result = await renderImage(options, baseUrl);
+         printRenderReport(result, options);
       }
 
       if (options.command === 'probe') {

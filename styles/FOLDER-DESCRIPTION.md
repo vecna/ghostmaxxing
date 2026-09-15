@@ -37,6 +37,9 @@ These files are linked directly by HTML pages and provide page layout or unique 
 - `index.css` — homepage-specific styling for the landing page.
   - Included by: `index.html`
 
+- `camera-stage.css` — the six-camera field, its fact panels and its finale. Split out of `index.css` when the stage moved off the homepage; it is placement for one block and knows nothing about the page around it.
+  - Included by: `about.html`
+
 - `genealogy.css` — genealogy page layout: hero, the two generated charts and their marks, legend, row cards. Generated together with `genealogy.html` by `scripts-dev/build-genealogy.py`; edit the CSS string there.
   - Included by: `genealogy.html`
 

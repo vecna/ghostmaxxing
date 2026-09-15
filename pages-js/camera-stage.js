@@ -1,4 +1,9 @@
-/* The homepage camera field.
+/* The camera field.
+ *
+ * This ran at the top of the homepage until the story carousel took that
+ * slot; it now sits on /about.html, between who is making this and the
+ * vision. Nothing about the interaction changed. Its stylesheet is
+ * styles/camera-stage.css and its camera <template>s live in the same page.
  *
  * The arc, and why it ends the way it does:
  *
