@@ -6,5 +6,7 @@
   { "id": "maximalism", "url": "ghostyles/maximalism.js" },
   { "id": "smokey-eyes", "url": "ghostyles/smokey-eyes.js" },
   { "id": "soft-contour", "url": "ghostyles/soft-contour.js" },
-  { "id": "uv-stripes", "url": "ghostyles/uv-stripes.js" }
+  { "id": "uv-stripes", "url": "ghostyles/uv-stripes.js" },
+  { "id": "circular-fragments", "url": "ghostyles/circular-fragments.js" },
+  { "id": "rectangles", "url": "ghostyles/rectangles.js" }
 ]
