@@ -35,6 +35,11 @@
  *                      database; probe folded into --debug; timestamped
  *                      progress; DOM clicks, direct style injection and CDP
  *                      screenshots instead of Playwright waits; --version.
+ *   0.9.2  2026-09-20  --feed: the fake webcam frame size is an option. render
+ *                      defaults to "fit" (a 4:3 frame as tall as the source),
+ *                      because at 640x480 every overlay the lab draws was
+ *                      rasterised at 480 lines and upscaled, which made the
+ *                      labels unreadable. measure and shots keep 640x480.
  */
 
 const fs = require('node:fs');
@@ -44,7 +49,7 @@ const { spawnSync } = require('node:child_process');
 const httpServer = require('http-server');
 const { chromium } = require('@playwright/test');
 
-const VERSION = '0.9.1';
+const VERSION = '0.9.2';
 const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_RENDER_DIR = path.join(ROOT, 'scratch');
 const DEFAULT_SHOT_OUTPUT = path.join(ROOT, 'images', 'workshops');
@@ -145,6 +150,14 @@ shots options:
   --record <sec>         Seconds of clip to record (default: 7)
 
 Common options:
+  --feed <size>          Resolution of the fake webcam frame the picture is
+                         fitted into, landscape. WxH such as 1440x1080, or
+                         sd (640x480), hd (1920x1080), fit (a 4:3 frame as
+                         tall as the source, up to 1080).
+                         Default: fit for render, sd for measure and shots.
+                         Everything the lab draws is rasterised at this size
+                         and scaled up to the screen, so sd is a real webcam
+                         and looks like one; fit or hd for a picture to read.
   --seconds <n>          Length of the fake webcam clip (default: 8; a video
                          longer than this is cut)
   --settle <sec>         Seconds to wait after the first detection (default: 2)
@@ -212,6 +225,7 @@ function parseArgs(argv) {
       record: 7,
       samples: 4,
       interval: 1.2,
+      feed: null,
       seconds: 8,
       settle: 2,
       locale: 'en',
@@ -281,6 +295,7 @@ function parseArgs(argv) {
          case '--samples': options.samples = Math.max(1, parseNumber(arg, value, { integer: true })); break;
          case '--interval': options.interval = parseNumber(arg, value); break;
          case '--seconds': options.seconds = Math.max(2, parseNumber(arg, value)); break;
+         case '--feed': options.feed = parseFeed(value); break;
          case '--settle': options.settle = parseNumber(arg, value); break;
          case '--keep-open': options.keepOpen = parseNumber(arg, value); break;
          default: throw new Error(`Unknown option: ${arg}`);
@@ -303,7 +318,26 @@ function parseArgs(argv) {
       options.format = /\.png$/i.test(options.output) ? 'png' : 'jpg';
    }
    if (options.command === 'shots' && !options.output) options.output = DEFAULT_SHOT_OUTPUT;
+   if (!options.feed) options.feed = options.command === 'render' ? FEEDS.fit : FEEDS.sd;
    return options;
+}
+
+/** Named fake-webcam frame sizes. `fit` is resolved per source in toY4m. */
+const FEEDS = {
+   sd: { width: 640, height: 480, label: 'sd' },
+   hd: { width: 1920, height: 1080, label: 'hd' },
+   fit: { fit: true, label: 'fit' },
+};
+
+function parseFeed(raw) {
+   const value = raw.toLowerCase();
+   if (FEEDS[value]) return FEEDS[value];
+   const match = /^(\d{2,4})x(\d{2,4})$/.exec(value);
+   if (!match) throw new Error('--feed must be WxH (for example 1440x1080), sd, hd or fit.');
+   const width = Number(match[1]);
+   const height = Number(match[2]);
+   if (height > width) throw new Error('--feed must be landscape: the lab lays the video out as a landscape frame and a portrait feed distorts the geometry. Portrait pictures are fitted into the frame with bars.');
+   return { width: width - (width % 2), height: height - (height % 2), label: `${width}x${height}` };
 }
 
 // ---------------------------------------------------------------------------
@@ -315,13 +349,46 @@ function ffmpegAvailable() {
    return !probe.error && probe.status === 0;
 }
 
+/** Width and height of a picture or video, through ffprobe. */
+function probeSize(source) {
+   const result = spawnSync('ffprobe', [
+      '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0:s=x', source,
+   ], { encoding: 'utf8' });
+   const match = /^(\d+)x(\d+)/.exec(String(result.stdout || '').trim());
+   if (result.status !== 0 || !match) return null;
+   return { width: Number(match[1]), height: Number(match[2]) };
+}
+
+/**
+ * The frame a source is fitted into. `fit` picks a 4:3 landscape frame as
+ * tall as the source (capped at 1080 and rounded to even numbers), so a
+ * portrait photograph keeps its full height and the lab rasterises its
+ * overlays at that resolution instead of at 480 lines.
+ */
+function resolveFeed(feed, source) {
+   if (!feed.fit) return feed;
+   const size = probeSize(source);
+   if (!size) {
+      progress(`${displayPath(source)}: size unknown, using a 1440x1080 feed`);
+      return { width: 1440, height: 1080 };
+   }
+   let height = Math.min(1080, size.height);
+   let width = Math.max(Math.round(height * 4 / 3), size.width <= 1920 ? size.width : 1920);
+   if (width > 1920) { width = 1920; height = Math.min(height, 1440); }
+   width -= width % 2;
+   height -= height % 2;
+   if (height > width) height = width; // never portrait
+   return { width, height };
+}
+
 /**
  * Turn a still or a video into the Y4M the fake webcam wants.
  *
- * The source is fitted to a 640x480 frame and padded rather than stretched,
+ * The source is fitted to the --feed frame and padded rather than stretched,
  * because face-api's landmark positions are only meaningful if the face keeps
  * its aspect ratio. A 4:3 source fills the frame; anything else is centred on
- * a neutral grey. A .y4m is used as it is. Chromium loops the file.
+ * a neutral grey. A .y4m is used as it is, at its own size. Chromium loops
+ * the file.
  */
 function toY4m(source, workDir, label, options) {
    const extension = path.extname(source).toLowerCase();
@@ -334,12 +401,14 @@ function toY4m(source, workDir, label, options) {
       progress(`${label}: unknown extension "${extension}", handing it to ffmpeg as a picture`);
    }
    const target = path.join(workDir, `${label}.y4m`);
-   const filters = 'scale=640:480:force_original_aspect_ratio=decrease,pad=640:480:(ow-iw)/2:(oh-ih)/2:color=0x9a938c,format=yuv420p';
+   const feed = resolveFeed(options.feed, source);
+   const { width, height } = feed;
+   const filters = `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=0x9a938c,format=yuv420p`;
    const args = ['-y', '-loglevel', 'error'];
    if (isVideo) args.push('-i', source, '-t', String(options.seconds), '-r', '15', '-an');
    else args.push('-loop', '1', '-i', source, '-t', String(options.seconds), '-r', '15');
    args.push('-vf', filters, '-pix_fmt', 'yuv420p', target);
-   progress(`${label}: ${displayPath(source)} -> ${isVideo ? 'video' : 'still'} as Y4M (${options.seconds}s)`);
+   progress(`${label}: ${displayPath(source)} -> ${isVideo ? 'video' : 'still'} as a ${width}x${height} Y4M feed (${options.seconds}s)`);
    const result = spawnSync('ffmpeg', args, { encoding: 'utf8' });
    if (result.status !== 0) {
       throw new Error(`ffmpeg could not read ${displayPath(source)}: ${String(result.stderr || '').trim()}`);
@@ -948,6 +1017,7 @@ async function render(options, baseUrl, workDir) {
 
       out();
       out(`source   : ${displayPath(options.baseline)}`);
+      out(`feed     : ${options.feed.label}${options.feed.fit ? ' (4:3 frame as tall as the source, up to 1080)' : ''}`);
       out(`layers   : ${options.layers.join(', ')} (lab overlay mode: ${mode})${options.ghostyle ? `, ghostyle ${options.ghostyle}` : ''}`);
       if (options.saveIdentity) out(`identity : ${identity ? `saved, lab reports "${identity.state}"` : 'NOT saved'}`);
       if (geometry.face) {
@@ -1076,6 +1146,7 @@ function summarise(options, baselineReadout, samples, detectedDazzled) {
 
    return {
       tool: `lab-capture ${VERSION}`,
+      feed: options.feed.label,
       measuredAt: new Date().toISOString(),
       baseline: displayPath(options.baseline),
       dazzled: displayPath(options.dazzled),
@@ -1096,6 +1167,7 @@ function printMeasure(result) {
    out();
    out(`baseline : ${result.baseline}  (saved, lab reported "${result.baselineState || '?'}")`);
    out(`dazzled  : ${result.dazzled}`);
+   out(`feed     : ${result.feed}`);
    out(`threshold: ${result.threshold ?? '?'}`);
    out(`readings : ${result.samples.map((sample) => `${sample.num ?? '—'} (${sample.state || 'no state'})`).join(', ')}`);
    if (result.min !== null) out(`distance : min ${result.min}  mean ${result.mean}  max ${result.max}`);

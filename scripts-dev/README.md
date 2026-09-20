@@ -1,6 +1,6 @@
 # Development and maintenance scripts
 
-Version 0.9.1 · 18 September 2026
+Version 0.9.2 · 20 September 2026
 
 This guide describes development and maintenance scripts, together with the relevant commands in `package.json`.
 
@@ -430,6 +430,7 @@ node scripts-dev/lab-capture.cjs render --baseline original1.jpg \
 | `--aspect <w:h>` | Crop aspect, default `4:5`. |
 | `--width <px>` | Output width, default `1024`. |
 | `--quality <n>` | JPEG quality, default `82`. |
+| `--feed <size>` | Resolution of the fake webcam frame, see below. Default `fit` for `render`. |
 
 `render` prints the face box and the crop it used and the file it wrote. It
 prints no distance: that is `measure`'s job. If face-api finds no face it
@@ -507,9 +508,38 @@ Options: `--output <folder>`, `--prefix`, `--format jpg|png`, `--quality`,
 `--record <sec>`. Use `--prefix` when capturing more than one face into the
 same folder, otherwise each run overwrites the last.
 
+### The feed resolution decides how sharp the overlays are
+
+Everything the lab draws, the box, the scaffold, the labels and a Ghostyle,
+is rasterised onto a canvas the size of the webcam frame and then scaled up
+to the screen. With the original 640x480 frame a portrait photograph such as
+1280x1706 was reduced to 360x480 pixels of picture, the label text was
+drawn at that size, and the screenshot then enlarged it about three times:
+that is why the labels in early renders were unreadable and the picture
+soft, whatever the source resolution. Changing the font size in the lab does
+not help, because the pixels are missing before the font is drawn.
+
+`--feed` sets the frame:
+
+| Value | Frame | Use |
+|---|---|---|
+| `fit` | a 4:3 landscape frame as tall as the source, up to 1080 lines (`render` default) | pictures to read or publish |
+| `sd` | 640x480 (`measure` and `shots` default) | webcam conditions, comparable with earlier measurements |
+| `hd` | 1920x1080 | the largest frame the lab asks a real camera for |
+| `WxH` | any landscape size, for example `1440x1080` | |
+
+The frame must be landscape: the lab lays the video out as a landscape frame
+and a portrait feed distorts the geometry. A portrait picture is fitted into
+the frame with neutral bars at the sides, which a wide crop can show; lower
+`--pad` or use `--aspect 3:4` if that matters. A larger feed makes the run
+somewhat slower and the temporary clip larger (about 3.5 MB per frame at
+1440x1080, deleted at the end). Distances measured at different feed sizes
+are not directly comparable, so `measure` records the feed in its output and
+keeps `sd` unless told otherwise.
+
 ### Common options
 
-`--seconds` (clip length, default 8), `--settle` (seconds after the first
+`--feed <size>` (above), `--seconds` (clip length, default 8), `--settle` (seconds after the first
 detection, default 2), `--locale` (lab language, default `en`), `--base-url`,
 `--lab` (page path, default `/lab.html`), `--headed`, `--keep-open <sec>`,
 `--debug`, `--version`, `--help`. The script carries its own version
