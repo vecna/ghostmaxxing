@@ -7,20 +7,26 @@ browser with a synthetic face in place of the webcam. The commands live in
 recognition distance". This page covers why the harness exists and how to read
 what it produces.
 
-## Two harnesses
+## Three commands, one harness
 
-`measure` and `shots` drive the **built fixtures**: `figureN-clean.y4m` and `figureN-painted.y4m`, two separately generated pictures of the same synthetic person. That is the right shape for measuring a set.
-
-`render` drives **one arbitrary photograph**, and it is what the homepage story cards are made with:
+Everything goes through `scripts-dev/lab-capture.cjs`, and every command takes
+explicit file names:
 
 ```sh
-node scripts-dev/lab-capture.cjs render --image shots/candidate.jpg \
-  --ghostyle cv-dazzle-1 --layers box,ghostyle
+# one picture in, one picture out: the lab's layers drawn on a photograph
+node scripts-dev/lab-capture.cjs render --baseline face.jpg --layers landmarks --output face-landmarks.jpg
+node scripts-dev/lab-capture.cjs render --baseline face.jpg --ghostyle cv-dazzle-1 --output face-dazzle.jpg
+
+# two pictures in, a distance out
+node scripts-dev/lab-capture.cjs measure --baseline face.jpg --dazzled face-dazzle.jpg --output-visual-log face-test.jpg
+
+# the workshop screenshots, from a clean and a painted picture of the same face
+node scripts-dev/lab-capture.cjs shots --baseline clean.jpeg --dazzled painted.jpeg
 ```
 
-The difference that matters is not the input format. A Ghostyle is an overlay drawn on the video by the lab, so `render`'s clean pass and Ghostyle pass are the same frame: same crop, same light, same pose, guaranteed by the renderer rather than by the subject holding still. Two pictures that differ only in the thing being tested are comparable; two photographs of a person who moved between them are not, and the difference gets attributed to the framing.
+`render` is what the homepage story cards are made with. A Ghostyle is an overlay drawn on the video by the lab, so two renders of the same photograph are the same frame: same crop, same light, same pose, guaranteed by the renderer rather than by the subject holding still. Two pictures that differ only in the thing being tested are comparable; two photographs of a person who moved between them are not.
 
-It writes cropped images into `scratch/story/` and prints the distance, the threshold and the crop it used. It writes no data file: the numbers that reach a page are typed in by hand.
+`measure` is where the numbers come from. It saves the identity from the baseline in one browser session, carries the lab's face database into a second session that sees the dazzled picture, and reads the distance the lab reports. It prints the readings and a verdict, and writes nothing unless asked (`--json`, `--output-visual-log`): the numbers that reach a page are typed in by hand.
 
 ## The method
 
@@ -65,17 +71,21 @@ once the painted segment starts. Chromium loops the file.
 ## The script doing most of it
 
 ```
-"capture:fixtures": "node scripts-dev/build-face-fixtures.cjs",
+"capture:render":  "node scripts-dev/lab-capture.cjs render",
 "capture:measure": "node scripts-dev/lab-capture.cjs measure",
-"capture:shots": "node scripts-dev/lab-capture.cjs shots",
-"capture:probe": "node scripts-dev/lab-capture.cjs probe",
+"capture:shots":   "node scripts-dev/lab-capture.cjs shots",
 ```
+
+The `--debug` flag on any of them prints the video track, the lab's state and
+the browser console at the end of each session, for when a run comes back
+empty.
 
 ## A result worth keeping
 
 While making these I ran all eight fixture pairs through the lab: save the
-baseline from the clean face, then measure the painted face in the same
-session, default settings, `tiny_face_detector`, threshold 0.58.
+baseline from the clean face, then measure the painted face, default settings,
+`tiny_face_detector`, threshold 0.58. Today that is one `measure` per pair,
+`--baseline figureN-clean.jpeg --dazzled figureN-painted.jpeg`.
 
 | Pair | Painted face, peak distance | Outcome |
 |---|---|---|
@@ -127,6 +137,6 @@ Face recognition system works also when a person twist their face, and so a cond
 
 Drop `figureN-clean.jpeg` and `figureN-painted.jpeg` into
 `tests/fixtures/synthetic-faces/`, both showing the same face, ideally the same
-framing. Build the fixtures, measure, then add the row to the table above. The
-`.y4m` files are git-ignored: they are large and regenerable, so only the
-JPEGs and the measurements are worth committing.
+framing. Run `measure` on the pair, then add the row to the table above. No
+fixture build is needed: the script converts the JPEGs itself, and the
+temporary `.y4m` it makes is deleted at the end of the run.
