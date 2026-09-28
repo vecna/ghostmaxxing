@@ -10,10 +10,11 @@
  *   figureN-painted.y4m   the same face wearing the makeup
  *   figureN-pair.y4m      clean then painted, concatenated, for one session
  *
- * The pair file is what `lab-capture.cjs measure` uses: the lab saves the
- * identity while the clean segment is on screen, then reports the distance as
- * the painted segment arrives, which is the measurement a workshop reproduces
- * with a real face.
+ * The pair file gives a single clean-then-painted feed for anyone driving the
+ * lab by hand: save the identity while the clean segment is on screen, read
+ * the distance as the painted segment arrives. `lab-capture.cjs` no longer
+ * needs these clips: it converts pictures itself and takes the two files
+ * directly (`measure --baseline clean.jpeg --dazzled painted.jpeg`).
  *
  * Requires ffmpeg on PATH. Output is large (roughly 7 MB per second at
  * 640x480) and is git-ignored.

@@ -138,10 +138,11 @@
        shape of the story, not a measurement, and they must be replaced before
        this page is published. Produce the real ones with
 
-         node scripts-dev/lab-capture.cjs render --image <photo> --ghostyle <id>
+         node scripts-dev/lab-capture.cjs render  --baseline <photo> --ghostyle <id> --output <dazzled>
+         node scripts-dev/lab-capture.cjs measure --baseline <photo> --dazzled <dazzled>
 
-       which prints the distance and the threshold, and type them in here by
-       hand. There is no data file behind this and there should not be one:
+       the second of which prints the distance and the threshold; type them in
+       here by hand. There is no data file behind this and there should not be one:
        the cards are chosen, not generated.
 
        Measure first and write the captions afterwards. If a Ghostyle does not

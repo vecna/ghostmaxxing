@@ -29,7 +29,7 @@ Ghostmaxxing is designed to work as a research loop, not as a collection of unre
 
 In compact form:
 
-> Local tests -> Ghostyles and records -> Fediverse backend -> lab updates and public distribution -> anonymous reporting -> verified evidence -> better tests
+> Local tests -> Ghostyles and records -> Fediverse backend -> lab updates and public distribution -> anonymous reporting -> verified evidence -> better tests -> better public knowledge (ideally, after, and not pursued by Ghostmaxxing -> awareness about face recognition failures and unbalanced policy).
 
 The loop does not promise that public visibility alone changes institutional power. It creates shared, testable knowledge and a path by which evidence can alter the research.
 
@@ -105,9 +105,11 @@ Avoid sounding like:
 
 ## Editorial principles
 
-### 1. Test, do not trust
+### 1. Test, do not simply "trust"
 
-A face match is a system output, not a truth. Make the pipeline inspectable and the claim testable.
+Way too many projects exist selling (false) invisibility. Ghostmaxxing is made to allow delocalized testing and individual empowering.
+
+face match is a system output, so this make the pipeline inspectable and the claim testable.
 
 Prefer:
 

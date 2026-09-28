@@ -1,6 +1,6 @@
 # Development and maintenance scripts
 
-Version 1.0 · 4 September 2026
+Version 0.9.2 · 20 September 2026
 
 This guide describes development and maintenance scripts, together with the relevant commands in `package.json`.
 
@@ -18,7 +18,9 @@ Run the commands below from the `ghostmaxxing` repository root. Most scripts res
 | Validate complementary projects | `npm run validate:projects` | Checks JSON, URLs, categories and local images |
 | Build complementary projects | `npm run update:projects` | Overwrites `projects/index.html` |
 | Redraw the genealogy chart | `npm run update:genealogy` | Overwrites `genealogy.html` and `styles/genealogy.css` (needs `python3`) |
-| Put a photograph through the lab | `node scripts-dev/lab-capture.cjs render --image <file>` | Cropped PNG or JPEG in `scratch/story/`, numbers on stdout (needs `ffmpeg`) |
+| Draw the lab's layers on a picture | `node scripts-dev/lab-capture.cjs render --baseline <file> --layers landmarks --output <file>` | One picture with the lab's overlays (needs `ffmpeg`) |
+| Measure the distance between two pictures | `node scripts-dev/lab-capture.cjs measure --baseline <file> --dazzled <file>` | Readings and verdict on stdout; `--output-visual-log <file>` for a composite picture |
+| Capture the workshop screenshots | `node scripts-dev/lab-capture.cjs shots --baseline <file> --dazzled <file>` | Three JPEGs in `images/workshops/` |
 | Generate a code map and viewer | `npm run codemap` | `codemap/codemap.json`, `codemap/codemap.html` |
 | Export UI translations | `npm run i18n:extract` | POT and pipe-delimited CSV under `translations/` |
 | Extract public copy | `node scripts-dev/extract-text-only.js` | `EXTRACTED-text-YYYY-MM-DD.md` |
@@ -90,33 +92,20 @@ npm run update:genealogy
 ## Pick a picture for the homepage story
 
 ```sh
-node scripts-dev/lab-capture.cjs render --image shots/candidate.jpg \
-  --ghostyle cv-dazzle-1 --layers box,ghostyle
+node scripts-dev/lab-capture.cjs render --baseline shots/candidate.jpg \
+  --ghostyle cv-dazzle-1 --output scratch/candidate-dazzle.jpg
+node scripts-dev/lab-capture.cjs render --baseline shots/candidate.jpg \
+  --layers landmarks --output scratch/candidate-landmarks.jpg
 ```
 
-`render` is the picture-picking tool. `measure` runs the built fixtures and reports numbers; `render` takes any still, turns it into a fake webcam feed with `ffmpeg`, opens the lab against it, turns on the layers you asked for, and writes a cropped image you can drop into a page.
+`render` is the picture-picking tool: one picture in, one picture out. It turns the still into a fake webcam feed with `ffmpeg`, opens the lab against it, switches on the layers and the Ghostyle you asked for, crops around the face and writes the file you named. The lab does the drawing; nothing is painted on afterwards.
 
-The clean pass and the Ghostyle pass are **the same frame**. A Ghostyle is an overlay drawn on the video, so nobody has to hold a pose between two photographs: crop, light, distance and expression are identical by construction and the only thing that differs is the thing being tested. That is what makes two cards comparable, and it is why the story carousel does not need a photographer.
-
-| Option | Meaning |
-|---|---|
-| `--image <file>` | Any JPEG or PNG with one frontal face. Required. |
-| `--ghostyle <id>` | An id from `ghostyles.json`. Omitted, only the clean pass is written. |
-| `--layers <list>` | From `none`, `box`, `landmarks`, `mesh`, `ghostyle`. Default `box`. `landmarks` is the box plus the face-api 68-point scaffold, which is the "recognised" look. |
-
-For a card that shows a Ghostyle, pass `--layers ghostyle` on its own. That keeps the lab in its Camera view, which is where the effect is painted; the clean pass of the same run still comes back carrying the detection scaffold, so one command gives you both the "this face is being read" picture and the "this is the pattern on it" picture. Adding `box` or `landmarks` moves the lab into a points view, where the overlay canvas is given over to the scaffold and the pattern does not appear.
-| `--pad <n>` | Crop padding as a fraction of the face box, default `0.6`. A fraction rather than a pixel count, so the head fills the same share of every card whatever the source resolution. |
-| `--aspect <w:h>` | Crop aspect, default `4:5`. |
-| `--width <px>` | Output width, default `1024`. |
-| `--name <stem>` | Output file stem, default the image file name. |
-| `--no-measure` | Skip saving a baseline and reading the distance. |
-| `--output <path>` | Destination, default `scratch/story/`. |
-
-It writes images and prints numbers, and it writes no data file. The numbers are for choosing between candidates; the ones you publish are typed into the page by hand, because the story cards are chosen rather than generated. If face-api finds no face it stops and says so rather than writing an unannotated picture.
+Two renders of the same photograph are **the same frame**: same crop, same light, same pose, guaranteed by the renderer rather than by the subject holding still. That is what makes two story cards comparable. Full options, and `measure` for the numbers that go in the captions, are under "Draw the lab's layers on a picture and measure the distance" below.
 
 `update:genealogy` runs `scripts-dev/build-genealogy.py` (Python 3, standard library only). It reads `references/REFERENCES.json` and `projects/PROJECTS.json`, places every reference and every project on the genealogy chart by year and by the row its `target` tags select, and overwrites `genealogy.html` and `styles/genealogy.css`. It stops with a message when an entry carries a target the row table does not know, so run it after adding to either dataset. The row table and the access-to-kind mapping for projects live at the top of the script.
 
 After a documentation change, inspect the home, one affected module and any changed tutorial links. The source review does not establish that every module currently appears in JSDoc.
+
 
 ## Generate the code map
 
@@ -365,120 +354,231 @@ Choose checks for the changed behaviour. `check` does not rebuild docs, verify t
 
 When adding or changing a script, record its exact command, inputs, outputs, overwrite behaviour and failure conditions here. Update the task index and the short folder description. Keep executable behaviour separate from intended future behaviour, and document scripts without npm aliases as well as those exposed through `package.json`.
 
-## Capture lab screenshots and measure recognition distance
+## Draw the lab's layers on a picture and measure the distance
 
-Sources: `scripts-dev/build-face-fixtures.cjs`, `scripts-dev/lab-capture.cjs`.
+Source: `scripts-dev/lab-capture.cjs`. Run from the repository root.
 
-These two scripts run `lab.html` in a headless browser with a synthetic face in
-place of the webcam. They exist for two jobs: producing the workshop
-screenshots without pointing a camera at a real person, and measuring how far a
-painted face moves from its own saved identity.
+The script runs `lab.html` in a headless browser with a file in place of the
+webcam. Chromium is started with `--use-fake-device-for-media-stream` and
+`--use-file-for-fake-video-capture=<file>`, which accept a raw Y4M clip; any
+JPEG, PNG or video you pass is converted into one with `ffmpeg` first (a still
+is looped, a video is cut to `--seconds`). The lab then runs its full pipeline
+against that feed, and the script reads the page the way a participant does:
+the overlay canvases, and the `#gm-num`, `#gm-thr`, `#gm-state` readout.
 
-Both are development tools. They write nothing that ships, apart from the
-images you ask for.
+Three subcommands, all taking explicit file names:
+
+| Command | In | Out |
+|---|---|---|
+| `render` | `--baseline <file>` | one picture with the requested layers and/or Ghostyle drawn by the lab |
+| `measure` | `--baseline <file>` `--dazzled <file>` | the distance the lab reports for the dazzled picture against the identity saved from the baseline; optional composite picture and JSON |
+| `shots` | `--baseline <file>` `--dazzled <file>` | the three workshop screenshots in `images/workshops/` |
+
+It is a development tool. Nothing it writes ships unless you copy it into a
+page yourself.
 
 ### Requirements
 
-- The repository's development dependencies (`npm install`). Playwright is
-  already declared for the end-to-end tests, so no extra install is needed.
-- A Chromium build. The scripts look for `/opt/pw-browsers/chromium`, then the
-  usual system paths, and otherwise fall back to Playwright's own browser. If
-  none is present, run `npm run prepare:e2e` once.
-- `ffmpeg` on `PATH`, for the fixture builder only.
+- The repository's development dependencies (`npm install`). Playwright and
+  `canvas` are already declared, so no extra install is needed.
+- A Chromium build. On Linux the script looks for `/opt/pw-browsers/chromium`
+  and the usual system paths; elsewhere, and as a fallback, it uses
+  Playwright's own browser. If that is missing, run `npm run prepare:e2e`
+  once; the script says so when it happens.
+- `ffmpeg` on `PATH`, unless every input is already a `.y4m`.
 
-No server needs to be running. Both scripts start a static server on a free
-port and stop it at the end. Pass `--base-url http://localhost:8080` to use one
-you already have.
+No server needs to be running. The script starts a static server on a free
+port and stops it at the end. Pass `--base-url http://localhost:8080` to use
+one you already have.
 
-### Step 1: build the fake-webcam fixtures
+### Expect it to be slow, but never silent
 
-Chromium can replace the camera with a raw Y4M file. The builder turns each
-`figureN-clean` / `figureN-painted` pair in `tests/fixtures/synthetic-faces/`
-into three clips in `tests/fixtures/synthetic-faces/y4m/`:
+A headless browser without a GPU runs face-api and MediaPipe on the CPU,
+through swiftshader, and the lab runs them on every frame. A `render` takes
+one to two minutes; a `measure`, which opens the lab twice and saves an
+identity, two to three. Every phase prints a timestamped line on stderr:
 
-| File | Contents | Used by |
-|---|---|---|
-| `figureN-clean.y4m` | the bare face, 6 seconds | `shots` |
-| `figureN-painted.y4m` | the same face with the makeup, 10 seconds | `shots` |
-| `figureN-pair.y4m` | clean then painted, concatenated | `measure` |
-
-```sh
-node scripts-dev/build-face-fixtures.cjs --figure 9,10
-node scripts-dev/build-face-fixtures.cjs --figure all --force
+```
+[   2.4s] opening http://127.0.0.1:38065/lab.html
+[  22.7s] face detected
+[  45.4s] layers box: view "2d", overlay mode "bbox"
+[  61.4s] taking the picture
 ```
 
-The pair file is the one that matters. The lab saves an identity while the
-clean segment is on screen, then reports the distance as the painted segment
-arrives, which is exactly what a participant does with their own face.
+If a line has not appeared for two minutes, something is wrong; `--debug`
+prints the page state and the browser console at the end of each session,
+and `--headed` shows the browser.
 
-Output is roughly 7 MB per second at 640x480, so a pair is about 105 MB. The
-folder is git-ignored. `--size 320x240` cuts it to a quarter if disk is tight,
-at the cost of comparability with earlier runs.
-
-Other options: `--fps`, `--clean-seconds`, `--painted-seconds`,
-`--face-height`, `--background`, `--source`, `--output`, `--pair-only`,
-`--force`. `--help` lists them.
-
-### Step 2: measure
+### render: one picture in, one picture out
 
 ```sh
-node scripts-dev/lab-capture.cjs measure --figure 9,10
-node scripts-dev/lab-capture.cjs measure --figure all
+node scripts-dev/lab-capture.cjs render --baseline original1.jpg \
+  --layers landmarks --output original1-with-landmarks.jpg
+node scripts-dev/lab-capture.cjs render --baseline original1.jpg \
+  --ghostyle cv-dazzle-1 --output original1-with-ghostyle.jpg
 ```
 
-For each figure the script waits for the first detection, clicks Save, then
-reads `#gm-num`, `#gm-thr` and `#gm-state` six times across the painted
-segment. It prints a table and writes
-`tests/fixtures/synthetic-faces/lab-measurements.json` with every individual
-reading.
+| Option | Meaning |
+|---|---|
+| `--baseline <file>` | A JPEG or PNG with one frontal face, a video, or a `.y4m`. Required. |
+| `--layers <list>` | From `none`, `box`, `landmarks`, `mesh`; comma-separated. Default `none`. `box` is the detection box with its metric label; `landmarks` adds the face-api 68-point scaffold, the "recognised" look; `mesh` is the MediaPipe mesh. |
+| `--ghostyle <id>` | Paint this Ghostyle, an id from `ghostyles.json`. Combines with `--layers`: both are drawn. |
+| `--output <file>` | The picture to write. `.png` or `.jpg` decides the format. Default `scratch/<input>-<layers>[-<ghostyle>].jpg`. |
+| `--save-identity` | Save the face as an identity before drawing, so the box label reads `Recognised · #0` rather than `face detected`. Adds about a minute. Off by default. |
+| `--crop face\|frame` | `face` crops around the detected face (default); `frame` saves the whole 640x480 feed as the lab shows it. |
+| `--pad <n>` | Crop padding as a fraction of the face box, default `0.6`. A fraction rather than a pixel count, so the head fills the same share of every picture whatever the source resolution. |
+| `--aspect <w:h>` | Crop aspect, default `4:5`. |
+| `--width <px>` | Output width, default `1024`. |
+| `--quality <n>` | JPEG quality, default `82`. |
+| `--feed <size>` | Resolution of the fake webcam frame, see below. Default `fit` for `render`. |
 
-Read the result as follows. `min` is normally 0.00, the distance of the clean
-face against the identity it just saved. `peak` is the highest distance reached
-while the makeup is on screen. The verdict compares `peak` against the
-threshold the lab is using, `MATCH_THRESHOLD`, currently 0.58: below it the
-face is still recognised, at or above it the match breaks.
+`render` prints the face box and the crop it used and the file it wrote. It
+prints no distance: that is `measure`'s job. If face-api finds no face it
+stops and says so rather than writing an unannotated picture.
 
-Useful options: `--samples`, `--interval`, `--settle`, `--save-wait`,
-`--output`, `--base-url`, `--lab`, `--headed`.
-
-### Step 3: capture the screenshots
+### measure: two pictures in, a distance out
 
 ```sh
-node scripts-dev/lab-capture.cjs shots --figure 9
+node scripts-dev/lab-capture.cjs measure --baseline original1.jpg \
+  --dazzled original1-with-ghostyle.jpg \
+  --output-visual-log dazzle1-test-1.jpg
 ```
 
-Writes three images into `images/workshops/`:
+`measure` opens the lab twice. The first session loads `--baseline`, clicks
+Save and exports the lab's face database from `localStorage`. The second
+session seeds that database before loading `--dazzled`, waits for the lab's
+auto-find loop to report, and reads the distance several times. It prints the
+readings, the threshold and a verdict:
+
+```
+baseline : original1.jpg  (saved, lab reported "Recognised · #0")
+dazzled  : original1-with-ghostyle.jpg
+threshold: 0.58
+readings : 0.50 (Recognised · #0), 0.50 (Recognised · #0), 0.50 (Recognised · #0)
+distance : min 0.5  mean 0.5  max 0.5
+verdict  : still recognised: every reading is below the threshold 0.58
+```
+
+| Option | Meaning |
+|---|---|
+| `--baseline <file>` | The face whose identity is saved. Required. |
+| `--dazzled <file>` | The picture measured against it. Required. `--dazzledfile` is accepted as an alias. |
+| `--samples <n>` | Readings taken on the dazzled picture, default `4`. |
+| `--interval <sec>` | Seconds between readings, default `1.2`. |
+| `--output-visual-log <file>` | One composite picture: baseline and dazzled side by side, the readings, a distance bar against the threshold, the verdict. For a lab notebook or a message, not for publication. |
+| `--json <file>` | Every reading, the threshold and the verdict as JSON. |
+
+Read the verdict as follows. `still recognised` means every reading is under
+the threshold (`MATCH_THRESHOLD`, currently 0.58); `escaped` means every
+reading is at or above it; `unstable` means they straddle it. A face that the
+detector cannot find at all on the dazzled picture is reported as
+`no face found`: the lab has no descriptor to compare, so there is no number,
+and that is the strongest result rather than a missing one.
+
+Two cautions. A still fed as a webcam is the easiest possible case for a
+matcher: even light, frontal pose, no motion. And a picture that `render`
+wrote is a 4:5 crop at 1024 pixels, re-padded into the 640x480 feed, so
+measuring it against the original photograph also measures the crop: the
+baseline of the story face against its own clean crop reads 0.14 here. For a
+fair pair, compare the Ghostyle render with a render of the same photograph
+made with `--layers none`.
+
+Inputs can be videos as well as stills (`--seconds` caps the clip). With a
+video the readings vary from sample to sample, which is what `--samples` and
+`--interval` are for.
+
+### shots: the workshop screenshots
+
+```sh
+node scripts-dev/lab-capture.cjs shots \
+  --baseline tests/fixtures/synthetic-faces/figure9-clean.jpeg \
+  --dazzled tests/fixtures/synthetic-faces/figure9-painted.jpeg
+```
+
+Writes three full-page screenshots into `images/workshops/`, which
+`workshops.html` displays:
 
 | File | What it shows | How it is produced |
 |---|---|---|
-| `ws-lab-save-id.jpg` | a saved identity, readout at 0.00 | clean fixture, Save clicked |
-| `ws-lab-save-id-plain.jpg` | the landmark view | the same session, `[data-view="2d"]` |
-| `ws-lab-upload-consent.jpg` | the upload consent screen with a clip ready | painted fixture, Save, Record, Upload |
+| `ws-lab-save-id.jpg` | a saved identity, readout at 0.00 | baseline picture, Save clicked |
+| `ws-lab-save-id-plain.jpg` | the landmark view | the same session, 2D tab |
+| `ws-lab-upload-consent.jpg` | the upload consent screen with a clip ready | dazzled picture, Save, Record, Upload |
 
-Options: `--output`, `--prefix`, `--format jpg|png`, `--quality`, `--record`,
-`--headed`. Use `--prefix` when capturing more than one figure into the same
-folder, otherwise each figure overwrites the last.
+Options: `--output <folder>`, `--prefix`, `--format jpg|png`, `--quality`,
+`--record <sec>`. Use `--prefix` when capturing more than one face into the
+same folder, otherwise each run overwrites the last.
 
-### When a capture comes back empty
+### The feed resolution decides how sharp the overlays are
+
+Everything the lab draws, the box, the scaffold, the labels and a Ghostyle,
+is rasterised onto a canvas the size of the webcam frame and then scaled up
+to the screen. With the original 640x480 frame a portrait photograph such as
+1280x1706 was reduced to 360x480 pixels of picture, the label text was
+drawn at that size, and the screenshot then enlarged it about three times:
+that is why the labels in early renders were unreadable and the picture
+soft, whatever the source resolution. Changing the font size in the lab does
+not help, because the pixels are missing before the font is drawn.
+
+`--feed` sets the frame:
+
+| Value | Frame | Use |
+|---|---|---|
+| `fit` | a 4:3 landscape frame as tall as the source, up to 1080 lines (`render` default) | pictures to read or publish |
+| `sd` | 640x480 (`measure` and `shots` default) | webcam conditions, comparable with earlier measurements |
+| `hd` | 1920x1080 | the largest frame the lab asks a real camera for |
+| `WxH` | any landscape size, for example `1440x1080` | |
+
+The frame must be landscape: the lab lays the video out as a landscape frame
+and a portrait feed distorts the geometry. A portrait picture is fitted into
+the frame with neutral bars at the sides, which a wide crop can show; lower
+`--pad` or use `--aspect 3:4` if that matters. A larger feed makes the run
+somewhat slower and the temporary clip larger (about 3.5 MB per frame at
+1440x1080, deleted at the end). Distances measured at different feed sizes
+are not directly comparable, so `measure` records the feed in its output and
+keeps `sd` unless told otherwise.
+
+### Common options
+
+`--feed <size>` (above), `--seconds` (clip length, default 8), `--settle` (seconds after the first
+detection, default 2), `--locale` (lab language, default `en`), `--base-url`,
+`--lab` (page path, default `/lab.html`), `--headed`, `--keep-open <sec>`,
+`--debug`, `--version`, `--help`. The script carries its own version
+(`VERSION` at the top of the file, with a short history in the header
+comment); `--version` prints it, every run logs it on its first line, and
+`measure --json` records it, so a measurement can always be tied to the
+script that produced it.
+
+### The synthetic fixtures
+
+`tests/fixtures/synthetic-faces/` holds `figureN-clean.jpeg` /
+`figureN-painted.jpeg` pairs: the same generated face bare and with
+adversarial makeup. Nobody is depicted, so they can appear in documentation
+and be re-rendered at any time. Any of them is a valid `--baseline` or
+`--dazzled`. `scripts-dev/build-face-fixtures.cjs` still builds concatenated
+`.y4m` clips from them for anyone who wants a single clean-then-painted feed;
+`lab-capture.cjs` no longer needs those, since it converts pictures itself.
+
+To measure the whole set, loop in the shell:
 
 ```sh
-node scripts-dev/lab-capture.cjs probe --figure 9 --variant clean
+for n in 1 2 3 4 5 6 7 8; do
+  node scripts-dev/lab-capture.cjs measure \
+    --baseline tests/fixtures/synthetic-faces/figure$n-clean.jpeg \
+    --dazzled  tests/fixtures/synthetic-faces/figure$n-painted.jpeg \
+    --json scratch/measure-figure$n.json
+done
 ```
-
-`probe` prints the video track dimensions, whether `window.gstmxx` is present,
-the readout and the last twenty console lines. The usual causes are a fixture
-that was never built, a face the detector cannot find at that scale (raise
-`--face-height`), and a missing WebGL backend.
 
 ### One implementation note
 
 The lab runs face-api and MediaPipe on the render loop. Under a headless
 browser that starves `requestAnimationFrame`, and Playwright's own in-page
-pollers stall with it: `waitForSelector` and `waitForFunction` time out on
-elements that are plainly in the DOM. Every wait in `lab-capture.cjs`
-therefore polls from Node with `page.evaluate`, and clicks fall back to a
-direct DOM click when the actionability check cannot run. If you extend these
-scripts, keep that pattern or the runs become intermittent.
+pollers stall with it: `waitForSelector`, `waitForFunction`, `addStyleTag`
+and `page.screenshot` all wait for a page that never looks idle. Every wait
+in `lab-capture.cjs` therefore polls from Node with `page.evaluate`, treats an
+unanswered call as "busy" rather than "missing", clicks through the DOM, and
+takes screenshots through the DevTools protocol (`Page.captureScreenshot`).
+If you extend the script, keep that pattern or the runs become intermittent.
 
 
 ## Visibly mark AI-generated fixture images

@@ -245,11 +245,11 @@ export function drawDetectionScaffold(ctx, resized) {
       ctx.fill();
    });
 
-   const lines = ['volto rilevato'];
-   if (typeof resized.age === 'number') lines.push(`eta stimata: ${Math.round(resized.age)}`);
-   if (resized.gender) lines.push(`genere stimato: ${resized.gender}`);
+   const lines = ['face detected'];
+   if (typeof resized.age === 'number') lines.push(`estimated age: ${Math.round(resized.age)}`);
+   if (resized.gender) lines.push(`estimated gender: ${resized.gender}`);
 
-   ctx.font = '14px Inter, system-ui, sans-serif';
+   ctx.font = '16px Inter, system-ui, sans-serif';
    const pad = 6;
    const lineHeight = 18;
    const maxWidth = Math.max(...lines.map(l => ctx.measureText(l).width));
@@ -264,14 +264,14 @@ export function drawDetectionScaffold(ctx, resized) {
       ctx.translate(-(startX + boxWidth / 2), -(startY + boxHeight / 2));
    }
 
-   ctx.fillStyle = 'rgba(15, 17, 21, 0.78)';
-   ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+   ctx.fillStyle = 'rgb(7, 46, 38)'; // --gm-green-deep
+   ctx.strokeStyle = 'rgb(255, 241, 207)';
    ctx.lineWidth = 1;
    roundRect(ctx, startX, startY, boxWidth, boxHeight, 8);
    ctx.fill();
    ctx.stroke();
 
-   ctx.fillStyle = 'rgba(238, 242, 255, 0.96)';
+   ctx.fillStyle = 'rgb(255, 241, 207)'; // --gm-cream
    lines.forEach((line, i) => {
       ctx.fillText(line, startX + pad, startY + pad + (i + 1) * lineHeight - 4);
    });
