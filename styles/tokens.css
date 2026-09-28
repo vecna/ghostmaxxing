@@ -33,7 +33,7 @@
    neon cyberpunk. Flat fills, 2px ink separators, no drop shadows. */
 
 :root {
-  --gm-bg: #f26a1b;
+  --gm-bg: rgb(242, 106, 27);
   --gm-bg-deep: #d95a12;
   --gm-ink: #0a0a08;
   --gm-text: #0a2540;
@@ -45,11 +45,11 @@
      sits in. Nothing should pick a green by eye. */
   --gm-green-soft: #2f7a5c;
   --gm-green: #0b4a3c;
-  --gm-green-deep: #072e26;
+  --gm-green-deep: rgb(7, 46, 38);
   --gm-green-night: #061f1a;
 
   --gm-yellow: #f0c24a;
-  --gm-cream: #fff1cf;
+  --gm-cream: rgb(255, 241, 207);
 
   /* Dazzle pink. RESERVED: only ever inside a lens, as wind, or as the logo
      spiral. Contrast against --gm-bg is ~1.15:1 — never text, never on orange

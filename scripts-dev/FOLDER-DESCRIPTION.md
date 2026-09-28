@@ -10,7 +10,7 @@ Related-project generation lives beside its data in `projects/`, mirroring the e
 
 - `build-face-fixtures.cjs` — uses ffmpeg to turn synthetic clean/painted JPEG pairs into large, git-ignored Y4M fake-camera clips under `tests/fixtures/synthetic-faces/y4m/`.
 
-- `lab-capture.cjs` — runs `measure`, `shots`, or `probe` against the Lab with synthetic Y4M input; records local recognition measurements or captures workshop screenshots. It consumes the output of `build-face-fixtures.cjs`; results do not establish protection against external systems.
+- `lab-capture.cjs` — drives the Lab in a headless browser with a picture or video in place of the webcam (converted to Y4M with ffmpeg). `render` draws the Lab's layers and a Ghostyle on one picture, `measure` reports the recognition distance between a baseline and a dazzled picture, `shots` captures the workshop screenshots; `--debug` dumps page state. Results do not establish protection against external systems.
 
 - `mark-ai-images.cjs` — visibly stamps synthetic JPEG/PNG fixtures with a configurable `AI Gen` corner badge using node-canvas, the committed Atkinson Bold font and `styles/tokens.css`. Defaults to `tests/fixtures/synthetic-faces/`; compares visible pixels before overwriting, skips an existing badge (including other sizes), supports `--dry-run`, and atomically replaces unmarked images. JPEG is re-encoded and source metadata is not preserved. See `README.md` for commands and detection limits.
 
