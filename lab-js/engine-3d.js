@@ -1,7 +1,7 @@
 /**
  * @module engine-3d
  * @description
- * 3D biometric pipeline for Ghostati.
+ * Secondary image-embedding pipeline for Ghostmaxxing.
  *
  * Parallel to engine.js (face-api / 128-D / euclidean distance), this module
  * implements the ImageEmbedder path:
@@ -343,8 +343,8 @@ export function decideMatchState3d({ liveMaxSim, liveMaxId, obfMaxSim, obfMaxId 
  * Build the `mediapipe` section of the unified `matchStateChanged` payload.
  *
  * NOTE: the field is named `mediapipe` in the payload (matching the landmark
- * source) because both tasks are powered by MediaPipe. The two models run in the
- * same MediaPipe-initiated pipeline.
+ * source) because both tasks use MediaPipe Tasks. FaceLandmarker and
+ * ImageEmbedder are independent models with separate inference loops.
  *
  * @param {{ liveInfo3d: object, composite3d: object|null }} result3d
  *   As returned by findFace3d().

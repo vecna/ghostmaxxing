@@ -19,7 +19,7 @@
  *
  * Why this module exists as the public plugin API surface: plugin authors
  * should never need to know about face-api or MediaPipe internals — they
- * should just `Ghostati.drawClosedPath(ctx, points, …)` and have it look
+ * should just `gstmxx.drawClosedPath(ctx, points, …)` and have it look
  * consistent with everything else. Keeping the helpers here (and pure) makes
  * them unit-testable without a browser.
  */
@@ -56,7 +56,7 @@ export function distance(a, b) {
  * @returns {{x:number, y:number}} The averaged point.
  * @see expandEyePolygon – uses this to locate the eye centre.
  * @see ghostyles/smokey-eyes.js, ghostyles/lip-tint.js – representative
- *   plugin consumers via `Ghostati.avgPoint`.
+ *   plugin consumers via `gstmxx.avgPoint`.
  */
 export function avgPoint(points) {
    const total = points.reduce((acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }), { x: 0, y: 0 });
@@ -74,7 +74,7 @@ export function avgPoint(points) {
  * @param {number} t  Interpolation factor; clamped only by the caller.
  * @returns {{x:number, y:number}} The interpolated point.
  * @see expandEyePolygon, drawEyeWing, drawCheekSweep – internal uses.
- * @see ghostyles/splash.js – extensive use via `Ghostati.lerp` for anchors.
+ * @see ghostyles/splash.js – extensive use via `gstmxx.lerp` for anchors.
  */
 export function lerp(a, b, t) {
    return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
@@ -97,7 +97,7 @@ export function scaleFrom(center, point, scale) {
 
 /**
  * Convenience constructor for a `{x, y}` point. Exists so plugin code reads
- * fluently (`Ghostati.point(120, 40)` rather than `{x: 120, y: 40}`) when
+ * fluently (`gstmxx.point(120, 40)` rather than `{x: 120, y: 40}`) when
  * inline-building anchor positions or pushing extra points onto a path.
  *
  * @param {number} x

@@ -109,11 +109,9 @@ describe('main.setBusy', () => {
     }
 
     [
-      els.scanBtn,
       els.copyMakeupBtn,
       els.saveBtn,
       els.analyzeBtn,
-      els.overlayModeBtn,
       els.clearDbBtn,
       els.recordBtn,
     ].forEach(btn => {
@@ -126,7 +124,6 @@ describe('main.setBusy', () => {
 
     expect(els.saveBtn.disabled).toBe(true);
     expect(els.analyzeBtn.disabled).toBe(true);
-    expect(els.overlayModeBtn.disabled).toBe(true);
     expect(els.clearDbBtn.disabled).toBe(true);
     expect(els.copyMakeupBtn.disabled).toBe(true);
 
@@ -142,7 +139,6 @@ describe('main.setBusy', () => {
 
     expect(els.saveBtn.disabled).toBe(false);
     expect(els.analyzeBtn.disabled).toBe(false);
-    expect(els.overlayModeBtn.disabled).toBe(false);
     expect(els.copyMakeupBtn.disabled).toBe(true);
 
     const previewBtns = els.ghostylesContainer.querySelectorAll('.preview-btn');

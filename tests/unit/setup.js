@@ -44,18 +44,13 @@ document.body.innerHTML = `
     <canvas id="mesh3dOverlay"></canvas>
     <canvas id="bboxOverlay"></canvas>
   </div>
-  <button id="scanBtn"></button>
   <button id="copyMakeupBtn"></button>
-  <button id="fullscreenBtn"></button>
-  <button id="toggleSettingsBtn"></button>
-  <button id="closeSettingsBtn"></button>
   <div id="settingsDrawer" class="settings-drawer hidden"></div>
   <div id="historyDrawer" class="settings-drawer hidden"></div>
   <div id="historyEntries"></div>
   <button id="saveBtn"></button>
   <button id="analyzeBtn"></button>
   <button id="recordBtn"></button>
-  <button id="overlayModeBtn">Vista: bbox</button>
   <span id="dbCountBadge"></span>
   <button id="clearDbBtn"></button>
   <button id="reloadPluginsBtn" style="display:none"></button>

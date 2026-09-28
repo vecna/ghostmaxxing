@@ -30,9 +30,8 @@ export function distanceToDiversity(dist) {
  * @param {Array<number>} [liveResult.descriptor] - face-api descriptor for nearest-neighbor matching.
  * @param {Array<object>} [dbFaces=state.db.faces] - Saved 2D face records to compare against.
  * @returns {{liveScore: number|null, liveMinDist: number|null, liveMinId: number|null}} Closest live match metrics.
- * @see findFace - Uses the result before evaluating an active Ghostyle.
- * @see autoFindLoop - Reuses this lookup for repeated automatic face searches.
- * @see composeAnalysisData - Uses this lookup for the analysis panel nearest-face summary.
+ * @see lab-js/auto-find-loop.js - Reuses this lookup for repeated automatic face searches.
+ * @see lab-js/analyze-panel.js - Uses this lookup for the analysis panel nearest-face summary.
  */
 export function seekFaceInDb(liveResult, dbFaces = state.db?.faces || []) {
    const liveScore = liveResult?.detection?.score ?? null;

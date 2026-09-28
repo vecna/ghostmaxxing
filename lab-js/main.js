@@ -10,23 +10,9 @@ import { els, setStatus, clearOverlay } from './dom.js';
 import { loadGhostyle, reloadPlugins } from './ghostyles-manager.js';
 import { initPlugins3dLoader, getActiveEffect3d, activateEffect3d, deactivateEffect3d, toggleEffect3d, reloadPlugins3d } from './plugins3d-loader.js';
 import { exportMakeup } from './export-makeup.js';
-import { setOverlayMode, OVERLAY_MODE_STORAGE_KEY, OVERLAY_MODES } from './bbox-overlay.js';
 import { openAnalyzePanel } from './analyze-panel.js';
 import { captureThumbnail, deleteThumbnail, getThumbnail, saveThumbnail } from './face-thumbnails.js';
 import { applyI18n, initI18n, setupLocaleSelect, t } from './i18n.js';
-
-function overlayModeLabel(mode) {
-   return OVERLAY_MODES[mode] || OVERLAY_MODES.bbox;
-}
-
-function readInitialOverlayMode() {
-   try {
-      const raw = localStorage.getItem(OVERLAY_MODE_STORAGE_KEY);
-      return Object.keys(OVERLAY_MODES).includes(raw) ? raw : 'bbox';
-   } catch {
-      return 'bbox';
-   }
-}
 
 function isLocalPluginDevHost() {
    const host = window.location.hostname;
@@ -53,7 +39,7 @@ if (els.switchCameraBtn) {
          els.video.srcObject.getTracks().forEach(track => track.stop());
       }
       try {
-         await startCamera(state, els);
+         await startCamera();
       } catch (err) {
          handleError(err, t('camera_switch_error'));
       }
@@ -99,7 +85,7 @@ window.gstmxx = {
    toggleEffect3d: (id) => toggleEffect3d(id),
    reloadPlugins3d: () => reloadPlugins3d(),
    reloadPlugins: async () => reloadPlugins({
-      onFaceapiToggle: () => startEffectLoop(state, els)
+      onFaceapiToggle: () => startEffectLoop()
    }),
    get lastLandmarks3d() { return state.lastLandmarks3d; },
    set lastLandmarks3d(v) { state.lastLandmarks3d = v; },
@@ -108,20 +94,18 @@ window.gstmxx = {
    detectorOptions: DETECTOR_OPTIONS
 };
 
-// International alias (see redesign/ghostati-ghostmaxxing-naming-brief.txt)
-window.gstmxx = window.gstmxx;
-
 /**
  * Sets the busy flag for the whole UI, disabling/enabling controls during asynchronous operations.
  *
  * @param {boolean} isBusy - When true, UI controls are disabled to prevent concurrent actions.
  * @see init – called during startup to manage UI state while models load.
  * @see loadModels – UI is set busy while models are loading.
- * @see toggleEffect – disables controls while an effect is being applied.
+ * @see saveFace – save actions hold the UI busy while both engines persist data.
+ * @see openAnalyzePanel – analysis actions use the same guard against concurrent work.
  */
 export function setBusy(isBusy) {
    state.isSystemBusy = isBusy;
-   [els.copyMakeupBtn, els.saveBtn, els.analyzeBtn, els.overlayModeBtn, els.clearDbBtn, els.recordBtn, els.reloadPluginsBtn].forEach(btn => {
+   [els.copyMakeupBtn, els.saveBtn, els.analyzeBtn, els.clearDbBtn, els.recordBtn, els.reloadPluginsBtn].forEach(btn => {
       if (btn) {
          if (btn === els.copyMakeupBtn && !state.lastCompositedCanvas) btn.disabled = true;
          else if (btn === els.recordBtn && state.isRecording) btn.disabled = true;
@@ -156,8 +140,8 @@ async function loadModels() {
  *
  * @param {Error} err - The caught error object.
  * @param {string} fallbackMessage - User‑friendly message describing the context of the error.
- * @see init – uses handleError for camera initialization failures.
- * @see toggleEffect – uses handleError when scanning or applying effects fails.
+ * @see init – camera-start failures are routed here.
+ * @see startCamera – camera-switch failures are routed here.
  */
 function handleError(err, fallbackMessage) {
    console.log(t('error_console_prefix'), fallbackMessage);
@@ -281,7 +265,7 @@ function removeFaceById(id) {
    deleteThumbnail(id);
    persistDb3d();
    persistDb();
-   renderDbStats(state, els);
+   renderDbStats();
 }
 
 function createHistoryCard(id) {
@@ -401,10 +385,11 @@ async function tryCaptureThumbnailOnSave() {
 /**
  * Initializes the application: loads the database, renders statistics, sets up the canvas,
  * registers UI event listeners, loads models, ghostyle plugins, and starts the webcam.
- * This is the entry point called at the end of the script.
+ * In production this is the module entry point; Vitest skips the automatic
+ * call so individual helpers can be isolated.
  *
  * @see loadModels – called within init to load face-api.js models before webcam activation.
- * @see init(); – the function is invoked at the bottom of the script to start the app.
+ * @fires window#gstmxxReady after models, plugins, and the camera are ready.
  */
 async function init() {
    initI18n();
@@ -418,19 +403,8 @@ async function init() {
 
    state.db = loadDb();
    state.db3d = loadDb3d();
-   renderDbStats(state, els);
-   resizeCanvas(els);
-
-   if (els.toggleSettingsBtn && els.historyDrawer && els.settingsDrawer) {
-      els.toggleSettingsBtn.addEventListener('click', () => {
-         if (!els.settingsDrawer.classList.contains('hidden')) {
-            closeHistoryDrawer();
-         }
-      });
-   }
-   if (els.closeSettingsBtn && els.historyDrawer) {
-      els.closeSettingsBtn.addEventListener('click', closeHistoryDrawer);
-   }
+   renderDbStats();
+   resizeCanvas();
 
    if (els.reloadPluginsBtn) {
       if (isLocalPluginDevHost()) {
@@ -439,7 +413,7 @@ async function init() {
             setLog(t('plugin_reload_started_log'), 'loader');
             try {
                const loaded = await reloadPlugins({
-                  onFaceapiToggle: () => startEffectLoop(state, els)
+                  onFaceapiToggle: () => startEffectLoop()
                });
                setLog(t('plugin_reload_done_log', { count: loaded }), 'loader');
             } catch (err) {
@@ -453,23 +427,8 @@ async function init() {
 
    state.gstmxxEvents.addEventListener('dbChanged', renderHistoryEntries);
 
-   const initialOverlayMode = readInitialOverlayMode();
-   setOverlayMode(initialOverlayMode);
-   if (els.overlayModeBtn) {
-      els.overlayModeBtn.textContent = overlayModeLabel(initialOverlayMode);
-      els.overlayModeBtn.addEventListener('click', () => {
-         const currentMode = els.overlayModeBtn.dataset.overlayMode || initialOverlayMode;
-         const keys = Object.keys(OVERLAY_MODES);
-         const currentIndex = keys.indexOf(currentMode);
-         const nextMode = keys[(currentIndex + 1) % keys.length];
-         els.overlayModeBtn.dataset.overlayMode = setOverlayMode(nextMode);
-         els.overlayModeBtn.textContent = overlayModeLabel(els.overlayModeBtn.dataset.overlayMode);
-      });
-      els.overlayModeBtn.dataset.overlayMode = initialOverlayMode;
-   }
-
    window.addEventListener('resize', function () {
-      resizeCanvas(els);
+      resizeCanvas();
    });
 
    if (els.logBox) {
@@ -532,7 +491,7 @@ async function init() {
       catch (err) { handleError(err, t('save_face_error')); }
       finally {
          setBusy(false);
-         if (state.activeEffect) startEffectLoop(state, els);
+         if (state.activeEffect) startEffectLoop();
       }
    });
 
@@ -550,7 +509,7 @@ async function init() {
    els.clearDbBtn.addEventListener('click', () => {
       const svgIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
       if (els.clearDbBtn.textContent === t('confirm_question')) {
-         clearDb(state, els);
+         clearDb();
          els.clearDbBtn.innerHTML = svgIcon;
       } else {
          els.clearDbBtn.textContent = t('confirm_question');
@@ -595,7 +554,7 @@ async function init() {
          for (const item of list) {
             let effectiveUrl = relurl + '/' + item.url;
             await loadGhostyle(effectiveUrl, item.id || item.name, {
-               onFaceapiToggle: () => startEffectLoop(state, els)
+               onFaceapiToggle: () => startEffectLoop()
             });
          }
       }
@@ -607,7 +566,7 @@ async function init() {
 
    setLog(t('init_complete_webcam_log'));
    try {
-      await startCamera(state, els);
+      await startCamera();
    } catch (err) {
       handleError(err, t('webcam_permission_error', { origin: window.location.origin }));
       return;

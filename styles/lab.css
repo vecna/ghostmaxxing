@@ -2,9 +2,9 @@
    Ghostmaxxing — lab.css
    Production dark skin for the redesigned lab.
 
-   This stylesheet builds on the shared editorial page styles in pages.css and
-   keeps only the lab-specific layout and dark-surface overrides that are
-   unique to lab.html.
+   This stylesheet builds on the shared tokens, base rules, and tool chrome
+   imported by styles.css. It owns the application-stage layout and dark
+   controls that are unique to lab.html.
 
    Named regions (see lab.html / lab-ui.js):
      View bar    .viewbar     top overlay selector (Camera / 2D / 3D)
@@ -44,8 +44,9 @@
   --z-stage: 1;
   --z-chrome: 20;
   --z-bottom: 40;
-  --z-screen: 35;
-  --z-toast: 60;
+  /* Shared .gm-tool-back uses z-index 100; Lab screens must cover it while open. */
+  --z-screen: 110;
+  --z-toast: 120;
 }
 
 html, body {
@@ -290,17 +291,11 @@ html, body {
 .screen__kicker { font: 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
 .screen.device .screen__kicker { color: var(--dev); }
 .screen.online .screen__kicker { color: var(--net); }
-.screen h1, .drawer-header h2 { font: 400 25px var(--serif); margin: 16px 0 4px; }
+.screen h1 { font: 400 25px var(--serif); margin: 16px 0 4px; }
 .screen h2 { font: 400 18px var(--serif); margin: 20px 0 6px; }
 .screen h3 { font: 600 15px var(--sans); margin: 0 0 4px; }
 .screen p, .small-note { color: var(--muted); font-size: 14px; line-height: 1.5; }
 
-.drawer-header { display: flex; align-items: center; justify-content: space-between; }
-.icon-btn {
-  width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line);
-  background: transparent; color: var(--fg); cursor: pointer; display: grid; place-items: center;
-}
-.icon-btn svg { width: 18px; height: 18px; }
 .drawer-content { margin-top: 8px; }
 
 /* setting rows / groups */
@@ -353,7 +348,7 @@ input[type="color"] { width: 40px; height: 28px; border: 0; background: none; pa
 .switch[aria-checked="true"] { background: var(--orange); border-color: var(--orange); }
 .switch[aria-checked="true"]::after { left: 21px; background: #fff; }
 
-.linkbtn, .secondary-btn, .btn-link {
+.linkbtn, .secondary-btn {
   border: 1px solid var(--line); background: transparent; color: var(--fg);
   border-radius: 10px; padding: 8px 12px; font: 600 13px var(--sans); cursor: pointer;
 }
@@ -410,22 +405,10 @@ input[type="color"] { width: 40px; height: 28px; border: 0; background: none; pa
   color: #fff;
 }
 
-/* pinned-ghostyle rows in Settings */
-.pin { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
-.pin__ic { width: 40px; height: 40px; border-radius: 11px; background: var(--panel-2); color: var(--cream); display: grid; place-items: center; flex: none; }
-.pin__ic svg { width: 21px; height: 21px; }
-.pin__meta { flex: 1; }
-.pin__slot { font: 10px var(--mono); color: var(--faint); }
 .jsonnote { font-size: 12px; color: var(--faint); font-style: italic; margin-top: 6px; }
 
 /* faces gallery */
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-.facecard { border-radius: 14px; overflow: hidden; border: 1px solid var(--line-soft); background: #241a12; }
-.facecard.active { border-color: var(--dev); }
-.facecard .pic { display: block; aspect-ratio: 1/1; width: 100%; object-fit: cover; background: radial-gradient(70% 60% at 50% 40%, #3a2c20, #1c130c); }
-.facecard .meta { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; font-size: 12px; }
-.facecard .id { font: 12px var(--mono); color: var(--cream); }
-.facecard .tag { font-size: 10px; font-weight: 700; color: var(--dev); }
 .thumb { aspect-ratio: 3/4; border-radius: 14px; border: 1px solid var(--line-soft); background: linear-gradient(135deg, #2c2318, #3a2c20); display: grid; place-items: end start; padding: 10px; color: var(--cream); font: 11px var(--mono); }
 .card { background: var(--panel); border: 1px solid var(--line-soft); border-radius: 14px; padding: 14px; }
 .card + .card { margin-top: 10px; }
@@ -565,6 +548,4 @@ input[type="color"] { width: 40px; height: 28px; border: 0; background: none; pa
 }
 
 /* hidden engine controls we keep for binding but don't surface */
-.u-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); border: 0; }
-
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

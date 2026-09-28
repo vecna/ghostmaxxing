@@ -53,10 +53,10 @@ async function waitForVideoReady(v) {
 /**
  * Initializes the MediaPipe landmark loop after the Ghostmaxxing UI has exposed
  * `window.gstmxx`, the event bus, and the webcam video element. It loads the
- * CDN FaceLandmarker task, exposes the FaceLandmarker constants for UV/3D
- * plugins, logs readiness, emits `mediapipeReady`, and starts the animation loop.
- * The Italian warning and error messages in this function report missing
- * `gstmxx.events`, missing `#video`, or MediaPipe load failure during startup.
+ * vendored FaceLandmarker task and local model asset, exposes the FaceLandmarker
+ * constants for UV/3D plugins, logs readiness, emits `mediapipeReady`, and
+ * starts the animation loop. Localized diagnostics report missing prerequisites
+ * or MediaPipe load failure during startup.
  *
  * @returns {Promise<void>} Resolves after setup starts the loop, or exits early when prerequisites fail.
  * @see main - Dispatches `gstmxxReady` once `window.gstmxx`, state, and DOM handles are ready.
