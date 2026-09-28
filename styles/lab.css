@@ -530,6 +530,29 @@ input[type="color"] { width: 40px; height: 28px; border: 0; background: none; pa
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* On phones the centred view selector reaches into the homepage link. Keep
+   the destination visible as the brand mark, without the wordmark competing
+   for the same horizontal space. */
+@media (max-width: 699px) {
+  .gm-tool-back {
+    left: max(.25rem, env(safe-area-inset-left));
+    padding: .35rem;
+  }
+
+  .gm-tool-back img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .gm-tool-back span {
+    display: none;
+  }
+
+  .seg--home {
+    display: none;
+  }
+}
+
 /* ============================ DESKTOP ============================ */
 /* Wider stage, but the bottom bars keep their size and stay centred. */
 @media (min-width: 700px) {

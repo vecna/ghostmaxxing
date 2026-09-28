@@ -819,9 +819,9 @@ def build_html(refs, projects, marks, by_row, Y1):
      ------------------------------------------------------------------------ -->
 
 <div class="gm-page">
-  <div class="wrap">
 {HEADER}
 
+  <div class="wrap">
     <section class="gen-hero">
       <div class="gen-hero__lede">
         <h1>Genealogy of Face Surveillance</h1>

@@ -42,6 +42,7 @@ function siteHeader() {
       </span>
     </a>
     <nav class="gm-site-nav" aria-label="Primary">
+      <a class="gm-site-chip" href="/fediverse.html">in the Fediverse</a>
       <div class="gm-site-nav__group">
         <button class="gm-site-nav__trigger" aria-expanded="false" aria-controls="gmSiteMenu">Know more <span aria-hidden="true">&#9662;</span></button>
         <div class="gm-site-menu" id="gmSiteMenu">
@@ -65,7 +66,6 @@ function siteHeader() {
           </div>
         </div>
       </div>
-      <a class="gm-site-chip" href="/fediverse.html">in the Fediverse</a>
       <a class="gm-site-cta" href="/report.html">Leak to us &#8599;</a>
     </nav>
   </header>`;
