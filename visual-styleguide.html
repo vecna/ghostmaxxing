@@ -174,7 +174,7 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   </div>
 
   <h1 class="sg-head__title">Visual StyleGuide: a file written for AI-agent.</h1>
-  <p class="sg-head__lead">Ghostmaxxing is a public research lab for testing, explaining and questioning facial recognition through browser-based AR camouflage, adversarial-makeup experiments and a curated references archive. This document carries the identity that work is delivered in: voice, colour, type, the mark, and the camera-lens motif. Each component appears here as the live thing rather than a picture of it.</p>
+  <p class="sg-head__lead">Voice, colour, type, logo and camera components for Ghostmaxxing, shown as live examples.</p>
 
   <nav class="sg-toc">
     <a href="#system"><b>01</b> The system</a>
@@ -202,7 +202,11 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   <h2 class="sg-sec__title">The system</h2>
   <hr class="sg-rule">
   <div class="sg-intro">
+<<<<<<< Current - original text
     <p>Four layers, each allowed to know about the ones above it and nothing below. The rule that keeps this honest: <strong>a component never positions itself on a page.</strong> <code>cameras.css</code> draws a camera and sets the state of its lens; where that camera goes is <code>genealogy.css</code>'s business.</p>
+=======
+    <p>Four layers, each depending only on the layers above it. <strong>a component never positions itself on a page.</strong> <code>cameras.css</code> draws a camera and sets the state of its lens; where that camera goes is <code>genealogy.css</code>'s business.</p>
+>>>>>>> Incoming - proposed cut
     <p>One stylesheet link per page. <code>styles.css</code> is the root import list and the import order <em>is</em> the architecture.</p>
   </div>
 
@@ -214,7 +218,7 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
     <tr><td>pages</td><td><code>pages/genealogy.css</code><br><code>pages/homepage.css</code></td><td>One per page. Layout only.</td></tr>
   </table>
 
-  <p class="sg-card__note" style="margin-top:16px;max-width:46em">A <em>design token</em> is a named design decision — the smallest indivisible unit of the system: a colour, a size, a typeface. The term is standard; it originates at Salesforce and is now a W3C draft. It is worth being strict about, because the moment a component rule lands in a token file, that file stops being a source of truth and becomes another place to look.</p>
+  <p class="sg-card__note" style="margin-top:16px;max-width:46em">A <em>design token</em> names a value such as a colour, size or typeface. Keep component rules out of token files.</p>
 </section>
 
 
@@ -224,7 +228,7 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   <h2 class="sg-sec__title">Voice</h2>
   <hr class="sg-rule">
   <div class="sg-intro">
-    <p><strong>Activist first, culturally staged second, editorial third.</strong> Not an academic paper, not a cybersecurity product, not a policy campaign. It should sound like people who understand code, research, public space and political risk — in that combination, which is rarer than any one of them.</p>
+    <p><strong>Activist first, culturally staged second, editorial third.</strong> Write with technical precision and an understanding of public space and political risk.</p>
     <p>No emoji. Direct and precise, never sloganistic.</p>
   </div>
 
@@ -288,7 +292,7 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
     </div>
   </div>
 
-  <p class="sg-card__note" style="margin-top:18px;max-width:48em">One tension worth naming: the genealogy page is built on the word <em>defeated</em> — "defeated in 2016", the spent lens state. That word is on the avoid list. It survives there because it describes <strong>a historical, documented, past-tense event about a specific model</strong>, not a promise to the reader about their own face. If it ever slips into the present tense or the second person, it has become an unsafe claim.</p>
+  <p class="sg-card__note" style="margin-top:18px;max-width:48em">Use <em>defeated</em> only for <strong>a documented past result against a specific model</strong>, never as a promise to the reader.</p>
 </section>
 
 
@@ -351,7 +355,7 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   <h2 class="sg-sec__title">Type</h2>
   <hr class="sg-rule">
   <div class="sg-intro">
-    <p>Three families, each with exactly one job. The discipline is the point: as soon as the mono is allowed into a paragraph or the serif into a button, the hierarchy stops carrying meaning and becomes decoration.</p>
+    <p>Each font family has one role. Keep body text, controls and metadata distinct.</p>
   </div>
 
   <div class="sg-type" style="margin-top:8px">
@@ -542,7 +546,11 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
       <pre style="margin-top:14px"><span class="c">iris  = 0.44 × lens radius
 glint = 0.17 × lens radius,
         offset 0.30 × up and left</span></pre>
+<<<<<<< Current - original text
       <p class="sg-card__note" style="margin-top:12px">Written down so the next camera is derived rather than guessed. The old fleet carried these values in two of nine files and drifted everywhere else.</p>
+=======
+      <p class="sg-card__note" style="margin-top:12px">Use these values when adding cameras.</p>
+>>>>>>> Incoming - proposed cut
 
       <h3 class="sg-sub">The class contract, now real</h3>
       <p class="sg-card__note" style="margin-top:12px"><strong>Closed.</strong> <code>images/icons/cam-*.svg</code> are the class-driven re-export — no presentation attributes, state by attribute — and they are the source of truth for the fleet. The old <code>assets/icons/</code> copies with baked hex are deleted. What that change exposed is §12: a class-driven file has to be inlined, and every <code>&lt;img&gt;</code> pointing at one was rendering black.</p>
@@ -915,7 +923,7 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
   <div class="sg-do" style="margin-top:16px">
     <div><b class="no">Never</b><span>Give the fediverse yellow. Yellow is a live iris — it appears in every camera on this site meaning <em>reading, right now</em>. On a social presence it would say the fediverse is watching you.</span></div>
     <div><b class="no">Never</b><span>Use pink as a page ground anywhere. It is reserved, and at 1.06:1 against orange nothing on it would be readable.</span></div>
-    <div><b class="yes">Do</b><span>Put <code>rel="me"</code> on the fediverse link. It is what enables domain verification on Mastodon, and for an accountability project that checkmark is worth having.</span></div>
+    <div><b class="yes">Do</b><span>Put <code>rel="me"</code> on the Fediverse link for Mastodon domain verification.</span></div>
   </div>
 </section>
 
