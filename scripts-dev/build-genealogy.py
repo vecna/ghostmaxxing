@@ -88,8 +88,7 @@ ROWS = [
         span=(2010, 2013),
         title="Landmark geometry",
         sub="Eigenfaces · Fisherfaces · 68-point meshes",
-        body="The face as a set of distances between named points. The dome "
-             "never shows you which way it looks.",
+        body="Facial geometry described through distances between landmarks.",
         targets={"face-landmarks"},
     ),
     dict(
@@ -97,9 +96,8 @@ ROWS = [
         span=(2014, 2016),
         title="Learned embeddings",
         sub="DeepFace · FaceNet · ArcFace · deep detectors",
-        body="Systems stop measuring features and start learning them: every "
-             "face becomes a vector in a space nobody designed by hand. The "
-             "same networks read people, objects and number plates.",
+        body="Neural networks learn numerical representations for comparison. "
+             "Related architectures also detect people, objects and number plates.",
         targets={"face-recognition", "face-verification", "gender-classification",
                  "public-space-surveillance",
                  "person-detection", "object-detection", "image-classification",
@@ -124,8 +122,7 @@ ROWS = [
         span=(2020, None), present=True,
         title="Networked readers",
         sub="Pole cameras · shared watchlists",
-        body="Fixed cameras stop being cameras and become one queryable index. "
-             "The reading is unchanged; the reach is not.",
+        body="Networked cameras feed shared, searchable indexes.",
         targets={"networked-surveillance", "watchlist-matching"},
     ),
     dict(
@@ -133,9 +130,7 @@ ROWS = [
         span=(2020, None), present=True,
         title="Wearable readers",
         sub="Pervert glasses · body-worn",
-        body="The lens moves to eye level and stops looking like a lens. A "
-             "different technology from the pole, and a different problem: you "
-             "cannot learn to avoid a camera you cannot identify.",
+        body="Wearable cameras record at eye level and can be difficult to notice.",
         targets={"wearable-camera", "smart-glasses"},
     ),
 ]
@@ -874,13 +869,11 @@ def build_html(refs, projects, marks, by_row, Y1):
 {chr(10).join(cards)}
     </div>
 
-    <p class="gen-note gm-prose">Dates comes from first web appearance.
-      A reference is a documented result under stated conditions; the
-      conditions should be in the archive entry, but reproduceability isn't assured. A project is a
-      catalogued product, prototype, artwork or practice. Those products should be tested and ranked. Ghostmaxxing wants to be an hub for such evaluations.
-      Currently considered are {n_ref} references, {strong} of them with code or
-      artefacts published. {n_proj} projects, {commercial} of them commercial.
-      <a href="/about.html">If you know any project that should be referenced here, please get in touch</a>.</p>
+    <p class="gen-note gm-prose">Dates mark first web appearances. Reference entries describe test conditions;
+      reproducibility is not assured. Projects include products, prototypes, artworks and practices.
+      The archive contains {n_ref} references ({strong} with code or artefacts)
+      and {n_proj} projects ({commercial} commercial).
+      <a href="/about.html">Suggest a project</a>.</p>
   </div>
 </div>
 
