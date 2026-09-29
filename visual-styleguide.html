@@ -202,11 +202,7 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   <h2 class="sg-sec__title">The system</h2>
   <hr class="sg-rule">
   <div class="sg-intro">
-<<<<<<< Current - original text
-    <p>Four layers, each allowed to know about the ones above it and nothing below. The rule that keeps this honest: <strong>a component never positions itself on a page.</strong> <code>cameras.css</code> draws a camera and sets the state of its lens; where that camera goes is <code>genealogy.css</code>'s business.</p>
-=======
     <p>Four layers, each depending only on the layers above it. <strong>a component never positions itself on a page.</strong> <code>cameras.css</code> draws a camera and sets the state of its lens; where that camera goes is <code>genealogy.css</code>'s business.</p>
->>>>>>> Incoming - proposed cut
     <p>One stylesheet link per page. <code>styles.css</code> is the root import list and the import order <em>is</em> the architecture.</p>
   </div>
 
@@ -546,11 +542,7 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
       <pre style="margin-top:14px"><span class="c">iris  = 0.44 × lens radius
 glint = 0.17 × lens radius,
         offset 0.30 × up and left</span></pre>
-<<<<<<< Current - original text
-      <p class="sg-card__note" style="margin-top:12px">Written down so the next camera is derived rather than guessed. The old fleet carried these values in two of nine files and drifted everywhere else.</p>
-=======
       <p class="sg-card__note" style="margin-top:12px">Use these values when adding cameras.</p>
->>>>>>> Incoming - proposed cut
 
       <h3 class="sg-sub">The class contract, now real</h3>
       <p class="sg-card__note" style="margin-top:12px"><strong>Closed.</strong> <code>images/icons/cam-*.svg</code> are the class-driven re-export — no presentation attributes, state by attribute — and they are the source of truth for the fleet. The old <code>assets/icons/</code> copies with baked hex are deleted. What that change exposed is §12: a class-driven file has to be inlined, and every <code>&lt;img&gt;</code> pointing at one was rendering black.</p>
