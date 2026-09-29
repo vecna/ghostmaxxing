@@ -1,6 +1,6 @@
 # Ghostmaxxing Visual Direction
 
-Version: 0.9.9  
+Version: 0.9.11  
 Status: current internal standard  
 Language standard: clear international English; UK and US spelling may coexist  
 Last updated: September 2026

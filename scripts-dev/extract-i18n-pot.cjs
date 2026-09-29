@@ -51,7 +51,7 @@ function buildPot(messages) {
       '#',
       'msgid ""',
       'msgstr ""',
-      '"Project-Id-Version: Ghostmaxxing 0.9.9\\n"',
+      '"Project-Id-Version: Ghostmaxxing 0.9.11\\n"',
       `"POT-Creation-Date: ${today}\\n"`,
       '"Language-Team: NotYetExisting <translators at vecna dot eu>\\n"',
       '"Content-Type: text/plain; charset=UTF-8\\n"',

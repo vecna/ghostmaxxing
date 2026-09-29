@@ -16,8 +16,8 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..');
 const SOURCE_ROOT = path.join(ROOT, 'docs-src', 'en');
 const PAGE_INDEX = path.join(SOURCE_ROOT, 'pages.json');
-const PROJECT_VERSION = '0.9.9';
-const LAST_UPDATED = 'September 2026';
+const PROJECT_VERSION = '0.9.11';
+const LAST_UPDATED = 'October 2026';
 
 function escapeAttribute(value) {
   return String(value)

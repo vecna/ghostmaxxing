@@ -1,6 +1,6 @@
 # Ghostmaxxing technical reference
 
-> Version 0.9.9  
+> Version 0.9.11  
 > Last updated: September 2026  
 > Functional documentation: [use the tools and understand the results](/docs/)
 

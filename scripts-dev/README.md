@@ -1,6 +1,6 @@
 # Development and maintenance scripts
 
-Version 0.9.2 · 20 September 2026
+Version 0.9.11 · 1st October 2026
 
 This guide describes development and maintenance scripts, together with the relevant commands in `package.json`.
 
