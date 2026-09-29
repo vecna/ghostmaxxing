@@ -194,6 +194,12 @@
   max-width: 48rem;
 }
 
+.docs-article__todo {
+  width: fit-content;
+  padding: 0.2em 0.35em;
+  background: var(--gm-pink);
+  color: var(--gm-ink);
+}
 .docs-article table {
   width: 100%;
   margin-top: 1.25rem;
