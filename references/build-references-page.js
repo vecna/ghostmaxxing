@@ -250,7 +250,7 @@ function structuredData(refs) {
     '@type': 'CollectionPage',
     '@id': `${SITE_URL}/references/#webpage`,
     name: 'Cultural references — Ghostmaxxing',
-    description: 'A curated technical and cultural genealogy of face-recognition camouflage, adversarial makeup, CV Dazzle, face obfuscation and physical-world attacks against computer vision systems.',
+    description: 'Research, artworks and campaigns about face-recognition camouflage and physical attacks on computer vision.',
     url: `${SITE_URL}/references/`,
     inLanguage: 'en',
     isPartOf: {
@@ -259,11 +259,13 @@ function structuredData(refs) {
       url: `${SITE_URL}/`,
       name: 'Ghostmaxxing',
     },
-    publisher: {
-      '@type': 'Organization',
-      '@id': 'https://nina.watch/#organization',
-      name: 'NINA / Universal Digital Union',
-      url: 'https://nina.watch/',
+    author: {
+      '@type': 'Person',
+      '@id': 'https://me.vecna.eu/#vecna',
+      name: 'Claudio Agosti',
+      alternateName: 'vecna',
+      url: 'https://me.vecna.eu/',
+      sameAs: ['https://github.com/vecna'],
     },
     mainEntity: {
       '@type': 'ItemList',

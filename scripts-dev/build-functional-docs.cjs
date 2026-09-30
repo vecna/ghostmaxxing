@@ -130,11 +130,13 @@ function renderPage(page, body) {
     url: canonical,
     inLanguage: 'en',
     articleSection: 'Documentation',
-    publisher: {
-      '@type': 'Organization',
-      '@id': 'https://nina.watch/#organization',
-      name: 'NINA / Universal Digital Union',
-      url: 'https://nina.watch/',
+    author: {
+      '@type': 'Person',
+      '@id': 'https://me.vecna.eu/#vecna',
+      name: 'Claudio Agosti',
+      alternateName: 'vecna',
+      url: 'https://me.vecna.eu/',
+      sameAs: ['https://github.com/vecna'],
     },
     isPartOf: {
       '@type': 'WebSite',

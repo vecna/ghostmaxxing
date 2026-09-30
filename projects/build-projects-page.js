@@ -18,7 +18,7 @@ function structuredData(projects) {
     '@type': 'CollectionPage',
     '@id': `${SITE_URL}/projects/#webpage`,
     name: 'Related projects — Ghostmaxxing',
-    description: 'Products, prototypes, artworks, and collective practices that experiment with resistance to biometric and computer-vision surveillance.',
+    description: 'A catalogue of clothing, makeup, masks, light and other projects tested or proposed against computer vision.',
     url: `${SITE_URL}/projects/`,
     inLanguage: 'en',
     isPartOf: {
@@ -27,11 +27,13 @@ function structuredData(projects) {
       url: `${SITE_URL}/`,
       name: 'Ghostmaxxing',
     },
-    publisher: {
-      '@type': 'Organization',
-      '@id': 'https://nina.watch/#organization',
-      name: 'NINA / Universal Digital Union',
-      url: 'https://nina.watch/',
+    author: {
+      '@type': 'Person',
+      '@id': 'https://me.vecna.eu/#vecna',
+      name: 'Claudio Agosti',
+      alternateName: 'vecna',
+      url: 'https://me.vecna.eu/',
+      sameAs: ['https://github.com/vecna'],
     },
     mainEntity: {
       '@type': 'ItemList',

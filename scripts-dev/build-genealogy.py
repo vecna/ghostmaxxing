@@ -732,10 +732,7 @@ def build_html(refs, projects, marks, by_row, Y1):
     site_url = "https://ghostmaxxing.vecna.eu"
     page_url = f"{site_url}/genealogy.html"
     page_title = "Genealogy of Face Surveillance — Ghostmaxxing"
-    page_description = (
-        "What has been shown against which family of face-reading system, and when. "
-        "Every mark is an entry in the reference archive or the projects catalogue."
-    )
+    page_description = "A timeline linking face-reading systems to documented research, artworks and projects."
     structured_data = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
@@ -750,11 +747,13 @@ def build_html(refs, projects, marks, by_row, Y1):
             "url": f"{site_url}/",
             "name": "Ghostmaxxing",
         },
-        "publisher": {
-            "@type": "Organization",
-            "@id": "https://nina.watch/#organization",
-            "name": "NINA / Universal Digital Union",
-            "url": "https://nina.watch/",
+        "author": {
+            "@type": "Person",
+            "@id": "https://me.vecna.eu/#vecna",
+            "name": "Claudio Agosti",
+            "alternateName": "vecna",
+            "url": "https://me.vecna.eu/",
+            "sameAs": ["https://github.com/vecna"],
         },
         "mainEntity": {
             "@type": "ItemList",
@@ -839,16 +838,16 @@ def build_html(refs, projects, marks, by_row, Y1):
   <meta property="og:description" content="{html.escape(page_description, quote=True)}" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="{page_url}" />
-  <meta property="og:image" content="{site_url}/images/social/ghostmaxxing-generic.jpg" />
+  <meta property="og:image" content="{site_url}/images/social/ghostmaxxing-pole.jpg" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
+  <meta property="og:image:alt" content="Orange Ghostmaxxing preview card with an illustrated camera pole." />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="{html.escape(page_title, quote=True)}" />
   <meta name="twitter:description" content="{html.escape(page_description, quote=True)}" />
-  <meta name="twitter:image" content="{site_url}/images/social/ghostmaxxing-generic.jpg" />
-  <meta name="twitter:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
+  <meta name="twitter:image" content="{site_url}/images/social/ghostmaxxing-pole.jpg" />
+  <meta name="twitter:image:alt" content="Orange Ghostmaxxing preview card with an illustrated camera pole." />
   <script type="application/ld+json">
 {structured_json}
   </script>

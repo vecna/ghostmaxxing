@@ -42,28 +42,34 @@
           "name": "Vision & About — Ghostmaxxing",
           "description": "Ghostmaxxing is a public research lab for testing face-recognition camouflage, documenting what actually works, and investigating biometric systems installed in public space.",
           "about": { "@id": "https://ghostmaxxing.vecna.eu/#project" },
-          "publisher": { "@id": "https://nina.watch/#organization" }
+          "author": { "@id": "https://me.vecna.eu/#vecna" }
         },
         {
-          "@type": "Organization",
+          "@type": "Project",
           "@id": "https://ghostmaxxing.vecna.eu/#project",
           "name": "Ghostmaxxing",
           "url": "https://ghostmaxxing.vecna.eu/",
           "description": "An independent research and workshop project that tests local face-recognition responses, documents related work, and investigates biometric surveillance.",
-          "founder": {
-            "@type": "Person",
-            "name": "Claudio Agosti",
-            "url": "https://me.vecna.eu/"
-          },
+          "author": { "@id": "https://me.vecna.eu/#vecna" },
+          "sourceOrganization": { "@id": "https://nina.watch/#organization" },
           "sameAs": [
             "https://github.com/vecna/ghostmaxxing"
           ]
         },
         {
+          "@type": "Person",
+          "@id": "https://me.vecna.eu/#vecna",
+          "name": "Claudio Agosti",
+          "alternateName": "vecna",
+          "url": "https://me.vecna.eu/",
+          "sameAs": ["https://github.com/vecna"]
+        },
+        {
           "@type": "Organization",
           "@id": "https://nina.watch/#organization",
           "name": "NINA / Universal Digital Union",
-          "url": "https://nina.watch/"
+          "url": "https://nina.watch/",
+          "description": "The organization for which vecna developed the initial Ghostmaxxing concept; currently responsible for its workshops and separate whistleblowing platform."
         }
       ]
     }

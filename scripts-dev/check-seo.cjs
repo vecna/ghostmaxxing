@@ -6,7 +6,12 @@ const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..');
 const SITE_URL = 'https://ghostmaxxing.vecna.eu';
-const IMAGE_URL = `${SITE_URL}/images/social/ghostmaxxing-generic.jpg`;
+const DEFAULT_IMAGE_URL = `${SITE_URL}/images/social/ghostmaxxing-generic.jpg`;
+const COLLECTION_IMAGES = new Map([
+  ['projects/index.html', `${SITE_URL}/images/social/ghostmaxxing-glasses.jpg`],
+  ['references/index.html', `${SITE_URL}/images/social/ghostmaxxing-canopy.jpg`],
+  ['genealogy.html', `${SITE_URL}/images/social/ghostmaxxing-pole.jpg`],
+]);
 const DOC_PAGES_PATH = path.join(ROOT, 'docs-src', 'en', 'pages.json');
 const REQUIRED_META = [
   ['property', 'og:title'],
@@ -82,7 +87,9 @@ function checkHtml(filePath, canonicalUrls) {
   for (const [attribute, name] of REQUIRED_META) {
     if (!getMeta(head, attribute, name)?.trim()) fail(`${relative}: missing ${attribute}="${name}"`);
   }
-  if (getMeta(head, 'property', 'og:image') !== IMAGE_URL) fail(`${relative}: expected the supported 1200x630 JPEG social card`);
+  const expectedImage = COLLECTION_IMAGES.get(relative) || DEFAULT_IMAGE_URL;
+  if (getMeta(head, 'property', 'og:image') !== expectedImage) fail(`${relative}: unexpected social preview image`);
+  if (getMeta(head, 'name', 'twitter:image') !== expectedImage) fail(`${relative}: Open Graph and Twitter preview images must match`);
   if (getMeta(head, 'property', 'og:image:type') !== 'image/jpeg') fail(`${relative}: og:image:type must be image/jpeg`);
   if (getMeta(head, 'property', 'og:image:width') !== '1200' || getMeta(head, 'property', 'og:image:height') !== '630') {
     fail(`${relative}: social-card dimensions must be 1200x630`);
@@ -99,14 +106,21 @@ function checkHtml(filePath, canonicalUrls) {
   if (structuredData['@context'] !== 'https://schema.org' || (!structuredData['@type'] && !structuredData['@graph'])) {
     fail(`${relative}: JSON-LD requires schema.org context and a type`);
   }
-  const publisher = collectTypedItems(structuredData, 'Organization')
+  const vecna = collectTypedItems(structuredData, 'Person')
+    .some((person) => person.name === 'Claudio Agosti' && person.alternateName === 'vecna' &&
+      person.url === 'https://me.vecna.eu/' && person.sameAs?.includes('https://github.com/vecna'));
+  const nina = collectTypedItems(structuredData, 'Organization')
     .some((organization) => organization.name === 'NINA / Universal Digital Union' && organization.url === 'https://nina.watch/');
-  if (!publisher) fail(`${relative}: JSON-LD must include the specified NINA / Universal Digital Union publisher`);
+  if (['report.html', 'workshops.html'].includes(relative)) {
+    if (!nina) fail(`${relative}: JSON-LD must identify NINA as the responsible organization`);
+  } else if (!vecna) {
+    fail(`${relative}: JSON-LD must identify Claudio Agosti (vecna) as author`);
+  }
 
   const requiredTypes = {
-    'index.html': ['WebSite', 'Organization', 'SoftwareApplication'],
+    'index.html': ['WebSite', 'Person', 'SoftwareApplication'],
     'lab.html': ['WebApplication'],
-    'about.html': ['AboutPage', 'Organization'],
+    'about.html': ['AboutPage', 'Project', 'Person'],
     'report.html': ['WebPage', 'ContactPoint'],
     'genealogy.html': ['CollectionPage', 'ItemList'],
     'projects/index.html': ['CollectionPage', 'ItemList'],
@@ -192,8 +206,10 @@ function main() {
   const robots = fs.readFileSync(path.join(ROOT, 'web-files', 'robots.txt'), 'utf8');
   if (!robots.includes(`Sitemap: ${SITE_URL}/sitemap.xml`)) fail('web-files/robots.txt must point to the canonical sitemap URL');
 
-  const imagePath = path.join(ROOT, new URL(IMAGE_URL).pathname.slice(1));
-  if (!fs.existsSync(imagePath)) fail(`Social preview image is missing: ${path.relative(ROOT, imagePath)}`);
+  for (const imageUrl of new Set([DEFAULT_IMAGE_URL, ...COLLECTION_IMAGES.values()])) {
+    const imagePath = path.join(ROOT, new URL(imageUrl).pathname.slice(1));
+    if (!fs.existsSync(imagePath)) fail(`Social preview image is missing: ${path.relative(ROOT, imagePath)}`);
+  }
   process.stdout.write(`SEO checks passed for ${pagePaths.length} HTML pages and ${sitemapUrls.length} sitemap URLs.\n`);
 }
 
