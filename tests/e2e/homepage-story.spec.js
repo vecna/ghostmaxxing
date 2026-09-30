@@ -82,7 +82,7 @@ test.describe('The camera stage after its move', () => {
 
   test('offers the three archives under the field', async ({ page }) => {
     await page.goto('/about.html');
-    const routes = page.locator('.about-route');
+    const routes = page.locator('#camStage .btn-final');
     await expect(routes).toHaveCount(3);
     await expect(routes.nth(0)).toHaveAttribute('href', '/genealogy.html');
     await expect(routes.nth(1)).toHaveAttribute('href', '/projects/');

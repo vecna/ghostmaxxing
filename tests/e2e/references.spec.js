@@ -16,7 +16,7 @@ test.describe('Ghostmaxxing References page', () => {
 
     await page.goto('/references/index.html');
 
-    await expect(page.getByRole('heading', { name: 'The documents and culture behind face camouflage.' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Face-camouflage research and culture' })).toBeVisible();
     await expect(page.locator('#references-list .reference-entry')).toHaveCount(expectedReferenceCount);
     await expect(page.getByRole('navigation', { name: 'Related research' }).getByRole('link', { name: 'Complementary projects' })).toHaveAttribute('href', '/projects/');
   });

@@ -15,7 +15,7 @@ test.describe('Ghostmaxxing complementary projects page', () => {
     const expected = data.projects.filter((project) => project.category === category.id).length;
 
     await page.goto('/projects/');
-    await expect(page.getByRole('heading', { name: 'Different ways to trouble the machine.' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Camouflage projects' })).toBeVisible();
     await expect(page.locator('.project-row')).toHaveCount(data.projects.length);
 
     await page.getByRole('button', { name: category.label }).click();

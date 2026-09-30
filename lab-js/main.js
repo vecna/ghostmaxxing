@@ -19,11 +19,6 @@ function isLocalPluginDevHost() {
    return host === 'localhost' || host === '127.0.0.1' || host.endsWith('.local');
 }
 
-function closeHistoryDrawer() {
-   els.historyDrawer?.classList.add('hidden');
-   els.settingsDrawer?.classList.add('hidden');
-}
-
 // Mirror toggle logic (fallback, hidden in UI)
 if (els.mirrorToggle) {
    els.mirrorToggle.addEventListener('click', () => {

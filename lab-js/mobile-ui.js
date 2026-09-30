@@ -1,12 +1,5 @@
 /** @module mobile-ui */
 document.addEventListener('DOMContentLoaded', () => {
-  // --- SETTINGS DRAWER TOGGLE ---
-  const toggleSettingsBtn = document.getElementById('toggleSettingsBtn');
-  const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-
-  if (toggleSettingsBtn) toggleSettingsBtn.addEventListener('click', toggleDrawer);
-  if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', toggleDrawer);
-
   // --- GESTURES: SWIPE AND SCROLL TO CLEAR OVERLAY ---
   let touchStartY = 0;
   let touchEndY = 0;

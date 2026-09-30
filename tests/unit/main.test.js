@@ -7,7 +7,7 @@ const deps = vi.hoisted(() => ({
   startCamera: vi.fn(), resizeCanvas: vi.fn(), startEffectLoop: vi.fn(), recordOneSecond: vi.fn(),
   loadGhostyle: vi.fn(), reloadPlugins: vi.fn(), initPlugins3dLoader: vi.fn(), getActiveEffect3d: vi.fn(),
   activateEffect3d: vi.fn(), deactivateEffect3d: vi.fn(), toggleEffect3d: vi.fn(), reloadPlugins3d: vi.fn(),
-  exportMakeup: vi.fn(), setOverlayMode: vi.fn(), openAnalyzePanel: vi.fn(), captureThumbnail: vi.fn(),
+  exportMakeup: vi.fn(), openAnalyzePanel: vi.fn(), captureThumbnail: vi.fn(),
   deleteThumbnail: vi.fn(), getThumbnail: vi.fn(), saveThumbnail: vi.fn(), applyI18n: vi.fn(), initI18n: vi.fn(),
   setupLocaleSelect: vi.fn(),
 }));
@@ -42,10 +42,6 @@ vi.mock('../../lab-js/plugins3d-loader.js', () => ({
   toggleEffect3d: deps.toggleEffect3d, reloadPlugins3d: deps.reloadPlugins3d,
 }));
 vi.mock('../../lab-js/export-makeup.js', () => ({ exportMakeup: deps.exportMakeup }));
-vi.mock('../../lab-js/bbox-overlay.js', () => ({
-  setOverlayMode: deps.setOverlayMode, OVERLAY_MODE_STORAGE_KEY: 'overlay-mode',
-  OVERLAY_MODES: { bbox: 'BBox', mesh: 'Mesh', both: 'Both' },
-}));
 vi.mock('../../lab-js/analyze-panel.js', () => ({ openAnalyzePanel: deps.openAnalyzePanel }));
 vi.mock('../../lab-js/face-thumbnails.js', () => ({
   captureThumbnail: deps.captureThumbnail, deleteThumbnail: deps.deleteThumbnail,
@@ -117,7 +113,6 @@ describe('lab main', () => {
       delete window.gstmxx.FaceLandmarker;
     });
     deps.openAnalyzePanel.mockResolvedValue();
-    deps.setOverlayMode.mockImplementation(mode => mode);
     deps.setupLocaleSelect.mockImplementation((select, callback) => { localeCallback = callback; });
     window.localStorage.setItem('overlay-mode', 'mesh');
     vi.stubGlobal('fetch', vi.fn(async () => ({
@@ -171,7 +166,6 @@ describe('lab main', () => {
     setBusy(true);
     expect(els.saveBtn.disabled).toBe(true);
     expect(els.analyzeBtn.disabled).toBe(true);
-    expect(els.overlayModeBtn.disabled).toBe(true);
     expect(els.clearDbBtn.disabled).toBe(true);
     expect(els.copyMakeupBtn.disabled).toBe(true);
     expect(preview.disabled).toBe(true);
@@ -189,7 +183,7 @@ describe('lab main', () => {
     preview.remove();
   });
 
-  it('handles mirror, camera, overlay, log, recording, and plugin controls', async () => {
+  it('handles mirror, camera, log, recording, and plugin controls', async () => {
     await click(els.mirrorToggle);
     expect(state.isMirrored).toBe(true);
     expect(els.video.style.transform).toBe('scaleX(-1)');
@@ -207,13 +201,6 @@ describe('lab main', () => {
     expect(state.currentFacingMode).toBe('user');
     deps.startCamera.mockRejectedValueOnce(null);
     await click(els.switchCameraBtn);
-
-    await click(els.overlayModeBtn);
-    delete els.overlayModeBtn.dataset.overlayMode;
-    await click(els.overlayModeBtn);
-    els.overlayModeBtn.dataset.overlayMode = 'invalid';
-    deps.setOverlayMode.mockReturnValueOnce('invalid');
-    await click(els.overlayModeBtn);
 
     await click(els.logBox);
     expect(state.isLogExpanded).toBe(true);
@@ -304,22 +291,6 @@ describe('lab main', () => {
     setTimeoutSpy.mockRestore();
     vi.useRealTimers();
 
-    await click(els.toggleSettingsBtn);
-    els.settingsDrawer.classList.remove('hidden');
-    await click(els.toggleSettingsBtn);
-    expect(els.settingsDrawer.classList.contains('hidden')).toBe(true);
-    els.historyDrawer.classList.remove('hidden');
-    await click(els.closeSettingsBtn);
-    expect(els.historyDrawer.classList.contains('hidden')).toBe(true);
-    const settingsDrawer = els.settingsDrawer;
-    els.settingsDrawer = null;
-    await click(els.closeSettingsBtn);
-    els.settingsDrawer = settingsDrawer;
-    const historyDrawer = els.historyDrawer;
-    els.historyDrawer = null;
-    await click(els.closeSettingsBtn);
-    els.historyDrawer = historyDrawer;
-
     vi.useFakeTimers();
     await click(els.clearDbBtn);
     expect(els.clearDbBtn.textContent).toBe('confirm_question');
@@ -327,7 +298,7 @@ describe('lab main', () => {
     expect(deps.applyI18n).toHaveBeenCalledWith(els.clearDbBtn.parentElement);
     await click(els.clearDbBtn);
     await click(els.clearDbBtn);
-    expect(deps.clearDb).toHaveBeenCalledWith(state, els);
+    expect(deps.clearDb).toHaveBeenCalledWith();
     els.clearDbBtn.remove();
     await click(els.clearDbBtn);
     await vi.advanceTimersByTimeAsync(4000);
@@ -353,12 +324,10 @@ describe('lab main', () => {
 
   it('handles initialization failures and omitted optional elements', async () => {
     const original = {
-      toggleSettingsBtn: els.toggleSettingsBtn, historyDrawer: els.historyDrawer, settingsDrawer: els.settingsDrawer,
-      closeSettingsBtn: els.closeSettingsBtn, reloadPluginsBtn: els.reloadPluginsBtn, overlayModeBtn: els.overlayModeBtn,
-      logBox: els.logBox, recordBtn: els.recordBtn, historyEntries: els.historyEntries,
+      reloadPluginsBtn: els.reloadPluginsBtn, logBox: els.logBox,
+      recordBtn: els.recordBtn, historyEntries: els.historyEntries,
     };
-    els.toggleSettingsBtn = null; els.historyDrawer = null; els.settingsDrawer = null;
-    els.closeSettingsBtn = null; els.reloadPluginsBtn = null; els.overlayModeBtn = null;
+    els.reloadPluginsBtn = null;
     els.logBox = null; els.recordBtn = null;
     window.localStorage.getItem.mockImplementationOnce(() => { throw new Error('storage unavailable'); });
     window.faceapi.nets.tinyFaceDetector.loadFromUri.mockRejectedValueOnce(new Error('models unavailable'));
