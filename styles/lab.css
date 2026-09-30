@@ -410,6 +410,12 @@ input[type="color"] { width: 40px; height: 28px; border: 0; background: none; pa
 /* faces gallery */
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
 .thumb { aspect-ratio: 3/4; border-radius: 14px; border: 1px solid var(--line-soft); background: linear-gradient(135deg, #2c2318, #3a2c20); display: grid; place-items: end start; padding: 10px; color: var(--cream); font: 11px var(--mono); }
+.gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.gallery-card { position: relative; overflow: hidden; aspect-ratio: 3/4; border-radius: 14px; border: 1px solid var(--line-soft); background: #2c2318; color: var(--cream); text-decoration: none; }
+.gallery-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery-card span { position: absolute; inset: auto 0 0; padding: 28px 10px 10px; background: linear-gradient(transparent, rgba(0,0,0,.78)); font: 11px var(--mono); overflow-wrap: anywhere; }
+.gallery-status { color: var(--faint); font-size: 13px; margin-top: 14px; }
+.gallery-fallback { margin-top: 10px; }
 .card { background: var(--panel); border: 1px solid var(--line-soft); border-radius: 14px; padding: 14px; }
 .card + .card { margin-top: 10px; }
 .cardlist { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }

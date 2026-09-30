@@ -253,10 +253,9 @@
     <span class="screen__kicker" data-i18n="online_kicker">Online</span>
     <h1 data-i18n="shared_gallery_title">Shared gallery</h1>
     <p data-i18n="shared_gallery_description">Results and clips the community has published. Loaded from the server.</p>
-    <div class="grid2">
-      <div class="thumb" data-i18n="gallery_demo_broke">0.71 ✓ broke</div><div class="thumb">stripes · 0.64</div>
-      <div class="thumb">brush · 0.69</div><div class="thumb" data-i18n="gallery_demo_clip">2s clip</div>
-    </div>
+    <p id="gm-gallery-status" class="gallery-status" role="status" data-i18n="gallery_loading_status">Loading gallery…</p>
+    <button id="gm-gallery-fallback" class="secondary-btn gallery-fallback" type="button" hidden data-i18n="gallery_production_fallback">Click to pull from ghostmaxxing.vecna.eu</button>
+    <div id="gm-gallery-grid" class="gallery-grid" aria-live="polite"></div>
   </section>
 
   <section id="gm-screen-info" class="screen online hidden" aria-label="Info" data-i18n-aria-label="info_title">

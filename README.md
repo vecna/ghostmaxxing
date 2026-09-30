@@ -1,6 +1,6 @@
 # Ghostmaxxing
 <!-- coverage-badge:start -->
-[![Unit Test Coverage](https://img.shields.io/badge/coverage-96.77%25-green)](coverage/)
+[![Unit Test Coverage](https://img.shields.io/badge/coverage-96.79%25-green)](coverage/)
 <!-- coverage-badge:end -->
 
 [![CI](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml/badge.svg)](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml)
@@ -52,7 +52,10 @@ npm start            # serves the repo and opens /lab.html
 server works:
 
 ```bash
-npm run serve        # http://localhost:8080/  (no page opened)
+npm run serve        # static-only compatibility alias
+npm run serve:static # http://localhost:8080/ (frontend only)
+npm run serve:integrated # stage the client, then serve it from gstmxx-backend
+npm run test:integration # isolated same-origin gallery lifecycle
 python3 -m http.server 8000
 ```
 

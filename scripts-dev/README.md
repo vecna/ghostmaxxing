@@ -94,7 +94,7 @@ npm run update:genealogy
 
 `npm run htmls` and `npm run htmls:install` regenerate functional docs, JSDoc, projects, references, genealogy and the code map, then run `npm run check:seo`. Put lasting changes in the source HTML, page builders, or templates: `projects/index.html`, `references/index.html`, `genealogy.html` and the generated docs are overwritten. The project and reference JSON-LD item lists are built from their JSON catalogues.
 
-`npm run htmls:install` then runs `scripts-dev/install-client-interface.cjs`. That installer copies every root-level HTML file, the `projects/`, `references/`, `docs/` and other allow-listed directories, and selected deployable files from `web-files/` into `../gstmxx-backend/client-interface/`. It clears that destination before copying; use it only when replacing that client-interface directory is intended. Add root-served crawler files to `web-files/` and list them in the installer's `COPY_WEB_FILES`.
+`npm run htmls:install` then runs `scripts-dev/install-client-interface.cjs`. That installer copies every root-level HTML file, the `projects/`, `references/`, `docs/` and other allow-listed directories, and selected deployable files from `web-files/` into `../gstmxx-backend/client-interface/`. It clears that destination before copying; use it only when replacing that client-interface directory is intended. Set `GSTMXX_CLIENT_BUILD_DIR` to stage into an isolated target (as the integration test does). Add root-served crawler files to `web-files/` and list them in the installer's `COPY_WEB_FILES`.
 
 ## Pick a picture for the homepage story
 
@@ -345,7 +345,10 @@ The package provides the following additional commands:
 | Command | Scope |
 |---|---|
 | `npm start` | Serves the repository on port 8080 and opens `/lab.html` |
-| `npm run serve` | Serves the repository on port 8080 |
+| `npm run serve` | Compatibility alias for `serve:static` |
+| `npm run serve:static` | Serves only the frontend source tree on port 8080 |
+| `npm run serve:integrated` | Stages the client and starts the sibling backend on its configured port |
+| `npm run test:integration` | Tests staged client, upload, moderation, and gallery through one temporary origin |
 | `npm run serve:site` | Serves the repository and opens `/index.html` |
 | `npm run check` | Validates Ghostyles, then runs unit tests |
 | `npm run test:unit` | Runs Vitest once |

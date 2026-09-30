@@ -5,7 +5,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..');
-const TARGET = path.resolve(ROOT, '..', 'gstmxx-backend', 'client-interface');
+const TARGET = path.resolve(
+  process.env.GSTMXX_CLIENT_BUILD_DIR || path.join(ROOT, '..', 'gstmxx-backend', 'client-interface')
+);
 const KEEP_FILE = '.keep';
 const WEB_FILES_DIR = path.join(ROOT, 'web-files');
 
@@ -46,6 +48,9 @@ const COPY_WEB_FILES = [
 ];
 
 function cleanTargetDir(targetDir) {
+  if (targetDir === path.parse(targetDir).root || targetDir === ROOT) {
+    throw new Error(`Refusing to clear unsafe client build target: ${targetDir}`);
+  }
   fs.mkdirSync(targetDir, { recursive: true });
 
   for (const entry of fs.readdirSync(targetDir)) {

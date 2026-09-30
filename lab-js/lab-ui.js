@@ -24,6 +24,7 @@ import { state } from './state.js';
 import { setOverlayMode } from './bbox-overlay.js';
 import { applyI18n, t } from './i18n.js';
 import { initUploadConsentFlow } from './upload-consent.js';
+import { initGallery } from './gallery.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -145,6 +146,7 @@ function refreshUploadGate() {
   if (els.uploadCount) els.uploadCount.textContent = ui.recordings ? t('clips_ready_to_send', { count: ui.recordings }) : t('no_clips_recorded');
 }
 initUploadConsentFlow();
+initGallery();
 
 /* ---- Pinned Ghostyles on the rail --------------------------------------- */
 async function resolvePins() {

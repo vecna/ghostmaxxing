@@ -662,6 +662,36 @@ export const messages = {
       en: 'Results and clips the community has published. Loaded from the server.',
       pt: 'Resultados e clipes publicados pela comunidade. Carregados do servidor.',
    },
+   gallery_loading_status: {
+      context: 'lab.html; lab-js/gallery.js',
+      it: 'Caricamento galleria…',
+      en: 'Loading gallery…',
+      pt: 'Carregando galeria…',
+   },
+   gallery_empty_status: {
+      context: 'lab-js/gallery.js',
+      it: 'Non ci sono ancora immagini pubblicate.',
+      en: 'No published pictures yet.',
+      pt: 'Ainda não há imagens publicadas.',
+   },
+   gallery_load_failed_status: {
+      context: 'lab-js/gallery.js',
+      it: 'Impossibile caricare la galleria da questo server.',
+      en: 'Could not load the gallery from this server.',
+      pt: 'Não foi possível carregar a galeria deste servidor.',
+   },
+   gallery_production_fallback: {
+      context: 'lab.html; lab-js/gallery.js',
+      it: 'Clicca per caricare da ghostmaxxing.vecna.eu',
+      en: 'Click to pull from ghostmaxxing.vecna.eu',
+      pt: 'Clique para carregar de ghostmaxxing.vecna.eu',
+   },
+   gallery_image_alt: {
+      context: 'lab-js/gallery.js',
+      it: 'Immagine della comunità Ghostmaxxing',
+      en: 'Ghostmaxxing community image',
+      pt: 'Imagem da comunidade Ghostmaxxing',
+   },
    gallery_demo_broke: {
       context: 'lab.html:187',
       it: '0.71 ✓ rotto',
