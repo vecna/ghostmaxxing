@@ -178,7 +178,7 @@ function deactivatePluginOnError(pluginId) {
 }
 
 function wrapPluginCallbacks(ghostyle) {
-   const module = ghostyle.module || {};
+   const module = ghostyle.module;
    const wrappedModule = { ...module };
 
    const originalOnClear = 'onClear' in module ? module.onClear : undefined;

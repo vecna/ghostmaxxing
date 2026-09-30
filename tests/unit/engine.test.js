@@ -36,7 +36,7 @@ vi.mock('../../lab-js/db.js', () => ({
 
 import { state } from '../../lab-js/state.js';
 import { els, clearOverlay } from '../../lab-js/dom.js';
-import { distance, setLog, drawClosedPath, drawOpenPath, roundRect } from '../../lab-js/utils.js';
+import { distance, avgPoint, setLog, drawClosedPath, drawOpenPath, roundRect } from '../../lab-js/utils.js';
 import { resizeCanvas } from '../../lab-js/camera.js';
 import { persistDb, renderDbStats } from '../../lab-js/db.js';
 import { view as overlayView } from '../../lab-js/bbox-overlay.js';
@@ -162,6 +162,9 @@ describe('engine core exports', () => {
 
       vi.advanceTimersByTime(5000);
       expect(els.overlay.style.opacity).toBe('0');
+      state.overlayFadeTimeout = null;
+      triggerOverlayFadeout();
+      expect(els.overlay.style.transition).toBe('opacity 2s ease-in-out');
     } finally {
       vi.useRealTimers();
     }
@@ -238,6 +241,13 @@ describe('engine core exports', () => {
     expect(state.effectInferenceInFlight).toBe(false);
     expect(onDetection).toHaveBeenCalledTimes(1);
     expect(onDetection.mock.calls[0][0].detail.activeEffect).toBe(null);
+  });
+
+  it('runEffectPass leaves the overlay alone when an inactive pass finds no face', async () => {
+    faceapi.detectSingleFace.mockResolvedValue(null);
+    await runEffectPass();
+    expect(state.lastKnownEffectResult).toBeNull();
+    expect(state.effectInferenceInFlight).toBe(false);
   });
 
   it('drawGhostyleOverlay applies active effect draw and updates lastKnownEffectResult', () => {
@@ -410,6 +420,24 @@ describe('engine core exports', () => {
     expect(state.lastKnownEffectResult).toBe(null);
   });
 
+  it('drawGhostyleOverlay can include the scaffold with no active style', () => {
+    const result = {
+      detection: { box: { x: 1, y: 2, width: 3, height: 4 } },
+      landmarks: createLandmarksFixture(),
+    };
+    window.faceapi = globalThis.faceapi;
+    avgPoint.mockReturnValue({ x: 10, y: 20 });
+    faceapi.resizeResults.mockImplementation(() => result);
+    expect(window.faceapi).toBe(globalThis.faceapi);
+    expect(window.faceapi.resizeResults(result, {})).toBe(result);
+    drawGhostyleOverlay(result, true);
+    expect(overlayCtx.strokeRect).toHaveBeenCalled();
+
+    state.activeEffect = 'missing-style';
+    drawGhostyleOverlay(result, false);
+    expect(state.lastKnownEffectResult).toBe(result);
+  });
+
   it('drawDetectionScaffold mirrors labels when state is mirrored', () => {
     state.isMirrored = true;
     const resized = {
@@ -438,6 +466,15 @@ describe('engine core exports', () => {
     drawResult(result);
 
     expect(styleDraw).toHaveBeenCalledWith(overlayCtx, result.landmarks, result.detection.box);
+    expect(state.lastKnownEffectResult).toBe(result);
+  });
+
+  it('drawResult tolerates an active style without an onDraw hook', () => {
+    const result = { detection: { box: {} }, landmarks: createLandmarksFixture() };
+    state.activeEffect = 'metadata-only';
+    state.loadedGhostyles.set('metadata-only', { module: {} });
+    faceapi.resizeResults.mockReturnValue(result);
+    drawResult(result);
     expect(state.lastKnownEffectResult).toBe(result);
   });
 
@@ -502,6 +539,7 @@ describe('engine core exports', () => {
       landmarks: createLandmarksFixture(),
       descriptor: [0.7, 0.8]
     };
+    faceapi.resizeResults.mockImplementation(value => value);
     faceapi.detectSingleFace.mockReturnValue(makeAgeGenderDescriptorChain(result));
 
     const onMatch = vi.fn();
@@ -524,6 +562,24 @@ describe('engine core exports', () => {
     expect(els.overlay.style.transition).toBe('opacity 2s ease-in-out');
     expect(setLog).toHaveBeenCalledWith(expect.stringContaining('Impronta biometrica salvata con ID 7.'));
     expect(onMatch).not.toHaveBeenCalled();
+  });
+
+  it('saveFace copies landmark positions and normalizes an empty gender', async () => {
+    const result = {
+      age: 21.4,
+      gender: '',
+      detection: { score: 0.77, box: { x: 2, y: 3, width: 4, height: 5 } },
+      landmarks: { ...createLandmarksFixture(), positions: [{ x: 2, y: 3 }] },
+      descriptor: [0.2],
+    };
+    window.faceapi = globalThis.faceapi;
+    avgPoint.mockReturnValue({ x: 10, y: 20 });
+    faceapi.detectSingleFace.mockReturnValue(makeAgeGenderDescriptorChain(result));
+    const saved = await saveFace();
+    expect(saved.id).toBe(0);
+    expect(state.db.faces[0]).toMatchObject({
+      landmarks: [{ x: 2, y: 3 }], gender: null, age: 21,
+    });
   });
 
   it('detectFaceInCam stringifies thrown non-Error values', async () => {

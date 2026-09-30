@@ -20,7 +20,6 @@ let lastVideoTime = -1;
 let lastInferAt = 0;
 let video = null;
 let fpsSelect = null;
-let running = false;
 
 /**
  * Reads the MediaPipe loop throttle from the lab FPS selector and falls back to
@@ -99,7 +98,6 @@ async function init() {
    }
    events.dispatchEvent(new CustomEvent('mediapipeReady', { detail: {} }));
 
-   running = true;
    tick();
 }
 
@@ -118,7 +116,6 @@ async function init() {
  * @see compositeAndDetect3d - Reads cached landmarks for 3D efficacy compositing.
  */
 function tick() {
-   if (!running) return;
    requestAnimationFrame(tick);
    if (!faceLandmarker || !video || video.readyState < 2) return;
    if (video.currentTime === lastVideoTime) return;

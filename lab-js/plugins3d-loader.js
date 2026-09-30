@@ -53,7 +53,7 @@ function log3d(message) {
  * @see initPlugins3dLoader - Called by the `landmarks3d` event listener when UV rendering fails.
  */
 function deactivateBroken3dPlugin(entry, err) {
-   const pluginId = entry?.id || runtime.activePluginId;
+   const pluginId = entry?.id;
    if (!pluginId) return;
 
    setLog(t('plugin_runtime_error_log', { id: pluginId, message: asErrorLabel(err), hook: 'paintUV' }), pluginId);
@@ -245,7 +245,6 @@ function syncPanelHeightVar() {
  */
 function createParamRow(pluginId, p) {
    const values = runtime.paramValues.get(pluginId);
-   if (!values) return null;
 
    const row = document.createElement('div');
    row.className = 'pp-row';

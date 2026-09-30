@@ -100,6 +100,14 @@ describe('db module', () => {
       expect(loadDb3d()).toEqual(stored);
     });
 
+    it('returns an empty 3D DB for malformed or invalid-shaped storage', () => {
+      localStorage.setItem(STORAGE_KEY_3D, '{not-json');
+      expect(loadDb3d()).toEqual(defaultDb3d());
+
+      localStorage.setItem(STORAGE_KEY_3D, JSON.stringify({ modelVersion: DB3D_MODEL_VERSION, faces: 'invalid' }));
+      expect(loadDb3d()).toEqual(defaultDb3d());
+    });
+
     it('wipes an incompatible 3D DB and logs the automatic reset', () => {
       const stale = {
         faces: [{ id: 1, descriptor3d: [0.1, 0.2], savedAt: '2026-06-29T00:00:00.000Z' }]
@@ -112,6 +120,12 @@ describe('db module', () => {
       expect(state.db3d).toEqual(defaultDb3d());
       expect(localStorage.setItem).toHaveBeenCalledWith(STORAGE_KEY_3D, JSON.stringify(defaultDb3d()));
       expect(setLog).toHaveBeenCalledWith('Database 3D incompatibile col nuovo modello, svuoto', 'db');
+    });
+
+    it('wipes an incompatible empty 3D DB without logging a data-loss warning', () => {
+      localStorage.setItem(STORAGE_KEY_3D, JSON.stringify({ modelVersion: 'old', faces: [] }));
+      expect(loadDb3d()).toEqual(defaultDb3d());
+      expect(setLog).not.toHaveBeenCalled();
     });
   });
 
@@ -179,6 +193,13 @@ describe('db module', () => {
       expect(els.dbCount.textContent).toBe('0');
       expect(els.nextId.textContent).toBe('0');
       expect(els.dbCountBadge.textContent).toBe('0');
+    });
+
+    it('leaves an already-null 3D store null and does not persist it', () => {
+      state.db3d = null;
+      clearDb();
+      expect(state.db3d).toBeNull();
+      expect(localStorage.setItem).not.toHaveBeenCalledWith(STORAGE_KEY_3D, expect.any(String));
     });
   });
 

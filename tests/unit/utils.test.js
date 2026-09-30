@@ -366,3 +366,88 @@ describe('Logging utilities', () => {
   });
 });
 
+describe('Landmark and canvas helpers', () => {
+  let ctx;
+
+  beforeEach(() => {
+    ctx = document.createElement('canvas').getContext('2d');
+    ctx.canvas = { width: 100, height: 60 };
+    ctx.rect = vi.fn();
+    ctx.clip = vi.fn();
+  });
+
+  test('face-api clip helpers accept arrays, positions objects and getPositions objects', () => {
+    const points = [{ x: 20, y: 10 }, { x: NaN, y: 1 }, null, { x: 60, y: 50 }];
+    expect(utils.clipLeftHalf(ctx, null)).toBe(false);
+    expect(utils.clipLeftHalf(ctx, { positions: 'invalid' })).toBe(false);
+    expect(utils.clipLeftHalf(ctx, { getPositions: () => null })).toBe(false);
+    expect(utils.clipLeftHalf(ctx, points)).toBe(true);
+    expect(utils.clipRightHalf(ctx, { positions: points })).toBe(true);
+    expect(utils.clipRightHalf(ctx, { getPositions: () => points })).toBe(true);
+    expect(ctx.clip).toHaveBeenCalledTimes(3);
+  });
+
+  test('MediaPipe clip helpers reject non-arrays and filter malformed landmarks', () => {
+    expect(utils.clipLeftHalfUV(ctx, {})).toBe(false);
+    expect(utils.clipRightHalfUV(ctx, [null, { x: 0.25, y: 0.5 }, { x: 1, y: Infinity }])).toBe(true);
+    expect(utils.clipLeftHalfUV(ctx, [{ x: 0.75, y: 0.5 }, { x: 0.25, y: 0.5 }])).toBe(true);
+    expect(ctx.clip).toHaveBeenCalledTimes(2);
+  });
+
+  test('right-side clip helpers return false for empty point sets', () => {
+    expect(utils.clipRightHalf(ctx, null)).toBe(false);
+    expect(utils.clipRightHalfUV(ctx, [])).toBe(false);
+  });
+
+  test('expandEyePolygon falls back to the last eye point for sparse landmarks', () => {
+    const eye = [{ x: 10, y: 10 }, , { x: 14, y: 10 }, { x: 14, y: 12 }, { x: 12, y: 14 }, { x: 10, y: 12 }];
+    const result = utils.expandEyePolygon(eye, [{ x: 9, y: 5 }, { x: 12, y: 4 }], 1, 0.5);
+    expect(result).toHaveLength(6);
+  });
+
+  test('formats future and invalid relative dates and logs with an index offset', () => {
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date('2026-01-01T00:00:00.000Z'));
+      expect(utils.formatRelativeTime(null)).toBe('n/d');
+      expect(utils.formatRelativeTime('not-a-date')).toBe('n/d');
+      expect(utils.formatRelativeTime('2026-01-01T00:02:00.000Z')).toBe('tra 2 minuti');
+      expect(utils.formatRelativeTime('2026-01-01T01:00:00.000Z')).toBe('tra 1 ora');
+      expect(utils.formatRelativeTime(new Date('2025-12-31T23:00:00.000Z'))).toBe('1 ora fa');
+    } finally {
+      vi.useRealTimers();
+    }
+
+    state.logsArchive = [];
+    state.visibleLogStartIndex = 1;
+    for (let i = 0; i < 101; i++) utils.setLog(`offset ${i}`);
+    expect(state.visibleLogStartIndex).toBe(0);
+  });
+
+  test('formats thrown values and syncs canvas dimensions and mirror transforms', () => {
+    expect(utils.asErrorLabel(new TypeError('bad plugin'))).toBe('TypeError: bad plugin');
+    expect(utils.asErrorLabel('bad plugin')).toBe('bad plugin');
+
+    const canvas = { width: 0, height: 0, style: { transform: '' } };
+    const overlay = { width: 80, height: 40, style: { transform: 'scaleX(-1)' } };
+    utils.syncSize(canvas, overlay);
+    expect([canvas.width, canvas.height]).toEqual([80, 40]);
+    utils.syncSize(canvas, overlay);
+    utils.syncMirror(canvas, overlay);
+    expect(canvas.style.transform).toBe('scaleX(-1)');
+    utils.syncMirror(canvas, overlay);
+    expect(canvas.style.transform).toBe('scaleX(-1)');
+  });
+
+  test('drawEyeWing replaces an outer corner when a later left-eye point is farther left', () => {
+    const eye = [
+      utils.point(14, 10), utils.point(12, 8), utils.point(10, 10),
+      utils.point(11, 12), utils.point(12, 14), utils.point(13, 12),
+    ];
+    const eyebrow = [utils.point(10, 5), utils.point(12, 3), utils.point(14, 5)];
+    const tone = { scale: 1, brow: 0.5, fill: 'red', stroke: 'blue', side: 'left', tailX: -5, tailY: 2, line: 'black' };
+    utils.drawEyeWing(ctx, eye, eyebrow, 'left', tone);
+    expect(ctx.moveTo).toHaveBeenCalledWith(10, 10);
+  });
+});
+

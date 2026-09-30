@@ -117,6 +117,12 @@ describe('plugins3d-loader', () => {
           { name: 'enabled', type: 'bool', default: 1 },
           { name: 'mode', type: 'select', options: ['soft', 'hard'], default: 'hard' },
           { name: 'tint', type: 'color', default: '#0f8' },
+          { name: 'rgb', type: 'color', default: [300, -2, 'bad'] },
+          { name: 'hex-six', type: 'color', default: '#336699' },
+          { name: 'bad-color', type: 'color', default: 'not-a-color' },
+          { name: 'numeric-color', type: 'color', default: 42 },
+          { name: 'invalid-select', type: 'select', options: null, default: 'fallback' },
+          { name: 'invalid-range', type: 'range', min: 0, max: 2, default: 1.2 },
           { name: 'ignored', type: 'unknown', default: 'x' },
         ],
       },
@@ -135,12 +141,18 @@ describe('plugins3d-loader', () => {
     expect(panel.classList.contains('visible')).toBe(true);
     expect(panel.getAttribute('aria-hidden')).toBe('false');
     expect(panel.textContent).toContain('Parametri UV Style');
-    expect(panel.querySelectorAll('.pp-row')).toHaveLength(4);
+    expect(panel.querySelectorAll('.pp-row')).toHaveLength(10);
     expect(runtime.paramValues.get('uv-style')).toEqual({
       scale: 2,
       enabled: true,
       mode: 'hard',
       tint: [0, 255, 136],
+      rgb: [255, 0, 0],
+      'hex-six': [51, 102, 153],
+      'bad-color': [0, 0, 0],
+      'numeric-color': [0, 0, 0],
+      'invalid-select': 'fallback',
+      'invalid-range': 1.2,
       ignored: 'x',
     });
 
@@ -148,6 +160,7 @@ describe('plugins3d-loader', () => {
     const checkbox = panel.querySelector('input[type="checkbox"]');
     const select = panel.querySelector('select');
     const color = panel.querySelector('input[type="color"]');
+    const badColor = panel.querySelectorAll('input[type="color"]')[2];
 
     range.value = '0.4';
     range.dispatchEvent(new Event('input'));
@@ -157,9 +170,30 @@ describe('plugins3d-loader', () => {
     select.dispatchEvent(new Event('input'));
     color.value = '#336699';
     color.dispatchEvent(new Event('input'));
+    Object.defineProperty(range, 'value', { configurable: true, get: () => 'not-a-number' });
+    range.dispatchEvent(new Event('input'));
+    expect(runtime.paramValues.get('uv-style').scale).toBe(2);
+    delete range.value;
+    Object.defineProperty(badColor, 'value', { configurable: true, get: () => 'invalid-color' });
+    badColor.dispatchEvent(new Event('input'));
+    delete badColor.value;
+    state.gstmxxEvents.dispatchEvent(new Event('effectChanged'));
+      runtime.paramValues.get('uv-style').tint = [1, 2];
+      state.gstmxxEvents.dispatchEvent(new Event('effectChanged'));
+    expect(panel.querySelector('input[type="color"]').value).toBe('#000000');
+    runtime.paramValues.get('uv-style').tint = [51, 102, 153];
+    expect(runtime.paramValues.get('uv-style').scale).toBe(2);
+
+    const rendererOptions = createUvRenderer.mock.calls[0][0];
+    window.gstmxx = null;
+    expect(rendererOptions.getFaceLandmarker()).toBeNull();
+    window.gstmxx = { FaceLandmarker: { test: true } };
+    expect(rendererOptions.getFaceLandmarker()).toEqual({ test: true });
+    rendererOptions.log('uv renderer message');
+    expect(runtime.renderer.ensureLoaded).toHaveBeenCalled();
 
     expect(runtime.paramValues.get('uv-style')).toMatchObject({
-      scale: 0,
+      scale: 2,
       enabled: false,
       mode: 'soft',
       tint: [51, 102, 153],
@@ -188,9 +222,18 @@ describe('plugins3d-loader', () => {
     });
 
     loader.initPlugins3dLoader();
+    expect(loader.initPlugins3dLoader()).toBe(loader.initPlugins3dLoader());
+    expect(loader.deactivateEffect3d()).toBe(false);
 
     expect(loader.activateEffect3d('flat-style')).toBe(false);
     expect(loader.activateEffect3d('missing')).toBe(false);
+    state.loadedGhostyles.set('without-button', { id: 'without-button', module: { paintUV: vi.fn() } });
+    expect(loader.activateEffect3d('without-button')).toBe(false);
+    state.loadedGhostyles.set('non-button', { id: 'non-button', module: { paintUV: vi.fn() } });
+    const querySelector = vi.spyOn(document, 'querySelector').mockReturnValue({});
+    expect(loader.activateEffect3d('non-button')).toBe(false);
+    querySelector.mockRestore();
+    expect(loader.deactivateEffect3d()).toBe(false);
     expect(loader.activateEffect3d('uv-style')).toBe(true);
     expect(clickSpy).toHaveBeenCalledTimes(1);
 
@@ -199,7 +242,16 @@ describe('plugins3d-loader', () => {
 
     expect(loader.toggleEffect3d('uv-style')).toBe(true);
     expect(loader.deactivateEffect3d()).toBe(true);
-    expect(clickSpy).toHaveBeenCalledTimes(3);
+    clickSpy.mockClear();
+    state.activeEffect = null;
+    state.gstmxxEvents.dispatchEvent(new CustomEvent('effectChanged'));
+    expect(loader.toggleEffect3d('uv-style')).toBe(true);
+    expect(clickSpy).toHaveBeenCalledOnce();
+    state.activeEffect = 'uv-style';
+    state.gstmxxEvents.dispatchEvent(new CustomEvent('effectChanged'));
+    btn.remove();
+    expect(loader.deactivateEffect3d()).toBe(false);
+    expect(clickSpy).toHaveBeenCalledOnce();
     expect(loader.reloadPlugins3d()).toBe(false);
     expect(utils.setLog).toHaveBeenCalledWith(
       'reloadPlugins3d non disponibile: i plugin sono gestiti da ghostyles-manager.',
@@ -230,6 +282,10 @@ describe('plugins3d-loader', () => {
     state.gstmxxEvents.dispatchEvent(new CustomEvent('beforeEfficacyComposite3d', {
       detail: { canvas: compositeCanvas, ctx: compositeCtx },
     }));
+    state.gstmxxEvents.dispatchEvent(new CustomEvent('beforeEfficacyComposite', { detail: {} }));
+    state.gstmxxEvents.dispatchEvent(new CustomEvent('beforeEfficacyComposite3d', { detail: { canvas: compositeCanvas } }));
+    state.gstmxxEvents.dispatchEvent(new CustomEvent('beforeEfficacyComposite', { detail: null }));
+    state.gstmxxEvents.dispatchEvent(new CustomEvent('beforeEfficacyComposite3d', { detail: null }));
     state.gstmxxEvents.dispatchEvent(new CustomEvent('landmarks3d', {
       detail: { landmarks },
     }));
@@ -241,6 +297,15 @@ describe('plugins3d-loader', () => {
     expect(runtime.ctx.save).toHaveBeenCalled();
     expect(rendererMock.render).toHaveBeenCalledWith(module, runtime.ctx, landmarks, { strength: 0.5 });
     expect(runtime.ctx.restore).toHaveBeenCalled();
+
+    state.activeEffect = 'flat-style';
+    state.loadedGhostyles.set('flat-style', { id: 'flat-style', name: 'Flat', module: {} });
+    state.gstmxxEvents.dispatchEvent(new Event('effectChanged'));
+    state.gstmxxEvents.dispatchEvent(new CustomEvent('landmarks3d', { detail: { landmarks: [] } }));
+    state.activeEffect = 'uv-style';
+    state.gstmxxEvents.dispatchEvent(new Event('effectChanged'));
+    state.loadedGhostyles.delete('uv-style');
+    state.gstmxxEvents.dispatchEvent(new CustomEvent('landmarks3d', { detail: { landmarks: [{}] } }));
   });
 
   it('clears the active 3D plugin and broadcasts changes when renderer.render throws', async () => {

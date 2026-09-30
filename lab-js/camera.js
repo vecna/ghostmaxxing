@@ -146,7 +146,11 @@ export async function effectLoop(ts = 0) {
  * @see startCamera – calls this once the stream is live.
  */
 export function startEffectLoop() {
-   if (effectLoopHandle) cancelAnimationFrame(effectLoopHandle);
+   if (!effectLoopHandle) {
+      effectLoopHandle = requestAnimationFrame(effectLoop);
+      return;
+   }
+   cancelAnimationFrame(effectLoopHandle);
    effectLoopHandle = requestAnimationFrame(effectLoop);
 }
 

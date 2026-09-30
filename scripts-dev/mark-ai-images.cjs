@@ -19,9 +19,11 @@ async function setup() {
   });
   const css = await fs.readFile(path.join(ROOT, 'styles/tokens.css'), 'utf8');
   palette = Object.fromEntries(['gm-bg', 'gm-ink'].map(key => {
-    const match = css.match(new RegExp(`--${key}:\\s*(#[0-9a-f]{6})\\s*;`, 'i'));
+    const match = css.match(new RegExp(`--${key}:\\s*(#[0-9a-f]{6}|rgb\\(\\s*\\d+\\s*,\\s*\\d+\\s*,\\s*\\d+\\s*\\))\\s*;`, 'i'));
     if (!match) throw new Error(`Missing colour token --${key}`);
-    return [key, match[1]];
+    const color = match[1];
+    const hex = color.startsWith('#') ? color : `#${color.slice(4, -1).split(',').map(channel => Number(channel.trim()).toString(16).padStart(2, '0')).join('')}`;
+    return [key, hex];
   }));
 }
 

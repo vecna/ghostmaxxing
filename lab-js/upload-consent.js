@@ -411,7 +411,7 @@ export function initUploadConsentFlow() {
          clips = clips.filter((item) => item.id !== clip.id);
          selectedClipId = clips[0]?.id || null;
          if (noteInput) noteInput.value = '';
-         if (consentInput) consentInput.checked = false;
+         consentInput.checked = false;
          setLog(t('video_upload_done_log', { status: 201, filename: clip.filename }));
          setStatus(t('upload_receipt_created_status'), 'ok');
       } catch (err) {

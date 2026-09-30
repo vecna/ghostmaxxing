@@ -33,6 +33,11 @@ function isLocalPluginDevHost() {
    return host === 'localhost' || host === '127.0.0.1' || host.endsWith('.local');
 }
 
+function closeHistoryDrawer() {
+   els.historyDrawer?.classList.add('hidden');
+   els.settingsDrawer?.classList.add('hidden');
+}
+
 // Mirror toggle logic (fallback, hidden in UI)
 if (els.mirrorToggle) {
    els.mirrorToggle.addEventListener('click', () => {
@@ -178,7 +183,7 @@ function handleError(err, fallbackMessage) {
  * @param {object|null} mediapipeSection
  * @returns {'matched'|'eluded'|'partial-elusion'|'unknown'}
  */
-function computeOverall(faceapiSection, mediapipeSection) {
+export function computeOverall(faceapiSection, mediapipeSection) {
    if (!faceapiSection && !mediapipeSection) return 'unknown';
    const f = faceapiSection?.detectionState;
    const m = mediapipeSection?.detectionState;
@@ -406,7 +411,7 @@ async function tryCaptureThumbnailOnSave() {
  * @see loadModels – called within init to load face-api.js models before webcam activation.
  * @see init(); – the function is invoked at the bottom of the script to start the app.
  */
-async function init() {
+export async function init() {
    initI18n();
    setupLocaleSelect(els.localeSelect, () => {
       applyI18n();

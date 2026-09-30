@@ -251,9 +251,7 @@ export function saveThumbnail(id, dataUrl) {
    while (store.entries.length > store.maxEntries) {
       store.entries.sort((a, b) => new Date(a.savedAt).getTime() - new Date(b.savedAt).getTime());
       const evicted = store.entries.shift();
-      if (evicted) {
-         logThumbnailEvent(`Thumbnail evicted for ID ${evicted.id} (FIFO capacity ${store.maxEntries}).`);
-      }
+      logThumbnailEvent(`Thumbnail evicted for ID ${evicted.id} (FIFO capacity ${store.maxEntries}).`);
    }
 
    persistStore(store);

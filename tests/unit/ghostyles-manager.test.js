@@ -45,10 +45,26 @@ vi.mock('https://example.com/effects/draw-fail.js', () => ({
   onDraw: vi.fn(() => { throw new TypeError('draw boom'); })
 }), { virtual: true });
 
+vi.mock('https://example.com/effects/clear-fail.js', () => ({
+  onDraw: vi.fn(),
+  onClear: vi.fn(() => { throw 'clear boom'; }),
+}), { virtual: true });
+
+vi.mock('https://example.com/effects/paint-fail.js', () => ({
+  paintUV: vi.fn(() => { throw new Error('paint boom'); }),
+}), { virtual: true });
+
+vi.mock('https://example.com/effects/init-effect.js?t=123', () => ({
+  onInit: vi.fn(() => 'reload init'),
+  onDraw: vi.fn(),
+}), { virtual: true });
+
+vi.mock('https://example.com/effects/missing-callbacks.js?t=123', () => ({ SOME_CONST: true }), { virtual: true });
+
 import { state } from '../../lab-js/state.js';
-import { setLog } from '../../lab-js/utils.js';
+import { setLog, formatRelativeTime } from '../../lab-js/utils.js';
 import { clearActiveEffect, effectSelected, els } from '../../lab-js/dom.js';
-import { fetchGhostyleMetadata, importGhostyleModule, loadGhostyle, toggleEffect } from '../../lab-js/ghostyles-manager.js';
+import { fetchGhostyleMetadata, importGhostyleModule, loadGhostyle, toggleEffect, reloadPlugins } from '../../lab-js/ghostyles-manager.js';
 
 describe('ghostyles-manager', () => {
   beforeEach(() => {
@@ -92,6 +108,16 @@ describe('ghostyles-manager', () => {
       });
     });
 
+    it('extracts optional author and description metadata', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+        ok: true,
+        text: async () => '// @name Full Metadata\n// @author Ada\n// @description A short style\n// @version 2.0',
+      });
+      await expect(fetchGhostyleMetadata('https://example.com/effects/full.js')).resolves.toMatchObject({
+        author: 'Ada', description: 'A short style', version: '2.0',
+      });
+    });
+
     it('uses id as name if @name metadata is missing', async () => {
       vi.spyOn(globalThis, 'fetch').mockResolvedValue({
         ok: true,
@@ -112,6 +138,13 @@ describe('ghostyles-manager', () => {
         hasVersion: false,
         hasReleaseDate: false
       });
+    });
+
+    it('handles URLs ending in a slash and missing expected names', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: true, text: async () => 'export default {}' });
+      await expect(fetchGhostyleMetadata('https://example.com/effects/')).resolves.toMatchObject({ id: '', name: '' });
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: false, status: 404 });
+      await expect(loadGhostyle('https://example.com/effects/broken.js', null)).rejects.toThrow('https://example.com/effects/broken.js');
     });
 
     it('throws error when response is not ok', async () => {
@@ -168,6 +201,19 @@ describe('ghostyles-manager', () => {
       expect(onFaceapiToggle).toHaveBeenCalledTimes(1);
     });
 
+    it('inserts the preview button into a real ghostyle row', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+        ok: true, status: 200,
+        text: async () => '// @name Real Row\n// @version 1.0\n// @release_date 2026-05-01',
+      });
+      const originalContainer = els.ghostylesContainer;
+      els.ghostylesContainer = document.createElement('div');
+      await loadGhostyle('https://example.com/effects/init-effect.js', 'Real Row');
+      expect(els.ghostylesContainer.querySelector('.ghostyle-row .preview-btn')).not.toBeNull();
+      expect(els.ghostylesContainer.querySelector('.ghostyle-row .ghostyle-pins')).not.toBeNull();
+      els.ghostylesContainer = originalContainer;
+    });
+
     it('ignores a plugin without onDraw and paintUV', async () => {
       vi.spyOn(globalThis, 'fetch').mockResolvedValue({
         ok: true,
@@ -205,6 +251,18 @@ describe('ghostyles-manager', () => {
       expect(setLog).toHaveBeenCalledWith('Plugin init-effect senza @version', 'loader');
     });
 
+    it('uses the fallback freshness text when the relative label is empty', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+        ok: true, status: 200,
+        text: async () => '// @name Empty Freshness\n// @version 1.0\n// @release_date 2026-05-01',
+      });
+      formatRelativeTime.mockReturnValueOnce('');
+      const ghostyle = await loadGhostyle('https://example.com/effects/init-effect.js', null);
+      expect(ghostyle.freshnessLabel).toBe('');
+      const button = els.ghostylesContainer.appendChild.mock.calls.at(-1)[0];
+      expect(button.querySelector('.preview-btn__meta').textContent).toBe('aggiornato n/d');
+    });
+
     it('logs warning when @release_date is invalid and keeps loading', async () => {
       vi.spyOn(globalThis, 'fetch').mockResolvedValue({
         ok: true,
@@ -218,6 +276,25 @@ describe('ghostyles-manager', () => {
         'Plugin init-effect ha @release_date non valida (not-a-date), ignorata',
         'loader'
       );
+    });
+
+    it('uses HEAD freshness fallback for invalid and valid release headers', async () => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (_url, options) => {
+        if (options?.method === 'HEAD') {
+          const call = fetchSpy.mock.calls.filter(([, opts]) => opts?.method === 'HEAD').length;
+          if (call === 1) return { ok: false, headers: { get: vi.fn() } };
+          if (call === 2) return { ok: true, headers: { get: () => null } };
+          if (call === 3) return { ok: true, headers: { get: () => 'not-a-date' } };
+          return { ok: true, headers: { get: () => '2026-06-26T00:00:00.000Z' } };
+        }
+        return { ok: true, status: 200, text: async () => '// @name Init Effect\n// @version 1.0.0' };
+      });
+      const first = await loadGhostyle('https://example.com/effects/init-effect.js', null);
+      const second = await loadGhostyle('https://example.com/effects/init-effect.js', null);
+      const third = await loadGhostyle('https://example.com/effects/init-effect.js', null);
+      const fourth = await loadGhostyle('https://example.com/effects/init-effect.js', null);
+      expect([first.freshnessLabel, second.freshnessLabel, third.freshnessLabel, fourth.freshnessLabel])
+        .toEqual(['n/d', 'n/d', 'n/d', '3 giorni fa']);
     });
 
     it('wraps onInit errors without rejecting load', async () => {
@@ -262,6 +339,31 @@ describe('ghostyles-manager', () => {
       );
       expect(consoleErrorSpy).toHaveBeenCalled();
       consoleErrorSpy.mockRestore();
+    });
+
+    it('wraps onClear and paintUV exceptions and deactivates an active plugin button', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+        ok: true, status: 200,
+        text: async () => '// @name Clear Fail\n// @version 1.0\n// @release_date 2026-05-01',
+      });
+      const clearPlugin = await loadGhostyle('https://example.com/effects/clear-fail.js', 'Clear Fail');
+      state.activeEffect = 'clear-fail';
+      const button = document.createElement('button');
+      button.className = 'preview-btn active';
+      button.dataset.effect = 'clear-fail';
+      document.body.appendChild(button);
+      clearPlugin.module.onClear({});
+      expect(button.classList.contains('active')).toBe(false);
+      expect(setLog).toHaveBeenCalledWith(expect.stringContaining('clear boom'), 'clear-fail');
+
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+        ok: true, status: 200,
+        text: async () => '// @name Paint Fail\n// @version 1.0\n// @release_date 2026-05-01',
+      });
+      const paintPlugin = await loadGhostyle('https://example.com/effects/paint-fail.js', 'Paint Fail');
+      paintPlugin.module.paintUV({}, {}, {});
+      expect(setLog).toHaveBeenCalledWith(expect.stringContaining('paint boom'), 'paint-fail');
     });
 
     it('wraps metadata fetch errors with requested plugin name', async () => {
@@ -331,6 +433,145 @@ describe('ghostyles-manager', () => {
       });
       expect(effectSelected).toHaveBeenCalledWith(dummyButton);
       expect(setLog).toHaveBeenCalledWith(expect.stringContaining('attivato'));
+    });
+
+    it('reports a throwing onClear hook while deactivating an active effect', () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+      state.activeEffect = 'bad-clear';
+      state.loadedGhostyles.set('bad-clear', {
+        module: { onClear: () => { throw new Error('clear failed'); } },
+      });
+      toggleEffect('bad-clear', null);
+      expect(clearActiveEffect).toHaveBeenCalled();
+      expect(consoleError).toHaveBeenCalledWith('[plugin:bad-clear] errore in onClear:', expect.any(Error));
+    });
+
+    it('switches away from a previous plugin without an onClear hook', () => {
+      const previous = { id: 'previous', name: 'Previous', module: {} };
+      const next = { id: 'next', name: 'Next', module: {} };
+      state.activeEffect = 'previous';
+      state.loadedGhostyles.set('previous', previous);
+      state.loadedGhostyles.set('next', next);
+      const eventListener = vi.fn();
+      state.gstmxxEvents.addEventListener('effectChanged', eventListener);
+
+      toggleEffect('next', {});
+      expect(state.activeEffect).toBe('next');
+      expect(clearActiveEffect).not.toHaveBeenCalled();
+      expect(eventListener.mock.calls.at(-1)[0].detail).toEqual({ activeEffect: 'next', previous: 'previous' });
+    });
+  });
+
+  describe('reloadPlugins', () => {
+    it('clears active plugins, cache-busts a manifest URL, and returns loaded count', async () => {
+      const onClear = vi.fn();
+      state.activeEffect = 'previous';
+      state.loadedGhostyles.set('previous', { id: 'previous', module: { onClear } });
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: true, json: async () => [] });
+      const onEffectChanged = vi.fn();
+      state.gstmxxEvents.addEventListener('effectChanged', onEffectChanged);
+      const count = await reloadPlugins({ manifestUrl: 'https://example.com/manifest.json?rev=1' });
+      expect(count).toBe(0);
+      expect(onClear).toHaveBeenCalled();
+      expect(clearActiveEffect).toHaveBeenCalled();
+      expect(state.loadedGhostyles.size).toBe(0);
+      expect(fetchSpy.mock.calls[0][0]).toMatch(/manifest\.json\?rev=1&t=\d+/);
+      expect(onEffectChanged).toHaveBeenCalledWith(expect.objectContaining({ detail: { activeEffect: null, previous: 'previous' } }));
+    });
+
+    it('rejects an unsuccessful manifest response', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: false, status: 502 });
+      await expect(reloadPlugins({ baseUrl: 'https://example.com/plugins' })).rejects.toThrow('HTTP 502');
+    });
+
+    it('loads renderable plugins from a cache-busted manifest and counts them', async () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(123));
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (url, options) => {
+        if (url.includes('manifest.json')) {
+          return { ok: true, json: async () => [{ url: 'init-effect.js', id: 'init-effect' }] };
+        }
+        if (options?.method === 'HEAD') return { ok: true, headers: { get: () => '2026-06-26T00:00:00.000Z' } };
+        return { ok: true, status: 200, text: async () => '// @name Init Effect\n// @version 1.0.0\n// @release_date 2026-06-26' };
+      });
+      const loaded = await reloadPlugins({
+        baseUrl: 'https://example.com/effects',
+        manifestUrl: 'https://example.com/manifest.json',
+      });
+      expect(loaded).toBe(1);
+      expect(state.loadedGhostyles.has('init-effect')).toBe(true);
+      expect(fetchSpy.mock.calls[0][0]).toContain('manifest.json?t=123');
+      const button = els.ghostylesContainer.appendChild.mock.calls.at(-1)[0];
+      button.onclick();
+      expect(state.activeEffect).toBe('init-effect');
+      vi.useRealTimers();
+    });
+
+    it('reloads one plugin and forwards its face-api toggle callback', async () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(123));
+      const onFaceapiToggle = vi.fn();
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async url => {
+        if (url.includes('manifest.json')) {
+          return { ok: true, json: async () => [{ url: 'init-effect.js', id: 'init-effect' }] };
+        }
+        return { ok: true, status: 200, text: async () => '// @name Reloaded\n// @version 1.0\n// @release_date 2026-06-26' };
+      });
+      expect(await reloadPlugins({
+        baseUrl: 'https://example.com/effects',
+        manifestUrl: 'https://example.com/manifest.json',
+        onFaceapiToggle,
+      })).toBe(1);
+      expect(fetchSpy).toHaveBeenCalled();
+      const button = els.ghostylesContainer.appendChild.mock.calls.at(-1)[0];
+      button.onclick();
+      expect(onFaceapiToggle).toHaveBeenCalledOnce();
+      vi.useRealTimers();
+    });
+
+    it('counts only renderable entries and tolerates a missing plugin container', async () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(123));
+      vi.spyOn(globalThis, 'fetch').mockImplementation(async url => {
+        if (url.includes('manifest.json')) {
+          return { ok: true, json: async () => [
+            { url: 'init-effect.js', id: 'init-effect' },
+            { url: 'missing-callbacks.js', name: 'Empty' },
+          ] };
+        }
+        const noCallbacks = url.includes('missing-callbacks.js');
+        return { ok: true, status: 200, text: async () => noCallbacks
+          ? '// @name Empty\n// @version 1.0\n// @release_date 2026-06-26'
+          : '// @name Init Effect\n// @version 1.0\n// @release_date 2026-06-26' };
+      });
+      const originalContainer = els.ghostylesContainer;
+      els.ghostylesContainer = null;
+      vi.spyOn(globalThis, 'fetch').mockImplementation(async () => ({ ok: true, json: async () => [] }));
+      const emptyCount = await reloadPlugins({
+        baseUrl: 'https://example.com/effects',
+        manifestUrl: 'https://example.com/manifest.json',
+      });
+      expect(emptyCount).toBe(0);
+      els.ghostylesContainer = originalContainer;
+
+      vi.spyOn(globalThis, 'fetch').mockImplementation(async url => {
+        if (url.includes('manifest.json')) {
+          return { ok: true, json: async () => [
+            { url: 'init-effect.js', id: 'init-effect' },
+            { url: 'missing-callbacks.js', name: 'Empty' },
+          ] };
+        }
+        const noCallbacks = url.includes('missing-callbacks.js');
+        return { ok: true, status: 200, text: async () => noCallbacks
+          ? '// @name Empty\n// @version 1.0\n// @release_date 2026-06-26'
+          : '// @name Init Effect\n// @version 1.0\n// @release_date 2026-06-26' };
+      });
+      const count = await reloadPlugins({
+        baseUrl: 'https://example.com/effects',
+        manifestUrl: 'https://example.com/manifest.json',
+      });
+      expect(count).toBe(1);
+      vi.useRealTimers();
     });
   });
 });

@@ -315,7 +315,7 @@ export function createUvRenderer(options) {
 
    function hashParams(params) {
       // Stringificazione deterministica: chiavi ordinate, valori numerici troncati.
-      const keys = Object.keys(params || {}).sort();
+      const keys = Object.keys(params).sort();
       const parts = [];
       for (const k of keys) {
          const v = params[k];

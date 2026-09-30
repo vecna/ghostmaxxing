@@ -319,7 +319,7 @@ export function decideMatchState3d({ liveMaxSim, liveMaxId, obfMaxSim, obfMaxId 
       }
       return {
          detectionState: 'eluded',
-         headline: t('match_3d_ghostyle_eluded_headline', { similarity: (obfMaxSim ?? 0).toFixed(3), threshold: thr.toFixed(2) }),
+         headline: t('match_3d_ghostyle_eluded_headline', { similarity: obfMaxSim.toFixed(3), threshold: thr.toFixed(2) }),
       };
    }
 

@@ -1,6 +1,6 @@
 # Ghostmaxxing
 <!-- coverage-badge:start -->
-[![Unit Test Coverage](https://img.shields.io/badge/coverage-76.80%25-yellow)](coverage/)
+[![Unit Test Coverage](https://img.shields.io/badge/coverage-96.67%25-green)](coverage/)
 <!-- coverage-badge:end -->
 
 [![CI](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml/badge.svg)](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml)

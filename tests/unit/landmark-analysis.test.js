@@ -11,6 +11,41 @@ describe('landmark-analysis', () => {
     expect(distanceToDiversity(0.0)).toBe(0);
     expect(distanceToDiversity(1.0)).toBe(100);
     expect(distanceToDiversity(0.58)).toBe(58);
+    expect(distanceToDiversity(Number.NaN)).toBe(0);
+    expect(distanceToDiversity(-0.2)).toBe(0);
+    expect(distanceToDiversity(1.8)).toBe(100);
+  });
+
+  it('returns empty live metrics for missing descriptors and invalid face lists', () => {
+    expect(seekFaceInDb({ descriptor: [0.1] })).toMatchObject({ liveMinDist: null, liveMinId: null });
+    expect(seekFaceInDb(null, [{ id: 1, descriptor: [0.1] }])).toEqual({
+      liveScore: null, liveMinDist: null, liveMinId: null,
+    });
+    expect(seekFaceInDb({ detection: { score: 0.5 } }, [{ id: 1, descriptor: [0.1] }])).toMatchObject({
+      liveScore: 0.5, liveMinDist: null, liveMinId: null,
+    });
+    expect(seekFaceInDb({ descriptor: [0.1] }, null)).toMatchObject({ liveMinDist: null, liveMinId: null });
+    expect(seekFaceInDb({ descriptor: [0.1] }, [])).toMatchObject({ liveMinDist: null, liveMinId: null });
+    const emptyMappedFaces = [{ id: 1, descriptor: [0.1] }];
+    emptyMappedFaces.map = () => [];
+    expect(seekFaceInDb({ descriptor: [0.1] }, emptyMappedFaces)).toMatchObject({
+      liveMinDist: null, liveMinId: null,
+    });
+  });
+
+  it('returns empty composite metrics for missing results and empty archives', () => {
+    expect(computeCompositeMetrics(null)).toMatchObject({
+      obfScore: null, obfMinDist: null, obfMinId: null, detectionTotallyFailed: true,
+    });
+    expect(computeCompositeMetrics({ weakDetection: true })).toMatchObject({
+      weakDetection: true, detectionTotallyFailed: true,
+    });
+    expect(computeCompositeMetrics({ obfuscatedResult: {} }, null)).toMatchObject({
+      obfScore: null, obfMinDist: null, obfMinId: null, detectionTotallyFailed: false,
+    });
+    expect(computeCompositeMetrics({ obfuscatedResult: { detection: { score: 0.4 } } }, [])).toMatchObject({
+      obfScore: 0.4, obfMinDist: null, obfMinId: null,
+    });
   });
 
   it('seekFaceInDb returns closest match id and distance', () => {

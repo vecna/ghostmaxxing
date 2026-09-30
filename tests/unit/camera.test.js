@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 vi.mock('../../lab-js/dom.js', () => ({
   setStatus: vi.fn(),
+  clearOverlay: vi.fn(),
   els: {
     video: {
       srcObject: null,
@@ -49,7 +50,7 @@ vi.mock('../../lab-js/engine.js', () => ({
 }));
 
 import { state } from '../../lab-js/state.js';
-import { setStatus, els } from '../../lab-js/dom.js';
+import { setStatus, clearOverlay, els } from '../../lab-js/dom.js';
 import { setLog } from '../../lab-js/utils.js';
 import { runEffectPass } from '../../lab-js/engine.js';
 import {
@@ -65,6 +66,13 @@ import {
 describe('camera module', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    if (!els.mirrorToggle) {
+      els.mirrorToggle = { classList: { toggle: vi.fn() }, textContent: '' };
+    }
+    if (!els.recordBtn) {
+      els.recordBtn = { classList: { add: vi.fn(), remove: vi.fn() }, disabled: false };
+    }
 
     state.currentFacingMode = 'user';
     state.isMirrored = false;
@@ -148,6 +156,27 @@ describe('camera module', () => {
     expect(requestAnimationFrame).toHaveBeenCalled();
   });
 
+  it('startCamera handles a secure context without mediaDevices', async () => {
+    Object.defineProperty(navigator, 'mediaDevices', { value: undefined, configurable: true });
+    await expect(startCamera()).rejects.toThrow('mediaDevices unavailable (insecure context?)');
+    expect(setLog).toHaveBeenCalledWith(expect.stringContaining('Webcam non disponibile'));
+  });
+
+  it('startCamera propagates getUserMedia rejection and configures rear-camera mirroring', async () => {
+    navigator.mediaDevices.getUserMedia.mockRejectedValueOnce(new Error('permission denied'));
+    await expect(startCamera()).rejects.toThrow('permission denied');
+
+    state.currentFacingMode = 'environment';
+    const pending = startCamera();
+    await Promise.resolve();
+    els.video.onloadedmetadata();
+    await pending;
+    expect(state.isMirrored).toBe(false);
+    expect(els.video.style.transform).toBe('scaleX(1)');
+    expect(els.overlay.style.transform).toBe('scaleX(1)');
+    expect(els.mirrorToggle.textContent).toBe('Webcam speculare');
+  });
+
   it('resizeCanvas falls back to viewer rect before video dimensions are available', () => {
     els.video.videoWidth = 0;
     els.video.videoHeight = 0;
@@ -172,6 +201,18 @@ describe('camera module', () => {
     expect(effectLoopHandle).toBe(321);
   });
 
+  it('effectLoop uses the default delay and clears the overlay on a positive result', async () => {
+    els.fpsSelect.value = 'invalid';
+    state.lastEffectRun = 0;
+    await effectLoop(0);
+    expect(runEffectPass).not.toHaveBeenCalled();
+
+    els.fpsSelect.value = '10';
+    runEffectPass.mockResolvedValueOnce(true);
+    await effectLoop(11);
+    expect(clearOverlay).toHaveBeenCalled();
+  });
+
   it('startEffectLoop cancels previous frame and schedules a new one', () => {
     startEffectLoop();
 
@@ -182,6 +223,15 @@ describe('camera module', () => {
     expect(cancelAnimationFrame).toHaveBeenCalledWith(321);
     expect(requestAnimationFrame).toHaveBeenCalled();
     expect(effectLoopHandle).toBe(654);
+  });
+
+  it('startEffectLoop schedules without cancelling when no frame is active', () => {
+    stopEffectLoop();
+    expect(effectLoopHandle).toBeNull();
+    stopEffectLoop();
+    cancelAnimationFrame.mockClear();
+    startEffectLoop();
+    expect(cancelAnimationFrame).not.toHaveBeenCalled();
   });
 
   it('stopEffectLoop cancels frame and resets loop state flags', () => {
@@ -198,17 +248,22 @@ describe('camera module', () => {
   describe('recordOneSecond', () => {
     let mockMediaRecorderStart;
     let mockMediaRecorderStop;
+    let supportedTypes;
+    let latestRecorder;
 
     beforeEach(() => {
       vi.useFakeTimers();
       mockMediaRecorderStart = vi.fn();
       mockMediaRecorderStop = vi.fn();
+      supportedTypes = ['video/mp4;codecs=h264'];
+      latestRecorder = null;
 
       class MockMediaRecorder {
         constructor(stream, options) {
           this.stream = stream;
           this.options = options;
           this.state = 'inactive';
+          latestRecorder = this;
         }
         start() {
           this.state = 'recording';
@@ -220,13 +275,14 @@ describe('camera module', () => {
           if (this.onstop) this.onstop();
         }
       }
-      MockMediaRecorder.isTypeSupported = vi.fn(() => true);
+      MockMediaRecorder.isTypeSupported = vi.fn(type => supportedTypes.includes(type));
       vi.stubGlobal('MediaRecorder', MockMediaRecorder);
       vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200 })));
 
       els.video.srcObject = { id: 'camera-stream' };
       state.isRecording = false;
       state.isSystemBusy = false;
+      state.gstmxxEvents = new EventTarget();
       if (els.recordBtn) {
         els.recordBtn.disabled = false;
         els.recordBtn.classList.add.mockClear();
@@ -239,6 +295,8 @@ describe('camera module', () => {
     });
 
     it('sets recording state, adds classes, starts recorder, and stops after durationMs', async () => {
+      const clipRecorded = vi.fn();
+      state.gstmxxEvents.addEventListener('clipRecorded', clipRecorded);
       await recordOneSecond();
 
       expect(state.isRecording).toBe(true);
@@ -253,6 +311,64 @@ describe('camera module', () => {
       expect(state.isRecording).toBe(false);
       expect(els.recordBtn.classList.remove).toHaveBeenCalledWith('recording');
       expect(els.recordBtn.disabled).toBe(false);
+      expect(clipRecorded).toHaveBeenCalledOnce();
+      expect(clipRecorded.mock.calls[0][0].detail).toMatchObject({ extension: 'mp4', mimeType: 'video/mp4;codecs=h264' });
+    });
+
+    it('selects each supported recorder type and ignores empty chunks', async () => {
+      for (const [types, expectedType] of [
+        [['video/mp4'], 'video/mp4'],
+        [['video/webm;codecs=vp9'], 'video/webm;codecs=vp9'],
+        [['video/webm;codecs=vp8'], 'video/webm;codecs=vp8'],
+        [[], 'video/webm'],
+      ]) {
+        supportedTypes = types;
+        await recordOneSecond();
+        expect(latestRecorder.options.mimeType).toBe(expectedType);
+        latestRecorder.ondataavailable({ data: { size: 0 } });
+        latestRecorder.ondataavailable({ data: new Blob(['chunk']) });
+        latestRecorder.state = 'inactive';
+        await vi.advanceTimersByTimeAsync(2000);
+        expect(mockMediaRecorderStop).not.toHaveBeenCalled();
+        await latestRecorder.onstop();
+      }
+    });
+
+    it('refuses busy or inactive-stream captures and restores state after recorder errors', async () => {
+      state.isRecording = true;
+      await recordOneSecond();
+      state.isRecording = false;
+      state.isSystemBusy = true;
+      await recordOneSecond();
+      state.isSystemBusy = false;
+      els.video.srcObject = null;
+      await recordOneSecond();
+      expect(setLog).toHaveBeenCalledWith(expect.stringContaining('stream'));
+
+      els.video.srcObject = { id: 'camera-stream' };
+      const recordButton = els.recordBtn;
+      class BrokenRecorder {
+        constructor() { throw new Error('recorder unavailable'); }
+      }
+      BrokenRecorder.isTypeSupported = () => false;
+      vi.stubGlobal('MediaRecorder', BrokenRecorder);
+      await recordOneSecond();
+      expect(state.isRecording).toBe(false);
+      expect(setLog).toHaveBeenCalledWith(expect.stringContaining('recorder unavailable'));
+      els.recordBtn = null;
+      await recordOneSecond();
+      expect(state.isRecording).toBe(false);
+      els.recordBtn = recordButton;
+    });
+
+    it('uses the fallback clip id and tolerates a missing record button', async () => {
+      const originalButton = els.recordBtn;
+      els.recordBtn = null;
+      vi.stubGlobal('crypto', {});
+      await recordOneSecond();
+      await latestRecorder.onstop();
+      expect(state.isRecording).toBe(false);
+      els.recordBtn = originalButton;
     });
   });
 });

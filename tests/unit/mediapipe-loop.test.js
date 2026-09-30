@@ -37,10 +37,12 @@ function setVideoReady(video, readyState = 4, currentTime = 1) {
 describe('mediapipe loop', () => {
   let consoleWarnSpy;
   let consoleErrorSpy;
+  let frameCallback;
 
   beforeEach(() => {
     vi.resetModules();
     vi.clearAllMocks();
+    frameCallback = null;
 
     document.body.innerHTML = `
       <video id="video"></video>
@@ -58,7 +60,7 @@ describe('mediapipe loop', () => {
     });
 
     vi.spyOn(performance, 'now').mockReturnValue(1000);
-    vi.stubGlobal('requestAnimationFrame', vi.fn(() => 123));
+    vi.stubGlobal('requestAnimationFrame', vi.fn(callback => { frameCallback = callback; return 123; }));
 
     consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -79,6 +81,16 @@ describe('mediapipe loop', () => {
     expect(consoleWarnSpy).toHaveBeenCalledWith('console_mediapipe_events_missing');
     expect(mediapipeMocks.forVisionTasks).not.toHaveBeenCalled();
     expect(requestAnimationFrame).not.toHaveBeenCalled();
+  });
+
+  it('warns and skips startup when the video element is absent', async () => {
+    document.body.innerHTML = '<select id="fpsSelect"></select>';
+    window.gstmxx = { events: new EventTarget() };
+    await import('../../lab-js/mediapipe-loop.js');
+    window.dispatchEvent(new CustomEvent('gstmxxReady'));
+    await flushPromises();
+    expect(consoleWarnSpy).toHaveBeenCalledWith('console_mediapipe_video_missing');
+    expect(mediapipeMocks.forVisionTasks).not.toHaveBeenCalled();
   });
 
   it('loads FaceLandmarker, emits readiness, and dispatches landmarks on the first eligible frame', async () => {
@@ -113,6 +125,67 @@ describe('mediapipe loop', () => {
     expect(requestAnimationFrame).toHaveBeenCalledTimes(1);
   });
 
+  it('waits for video data and throttles duplicate, early, and empty-landmark frames', async () => {
+    const video = document.getElementById('video');
+    setVideoReady(video, 1, 1);
+    const events = new EventTarget();
+    const onLandmarks = vi.fn();
+    events.addEventListener('landmarks3d', onLandmarks);
+    window.gstmxx = { events };
+    await import('../../lab-js/mediapipe-loop.js');
+    window.dispatchEvent(new CustomEvent('gstmxxReady'));
+    await flushPromises();
+    expect(requestAnimationFrame).not.toHaveBeenCalled();
+
+    video.dispatchEvent(new Event('loadeddata'));
+    await flushPromises();
+    expect(requestAnimationFrame).toHaveBeenCalledOnce();
+    frameCallback();
+    expect(mediapipeMocks.detectForVideo).not.toHaveBeenCalled();
+
+    setVideoReady(video, 4, 1);
+    performance.now.mockReturnValue(1000);
+    frameCallback();
+    expect(mediapipeMocks.detectForVideo).toHaveBeenCalledOnce();
+
+    performance.now.mockReturnValue(1300);
+    frameCallback();
+    expect(mediapipeMocks.detectForVideo).toHaveBeenCalledOnce();
+
+    setVideoReady(video, 4, 2);
+    document.getElementById('fpsSelect').value = 'invalid';
+    mediapipeMocks.detectForVideo.mockReturnValueOnce({ faceLandmarks: [] });
+    performance.now.mockReturnValue(1100);
+    frameCallback();
+    expect(mediapipeMocks.detectForVideo).toHaveBeenCalledTimes(1);
+    performance.now.mockReturnValue(1121);
+    frameCallback();
+    expect(mediapipeMocks.detectForVideo).toHaveBeenCalledTimes(2);
+    expect(onLandmarks.mock.calls.at(-1)[0].detail.landmarks).toBeNull();
+    expect(window.gstmxx.lastLandmarks3d).toBeNull();
+  });
+
+  it('logs detector exceptions and catches a missing gstmxx during dispatch', async () => {
+    const events = new EventTarget();
+    window.gstmxx = { events };
+    await import('../../lab-js/mediapipe-loop.js');
+    window.dispatchEvent(new CustomEvent('gstmxxReady'));
+    await flushPromises();
+
+    const error = new Error('landmark failure');
+    mediapipeMocks.detectForVideo.mockImplementationOnce(() => { throw error; });
+    setVideoReady(document.getElementById('video'), 4, 2);
+    performance.now.mockReturnValue(1200);
+    frameCallback();
+    expect(consoleErrorSpy).toHaveBeenCalledWith('console_mediapipe_tick_error', error);
+
+    window.gstmxx = null;
+    setVideoReady(document.getElementById('video'), 4, 3);
+    performance.now.mockReturnValue(1400);
+    frameCallback();
+    expect(consoleErrorSpy).toHaveBeenCalledWith('console_mediapipe_tick_error', expect.any(TypeError));
+  });
+
   it('logs MediaPipe initialization failures through the app logger', async () => {
     const loadError = new Error('model offline');
     mediapipeMocks.createFromOptions.mockRejectedValueOnce(loadError);
@@ -128,5 +201,17 @@ describe('mediapipe loop', () => {
       'mediapipe'
     );
     expect(requestAnimationFrame).not.toHaveBeenCalled();
+  });
+
+  it('starts when the event bus is available without a plugin logger', async () => {
+    const events = new EventTarget();
+    const onReady = vi.fn();
+    events.addEventListener('mediapipeReady', onReady);
+    window.gstmxx = { events };
+    await import('../../lab-js/mediapipe-loop.js');
+    window.dispatchEvent(new CustomEvent('gstmxxReady'));
+    await flushPromises();
+    expect(onReady).toHaveBeenCalledOnce();
+    expect(requestAnimationFrame).toHaveBeenCalledOnce();
   });
 });

@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
+// Kept separate from engine-3d.test.js because these model lifecycle/error tests
+// replace DOM, persistence, logging, and configuration modules before import.
+// The algorithm suite uses real collaborators and a different hoisted mock graph.
+
 // ─── mocks (declared before any import of the tested module) ─────────────────
 
 vi.mock('../../lab-js/dom.js', () => ({

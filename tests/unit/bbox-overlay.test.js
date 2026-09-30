@@ -9,7 +9,9 @@ import {
   onDetection,
   onLandmarks3d,
   onMatchStateChanged,
+  onDbChanged,
   setOverlayMode,
+  overlayModeNeedsDetailedFaceapi,
   COLORS,
   OVERLAY_MODE_STORAGE_KEY,
 } from '../../lab-js/bbox-overlay.js';
@@ -184,6 +186,16 @@ describe('bbox-overlay utilities', () => {
       const success = init();
       expect(success).toBe(true);
     });
+
+    it('returns false and warns when an overlay canvas is missing', () => {
+      const bbox = document.getElementById('bboxOverlay');
+      bbox.remove();
+      const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      expect(init()).toBe(false);
+      expect(warning).toHaveBeenCalledWith('[bbox-overlay] #bboxOverlay o #overlay mancante, init saltato');
+      document.body.appendChild(bbox);
+      init();
+    });
   });
 
   describe('onMatchStateChanged', () => {
@@ -203,6 +215,46 @@ describe('bbox-overlay utilities', () => {
       expect(view.liveMinDist).toBe(0.35);
       expect(view.liveMinId).toBe(2);
     });
+
+    it('ignores empty details and reads top-level fallback state and metrics', () => {
+      onMatchStateChanged({ detail: null });
+      onMatchStateChanged({ detail: { detectionState: 'eluded', liveMinDist: 0.7, obfMinId: 4 } });
+      expect(view.matchState).toBe('eluded');
+      expect(view.liveMinDist).toBe(0.7);
+      expect(view.obfMinId).toBe(4);
+      expect(overlayModeNeedsDetailedFaceapi('2d')).toBe(true);
+      expect(overlayModeNeedsDetailedFaceapi('mesh')).toBe(false);
+    });
+  });
+
+  it('resets match metrics only when the face archive is cleared', () => {
+    view.matchState = 'matched';
+    view.liveMinDist = 0.2;
+    setOverlayMode('mesh');
+    const cachedMesh = makeLandmarks478();
+    const cachedDetection = makeDetection();
+    view.lastLandmarks3d = cachedMesh;
+    view.lastDetection = cachedDetection;
+    onDbChanged({ detail: { count: 3 } });
+    expect(view.matchState).toBe('matched');
+    onDbChanged({ detail: { count: 0 } });
+    expect(view.matchState).toBe('unknown');
+    expect(view.liveMinDist).toBeNull();
+    expect(view.overlayMode).toBe('mesh');
+    expect(view.lastLandmarks3d).toBe(cachedMesh);
+    expect(view.lastDetection).toBe(cachedDetection);
+  });
+
+  it('keeps the active mode when storage is blocked or the requested mode is invalid', () => {
+    setOverlayMode('bbox');
+    const setItem = vi.spyOn(window.localStorage, 'setItem').mockImplementation(() => { throw new Error('blocked'); });
+    expect(setOverlayMode('invalid')).toBe('bbox');
+    expect(setOverlayMode('2d')).toBe('2d');
+    setItem.mockRestore();
+    window.localStorage.getItem.mockImplementationOnce(() => { throw new Error('blocked'); });
+    view.overlayMode = 'mesh';
+    init();
+    expect(view.overlayMode).toBe('mesh');
   });
 
   describe('overlay modes and rendering', () => {
@@ -334,6 +386,103 @@ describe('bbox-overlay utilities', () => {
         'eta stimata: 29',
         'genere stimato: female'
       ]);
+    });
+
+    it('falls back to bbox labels when 2d landmarks are unavailable', () => {
+      setOverlayMode('2d');
+      onDetection({ detail: { result: makeDetection() } });
+      expect(ctx.strokeRect).toHaveBeenCalledOnce();
+      expect(ctx.fillText).toHaveBeenCalled();
+    });
+
+    it('ignores malformed events and draws mirrored overflow labels with obfuscated IDs', () => {
+      setOverlayMode('entrambi');
+      onLandmarks3d({ detail: { landmarks: { invalid: true } } });
+      onDetection({ detail: null });
+      expect(view.lastLandmarks3d).toBeNull();
+      expect(view.lastDetection).toBeNull();
+
+      const bbox = document.getElementById('bboxOverlay');
+      bbox.style.transform = 'scaleX(-1)';
+      const result = makeDetection();
+      result.detection.box = { x: 700, y: 0, width: 100, height: 80 };
+      view.liveMinId = 1;
+      view.obfMinId = 2;
+      onDetection({ detail: { result } });
+      expect(ctx.translate).toHaveBeenCalled();
+      expect(ctx.scale).toHaveBeenCalledWith(-1, 1);
+      expect(ctx.fillText.mock.calls.some(([label]) => String(label).includes('ObfFaceId!'))).toBe(true);
+    });
+
+    it('skips rendering without a context and ignores detections without a box', () => {
+      const bbox = document.getElementById('bboxOverlay');
+      const getContext = bbox.getContext;
+      bbox.getContext = () => null;
+      init();
+      expect(() => setOverlayMode('bbox')).not.toThrow();
+      bbox.getContext = getContext;
+      init();
+
+      faceapi.resizeResults = vi.fn(result => result);
+      ctx.strokeRect.mockClear();
+      onDetection({ detail: { result: {} } });
+      expect(ctx.strokeRect).not.toHaveBeenCalled();
+    });
+
+    it('uses intrinsic width as CSS scale fallback and mirrors sparse 2D labels', () => {
+      const bbox = document.getElementById('bboxOverlay');
+      bbox.getBoundingClientRect = () => ({ width: 0 });
+      Object.defineProperty(bbox, 'clientWidth', { value: 0, configurable: true });
+      bbox.style.transform = 'scaleX(-1)';
+
+      const detailed = {
+        detection: { score: 0.8, box: { x: -30, y: 300, width: 80, height: 90 } },
+        landmarks: makeDetailedDetection().landmarks,
+      };
+      setOverlayMode('2d');
+      onDetection({ detail: { result: detailed } });
+      expect(ctx.translate).toHaveBeenCalled();
+      expect(ctx.scale).toHaveBeenCalledWith(-1, 1);
+
+      setOverlayMode('bbox');
+      view.liveMinId = 1;
+      view.obfMinId = 2;
+      onDetection({ detail: { result: detailed } });
+      expect(ctx.fillText.mock.calls.some(([label]) => String(label).includes('ObfFaceId!'))).toBe(true);
+    });
+
+    it('covers the final match-state fallback without an overall state', () => {
+      onMatchStateChanged({ detail: { source: 'auto' } });
+      expect(view.matchState).toBe('unknown');
+    });
+
+    it('renders unmirrored and mirrored labels with an overwide metric block', () => {
+      const overlay = document.getElementById('overlay');
+      const bbox = document.getElementById('bboxOverlay');
+      const detailed = makeDetailedDetection();
+      detailed.detection.box = { x: 700, y: 300, width: 80, height: 80 };
+
+      overlay.style.transform = '';
+      setOverlayMode('2d');
+      onDetection({ detail: { result: detailed } });
+      expect(bbox.style.transform).toBe('');
+
+      ctx.scale.mockClear();
+      overlay.style.transform = 'scaleX(-1)';
+      setOverlayMode('2d');
+      onDetection({ detail: { result: detailed } });
+      expect(bbox.style.transform).toBe('scaleX(-1)');
+      expect(ctx.scale).toHaveBeenCalledWith(-1, 1);
+
+      ctx.measureText.mockReturnValue({ width: 1000 });
+      setOverlayMode('bbox');
+      bbox.style.transform = 'scaleX(-1)';
+      ctx.scale.mockClear();
+      onDetection({ detail: { result: detailed } });
+      expect(bbox.style.transform).toBe('scaleX(-1)');
+      expect(ctx.fillRect).toHaveBeenCalled();
+      expect(ctx.scale).toHaveBeenCalledWith(-1, 1);
+      expect(ctx.scale).toHaveBeenCalledWith(-1, 1);
     });
   });
 });

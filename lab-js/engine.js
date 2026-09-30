@@ -185,7 +185,7 @@ export function drawGhostyleOverlay(result, includeDetectionScaffold = false) {
       // added because sometimes this is undefined?
       return;
    }
-   if (includeDetectionScaffold) drawDetectionScaffold(resized);
+   if (includeDetectionScaffold) drawDetectionScaffold(ctx, resized);
    if (state.activeEffect) {
       const style = state.loadedGhostyles.get(state.activeEffect);
       if (style && style.module.onDraw) {

@@ -162,6 +162,7 @@ describe('analyze-panel', () => {
 
   it('opens the panel, renders the detected-face report, and closes cleanly', async () => {
     vi.useFakeTimers();
+    expect(generateReportText()).toContain('Nessun dato disponibile.');
     const faceResult = makeFaceResult();
     mockFaceApi(faceResult);
     getFaceEmbedding.mockResolvedValue([0.2, 0.8]);
@@ -194,9 +195,18 @@ describe('analyze-panel', () => {
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('Volto rilevato: si'));
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('Match con ID: 7'));
 
+    document.getElementById('analyzePanel').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(modal.hidden).toBe(false);
+    document.getElementById('analyzeBackdrop').click();
+    expect(modal.classList.contains('open')).toBe(false);
+
     closeAnalyzePanel();
     expect(startEffectLoop).toHaveBeenCalled();
     expect(runEffectPass).toHaveBeenCalled();
+    expect(modal.classList.contains('open')).toBe(false);
+
+    await openAnalyzePanel();
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(modal.classList.contains('open')).toBe(false);
 
     vi.advanceTimersByTime(150);
@@ -223,5 +233,64 @@ describe('analyze-panel', () => {
     expect(seekFaceInDb).not.toHaveBeenCalled();
     expect(cosineSimilarity).not.toHaveBeenCalled();
     expect(distanceToDiversity).toHaveBeenCalledWith(state.MATCH_THRESHOLD);
+  });
+
+  it('handles a missing face-api global and an active plugin with no saved baseline', async () => {
+    global.faceapi = null;
+    getFaceEmbedding.mockResolvedValue(null);
+    hasActivePlugin.mockReturnValue(true);
+    state.db.faces = [];
+
+    await openAnalyzePanel();
+
+    expect(document.getElementById('analyzeInfo').innerHTML).toContain('Nessun volto rilevato nello snapshot.');
+    expect(decideMatchState).toHaveBeenCalledWith(expect.objectContaining({ detectionTotallyFailed: true }));
+    expect(generateReportText()).toContain('Nessun volto rilevato nello snapshot.');
+  });
+
+  it('reports a detected face with no 2D baseline and closes through its event handlers', async () => {
+    const faceResult = makeFaceResult();
+    faceResult.age = 0;
+    faceResult.gender = '';
+    faceResult.expressions = {};
+    faceResult.detection.score = Number.NaN;
+    mockFaceApi(faceResult);
+    getFaceEmbedding.mockResolvedValue([0.2, 0.8]);
+    state.db.faces = [];
+    state.db3d.faces = [{ id: 22, descriptor3d: [1, 0] }];
+    cosineSimilarity.mockReturnValue(0.91);
+
+    await openAnalyzePanel();
+    const info = document.getElementById('analyzeInfo');
+    const report = generateReportText();
+    expect(info.innerHTML).toContain('Nessun ID trovato');
+    expect(info.innerHTML).toContain('similarity con ID 22: 0.910');
+    expect(report).toContain('Nessun volto base nel database.');
+    expect(report).toContain('Cosine similarity con ID 22: 0.910');
+    expect(info.innerHTML).toContain('Confidence detection:</strong> -');
+
+    navigator.clipboard.writeText.mockRejectedValueOnce(new Error('clipboard blocked'));
+    await document.getElementById('analyzeCopyBtn').onclick();
+    expect(setLog).toHaveBeenCalledWith('Impossibile copiare il report negli appunti');
+
+    document.getElementById('analyzePanel').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'x' }));
+    expect(document.getElementById('analyzeModal').hidden).toBe(false);
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(document.getElementById('analyzeModal').classList.contains('open')).toBe(false);
+
+    await openAnalyzePanel();
+    document.getElementById('analyzeBackdrop').click();
+    expect(document.getElementById('analyzeModal').classList.contains('open')).toBe(false);
+  });
+
+  it('returns safely when the analyze modal is absent', async () => {
+    vi.resetModules();
+    document.body.innerHTML = '<video id="video"></video><canvas id="overlay"></canvas>';
+    const isolatedPanel = await import('../../lab-js/analyze-panel.js?missing-root');
+
+    await isolatedPanel.openAnalyzePanel();
+
+    expect(stopEffectLoop).not.toHaveBeenCalled();
   });
 });

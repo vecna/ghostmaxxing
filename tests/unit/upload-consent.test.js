@@ -1,6 +1,7 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import { state } from '../../lab-js/state.js';
 import { setLog } from '../../lab-js/utils.js';
+import { t } from '../../lab-js/i18n.js';
 import {
   createReceiptCode,
   loadUploadReceipts,
@@ -86,6 +87,14 @@ describe('upload-consent flow and helpers', () => {
     expect(createReceiptCode()).toMatch(/^GSTMXX-[2-9A-Z]{4}-[2-9A-Z]{4}-[2-9A-Z]{4}-[2-9A-Z]{4}$/);
   });
 
+  it('falls back to Math.random for receipt codes and ignores non-array receipt data', () => {
+    vi.stubGlobal('crypto', {});
+    vi.spyOn(Math, 'random').mockReturnValue(0.5);
+    expect(createReceiptCode()).toBe('GSTMXX-2222-2222-2222-2222');
+    localStorage.setItem(RECEIPTS_STORAGE_KEY, JSON.stringify({ unexpected: true }));
+    expect(loadUploadReceipts()).toEqual([]);
+  });
+
   it('builds public and private receipt URLs from upload id and token', () => {
     expect(publicUrlForReceipt('upload-1')).toBe('http://localhost:3000/videos/upload-1.mp4');
     expect(publicUrlForReceipt('clip-1', 'clipboard')).toBe('http://localhost:3000/clipboard/clip-1.png');
@@ -123,6 +132,14 @@ describe('upload-consent flow and helpers', () => {
 
     it('ignores invalid hash patterns during import', () => {
       window.location.hash = '#receipt=invalidpayload';
+      initUploadConsentFlow();
+      expect(loadUploadReceipts()).toHaveLength(0);
+
+      window.location.hash = '#receipt=.missing-id';
+      initUploadConsentFlow();
+      expect(loadUploadReceipts()).toHaveLength(0);
+
+      window.location.hash = '#receipt=missing-token.';
       initUploadConsentFlow();
       expect(loadUploadReceipts()).toHaveLength(0);
     });
@@ -353,6 +370,149 @@ describe('upload-consent flow and helpers', () => {
       expect(document.getElementById('gm-upload-status').textContent).toBe(
         'video_upload_network_error_log_{"message":"Validation failed"}'
       );
+    });
+
+    it('compacts partial metrics, ignores empty actions, and handles response JSON errors', async () => {
+      initUploadConsentFlow();
+      const discard = document.getElementById('gm-upload-discard');
+      const submit = document.getElementById('gm-upload-submit');
+      submit.disabled = false;
+      submit.click();
+      discard.click();
+
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', { detail: null }));
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', { detail: 1 }));
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
+        detail: {
+          faceapi: { detectionState: '', liveMinDist: 0, distance: 0.4, liveMinId: 3, obfMinId: 4 },
+          mediapipe: { detectionState: '', liveMaxSim: 0, obfMaxSim: 0.7, obfMaxId: 5 },
+        },
+      }));
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+        detail: { id: 'small', blob: new Blob(['x']), filename: 'small.mp4', size: 0, recordedAt: Date.now() },
+      }));
+      expect(document.getElementById('gm-upload-clip-meta').textContent).toContain('0 B');
+
+      const consent = document.getElementById('gm-upload-consent');
+      consent.checked = true;
+      consent.dispatchEvent(new Event('change'));
+      globalThis.fetch.mockResolvedValueOnce({
+        ok: false, status: 400, statusText: 'Bad Request', json: () => Promise.reject(new Error('invalid JSON')),
+      });
+      submit.click();
+      await flushPromises();
+      expect(document.getElementById('gm-upload-status').textContent).toContain('400 Bad Request');
+    });
+
+    it('tolerates a missing status element while processing clips', () => {
+      document.getElementById('gm-upload-status').remove();
+      initUploadConsentFlow();
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+        detail: { id: 'without-status', blob: new Blob(['x']), filename: 'x.mp4', size: 1, recordedAt: Date.now() },
+      }));
+      expect(document.getElementById('gm-upload-current').hidden).toBe(false);
+    });
+
+    it('handles missing consent and submit controls and empty translated status text', () => {
+      document.getElementById('gm-upload-consent').remove();
+      document.getElementById('gm-upload-submit').remove();
+      initUploadConsentFlow();
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', { detail: null }));
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', { detail: 1 }));
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
+        detail: {
+          source: '', overall: '', faceapi: null, mediapipe: null,
+        },
+      }));
+      t.mockReturnValueOnce('');
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+        detail: { id: 'no-consent', blob: new Blob(['x']), filename: 'x.mp4', size: 1, recordedAt: Date.now() },
+      }));
+      expect(document.getElementById('gm-upload-status').textContent).toBe('');
+      expect(document.getElementById('gm-upload-current').hidden).toBe(false);
+    });
+
+    it('normalizes empty metric sections and null fallback fields', () => {
+      initUploadConsentFlow();
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
+        detail: {
+          faceapi: {
+            detectionState: '', liveMinDist: null, distance: 0.42, obfMinDist: null,
+            matchedId: null, liveMinId: null, obfMinId: 7,
+          },
+          mediapipe: {
+            detectionState: '', liveMaxSim: null, obfMaxSim: 0.8,
+            matchedId: null, liveMaxId: null, obfMaxId: 8,
+          },
+        },
+      }));
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+        detail: { id: 'fallback-metrics', blob: new Blob(['x']), filename: 'x.mp4', size: 1, recordedAt: Date.now() },
+      }));
+      expect(document.getElementById('gm-upload-clip-meta').textContent).toContain('n/a');
+
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
+        detail: { faceapi: {}, mediapipe: {} },
+      }));
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+        detail: { id: 'empty-metrics', blob: new Blob(['x']), filename: 'x.mp4', size: 1, recordedAt: Date.now() },
+      }));
+      expect(document.getElementById('gm-upload-current').hidden).toBe(false);
+    });
+
+    it('handles legacy receipts, absent optional controls, malformed DELETE JSON, and metric uploads', async () => {
+      localStorage.setItem(RECEIPTS_STORAGE_KEY, JSON.stringify([{
+        uploadId: 'legacy-id', deleteToken: 'legacy-token', publicUrl: 'https://example.test/video.mp4',
+        privateUrl: 'https://example.test/lab.html#receipt=legacy-id.legacy-token', status: 'pending',
+      }]));
+      document.getElementById('gm-upload-empty').remove();
+      document.getElementById('gm-upload-status').remove();
+      document.getElementById('gm-upload-note').remove();
+      initUploadConsentFlow();
+
+      const legacyCard = document.querySelector('.receipt-card');
+      expect(legacyCard.querySelector('h3').textContent).toBe('legacy-id');
+      expect(legacyCard.querySelector('.upload-meta').textContent).toContain('v1');
+
+      Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true });
+      legacyCard.querySelectorAll('.receipt-actions button')[0].click();
+      await flushPromises();
+
+      globalThis.fetch.mockResolvedValueOnce({
+        ok: false, status: 500, statusText: 'Offline', json: () => Promise.reject(new Error('bad json')),
+      });
+      legacyCard.querySelectorAll('.receipt-actions button')[1].click();
+      await flushPromises();
+      expect(loadUploadReceipts()[0]).toMatchObject({ status: 'delete-failed', lastError: '500 Offline' });
+
+      const submit = document.getElementById('gm-upload-submit');
+      submit.disabled = false;
+      submit.click();
+      expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
+        detail: { source: 'auto', overall: 'eluded', faceapi: { detectionState: 'eluded', distance: 0.6, liveMinId: 7 } },
+      }));
+      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+        detail: { id: 'metric-clip', blob: new Blob(['clip']), filename: 'clip.mp4', size: 1024, recordedAt: Date.now() },
+      }));
+      expect(document.getElementById('gm-upload-current').hidden).toBe(false);
+      expect(document.getElementById('gm-upload-clip-meta').textContent).toContain('1.0 KB');
+
+      document.getElementById('gm-upload-consent').checked = true;
+      document.getElementById('gm-upload-consent').dispatchEvent(new Event('change'));
+      globalThis.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ ok: true, uploadId: 'metric-upload', deleteToken: 'metric-token' }),
+      });
+      submit.click();
+      await flushPromises();
+      const uploadCall = globalThis.fetch.mock.calls.at(-1);
+      const form = uploadCall[1].body;
+      expect(form.get('metrics_json')).toContain('"liveMinDist":0.6');
+      expect(form.get('user_note')).toBeNull();
+      expect(form.get('ghostyle_id')).toBeNull();
+      expect(loadUploadReceipts()[0].uploadId).toBe('metric-upload');
     });
 
     it('handles localStorage errors gracefully during loadUploadReceipts', () => {

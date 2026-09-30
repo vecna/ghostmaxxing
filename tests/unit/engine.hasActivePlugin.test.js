@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
+// Kept separate from engine.test.js because hasActivePlugin reads the public
+// window.gstmxx accessors and therefore needs main.js mocked before engine loads.
+// The main engine suite intentionally exercises the opposite, real-module graph.
+
 vi.mock('../../lab-js/main.js', () => ({
   els: {},
   clearOverlay: vi.fn(),

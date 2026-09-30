@@ -1,9 +1,18 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+const visionMocks = vi.hoisted(() => ({
+  forVisionTasks: vi.fn(async () => ({ vision: true })),
+  createFromOptions: vi.fn(async (_vision, options) => ({ options })),
+}));
+
 import { cosineSimilarity, decideMatchState3d, seekFaceInDb3d, evaluateMatch3d } from '../../lab-js/engine-3d.js';
+import { loadMobileNet } from '../../lab-js/engine-3d.js';
+import { MEDIAPIPE_TASKS_VISION_URL } from '../../lab-js/config.js';
 import { state } from '../../lab-js/state.js';
 
 describe('engine-3d.js biometric pipeline', () => {
   beforeEach(() => {
+    state.imageEmbedder = null;
     state.MATCH_THRESHOLD_3D = 0.85;
     state.db3d = {
       faces: []
@@ -116,6 +125,7 @@ describe('engine-3d.js biometric pipeline', () => {
   describe('evaluateMatch3d', () => {
     it('returns null if result3d is null', () => {
       expect(evaluateMatch3d(null)).toBeNull();
+      expect(evaluateMatch3d({ liveInfo3d: null })).toBeNull();
     });
 
     it('evaluates match correctly with live and obfuscated inputs', () => {
@@ -135,6 +145,54 @@ describe('engine-3d.js biometric pipeline', () => {
       expect(result.obfMaxSim).toBe(0);
       expect(result.obfMaxId).toBe(1);
       expect(result.detectionState).toBe('eluded'); // since obfMaxSim (0) < threshold (0.85)
+    });
+
+    it('falls back to live metrics when no composite embedding is supplied', () => {
+      const matched = evaluateMatch3d({
+        liveInfo3d: { liveMaxSim: 0.92, liveMaxId: 7 },
+        composite3d: null,
+      });
+      expect(matched).toMatchObject({ detectionState: 'matched', similarity: 0.92, matchedId: 7 });
+
+      const eluded = evaluateMatch3d({
+        liveInfo3d: { liveMaxSim: 0.4, liveMaxId: 8 },
+      });
+      expect(eluded).toMatchObject({ detectionState: 'eluded', similarity: 0.4, matchedId: null });
+
+      const unknown = evaluateMatch3d({
+        liveInfo3d: { liveMaxSim: null, liveMaxId: null },
+      });
+      expect(unknown).toMatchObject({ detectionState: 'unknown', similarity: null, matchedId: null });
+    });
+
+    it('matches on a composite embedding above the 3D threshold', () => {
+      state.db3d = { faces: [{ id: 12, descriptor3d: [1, 0] }] };
+      const result = evaluateMatch3d({
+        liveInfo3d: { liveMaxSim: 0.4, liveMaxId: 99 },
+        composite3d: { embedding: [1, 0] },
+      });
+      expect(result).toMatchObject({ detectionState: 'matched', obfMaxSim: 1, matchedId: 12 });
+    });
+  });
+
+  describe('loadMobileNet', () => {
+    it('accepts an injected embedder and reuses an already-loaded instance', async () => {
+      const embedder = { embed: vi.fn() };
+      await loadMobileNet(embedder);
+      expect(state.imageEmbedder).toBe(embedder);
+      await loadMobileNet();
+      expect(visionMocks.forVisionTasks).not.toHaveBeenCalled();
+    });
+
+    it('loads the vendored ImageEmbedder with the configured vision resolver', async () => {
+      vi.doMock(MEDIAPIPE_TASKS_VISION_URL, () => ({
+        FilesetResolver: { forVisionTasks: visionMocks.forVisionTasks },
+        ImageEmbedder: { createFromOptions: visionMocks.createFromOptions },
+      }));
+      await loadMobileNet();
+      expect(visionMocks.forVisionTasks).toHaveBeenCalledOnce();
+      expect(visionMocks.createFromOptions).toHaveBeenCalledOnce();
+      expect(state.imageEmbedder.options.runningMode).toBe('VIDEO');
     });
   });
 });

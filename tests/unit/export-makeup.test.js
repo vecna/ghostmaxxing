@@ -179,6 +179,31 @@ describe('export-makeup helpers', () => {
       expect(input.sourceCanvas).toBeNull();
       expect(input.logText).toBe('');
     });
+
+    it('returns null when a live-composite canvas has no 2D context', () => {
+      const getContext = vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
+      const input = collectExportInput({
+        lastCompositedCanvas: null, isMirrored: false, activeEffect: null, loadedGhostyles: new Map(),
+      }, { overlay: { width: 20, height: 20 }, video: { readyState: 4 }, logBox: { lastChild: null } });
+      expect(input.sourceCanvas).toBeNull();
+      getContext.mockRestore();
+    });
+
+    it('skips a video that is not ready and overlay layers with no size', () => {
+      const mesh = document.getElementById('mesh3dOverlay');
+      const bbox = document.getElementById('bboxOverlay');
+      const oldSize = [mesh.width, mesh.height, bbox.width, bbox.height];
+      mesh.width = 0; mesh.height = 0; bbox.width = 0; bbox.height = 0;
+      const ctx = { drawImage: vi.fn() };
+      const getContext = vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(ctx);
+      const input = collectExportInput({
+        lastCompositedCanvas: null, isMirrored: false, activeEffect: null, loadedGhostyles: new Map(),
+      }, { overlay: makeCanvas(20, 20), video: { readyState: 1 }, logBox: { lastChild: null } });
+      expect(input.sourceCanvas).toBeInstanceOf(HTMLCanvasElement);
+      expect(ctx.drawImage).toHaveBeenCalledTimes(1);
+      [mesh.width, mesh.height, bbox.width, bbox.height] = oldSize;
+      getContext.mockRestore();
+    });
   });
 
   describe('makeImageFile', () => {
@@ -324,6 +349,14 @@ describe('export-makeup helpers', () => {
 
       expect(setLog).not.toHaveBeenCalled();
       expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it('logs a render error when the export canvas has no 2D context', async () => {
+      state.lastCompositedCanvas = makeCanvas(20, 20);
+      const getContext = vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
+      await exportMakeup();
+      expect(setLog).toHaveBeenCalledWith('Errore copia immagine.');
+      getContext.mockRestore();
     });
   });
 });

@@ -112,9 +112,9 @@ hideAllScreens();
 
 /* ---- Fullscreen / threshold display (Settings) --------------------------- */
 on($('#gm-fs'), 'click', () => {
-  const t = document.documentElement;
+  const root = document.documentElement;
   if (!document.fullscreenElement) {
-    (t.requestFullscreen ? t.requestFullscreen() : Promise.reject())
+    (root.requestFullscreen ? root.requestFullscreen() : Promise.reject())
       .then(() => { $('#gm-fs').textContent = t('exit_fullscreen_button'); })
       .catch(() => toast(t('fullscreen_not_available_toast')));
   } else { document.exitFullscreen(); $('#gm-fs').textContent = t('enter_fullscreen_button'); }
@@ -169,7 +169,7 @@ function ghostyleName(id) {
   const t = btn && btn.querySelector('.preview-btn__title');
   return (t && t.textContent.trim()) || (btn && btn.textContent.trim()) || id;
 }
-function shortCap(name) { return (name || '').split(/\s+/).pop().slice(0, 8) || '—'; }
+export function shortCap(name) { return (name || '').split(/\s+/).pop().slice(0, 8) || '—'; }
 
 function updatePinButtonStates() {
   $$('.ghostyle-row').forEach(row => {
