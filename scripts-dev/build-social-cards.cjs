@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Export the four editable HTML social cards with Playwright element screenshots.
- * node scripts-dev/build-social-cards.cjs [--format jpg|png] [--only glasses,pole,canopy,generic]
+ * Export the editable HTML social cards with Playwright element screenshots.
+ * node scripts-dev/build-social-cards.cjs [--format jpg|png] [--only glasses,pole,canopy,generic,gallery]
  * node scripts-dev/build-social-cards.cjs --update-docs
  * Uses existing @playwright/test; writes images/social/ and a capture manifest.
  */
@@ -9,7 +9,7 @@ const fs=require('node:fs/promises');
 const path=require('node:path');
 const http=require('node:http');
 const ROOT=path.resolve(__dirname,'..');
-const IDS=['glasses','pole','canopy','generic'];
+const IDS=['glasses','pole','canopy','generic','gallery'];
 const DOCS=`## Social cards
 
 Edit \`scripts-dev/social-cards.html\` to change copy, layout, or the embedded SVG artwork.
@@ -63,13 +63,13 @@ async function updateDocs(){
 }
 async function main(){
  let format='jpg',ids=IDS,output=path.join(ROOT,'images/social');const args=process.argv.slice(2);
- if(args.includes('--help')){console.log('Usage: node scripts-dev/build-social-cards.cjs [--format jpg|png] [--only glasses,pole,canopy,generic] [--output directory]\n       node scripts-dev/build-social-cards.cjs --update-docs');return;}
+  if(args.includes('--help')){console.log('Usage: node scripts-dev/build-social-cards.cjs [--format jpg|png] [--only glasses,pole,canopy,generic,gallery] [--output directory]\n       node scripts-dev/build-social-cards.cjs --update-docs');return;}
  if(args.length===1&&args[0]==='--update-docs')return updateDocs();
  for(let i=0;i<args.length;i++){
   const flag=args[i],value=args[++i];if(!value)throw new Error(`Missing value: ${flag}`);
   if(flag==='--format')format=value;else if(flag==='--only')ids=[...new Set(value.split(','))];else if(flag==='--output')output=path.resolve(value);else throw new Error(`Unknown option: ${flag}`);
  }
- if(!['jpg','png'].includes(format)||!ids.length||ids.some(id=>!IDS.includes(id)))throw new Error('Use jpg/png and card IDs glasses,pole,canopy,generic.');
+ if(!['jpg','png'].includes(format)||!ids.length||ids.some(id=>!IDS.includes(id)))throw new Error('Use jpg/png and card IDs glasses,pole,canopy,generic,gallery.');
  const {chromium}=require('@playwright/test');
  const types={'.html':'text/html','.css':'text/css','.js':'text/javascript','.woff2':'font/woff2','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg'};
  const server=http.createServer(async(req,res)=>{

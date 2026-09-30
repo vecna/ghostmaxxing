@@ -753,7 +753,7 @@ def build_html(refs, projects, marks, by_row, Y1):
             "name": "Claudio Agosti",
             "alternateName": "vecna",
             "url": "https://me.vecna.eu/",
-            "sameAs": ["https://github.com/vecna"],
+            "sameAs": ["https://github.com/vecna", "https://retro.pizza/@vecna"],
         },
         "mainEntity": {
             "@type": "ItemList",

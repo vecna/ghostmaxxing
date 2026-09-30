@@ -19,12 +19,17 @@ main{display:grid;gap:28px;padding:0 24px 28px;width:max-content}
 .card--canopy .art{right:50px;top:172px;width:400px;height:356px}
 .card--generic .art{right:70px;top:199px;width:345px;height:345px}
 .card--generic .message{font-size:70px;width:690px}
+.card--gallery .message{font-size:68px;width:620px}
+.card--gallery .art{right:50px;top:174px;width:455px;height:330px;display:grid;gap:16px;transform:rotate(-2deg)}
+.gallery-ghostyle{height:157px;border:7px solid var(--gm-ink);background:var(--gm-cream);display:grid;grid-template-columns:120px 1fr;align-items:center;overflow:hidden}
+.gallery-ghostyle img{width:120px;height:157px;object-fit:cover;display:block;border-right:7px solid var(--gm-ink)}
+.gallery-ghostyle span{padding:0 22px;font:700 34px/1 Newsreader,serif;color:var(--gm-green)}
 .footer{position:absolute;left:56px;right:56px;bottom:29px;display:flex;justify-content:space-between;align-items:center;border-top:2px solid var(--gm-ink);padding-top:15px;font:700 20px Newsreader,serif;letter-spacing:.015em}
 .footer .domain{font-size:24px;letter-spacing:0}
 .single{width:1200px;height:630px;overflow:hidden}.single nav{display:none}.single main{padding:0;gap:0}.single .card[hidden]{display:none}
 /* SVG artwork is a snapshot of the existing deployed assets. Edit these copies explicitly. */
 </style></head><body>
-<nav aria-label="Card previews"><a href="?">All cards</a><a href="?card=glasses">Glasses</a><a href="?card=pole">Pole camera</a><a href="?card=canopy">Canopy</a><a href="?card=generic">Generic</a></nav>
+<nav aria-label="Card previews"><a href="?">All cards</a><a href="?card=glasses">Glasses</a><a href="?card=pole">Pole camera</a><a href="?card=canopy">Canopy</a><a href="?card=generic">Generic</a><a href="?card=gallery">Gallery</a></nav>
 <main>
 <article class="card card--glasses" id="card-glasses" aria-label="glasses social card">
 <h1 class="brand">Ghostmaxxing</h1>
@@ -116,6 +121,15 @@ main{display:grid;gap:28px;padding:0 24px 28px;width:max-content}
 </svg>
 </div>
 <div class="footer"><span class="domain">ghostmaxxing.vecna.eu</span><span>Open-source · Local tests</span></div>
+</article>
+<article class="card card--gallery" id="card-gallery" aria-label="gallery social card">
+<h1 class="brand">Ghostmaxxing</h1>
+<h2 class="message"><span>Community</span><span>Ghostyles.</span><span>Newest first.</span></h2>
+<div class="art" aria-hidden="true">
+  <span class="gallery-ghostyle"><img src="../images/home/story/ghostyle-1.svg" alt=""><span>Ghostyle 1</span></span>
+  <span class="gallery-ghostyle"><img src="../images/home/story/ghostyle-3.svg" alt=""><span>Ghostyle 3</span></span>
+</div>
+<div class="footer"><span class="domain">ghostmaxxing.vecna.eu/gallery.html</span><span>Follow on the Fediverse</span></div>
 </article>
 </main>
 <script>

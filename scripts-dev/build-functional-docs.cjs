@@ -136,7 +136,7 @@ function renderPage(page, body) {
       name: 'Claudio Agosti',
       alternateName: 'vecna',
       url: 'https://me.vecna.eu/',
-      sameAs: ['https://github.com/vecna'],
+      sameAs: ['https://github.com/vecna', 'https://retro.pizza/@vecna'],
     },
     isPartOf: {
       '@type': 'WebSite',

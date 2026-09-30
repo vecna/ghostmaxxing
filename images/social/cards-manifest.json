@@ -1,36 +1,12 @@
 {
-  "method": "Local Canvas and SVG renderer; supplied files are not Playwright screenshots",
   "source": "scripts-dev/social-cards.html",
   "width": 1200,
   "height": 630,
   "captures": [
-    {
-      "id": "glasses",
-      "file": "ghostmaxxing-glasses.jpg",
-      "width": 1200,
-      "height": 630,
-      "bytes": 236145
-    },
-    {
-      "id": "pole",
-      "file": "ghostmaxxing-pole.jpg",
-      "width": 1200,
-      "height": 630,
-      "bytes": 213599
-    },
-    {
-      "id": "canopy",
-      "file": "ghostmaxxing-canopy.jpg",
-      "width": 1200,
-      "height": 630,
-      "bytes": 234271
-    },
-    {
-      "id": "generic",
-      "file": "ghostmaxxing-generic.jpg",
-      "width": 1200,
-      "height": 630,
-      "bytes": 225571
-    }
+    { "id": "glasses", "file": "ghostmaxxing-glasses.jpg", "width": 1200, "height": 630, "bytes": 236145 },
+    { "id": "pole", "file": "ghostmaxxing-pole.jpg", "width": 1200, "height": 630, "bytes": 213599 },
+    { "id": "canopy", "file": "ghostmaxxing-canopy.jpg", "width": 1200, "height": 630, "bytes": 234271 },
+    { "id": "generic", "file": "ghostmaxxing-generic.jpg", "width": 1200, "height": 630, "bytes": 225571 },
+    { "id": "gallery", "file": "ghostmaxxing-gallery.jpg", "width": 1200, "height": 630, "bytes": 119572 }
   ]
 }

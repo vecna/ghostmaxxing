@@ -80,6 +80,11 @@ async function main() {
     assert.equal(clientModule.status, 200);
     assert.match(await clientModule.text(), /api\/gallery/);
 
+    const galleryPage = await fetch(`${origin}/gallery.html`);
+    assert.equal(galleryPage.status, 200);
+    assert.match(await galleryPage.text(), /id="gallery-more"/);
+    assert.equal((await fetch(`${origin}/pages-js/gallery.js`)).status, 200);
+
     const gallery = await fetch(`${origin}/api/gallery?limit=24`, {
       headers: { Origin: 'http://localhost:8080' },
     });
@@ -88,6 +93,9 @@ async function main() {
     const body = await gallery.json();
     assert.equal(body.ok, true);
     assert.equal(body.items.length, 1);
+    assert.equal(body.gallery.actor, `@ghostyles-pictures@127.0.0.1:${port}`);
+    assert.equal(body.gallery.followers, 0);
+    assert.equal(body.nextCursor, null);
     assert.equal(body.items[0].content, 'Integrated gallery picture');
     assert.equal(body.items[0].ghostyleId, 'brush');
     assert.match(body.items[0].imageUrl, new RegExp(`^${origin}/clipboard/`));

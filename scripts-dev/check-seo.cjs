@@ -11,6 +11,7 @@ const COLLECTION_IMAGES = new Map([
   ['projects/index.html', `${SITE_URL}/images/social/ghostmaxxing-glasses.jpg`],
   ['references/index.html', `${SITE_URL}/images/social/ghostmaxxing-canopy.jpg`],
   ['genealogy.html', `${SITE_URL}/images/social/ghostmaxxing-pole.jpg`],
+  ['gallery.html', `${SITE_URL}/images/social/ghostmaxxing-gallery.jpg`],
 ]);
 const DOC_PAGES_PATH = path.join(ROOT, 'docs-src', 'en', 'pages.json');
 const REQUIRED_META = [
@@ -108,7 +109,8 @@ function checkHtml(filePath, canonicalUrls) {
   }
   const vecna = collectTypedItems(structuredData, 'Person')
     .some((person) => person.name === 'Claudio Agosti' && person.alternateName === 'vecna' &&
-      person.url === 'https://me.vecna.eu/' && person.sameAs?.includes('https://github.com/vecna'));
+      person.url === 'https://me.vecna.eu/' && person.sameAs?.includes('https://github.com/vecna') &&
+      person.sameAs?.includes('https://retro.pizza/@vecna'));
   const nina = collectTypedItems(structuredData, 'Organization')
     .some((organization) => organization.name === 'NINA / Universal Digital Union' && organization.url === 'https://nina.watch/');
   if (['report.html', 'workshops.html'].includes(relative)) {
@@ -123,6 +125,7 @@ function checkHtml(filePath, canonicalUrls) {
     'about.html': ['AboutPage', 'Project', 'Person'],
     'report.html': ['WebPage', 'ContactPoint'],
     'genealogy.html': ['CollectionPage', 'ItemList'],
+    'gallery.html': ['CollectionPage', 'ImageGallery'],
     'projects/index.html': ['CollectionPage', 'ItemList'],
     'references/index.html': ['CollectionPage', 'ItemList', 'ScholarlyArticle'],
   }[relative];
@@ -150,6 +153,20 @@ function checkHtml(filePath, canonicalUrls) {
       fail('index.html: SoftwareApplication must link to its source repository');
     }
   }
+  if (relative === 'gallery.html') {
+    const actorUrl = `${SITE_URL}/federation/actors/ghostyles-pictures`;
+    const rssUrl = `${SITE_URL}/feed/ghostyles-pictures.xml`;
+    const links = (head.match(/<link\b[^>]*>/gi) || []).map(attributes);
+    if (!links.some((link) => link.rel === 'me' && link.href === actorUrl)) {
+      fail('gallery.html: missing rel="me" link to the gallery ActivityPub actor');
+    }
+    if (!links.some((link) => link.rel === 'alternate' && link.type === 'application/activity+json' && link.href === actorUrl)) {
+      fail('gallery.html: missing ActivityPub actor alternate link');
+    }
+    if (!links.some((link) => link.rel === 'alternate' && link.type === 'application/rss+xml' && link.href === rssUrl)) {
+      fail('gallery.html: missing gallery RSS alternate link');
+    }
+  }
 }
 
 function main() {
@@ -162,6 +179,7 @@ function main() {
     'fediverse.html',
     'workshops.html',
     'loader.html',
+    'gallery.html',
     'genealogy.html',
     'visual-styleguide.html',
     'projects/index.html',
@@ -194,6 +212,7 @@ function main() {
     `${SITE_URL}/projects/`,
     `${SITE_URL}/references/`,
     `${SITE_URL}/genealogy.html`,
+    `${SITE_URL}/gallery.html`,
     `${SITE_URL}/docs/`,
     ...docsPages.map((page) => {
       const route = page.output.replace(/index\.html$/, '');

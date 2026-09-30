@@ -22,7 +22,7 @@ Use one stable Person node for the author:
   "name": "Claudio Agosti",
   "alternateName": "vecna",
   "url": "https://me.vecna.eu/",
-  "sameAs": ["https://github.com/vecna"]
+  "sameAs": ["https://github.com/vecna", "https://retro.pizza/@vecna"]
 }
 ```
 
@@ -50,6 +50,7 @@ Preview images are absolute, fetchable 1200×630 JPEG files. Open Graph and Twit
 | Projects catalogue | `images/social/ghostmaxxing-glasses.jpg` |
 | Reference archive | `images/social/ghostmaxxing-canopy.jpg` |
 | Genealogy | `images/social/ghostmaxxing-pole.jpg` |
+| Community gallery | `images/social/ghostmaxxing-gallery.jpg` |
 
 The source list and generation notes live in `images/social/cards-manifest.json` and `images/social/FOLDER-DESCRIPTION.md`. New preview assets belong in `images/social/` or `images/preview/`; never overwrite an unrelated source image in `images/`. Record the source and generation method, and update `scripts-dev/check-seo.cjs` when adding a page-specific card.
 
@@ -61,6 +62,7 @@ Every indexed page has exactly one parseable Schema.org JSON-LD block.
 - Lab and loader: `WebApplication` with vecna as author.
 - About: `AboutPage`, the Ghostmaxxing `Project`, and vecna as author.
 - Projects, references and genealogy: `CollectionPage` and generated `ItemList`, with vecna as author.
+- Gallery: `CollectionPage` with an `ImageGallery`, vecna as author, and links to the gallery RSS feed and ActivityPub actor.
 - Functional and API documentation: `TechArticle`, with vecna as author.
 - Workshops: `CollectionPage`, with NINA as the responsible publisher or organizer. Vecna may remain credited as the project author.
 - Report: `WebPage` and `ContactPoint`, with NINA identified as operator of the separate GlobaLeaks submission service. Do not imply that Ghostmaxxing receives or operates submissions.

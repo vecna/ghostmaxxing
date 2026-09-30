@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="canonical" href="https://ghostmaxxing.vecna.eu/gallery.html" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/images/logo/mark-color.svg" />
+    <meta name="theme-color" content="#f26a1b" />
+    <title>Shared gallery — Ghostmaxxing</title>
+    <meta name="description" content="Moderated face-recognition camouflage results shared by the Ghostmaxxing community." />
+    <meta property="og:title" content="Shared gallery — Ghostmaxxing" />
+    <meta property="og:description" content="Moderated camouflage results, newest first." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ghostmaxxing.vecna.eu/gallery.html" />
+    <meta property="og:image" content="https://ghostmaxxing.vecna.eu/images/social/ghostmaxxing-gallery.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Ghostmaxxing community results shared with consent, newest first." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Shared gallery — Ghostmaxxing" />
+    <meta name="twitter:description" content="Moderated camouflage results, newest first." />
+    <meta name="twitter:image" content="https://ghostmaxxing.vecna.eu/images/social/ghostmaxxing-gallery.jpg" />
+    <meta name="twitter:image:alt" content="Ghostmaxxing community results shared with consent, newest first." />
+    <link rel="alternate" type="application/rss+xml" title="Ghostmaxxing gallery RSS" href="https://ghostmaxxing.vecna.eu/feed/ghostyles-pictures.xml" />
+    <link rel="alternate" type="application/activity+json" title="Ghostmaxxing gallery ActivityPub actor" href="https://ghostmaxxing.vecna.eu/federation/actors/ghostyles-pictures" />
+    <link rel="me" href="https://ghostmaxxing.vecna.eu/federation/actors/ghostyles-pictures" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "@id": "https://ghostmaxxing.vecna.eu/gallery.html#webpage",
+      "url": "https://ghostmaxxing.vecna.eu/gallery.html",
+      "name": "Shared gallery — Ghostmaxxing",
+      "description": "Moderated face-recognition camouflage results shared with consent by the Ghostmaxxing community.",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@type": "WebSite",
+        "@id": "https://ghostmaxxing.vecna.eu/#website",
+        "url": "https://ghostmaxxing.vecna.eu/",
+        "name": "Ghostmaxxing"
+      },
+      "author": {
+        "@type": "Person",
+        "@id": "https://me.vecna.eu/#vecna",
+        "name": "Claudio Agosti",
+        "alternateName": "vecna",
+        "url": "https://me.vecna.eu/",
+        "sameAs": ["https://retro.pizza/@vecna", "https://sociale.network/@vecna" ]
+      },
+      "mainEntity": {
+        "@type": "ImageGallery",
+        "@id": "https://ghostmaxxing.vecna.eu/gallery.html#gallery",
+        "name": "Ghostmaxxing community gallery",
+        "description": "Moderated community camouflage results, ordered from newest to oldest.",
+        "url": "https://ghostmaxxing.vecna.eu/gallery.html",
+        "sameAs": "https://ghostmaxxing.vecna.eu/federation/actors/ghostyles-pictures"
+      }
+    }
+    </script>
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/gallery.css" />
+    <script defer src="/pages-js/nav.js"></script>
+    <script type="module" src="/pages-js/gallery.js"></script>
+  </head>
+  <body>
+    <header class="gm-site-header">
+      <a class="gm-site-wordmark" href="/" aria-label="Ghostmaxxing homepage">
+        <img class="gm-site-wordmark__mark" src="/images/logo/mark-color.svg" width="40" height="40" alt aria-hidden="true" />
+        <span class="gm-site-wordmark__text"><span class="gm-site-wordmark__title">Ghostmaxxing</span><span class="gm-site-wordmark__sub">A public lab for testing camouflage</span></span>
+      </a>
+      <nav class="gm-site-nav" aria-label="Primary">
+        <a class="gm-site-chip" href="/fediverse.html">in the Fediverse</a>
+        <a class="gm-site-cta" href="/lab.html">Open the lab ↗</a>
+      </nav>
+    </header>
+
+    <main class="gallery-page">
+      <header class="gallery-hero">
+        <p class="gallery-kicker">Shared with consent</p>
+        <h1>Community gallery</h1>
+        <p class="gallery-lead">Moderated camouflage experiments published by the people who made them, ordered from newest to oldest.</p>
+        <div class="gallery-follow" id="gallery-follow" hidden>
+          <span>Follow every new picture on the Fediverse:</span>
+          <button type="button" id="gallery-copy-handle"></button>
+          <small id="gallery-followers"></small>
+        </div>
+      </header>
+
+      <p class="gallery-status" id="gallery-status" role="status">Loading the gallery…</p>
+      <button class="gallery-action" id="gallery-production-fallback" type="button" hidden>Click to pull from ghostmaxxing.vecna.eu</button>
+      <div class="gallery-list" id="gallery-list" aria-live="polite"></div>
+      <div class="gallery-more-wrap">
+        <button class="gallery-action" id="gallery-more" type="button" hidden>Load older</button>
+      </div>
+    </main>
+  </body>
+</html>
