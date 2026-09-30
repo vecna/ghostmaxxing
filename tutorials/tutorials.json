@@ -31,5 +31,8 @@
   },
   "aigen-image-labeler": {
      "title": "(internal) AI Gen image labeler"
+  },
+  "seo": {
+     "title": "(internal) SEO metadata and HTML build"
   }
 }

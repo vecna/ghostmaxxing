@@ -734,6 +734,52 @@ def plural(n, word):
 # 7. Assemble the page.
 # ---------------------------------------------------------------------------
 def build_html(refs, projects, marks, by_row, Y1):
+    site_url = "https://ghostmaxxing.vecna.eu"
+    page_url = f"{site_url}/genealogy.html"
+    page_title = "Genealogy of Face Surveillance — Ghostmaxxing"
+    page_description = (
+        "What has been shown against which family of face-reading system, and when. "
+        "Every mark is an entry in the reference archive or the projects catalogue."
+    )
+    structured_data = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "@id": f"{page_url}#webpage",
+        "name": page_title,
+        "description": page_description,
+        "url": page_url,
+        "inLanguage": "en",
+        "isPartOf": {
+            "@type": "WebSite",
+            "@id": f"{site_url}/#website",
+            "url": f"{site_url}/",
+            "name": "Ghostmaxxing",
+        },
+        "publisher": {
+            "@type": "Organization",
+            "@id": "https://nina.watch/#organization",
+            "name": "NINA / Universal Digital Union",
+            "url": "https://nina.watch/",
+        },
+        "mainEntity": {
+            "@type": "ItemList",
+            "numberOfItems": len(marks),
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": position,
+                    "item": {
+                        "@type": "CreativeWork",
+                        "name": mark["label"],
+                        "url": f"{site_url}{mark['href']}",
+                        "datePublished": str(mark["year"]),
+                    },
+                }
+                for position, mark in enumerate(marks, start=1)
+            ],
+        },
+    }
+    structured_json = json.dumps(structured_data, ensure_ascii=False, indent=2).replace("<", "\\u003c")
     n_ref, n_proj = len(refs), len(projects)
     strong = sum(1 for m in marks if m["source"] == "ref" and m["grade"] == "strong")
     commercial = sum(1 for m in marks if m["source"] == "proj" and m["kind"] == "commercial")
@@ -785,21 +831,32 @@ def build_html(refs, projects, marks, by_row, Y1):
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Genealogy of Face Surveillance | Ghostmaxxing</title>
+  <title>{html.escape(page_title)}</title>
   <meta name="description"
-    content="What has been shown against which family of face-reading system, and when. Every mark is an entry in the reference archive or the projects catalogue." />
-  <link rel="canonical" href="https://ghostmaxxing.vecna.eu/genealogy.html" />
+    content="{html.escape(page_description, quote=True)}" />
+  <link rel="canonical" href="{page_url}" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#14100c" />
   <link rel="icon" type="image/svg+xml" href="/images/logo/mark-color.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png" />
   <link rel="apple-touch-icon" href="/images/logo/favicon-180.png" />
-  <meta property="og:title" content="Genealogy of Face Surveillance | Ghostmaxxing" />
-  <meta property="og:description"
-    content="What has been shown against which family of face-reading system, and when." />
+  <meta property="og:title" content="{html.escape(page_title, quote=True)}" />
+  <meta property="og:description" content="{html.escape(page_description, quote=True)}" />
   <meta property="og:type" content="article" />
-  <meta property="og:image" content="/images/social-card.svg" />
+  <meta property="og:url" content="{page_url}" />
+  <meta property="og:image" content="{site_url}/images/social/ghostmaxxing-generic.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{html.escape(page_title, quote=True)}" />
+  <meta name="twitter:description" content="{html.escape(page_description, quote=True)}" />
+  <meta name="twitter:image" content="{site_url}/images/social/ghostmaxxing-generic.jpg" />
+  <meta name="twitter:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
+  <script type="application/ld+json">
+{structured_json}
+  </script>
 
   <!-- One shared stylesheet, then one page stylesheet. -->
   <link rel="stylesheet" href="/styles/styles.css" />

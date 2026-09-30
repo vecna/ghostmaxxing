@@ -10,6 +10,48 @@ const DATA_PATH = path.join(__dirname, 'PROJECTS.json');
 const TEMPLATE_PATH = path.join(__dirname, 'templates', 'projects.template.html');
 const OUTPUT_PATH = path.join(__dirname, 'index.html');
 const VALIDATOR_PATH = path.join(__dirname, 'validate-projects.js');
+const SITE_URL = 'https://ghostmaxxing.vecna.eu';
+
+function structuredData(projects) {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': `${SITE_URL}/projects/#webpage`,
+    name: 'Related projects — Ghostmaxxing',
+    description: 'Products, prototypes, artworks, and collective practices that experiment with resistance to biometric and computer-vision surveillance.',
+    url: `${SITE_URL}/projects/`,
+    inLanguage: 'en',
+    isPartOf: {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      url: `${SITE_URL}/`,
+      name: 'Ghostmaxxing',
+    },
+    publisher: {
+      '@type': 'Organization',
+      '@id': 'https://nina.watch/#organization',
+      name: 'NINA / Universal Digital Union',
+      url: 'https://nina.watch/',
+    },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: projects.length,
+      itemListElement: projects.map((project, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'CreativeWork',
+          name: project.name,
+          url: project.url,
+          description: project.description,
+          datePublished: String(project.year),
+          keywords: project.target.join(', '),
+          image: `${SITE_URL}${project.image.src}`,
+        },
+      })),
+    },
+  }, null, 2).replace(/</g, '\\u003c');
+}
 
 const ACCESS_LABELS = {
   commercial: 'Commercial',
@@ -100,7 +142,8 @@ function main() {
     .replace(/{{LAST_UPDATED}}/g, esc(data.last_updated))
     .replace(/{{PROJECT_COUNT}}/g, String(projects.length))
     .replace('{{CATEGORY_FILTERS}}', renderFilters(data.categories))
-    .replace('{{PROJECT_ROWS}}', renderRows(projects, categoryMap));
+    .replace('{{PROJECT_ROWS}}', renderRows(projects, categoryMap))
+    .replace('{{SEO_STRUCTURED_DATA}}', structuredData(projects));
 
   fs.writeFileSync(OUTPUT_PATH, html, 'utf8');
   console.log(`Wrote ${path.relative(ROOT, OUTPUT_PATH)} with ${projects.length} projects.`);

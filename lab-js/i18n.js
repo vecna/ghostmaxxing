@@ -1862,9 +1862,9 @@ export const messages = {
    },
    loader_page_title: {
       context: 'loader.html:7',
-      it: 'Ghostmaxxing | Loader video',
-      en: 'Ghostmaxxing | Video Loader',
-      pt: 'Ghostmaxxing | Carregador de vídeo',
+      it: 'Loader video — Ghostmaxxing',
+      en: 'Video Loader — Ghostmaxxing',
+      pt: 'Carregador de vídeo — Ghostmaxxing',
    },
    loader_meta_description: {
       context: 'loader.html:8',

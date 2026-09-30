@@ -15,6 +15,7 @@ Run the commands below from the `ghostmaxxing` repository root. Most scripts res
 | Validate all Ghostyles | `npm run validate:ghostyles` | Stops when a file fails validation |
 | Generate API documentation | `npm run docs` | JSDoc output; configuration is `jsdoc.clean.json` |
 | Rebuild API documentation | `npm run docs:rebuild` | Deletes `docs/jsdoc/`, then runs JSDoc |
+| Validate SEO metadata | `npm run check:seo` | Checks page metadata, JSON-LD, social previews and sitemap output |
 | Validate complementary projects | `npm run validate:projects` | Checks JSON, URLs, categories and local images |
 | Build complementary projects | `npm run update:projects` | Overwrites `projects/index.html` |
 | Redraw the genealogy chart | `npm run update:genealogy` | Overwrites `genealogy.html` and `styles/genealogy.css` (needs `python3`) |
@@ -81,13 +82,19 @@ npm run update:references
 npm run update:genealogy
 ```
 
-`docs` runs `jsdoc -c jsdoc.clean.json`. The supplied technical index identifies `JSDOC_index.md` as the generated home and `docs/jsdoc/` as the output location; check the actual configuration when changing either.
+`docs` runs `jsdoc -c jsdoc.clean.json` and then adds canonical URLs, share previews and `TechArticle` JSON-LD to every generated page through `scripts-dev/enrich-jsdoc-seo.cjs`. The supplied technical index identifies `JSDOC_index.md` as the generated home and `docs/jsdoc/` as the output location; check the actual configuration when changing either.
 
 `docs:clean` recursively removes `docs/jsdoc/`. `docs:rebuild` runs cleanup and generation with `&&`. The hand-authored `docs/index.html` survives this cleanup. Edit source comments, tutorial sources and the home Markdown rather than generated JSDoc HTML.
 
 `validate:projects` checks `projects/PROJECTS.json`, its single primary strategy per entry, absolute URLs, duplicate identifiers, image metadata, and the presence of every local image under `images/projects/`. `update:projects` validates first and then fills `projects/templates/projects.template.html`, overwriting `projects/index.html`. It never downloads media or establishes permission to republish third-party images. Follow `projects/CONTRIBUTING-PROJECTS.md` when adding an entry.
 
 `update:references` runs `references/build-references-page.js`, which validates `references/REFERENCES.json` and fills `references/templates/references.template.html`, overwriting `references/index.html`. The references dataset remains the larger cultural and technical archive; do not move papers or articles into the complementary-project catalogue merely because they describe a possible intervention.
+
+## Rebuild and install the HTML site
+
+`npm run htmls` and `npm run htmls:install` regenerate functional docs, JSDoc, projects, references, genealogy and the code map, then run `npm run check:seo`. Put lasting changes in the source HTML, page builders, or templates: `projects/index.html`, `references/index.html`, `genealogy.html` and the generated docs are overwritten. The project and reference JSON-LD item lists are built from their JSON catalogues.
+
+`npm run htmls:install` then runs `scripts-dev/install-client-interface.cjs`. That installer copies every root-level HTML file, the `projects/`, `references/`, `docs/` and other allow-listed directories, and selected deployable files from `web-files/` into `../gstmxx-backend/client-interface/`. It clears that destination before copying; use it only when replacing that client-interface directory is intended. Add root-served crawler files to `web-files/` and list them in the installer's `COPY_WEB_FILES`.
 
 ## Pick a picture for the homepage story
 
