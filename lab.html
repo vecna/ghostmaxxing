@@ -20,7 +20,6 @@
   <meta name="generator" content="Hand-coded with rage against the algorithm" />
 
   <link rel="stylesheet" href="/styles/styles.css" />
-  <link rel="stylesheet" href="/styles/pages.css" />
   <link rel="stylesheet" href="/styles/lab.css" />
 </head>
 
@@ -300,19 +299,11 @@
 
   <div class="toast" id="gm-toast"></div>
 
-  <!-- Engine controls the new IA doesn't surface, kept for binding -->
-  <button id="scanBtn" class="u-hidden" tabindex="-1" aria-hidden="true"></button>
-  <button id="toggleSettingsBtn" class="u-hidden" tabindex="-1" aria-hidden="true"></button>
-  <button id="overlayModeBtn" class="u-hidden" tabindex="-1" aria-hidden="true"></button>
-
   <!-- ============================ SCRIPTS ============================ -->
-  <!-- Engine (unchanged), then the new presentation controller. -->
+  <!-- Entry points only; their imported dependencies are not loaded twice. -->
   <script src="/lab-js/mobile-ui.js"></script>
-  <script type="module" src="/lab-js/ghostyle3d-uv-renderer.js"></script>
-  <script type="module" src="/lab-js/plugins3d-loader.js"></script>
   <script type="module" src="/lab-js/mediapipe-loop.js"></script>
   <script src="/lab-js/vendor/face-api.js"></script>
-  <script type="module" src="/lab-js/bbox-overlay.js"></script>
   <script type="module" src="/lab-js/auto-find-loop.js"></script>
   <script type="module" src="/lab-js/main.js"></script>
   <script type="module" src="/lab-js/lab-ui.js"></script>

@@ -1,8 +1,8 @@
       <section class="content-page__header-area gm-prose" aria-labelledby="recognition-title">
         <span class="content-page__kicker">Technical explainer</span>
-        <h1 id="recognition-title">A face becomes a measurement before it becomes a match.</h1>
-        <p class="content-page__lead">Ghostmaxxing lets you inspect several stages that commercial interfaces often compress into one verdict.</p>
-        <p class="content-page__deck">This page follows the current implementation. Historical detection methods and adversarial research appear as context, not as claims about the models running in the Lab.</p>
+        <h1 id="recognition-title">How face recognition works</h1>
+        <p class="content-page__lead">Inspect detection, landmarks, descriptors and matching in the Lab.</p>
+        <p class="content-page__deck">This guide describes the current Lab; historical methods are marked separately.</p>
         <div class="content-page__actions">
           <a class="docs-link docs-link--primary" href="/docs/guides/lab.html">Run the Lab guide</a>
           <a class="docs-link" href="/docs/glossary/">Look up a term</a>
@@ -13,7 +13,7 @@
         <article class="docs-article gm-prose">
           <section id="pipeline">
             <span class="docs-eyebrow">Primary 2D path</span>
-            <h2>Steps in the face-api comparison pipeline.</h2>
+            <h2>The face-api pipeline</h2>
             <div class="docs-pipeline">
               <div class="docs-pipeline__stage"><strong>Image</strong><span>A frame from the camera, video, or composite canvas.</span></div>
               <div class="docs-pipeline__stage"><strong>Detection</strong><span>TinyFaceDetector proposes one face box above its score threshold.</span></div>
@@ -68,7 +68,7 @@
 
           <section id="ghostyle-pass">
             <span class="docs-eyebrow">Testing an intervention</span>
-            <h2>A Ghostyle creates a second image to inspect.</h2>
+            <h2>Analysing a Ghostyle</h2>
             <p>The live detector follows the original camera image so the effect can remain attached to the face. On a slower loop, the Lab draws the Ghostyle onto a composite image and analyses that modified image. Keeping these paths separate makes the overlay responsive while allowing the intervention to affect the measured result.</p>
             <p>An experiment can therefore change at several points: the composite detector may stop returning a box, landmarks may shift, the face descriptor may move beyond its threshold, or the two comparison paths may disagree. Record which event occurred.</p>
           </section>

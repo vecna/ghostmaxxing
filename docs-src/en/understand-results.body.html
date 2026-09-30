@@ -1,8 +1,7 @@
       <section class="content-page__header-area gm-prose" aria-labelledby="results-title">
         <span class="content-page__kicker">Understand the results</span>
-        <h1 id="results-title">Possible results and how to interpret them.</h1>
-        <p class="content-page__lead">A face recognition technology might fail in <i>detection</i> (doesn't see any face), <i>geometry</i> (incorrectly align the face), and <i>identity comparison</i> (the closer match is incorrect). 
-          .</p>
+        <h1 id="results-title">Interpret your results</h1>
+        <p class="content-page__lead">Failures can occur in <i>detection</i>, <i>face alignment</i> or <i>identity comparison</i>.</p>
         <!-- <p class="content-page__deck"></p> -->
         <div class="content-page__actions">
           <a class="docs-link docs-link--primary" href="/docs/understand/face-recognition.html">Follow the pipeline</a>
@@ -34,13 +33,13 @@
 
           <section id="states">
             <span class="docs-eyebrow">Visible states</span>
-            <h2>"states" in which the lab can be.</h2>
+            <h2>Lab states</h2>
             <div class="docs-statuses">
               <div class="docs-status"><span class="docs-status__label">Save your face</span><h3>No baseline</h3><p>The camera may be working and a face may be detected, but there is no saved identity reference to compare with.</p></div>
               <div class="docs-status"><span class="docs-status__label">Measuring</span><h3>Waiting for a fresh comparison</h3><p>A baseline exists, but the interface has not received a new result for the current state.</p></div>
               <div class="docs-status"><span class="docs-status__label">No face in frame</span><h3>No usable live descriptor</h3><p>The current pass did not return a face. This may reflect the input (dazzled/camouflaged), threshold, or any other failable step.</p></div>
               <div class="docs-status"><span class="docs-status__label">Recognised</span><h3>Distance within threshold</h3><p>The nearest descriptor is close enough to a saved baseline under the current 2D rule.</p></div>
-              <div class="docs-status"><span class="docs-status__label">Escaped</span><h3>Distance beyond threshold</h3><p>The detector still returned a face, but the composite descriptor is so distant than a registered face that can't be considered reliable.</p></div>
+              <div class="docs-status"><span class="docs-status__label">Escaped</span><h3>Distance beyond threshold</h3><p>A face was detected, but its composite descriptor falls beyond the match threshold.</p></div>
               <div class="docs-status"><span class="docs-status__label">No face found</span><h3>Composite detection absent</h3><p>With a Ghostyle active, the modified-image pass did not return a descriptor. This is detection failure, not a measured identity distance.</p></div>
             </div>
           </section>
@@ -75,7 +74,7 @@
 
           <section id="report">
             <span class="docs-eyebrow">Record a useful result</span>
-            <h2>Conditions that might affect the test repetition.</h2>
+            <h2>Record the test conditions</h2>
             <ul>
               <li>Tool and application revision.</li>
               <li>Input file or camera, resolution, frame rate, and controlled timestamp where available.</li>

@@ -2183,11 +2183,17 @@ export function normalizeLocale(locale, fallback = DEFAULT_LOCALE) {
    return supportedLocales.includes(short) ? short : fallback;
 }
 
+/**
+ * Read and normalize the persisted locale.
+ *
+ * @returns {'it'|'en'|'pt'|null} A supported two-letter locale, or `null`
+ *   when storage is unavailable, empty, or contains an unsupported value.
+ */
 export function getStoredLocale() {
    try {
-      return normalizeLocale(localStorage.getItem(LOCALE_STORAGE_KEY));
+      return normalizeLocale(localStorage.getItem(LOCALE_STORAGE_KEY), null);
    } catch {
-      return DEFAULT_LOCALE;
+      return null;
    }
 }
 
@@ -2202,12 +2208,7 @@ export function getBrowserLocale() {
 
 let currentLocale = (() => {
    if (typeof process !== 'undefined' && process.env && process.env.VITEST) return 'it';
-   try {
-      const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
-      return stored ? normalizeLocale(stored) : getBrowserLocale();
-   } catch {
-      return getBrowserLocale();
-   }
+   return getStoredLocale() || getBrowserLocale();
 })();
 
 export function getLocale() {

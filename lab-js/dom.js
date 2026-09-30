@@ -36,17 +36,12 @@ export const els = {
    thresholdLabel: document.getElementById('thresholdLabel'),
    effectName: document.getElementById('effectName'),
    effectTracking: document.getElementById('effectTracking'),
-   scanBtn: document.getElementById('scanBtn'),
    copyMakeupBtn: document.getElementById('copyMakeupBtn'),
    saveBtn: document.getElementById('saveBtn'),
    analyzeBtn: document.getElementById('analyzeBtn'),
-   toggleSettingsBtn: document.getElementById('toggleSettingsBtn'),
-   closeSettingsBtn: document.getElementById('closeSettingsBtn'),
    settingsDrawer: document.getElementById('settingsDrawer'),
-   closeHistoryBtn: document.getElementById('closeHistoryBtn'),
    historyDrawer: document.getElementById('historyDrawer'),
    historyEntries: document.getElementById('historyEntries'),
-   overlayModeBtn: document.getElementById('overlayModeBtn'),
    clearDbBtn: document.getElementById('clearDbBtn'),
    reloadPluginsBtn: document.getElementById('reloadPluginsBtn'),
    ghostylesContainer: document.getElementById('ghostylesContainer'),
@@ -61,11 +56,11 @@ export const els = {
 };
 
 /**
- * Update the status indicator in the header. The `kind` argument selects the
+ * Update the status indicator over the camera stage. The `kind` argument selects the
  * dot colour class (`live` = green, `error` = red, anything else = default
- * grey) and `text` populates the adjacent label. Centralising the logic here
- * keeps the indicator visually consistent regardless of which module
- * triggered the change.
+ * grey) and `text` populates the adjacent label. An error also adds
+ * `viewer.has-error`, transforming the normally hidden pill into a visible
+ * error notice; every non-error update removes that class.
  *
  * @param {string} kind  One of 'live', 'init', 'error', or any other string
  *   (defaults to neutral styling). Only 'live' and 'error' apply a CSS class.
@@ -79,6 +74,7 @@ export function setStatus(kind, text) {
    els.statusDot.className = 'status-dot';
    if (kind === 'live') els.statusDot.classList.add('live');
    if (kind === 'error') els.statusDot.classList.add('error');
+   if (els.viewer) els.viewer.classList.toggle('has-error', kind === 'error');
    els.statusText.textContent = text;
 }
 
@@ -103,10 +99,10 @@ export function clearOverlay() {
 
 /**
  * Reset UI and runtime state after an effect is deactivated: drop the active
- * class from every preview button, undo the scan-button styling, blank the
- * "effect name" / "tracking" labels, null out the cached detection result
- * and last composited canvas, disable the copy-makeup button, and clear the
- * overlay canvas. Side-effect only — no event is dispatched.
+ * class from every preview button, blank the "effect name" / "tracking"
+ * labels, null out the cached detection result and last composited canvas,
+ * disable the copy-makeup button, and clear the overlay canvas. Side-effect
+ * only — no event is dispatched.
  *
  * @see lab-js/ghostyles-manager.js – `toggleEffect()` calls this when the
  *   user deactivates the currently active effect.
@@ -115,12 +111,6 @@ export function clearActiveEffect() {
    const previewBtns = els.ghostylesContainer ? els.ghostylesContainer.querySelectorAll('.preview-btn') : [];
 
    previewBtns.forEach(btn => btn.classList.remove('active'));
-   if (els.scanBtn) {
-      els.scanBtn.style.background = '';
-      els.scanBtn.style.borderColor = '';
-      els.scanBtn.style.color = '';
-   }
-
    if (els.effectName) els.effectName.textContent = t('not_available_label');
    if (els.effectTracking) els.effectTracking.textContent = t('off_status');
 
@@ -134,10 +124,9 @@ export function clearActiveEffect() {
 /**
  * Apply UI styling after a ghostyle button is selected: mark the chosen
  * button active and clear the others, hide any preview image still on
- * screen, restyle the scan button to the "armed" appearance, cancel any
- * pending overlay fade, and update the "effect name" / "tracking" labels
- * from the active ghostyle record. Reads `state.activeEffect` directly, so
- * callers must set it before invoking this.
+ * screen, cancel any pending overlay fade, and update the "effect name" /
+ * "tracking" labels from the active ghostyle record. Reads
+ * `state.activeEffect` directly, so callers must set it before invoking this.
  *
  * @param {HTMLButtonElement} button  The button that was just clicked.
  * @see lab-js/ghostyles-manager.js – `toggleEffect()` calls this after
@@ -150,12 +139,6 @@ export function effectSelected(button) {
    if (els.previewImage) {
       els.previewImage.style.display = 'none';
       els.previewImage.removeAttribute('src');
-   }
-
-   if (els.scanBtn) {
-      els.scanBtn.style.background = 'linear-gradient(180deg, rgba(159, 122, 234, 0.35), rgba(159, 122, 234, 0.15))';
-      els.scanBtn.style.borderColor = 'rgba(159, 122, 234, 0.5)';
-      els.scanBtn.style.color = '#fff';
    }
 
    if (state.overlayFadeTimeout)

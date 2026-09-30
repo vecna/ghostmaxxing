@@ -27,10 +27,8 @@ describe('dom.js functions', () => {
     // Clear and restore DOM elements before each test
     els.statusDot.className = '';
     els.statusText.textContent = '';
+    els.viewer.className = 'viewer fullscreen';
     els.ghostylesContainer.innerHTML = '';
-    els.scanBtn.style.background = '';
-    els.scanBtn.style.borderColor = '';
-    els.scanBtn.style.color = '';
     els.effectName.textContent = '';
     els.effectTracking.textContent = '';
     els.copyMakeupBtn.disabled = false;
@@ -55,6 +53,7 @@ describe('dom.js functions', () => {
       expect(els.statusDot.classList.contains('status-dot')).toBe(true);
       expect(els.statusDot.classList.contains('live')).toBe(true);
       expect(els.statusText.textContent).toBe('Webcam attiva');
+      expect(els.viewer.classList.contains('has-error')).toBe(false);
     });
 
     it('sets status dot class and status text for error status', () => {
@@ -62,6 +61,10 @@ describe('dom.js functions', () => {
       expect(els.statusDot.classList.contains('status-dot')).toBe(true);
       expect(els.statusDot.classList.contains('error')).toBe(true);
       expect(els.statusText.textContent).toBe('Errore fotocamera');
+      expect(els.viewer.classList.contains('has-error')).toBe(true);
+
+      setStatus('init', 'Caricamento');
+      expect(els.viewer.classList.contains('has-error')).toBe(false);
     });
   });
 
@@ -93,11 +96,6 @@ describe('dom.js functions', () => {
       els.ghostylesContainer.appendChild(btn1);
       els.ghostylesContainer.appendChild(btn2);
 
-      // Set some initial styling on scanBtn
-      els.scanBtn.style.background = 'red';
-      els.scanBtn.style.borderColor = 'blue';
-      els.scanBtn.style.color = 'green';
-
       // Set some initial text on labels
       els.effectName.textContent = 'Some Effect';
       els.effectTracking.textContent = 'some-effect';
@@ -120,10 +118,6 @@ describe('dom.js functions', () => {
       expect(btn1.classList.contains('active')).toBe(false);
       expect(btn2.classList.contains('active')).toBe(false);
       
-      expect(els.scanBtn.style.background).toBe('');
-      expect(els.scanBtn.style.borderColor).toBe('');
-      expect(els.scanBtn.style.color).toBe('');
-
       expect(els.effectName.textContent).toBe('not_available_label');
       expect(els.effectTracking.textContent).toBe('off_status');
 
@@ -137,13 +131,11 @@ describe('dom.js functions', () => {
 
     it('handles missing elements gracefully', () => {
       const originalContainer = els.ghostylesContainer;
-      const originalScanBtn = els.scanBtn;
       const originalEffectName = els.effectName;
       const originalEffectTracking = els.effectTracking;
       const originalCopyMakeupBtn = els.copyMakeupBtn;
 
       els.ghostylesContainer = null;
-      els.scanBtn = null;
       els.effectName = null;
       els.effectTracking = null;
       els.copyMakeupBtn = null;
@@ -152,7 +144,6 @@ describe('dom.js functions', () => {
 
       // Restore
       els.ghostylesContainer = originalContainer;
-      els.scanBtn = originalScanBtn;
       els.effectName = originalEffectName;
       els.effectTracking = originalEffectTracking;
       els.copyMakeupBtn = originalCopyMakeupBtn;
@@ -183,9 +174,6 @@ describe('dom.js functions', () => {
       expect(els.previewImage.style.display).toBe('none');
       expect(els.previewImage.getAttribute('src')).toBeNull();
 
-      expect(els.scanBtn.style.color).toBe('rgb(255, 255, 255)');
-      expect(els.scanBtn.style.borderColor).toBe('rgba(159, 122, 234, 0.5)');
-
       expect(els.overlay.style.transition).toBe('none');
       expect(els.overlay.style.opacity).toBe('1');
 
@@ -209,14 +197,12 @@ describe('dom.js functions', () => {
     it('handles missing elements gracefully', () => {
       const originalContainer = els.ghostylesContainer;
       const originalPreviewImage = els.previewImage;
-      const originalScanBtn = els.scanBtn;
       const originalOverlay = els.overlay;
       const originalEffectName = els.effectName;
       const originalEffectTracking = els.effectTracking;
 
       els.ghostylesContainer = null;
       els.previewImage = null;
-      els.scanBtn = null;
       els.overlay = null;
       els.effectName = null;
       els.effectTracking = null;
@@ -235,11 +221,9 @@ describe('dom.js functions', () => {
       // Restore
       els.ghostylesContainer = originalContainer;
       els.previewImage = originalPreviewImage;
-      els.scanBtn = originalScanBtn;
       els.overlay = originalOverlay;
       els.effectName = originalEffectName;
       els.effectTracking = originalEffectTracking;
     });
   });
 });
-

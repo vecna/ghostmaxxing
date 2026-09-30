@@ -49,7 +49,7 @@
  *   **Range:** `null` until `db.loadDb()` runs at startup; afterwards an object
  *   where `nextId >= 0` and `faces` is a (possibly empty) array.
  *   **Used in:** db.js (load/save/clear/renderDbStats), engine.js (descriptor
- *   matching), utils.js (computeMatchState), main.js (init, `Ghostati.getDb`).
+ *   matching), utils.js (computeMatchState), main.js (init, `gstmxx.getDb`).
  *
  * @property {{ faces: FaceRecord3d[], modelVersion: string } | null} db3d
  *   Local 3D face database (ImageEmbedder embeddings, keyed by same IDs as db).
@@ -67,7 +67,7 @@
  *   `loadedGhostyles`.
  *   **Used in:** ghostyles-manager.js (toggleEffect/deactivateEffect), dom.js
  *   (clearActiveEffect/effectSelected), engine.js (runEffectPass,
- *   hasActivePlugin), main.js (scan branch, `Ghostati.getActiveEffect`).
+ *   hasActivePlugin), main.js (scan branch, `gstmxx.getActiveEffect`).
  *
  * @property {boolean} effectInferenceInFlight
  *   Re-entrancy guard: `true` while an async face-api inference for the effect
@@ -95,7 +95,7 @@
  *   a face-api detection result, optionally carrying 68-point landmarks (shape
  *   depends on whether an effect requiring landmarks is active).
  *   **Used in:** engine.js (set in runEffectPass / scan / efficacy paths), dom.js
- *   (reset to `null` in clearActiveEffect), main.js (`Ghostati.getLastResult`).
+ *   (reset to `null` in clearActiveEffect), main.js (`gstmxx.getLastResult`).
  *
  * @property {HTMLCanvasElement|null} lastCompositedCanvas
  *   The last composited canvas (live frame + applied makeup overlay) produced by
@@ -122,7 +122,7 @@
  *   Rolling archive of rendered log line DOM nodes.
  *   **Range:** 0–100 elements; capped at 100, oldest entries shifted out (FIFO).
  *   **Used in:** utils.js (setLog pushes, updateLogDisplay renders),
- *   main.js (`Ghostati.clearVisibleLogs`).
+ *   main.js (`gstmxx.clearVisibleLogs`).
  *
  * @property {number} visibleLogStartIndex
  *   Index into `logsArchive` marking where currently-visible logs begin, so the
@@ -147,7 +147,7 @@
  *   **Range:** no enforced bounds. Conventionally an L2 distance in ~0.4–0.6 for
  *   face-api; default `0.58`. Lower = stricter matching.
  *   **Used in:** utils.js (computeMatchState), engine.js (match classification in
- *   findFace), db.js (threshold label), main.js (`Ghostati.getMatchThreshold`).
+ *   periodic matching), db.js (threshold label), main.js (`gstmxx.getMatchThreshold`).
  *
  * @property {number} MATCH_THRESHOLD_3D
  *   ImageEmbedder cosine-similarity threshold. A similarity `>=` this value is a match.

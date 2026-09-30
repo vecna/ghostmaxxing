@@ -12,8 +12,8 @@
  *   2. Effect render loop: throttled `requestAnimationFrame` driver that
  *      calls `runEffectPass()` from `engine.js` at the rate selected by the
  *      FPS dropdown.
- *   3. One-second recording: a small MediaRecorder wrapper used by the
- *      workshop's "capture and share" button.
+ *   3. Short recording: a MediaRecorder wrapper used by the Lab action rail
+ *      and its local upload/consent panel.
  *
  * No module-level mutable state lives here except `effectLoopHandle` (the
  * rAF id used to cancel the loop on stop). All other state goes through
@@ -156,7 +156,7 @@ export function startEffectLoop() {
 
 /**
  * Stop the effect render loop and reset the inference-in-flight guard.
- * Currently called only from unit tests; no production code path teardown
+ * Currently called only from unit tests; no production code path tears down
  * the loop because the page lifecycle does it implicitly. Kept for
  * completeness and as a test-only handle.
  *
@@ -179,6 +179,9 @@ export function stopEffectLoop() {
  * support), falls back to MP4 generic, then VP9 WebM, then VP8 WebM. If
  * none of these are supported, `MediaRecorder` will throw and the error is
  * surfaced into the log.
+ *
+ * The exported name is retained for API compatibility; the actual duration
+ * comes from `RECORDING_CONFIG.durationMs` and is not fixed at one second.
  *
  * @returns {Promise<void>}
  * @see RECORDING_CONFIG – controls mode, endpoint, and duration.

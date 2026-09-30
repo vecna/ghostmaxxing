@@ -18,7 +18,7 @@ export { seekFaceInDb, computeCompositeMetrics, decideMatchState } from './landm
  * @param {boolean} drawOverlay - Whether to draw the detection overlay.
  * @returns {Promise<Object|null>} Detection result, faceapi object.
  * @see saveFace - uses detectFaceInCam before saving a face.
- * @see findFace - uses detectFaceInCam to compare against stored faces.
+ * @see lab-js/auto-find-loop.js - obtains the live baseline used for periodic matching.
  * @see computeCompositeMetrics - uses detectFaceInCam as the baseline detection.
  */
 export async function detectFaceInCam(drawOverlay) {
@@ -66,7 +66,6 @@ export function triggerOverlayFadeout() {
 /**
  * Build a canvas with video compositing and the active 2D/3D Ghostyle overlay.
  * Calls the active 2D Ghostyle's onDraw() hook to render the overlay.
- * Executes face-api detection on the composited frame.
  * Executes a Face API detection with landmarks and descriptor on the composite.
  * Returns an object containing the canvas, obfuscatedResult, and weakDetection flag.
  * If detection with the normal threshold (`scoreThreshold: 0.5`) fails, it retries with a relaxed threshold (0.1) to still extract numeric metrics from the composite —
@@ -74,7 +73,7 @@ export function triggerOverlayFadeout() {
  * `weakDetection` indicates when a fallback detection was required.
  * @param {Object} liveResult - Result from the live face detection.
  * @returns {Promise<Object>} An object with canvas, obfuscatedResult, and weakDetection.
- * @see findFace - uses this function to obtain a composite for post‑makeup comparison.
+ * @see lab-js/auto-find-loop.js - uses this function for post-Ghostyle comparison.
  * @see computeCompositeMetrics - uses detectFaceInCam as the baseline detection.
  */
 export async function compositeAndDetect(liveResult) {
@@ -176,7 +175,7 @@ export async function runEffectPass() {
  * @see drawDetectionScaffold - optionally used when includeDetectionScaffold is true.
  */
 export function drawGhostyleOverlay(result, includeDetectionScaffold = false) {
-   resizeCanvas(els);
+   resizeCanvas();
    const ctx = els.overlay.getContext('2d');
    ctx.clearRect(0, 0, els.overlay.width, els.overlay.height);
    const resized = faceapi.resizeResults(result, { width: els.overlay.width, height: els.overlay.height });
@@ -286,7 +285,7 @@ export function drawDetectionScaffold(ctx, resized) {
  * @see drawGhostyleOverlay - effect drawing is performed here if active.
  */
 export function drawResult(result) {
-   resizeCanvas(els);
+   resizeCanvas();
    const ctx = els.overlay.getContext('2d');
    ctx.clearRect(0, 0, els.overlay.width, els.overlay.height);
    const resized = faceapi.resizeResults(result, { width: els.overlay.width, height: els.overlay.height });
@@ -306,7 +305,11 @@ export function drawResult(result) {
 
 
 /**
- * Capture the current face, save its descriptor and metadata to the local database, and log the action.
+ * Capture the current face, convert its typed descriptor and landmark points
+ * to JSON-safe arrays, assign the next local ID, persist it, and log the action.
+ *
+ * @returns {Promise<{id: number, result: object}|undefined>} The assigned ID
+ *   and original face-api result, or `undefined` when no face is detected.
  * @see detectFaceInCam - obtains the face data to be saved.
  */
 export async function saveFace() {
@@ -332,8 +335,24 @@ export async function saveFace() {
    return { id, result };
 }
 
-// This function shares the helper that are private, and so it can be 
-// used by the auto-loop-search-face
+/**
+ * Convert raw live/composite distance data into the 2D section consumed by
+ * `matchStateChanged`. Composite detections are reduced to efficacy metrics;
+ * `decideMatchState` then chooses the effective distance and matched ID. With
+ * no composite, the live nearest-neighbour distance drives the decision.
+ *
+ * @param {{liveMinDist: number|null, liveMinId: number|null}} liveInfo Nearest
+ *   saved face for the unmodified camera frame.
+ * @param {object|null} composite Detection result from the
+ *   Ghostyle-composited frame, when an effect is active.
+ * @param {object} [composite.obfuscatedResult] face-api result detected on the
+ *   composited frame.
+ * @param {boolean} [composite.weakDetection] Whether the relaxed detector was
+ *   required to recover that result.
+ * @returns {{headline: string, detail: object}} Localized decision text plus
+ *   normalized live/composite metrics for the UI and event payload.
+ * @see lab-js/auto-find-loop.js - publishes the returned values periodically.
+ */
 export function evaluateMatch(liveInfo, composite) {
    const { liveMinDist, liveMinId } = liveInfo;
 
@@ -371,7 +390,7 @@ export function evaluateMatch(liveInfo, composite) {
 /**
  * Determine whether a 2D or 3D effect plugin is currently active.
  * @returns {boolean} True if an effect plugin is active.
- * @see findFace - checks plugin status before compositing.
+ * @see lab-js/auto-find-loop.js - skips composite work when no plugin is active.
  */
 export function hasActivePlugin() {
    const G = window.gstmxx;

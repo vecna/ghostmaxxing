@@ -15,8 +15,8 @@
  *   Badges      <- faces via #dbCountBadge (engine), uploads via recordings
  *
  * Everything that reaches into the engine is guarded and marked `INTEGRATION:`
- * where the assumption must be confirmed against live engine behaviour. This
- * file has NOT been run against a camera + models; treat it as a first pass.
+ * where the assumption depends on a public engine hook. View switching and
+ * event mirroring are exercised by the lab end-to-end tests.
  */
 import { state } from './state.js';
 // Drives which landmark visualisation bbox-overlay paints onto #bboxOverlay.
@@ -104,9 +104,7 @@ $$('.navbtn[data-screen]').forEach(b => on(b, 'click', () => {
   if (b.getAttribute('aria-disabled') === 'true') { toast(t('record_clip_first_toast')); return; }
   openScreen(b.dataset.screen);
 }));
-// screen close buttons (also bound by the engine; harmless to double-bind)
-on($('#closeSettingsBtn'), 'click', () => { hideAllScreens(); $$('.navbtn').forEach(b => b.setAttribute('aria-current', 'false')); });
-on($('#closeHistoryBtn'), 'click', () => { hideAllScreens(); $$('.navbtn').forEach(b => b.setAttribute('aria-current', 'false')); });
+// Every screen close control uses the shared data attribute.
 $$('[data-close-screen]').forEach(b => on(b, 'click', () => { hideAllScreens(); $$('.navbtn').forEach(n => n.setAttribute('aria-current', 'false')); }));
 hideAllScreens();
 

@@ -67,7 +67,7 @@
         "person-detection",
         "object-detection"
       ],
-      "description": "A Milan-based fashion company producing knitted garments whose adversarial patterns are intended to confuse automated person and object detectors. The clothing acts upstream of face matching: it tries to stop a camera system from classifying the wearer as a person in the first place.",
+      "description": "Milan-based fashion company making knitted patterns intended to disrupt person and object detection, before face matching.",
       "image": {
         "src": "/images/projects/cap-able.webp",
         "alt": "A Cap_able knitted garment carrying an adversarial pattern.",
@@ -88,7 +88,7 @@
       "target": [
         "face-detection"
       ],
-      "description": "A Leipzig privacy-fashion label selling Faception garments covered with face-like signals, alongside reflective anti-photography clothing and Faraday accessories. Its face-pattern collection aims to make automated systems detect faces where no face exists, increasing ambiguity around the wearer.",
+      "description": "Leipzig label selling Faception garments with face-like decoys, alongside reflective clothing and Faraday accessories. The face patterns aim to trigger false detections around the wearer.",
       "image": {
         "src": "/images/projects/urban-privacy.webp",
         "alt": "Models wearing Urban Privacy counter-surveillance clothing.",
@@ -115,7 +115,7 @@
         "nir-face-recognition",
         "sensor-disturbance"
       ],
-      "description": "Commercial privacy eyewear combining infrared-blocking lenses with reflective frames. Different models target infrared illumination, eye tracking, or depth-based face mapping; the effect therefore depends on the camera spectrum and acquisition system rather than providing universal invisibility.",
+      "description": "Eyewear combining infrared-blocking lenses and reflective frames. Models target infrared illumination, eye tracking or depth mapping; effects depend on the camera spectrum and capture system.",
       "image": {
         "src": "/images/projects/reflectacles.webp",
         "alt": "Reflectacles privacy eyewear photographed on a wearer.",
@@ -137,7 +137,7 @@
         "person-detection",
         "face-recognition"
       ],
-      "description": "Bill Swearingen's project uses an evolutionary process to search for adversarial patterns that can be printed on ordinary fabric. Presented at DEF CON as an experiment about whether clothing can defeat a complete recognition pipeline, it is now moving from conference prototype toward a crowdfunded garment.",
+      "description": "Bill Swearingen’s evolutionary search for adversarial patterns printable on fabric. Presented at DEF CON as a recognition-pipeline experiment, it is moving toward a crowdfunded garment.",
       "image": {
         "src": "/images/projects/norecognition.webp",
         "alt": "Bill Swearingen presenting noRecognition at DEF CON.",
@@ -163,7 +163,7 @@
       "target": [
         "person-detection"
       ],
-      "description": "Simon Weckert's wearable installation turns an adversarial pattern developed against YOLO person detection into a shirt and public artwork. It exposes the fragility of automated seeing; the artist explicitly does not promise anonymity or effectiveness against a particular government system.",
+      "description": "Simon Weckert’s shirt and artwork uses a pattern developed against YOLO person detection. The artist does not promise anonymity or effectiveness against government systems.",
       "image": {
         "src": "/images/projects/digital-camouflage.webp",
         "alt": "A Digital Camouflage shirt being observed by a computer-vision interface.",
@@ -185,7 +185,7 @@
         "security-camera",
         "sensor-disturbance"
       ],
-      "description": "Mac Pierce's open DIY garment places high-power infrared emitters around the hood and uses a tuned strobe to disturb night-vision exposure around the head. It targets IR-sensitive cameras rather than directly changing a face descriptor, and its effect varies with the camera, distance, light, and exposure controls.",
+      "description": "Mac Pierce’s DIY hood uses infrared emitters and strobing to disturb night-vision exposure. It targets camera capture, not face descriptors; effects depend on camera, distance, lighting and exposure controls.",
       "image": {
         "src": "/images/projects/camera-shy-hoodie.webp",
         "alt": "The Camera-Shy Hoodie producing infrared glare in security-camera footage.",
@@ -211,7 +211,7 @@
       "target": [
         "face-detection"
       ],
-      "description": "Adam Harvey's foundational computer-vision camouflage project uses makeup, hairstyling, occlusion, and asymmetry to break the facial structure expected by a detector. The original looks targeted Viola-Jones Haar cascades and are historical examples, not current protection recipes for modern neural networks.",
+      "description": "Adam Harvey’s makeup and hairstyling experiments targeted Viola-Jones Haar-cascade face detection. These historical patterns do not establish protection against modern neural networks.",
       "image": {
         "src": "/images/projects/cv-dazzle.webp",
         "alt": "A face styled with an asymmetric CV Dazzle look.",
@@ -233,7 +233,7 @@
         "face-detection",
         "face-recognition"
       ],
-      "description": "Michelle Tylicki and Lauri Love turn anti-surveillance makeup into an interactive salon for teaching, designing, and testing a look. The touring work connects collective experimentation with model feedback, although its public documentation does not provide a complete reproducible benchmark.",
+      "description": "Michelle Tylicki and Lauri Love’s interactive salon teaches and tests anti-surveillance makeup with model feedback. Public documentation lacks a complete reproducible benchmark.",
       "image": {
         "src": "/images/projects/dazzle.webp",
         "alt": "A participant testing anti-surveillance makeup in the DAZZLE installation.",
@@ -255,7 +255,7 @@
         "public-space-surveillance",
         "face-recognition"
       ],
-      "description": "A London collective that used CV Dazzle walks, workshops, films, and public interventions to make surveillance infrastructure visible and discussable. Its contribution is a repeatable social and workshop practice rather than a controlled claim of recognition evasion.",
+      "description": "London collective using CV Dazzle walks, workshops and films to examine public surveillance. It offers a workshop practice, not controlled evidence of recognition evasion.",
       "image": {
         "src": "/images/projects/dazzle-club.webp",
         "alt": "The Dazzle Club walking in public with face paint.",
@@ -276,7 +276,7 @@
       "target": [
         "face-detection"
       ],
-      "description": "Adam Harvey and Hyphen-Labs developed a textile covered with machine-readable false faces, redirecting a detector toward decoys around the wearer. Its first version was specific to OpenCV Haar cascades, was never sold, and was not tested against modern deep face detectors.",
+      "description": "Adam Harvey and Hyphen-Labs’ textile places false-face decoys around the wearer. The first version targeted OpenCV Haar cascades, was never sold and was not tested against modern deep face detectors.",
       "image": {
         "src": "/images/projects/hyperface.webp",
         "alt": "HyperFace textile printed with abstract false-face patterns.",
@@ -298,7 +298,7 @@
         "face-detection",
         "sensor-disturbance"
       ],
-      "description": "A National Institute of Informatics research programme that explored active infrared emitters and later passive reflective or absorbing eyewear. The visor aims to suppress the eye-region contrast used by some face-analysis pipelines; NII now lists it as a past project.",
+      "description": "National Institute of Informatics research on infrared emitters and passive reflective or absorbing eyewear intended to suppress eye-region contrast. NII lists it as a past project.",
       "image": {
         "src": "/images/projects/privacy-visor.webp",
         "alt": "A Privacy Visor prototype worn over the eyes.",
@@ -319,7 +319,7 @@
       "target": [
         "face-recognition"
       ],
-      "description": "Simone C. Niquille printed T-shirts with celebrity impersonators and highly circulated stock faces to introduce false identities into social-media recognition and tagging. The shirts do not hide the wearer's face; they explore privacy through misidentification, duplication, and database noise.",
+      "description": "Simone C. Niquille’s shirts use celebrity impersonators and stock faces to introduce false identities into social-media tagging. They explore database noise rather than hiding the wearer’s face.",
       "image": {
         "src": "/images/projects/realface-glamouflage.webp",
         "alt": "A REALFACE Glamouflage T-shirt printed with repeated faces.",
@@ -345,7 +345,7 @@
       "target": [
         "face-recognition"
       ],
-      "description": "Leonardo Selvaggio distributed photorealistic prosthetic and paper masks of his own face so that many wearers would present the same identity to cameras. URME replaces one identity with another rather than attempting invisibility, turning biometric substitution into a collective artwork.",
+      "description": "Leonardo Selvaggio’s prosthetic and paper masks reproduce his face for multiple wearers. The artwork explores identity substitution rather than invisibility.",
       "image": {
         "src": "/images/projects/urme-surveillance.webp",
         "alt": "A person holding and wearing a URME Surveillance face mask.",
@@ -372,7 +372,7 @@
         "face-recognition",
         "face-detection"
       ],
-      "description": "Zach Blas's workshops aggregate participants' facial data into amorphous collective masks that cannot be reduced to one individual portrait. The project opposes biometric classification and its social biases through collective masking, performance, and public discussion.",
+      "description": "Zach Blas’s workshops combine participants’ facial data into collective masks. The performances challenge biometric classification and its social biases.",
       "image": {
         "src": "/images/projects/facial-weaponization-suite.webp",
         "alt": "Participants wearing a collective mask from the Facial Weaponization Suite.",
@@ -557,7 +557,7 @@
       "target": [
         "flash-photography"
       ],
-      "description": "A 2015 collection of five retroreflective garments by the clothing brand Betabrand with the musician Chris Holmes, using fabric coated with glass nanospheres that return a camera flash to the lens. It was conceived to disrupt press photography rather than recognition systems, and made no claim about face detection or matching. The collection was crowdfunded, shipped, and is no longer sold.",
+      "description": "Betabrand and Chris Holmes’ 2015 collection used glass-nanosphere fabric to reflect camera flash toward the lens. It targeted press photography and made no face-recognition claim. The crowdfunded collection shipped and is no longer sold.",
       "image": {
         "src": "/images/projects/betabrand-flashback.webp",
         "alt": "A person wearing Betabrand Flashback clothing while surrounding phones photograph its reflective surface.",
@@ -578,7 +578,7 @@
       "target": [
         "license-plate-recognition"
       ],
-      "description": "Kate Bertash printed garments covered with plausible vehicle number plates so that automated licence plate readers would capture, timestamp and record them alongside real vehicles. The mechanism is data injection rather than evasion: the plates only need to be accepted by a reader, not to defeat a classifier, and the target is the integrity of plate-reader databases rather than any face system. Demonstrated at DEF CON 27 against OpenALPR and commercial mobile readers; the garments have not been sold since around 2023.",
+      "description": "Kate Bertash’s garments carry plausible number plates to inject false records into licence-plate databases, not hide faces. Demonstrated at DEF CON 27 against OpenALPR and commercial mobile readers; garments have not been sold since around 2023.",
       "image": {
         "src": "/images/projects/adversarial-fashion.webp",
         "alt": "A shirt printed with rows of vehicle number plates.",
@@ -599,7 +599,7 @@
       "target": [
         "thermal-imaging"
       ],
-      "description": "Adam Harvey's 2013 garment series used silver-plated, thermally reflective fabric to reduce the wearer's thermal signature in long-wave infrared imaging. It addresses aerial and thermal observation rather than face detection or matching, and is frequently miscited as anti-face-recognition clothing. The pieces were sold briefly through Harvey's Privacy Gift Shop and are now sold out.",
+      "description": "Adam Harvey’s 2013 silver-plated garments reduced thermal signatures in long-wave infrared imaging. They address thermal observation, not face recognition. Previously sold through the Privacy Gift Shop; now sold out.",
       "image": {
         "src": "/images/projects/stealth-wear.webp",
         "alt": "A hooded garment in reflective metallic fabric, shown beside its thermal-camera image.",
@@ -719,7 +719,7 @@
         "face-detection",
         "face-recognition"
       ],
-      "description": "Sterling Crispin used genetic algorithms driven by face detection and recognition systems to evolve forms those systems read as maximally face-like, then 3D-printed them as wearable masks. The series is presented as a way to show the machine what it is looking for rather than as a countermeasure; Crispin states directly that defeating face recognition is not the goal, since covering a face with a hand already achieves non-detection. Produced between 2013 and 2015 and exhibited internationally.",
+      "description": "Sterling Crispin used genetic algorithms to generate forms that face-analysis systems read as face-like, then 3D-printed wearable masks. Produced in 2013–2015, the artwork examines machine representations; it is not presented as a countermeasure.",
       "image": {
         "src": "/images/projects/data-masks.webp",
         "alt": "A 3D-printed mask whose features approximate an algorithm's idea of a face.",
@@ -741,7 +741,7 @@
         "face-landmarks",
         "face-recognition"
       ],
-      "description": "Ewa Nowak's brass face jewellery hooks behind the ears and places two discs below the eyes and a rectangle between them, positioned to disturb the facial landmarks a detector locates. The designer's only reported test was uploading photographs to Facebook and observing that its tag suggestion did not appear, which is a single consumer-platform check on frontal stills rather than a measurement. It was made as a prototype and has not been produced commercially.",
+      "description": "Ewa Nowak’s brass face jewellery places discs below the eyes and a rectangle between them to disturb landmark detection. The only reported test was the absence of Facebook tag suggestions on frontal photos. No quantitative evaluation or commercial production is reported.",
       "image": {
         "src": "/images/projects/incognito-nowak.webp",
         "alt": "Brass jewellery worn across the face, with discs below the eyes and a bar between them.",
@@ -789,7 +789,7 @@
       "target": [
         "face-recognition"
       ],
-      "description": "Jing-cai Liu's 2017 bachelor project at the Utrecht School of the Arts mounts a small projector on the head to cast a different appearance over the wearer's face. It is a speculative design rather than a tested countermeasure: the project page states that most of the designs in the series are not working products, and no optical specification or test result is published. It is frequently misattributed to Jip van Leeuwenstein, who was one of five collaborators on the wider series.",
+      "description": "Jing-cai Liu’s 2017 design uses a head-mounted projector to change facial appearance. It is speculative: no optical specifications or test results are published, and the project says most designs are not working products. Often misattributed to collaborator Jip van Leeuwenstein.",
       "image": {
         "src": "/images/projects/wearable-face-projector.webp",
         "alt": "A head-mounted projector casting another face over the wearer's own.",
@@ -811,7 +811,7 @@
         "face-recognition",
         "gender-classification"
       ],
-      "description": "A hands-on workshop titled “Face/Off: Adversarial Drag in the Age of Capture”, run within the Queer and Feminist Informatics Network at the University of Amsterdam. It uses drag technique and adversarial makeup against both facial and automated gender classification, treating the binaries encoded in classifiers as part of what is being contested. The network presents it as pedagogy and creative research and makes no claim of effectiveness against a named system.",
+      "description": "“Face/Off: Adversarial Drag in the Age of Capture” is a Queer and Feminist Informatics Network workshop at the University of Amsterdam. Drag and makeup experiments challenge face and gender classification. It claims no effectiveness against a named system.",
       "image": {
         "src": "/images/projects/qfin-adversarial-drag.webp",
         "alt": "The glitch-styled banner of the Queer and Feminist Informatics Network.",

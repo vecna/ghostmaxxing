@@ -1,6 +1,6 @@
       <section class="content-page__header-area gm-prose" aria-labelledby="maintain-title">
         <span class="content-page__kicker">Maintain the project</span>
-        <h1 id="maintain-title">Know what each command reads, writes, and replaces.</h1>
+        <h1 id="maintain-title">Build and maintain Ghostmaxxing</h1>
         <p class="content-page__lead">An operational index for documentation, tests, validation, source exports, generated assets, and packaging.</p>
         <p class="content-page__deck">Run these commands from the repository root. Review generated diffs. A successful exit proves only that the script completed its own checks.</p>
         <div class="content-page__actions">
@@ -46,7 +46,7 @@
 
           <section id="scripts">
             <span class="docs-eyebrow">scripts-dev inventory</span>
-            <h2>Every support script has a boundary.</h2>
+            <h2>Script inputs and outputs</h2>
             <div class="docs-maintenance-list">
               <article class="docs-maintenance-item"><h3>build-functional-docs.cjs</h3><p>Wraps English body fragments in shared site chrome and documentation navigation. Writes ten static pages under <code>docs/</code> and the <code>docs.html</code> compatibility redirect. It does not translate content or generate JSDoc.</p></article>
               <article class="docs-maintenance-item"><h3>capture-doc-screenshots.cjs</h3><p>Drives Lab and Video Loader with Playwright fixtures. Writes stable screenshots and records pixel dimensions, aspect ratio, crop, viewport, and provenance in the manifest. Brush is an optional path.</p></article>
@@ -65,7 +65,7 @@
 
           <section id="release-check">
             <span class="docs-eyebrow">Before hand-off</span>
-            <h2>Reminder before issuing a new release.</h2>
+            <h2>Release checks</h2>
             <ul>
               <li>Run the relevant unit and end-to-end tests, not only <code>npm run check</code>.</li>
               <li>Validate every Ghostyle and inspect warnings.</li>

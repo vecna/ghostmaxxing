@@ -1,9 +1,8 @@
       <section class="content-page__header-area gm-prose" aria-labelledby="brush-guide-title">
         <span class="content-page__kicker">Optional guide · Face Brush</span>
         <h1 id="brush-guide-title">Digital sketch.</h1>
-        <p class="content-page__lead">Brush is a feature in the lab that allows digital painting over the face, to simulate it's possible result, 
-          before doing any actual painting.  also in that case you .</p>
-        <p class="content-page__deck">you can control color, size, and opacity of the brush.</p>
+        <p class="content-page__lead">Sketch a pattern on your face before testing it with physical makeup.</p>
+        <p class="content-page__deck">Control brush colour, size and opacity.</p>
         <div class="content-page__actions">
           <a class="docs-link docs-link--primary" href="/lab.html">Open the Lab &#8599;</a>
           <a class="docs-link" href="/docs/guides/lab.html">Lab fundamentals</a>
@@ -18,9 +17,9 @@
 
             <p>At the first software release, two specific Ghostyles exists to allow realtime simulation 
               and preview to</p>
-            <H1>TODO how yo select ghostyles</H1>
-            <H1>TODO brush example </H1>
-            <H1>TODO 3d stripes example </H1>
+            <H1 class="docs-article__todo">TODO how yo select ghostyles</H1>
+            <H1 class="docs-article__todo">TODO brush example </H1>
+            <H1 class="docs-article__todo">TODO 3d stripes example </H1>
           </section>
 
           <section id="procedure">
@@ -28,7 +27,7 @@
             <div class="docs-step-list">
               <div class="docs-step"><span class="docs-step__number">01</span><div><h3>Save the clean face</h3><p>Use the same camera, pose, and light you intend to keep during the digital sketch.</p></div></div>
               <div class="docs-step"><span class="docs-step__number">02</span><div><h3>Activate Brush</h3><p>Select Face Brush from the Ghostyles. The control bar exposes colour, size, opacity, Undo, Clear, Copy state, and Bake Ghostyle.</p></div></div>
-              <div class="docs-step"><span class="docs-step__number">03</span><div><h3>Reduce the brush size</h3><p>Start with marks that remain local to a feature. Work around eyes, brows, cheeks, the bridge and sides of the nose, and the mouth rather than hiding the whole face under three broad strokes.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">03</span><div><h3>Reduce the brush size</h3><p>Start with small marks around the eyes, brows, cheeks, nose and mouth.</p></div></div>
               <div class="docs-step"><span class="docs-step__number">04</span><div><h3>Hold and paint</h3><p>The plugin stores samples relative to nearby 68-point face-api landmarks and an eye-based frame. Marks follow translation, in-plane rotation, and scale while the face remains detectable.</p></div></div>
               <div class="docs-step"><span class="docs-step__number">05</span><div><h3>Observe a series</h3><p>Wait for several composite analyses after each small change. Keep a note of the baseline, threshold, brush settings, and regions changed.</p></div></div>
               <div class="docs-step"><span class="docs-step__number">06</span><div><h3>Save a proposal</h3><p><strong>Copy state</strong> preserves the stroke data. <strong>Bake Ghostyle</strong> downloads a standalone plugin proposal, or copy/upload the resulting picture.</p></div></div>
@@ -48,17 +47,17 @@
             <span class="docs-eyebrow">Physical translation</span>
             <h2>Retest with real makeup.</h2>
             <ul>
-              <li>if you saved a ghostyle, just reload it</li>
-              <li>Try to use a similar color, assuming the effective makeup has higher opacity than what can be digitally siulate</li>
-              <li>The labi can't distinguish between actual color and digiital overlay, therefore when the painting is happening and both are present, those reading shouldn't be accurate</li>
-              <li>Reproduce the pattern as closely as practical, then remove the Ghostyle!</li>
-              <li>if works: please get in touch!? You just used Ghostmaxxing at it's fullest!</li>
+              <li>Reload your saved Ghostyle.</li>
+              <li>Match the colours and opacity as closely as possible.</li>
+              <li>While both are visible, the Lab measures the makeup and overlay together.</li>
+              <li>Remove the digital Ghostyle before testing the physical pattern.</li>
+              <li>Share the result with its test conditions.</li>
             </ul>
           </section>
 
           <section id="limits">
             <span class="docs-eyebrow">Limits</span>
-            <h2>It's too easy to draw a wide line.</h2>
+            <h2>Test small patterns</h2>
             <p>Broad occlusion can make a detector lose the face, but it may also produce an impractical or misleading design. A useful authoring session records where the pattern sits, how visible it is, whether the face remains trackable, and how stable the result is across frames.</p>
           </section>
 
