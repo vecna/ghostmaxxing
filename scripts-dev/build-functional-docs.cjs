@@ -18,6 +18,8 @@ const SOURCE_ROOT = path.join(ROOT, 'docs-src', 'en');
 const PAGE_INDEX = path.join(SOURCE_ROOT, 'pages.json');
 const PROJECT_VERSION = '0.9.11';
 const LAST_UPDATED = 'October 2026';
+const SITE_URL = 'https://ghostmaxxing.vecna.eu';
+const SOCIAL_IMAGE = `${SITE_URL}/images/social/ghostmaxxing-generic.jpg`;
 
 function escapeAttribute(value) {
   return String(value)
@@ -25,6 +27,15 @@ function escapeAttribute(value) {
     .replaceAll('"', '&quot;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;');
+}
+
+function canonicalUrl(output) {
+  const route = output.replace(/index\.html$/, '');
+  return `${SITE_URL}/${route}`;
+}
+
+function jsonForScript(value) {
+  return JSON.stringify(value, null, 2).replace(/</g, '\\u003c');
 }
 
 function current(section, candidate) {
@@ -109,20 +120,56 @@ function siteFooter() {
 
 function renderPage(page, body) {
   const mainClass = page.mainClass ? ` ${page.mainClass}` : '';
+  const canonical = canonicalUrl(page.output);
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    '@id': `${canonical}#article`,
+    headline: page.title,
+    description: page.description,
+    url: canonical,
+    inLanguage: 'en',
+    articleSection: 'Documentation',
+    publisher: {
+      '@type': 'Organization',
+      '@id': 'https://nina.watch/#organization',
+      name: 'NINA / Universal Digital Union',
+      url: 'https://nina.watch/',
+    },
+    isPartOf: {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      url: `${SITE_URL}/`,
+      name: 'Ghostmaxxing',
+    },
+  };
   return `<!doctype html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <link rel="canonical" href="${canonical}" />
   <title>${escapeAttribute(page.title)}</title>
   <meta name="generator" content="Hand-coded with rage against the algorithm" />
   <meta name="description" content="${escapeAttribute(page.description)}" />
-  <meta property="og:title" content="${escapeAttribute(page.title.replace(' | Ghostmaxxing', ''))} | Ghostmaxxing" />
+  <meta property="og:title" content="${escapeAttribute(page.title)}" />
   <meta property="og:description" content="${escapeAttribute(page.description)}" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="/images/social-card.svg" />
+  <meta property="og:url" content="${canonical}" />
+  <meta property="og:image" content="${SOCIAL_IMAGE}" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${escapeAttribute(page.title)}" />
+  <meta name="twitter:description" content="${escapeAttribute(page.description)}" />
+  <meta name="twitter:image" content="${SOCIAL_IMAGE}" />
+  <meta name="twitter:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
+  <script type="application/ld+json">
+${jsonForScript(structuredData)}
+  </script>
   <link rel="icon" type="image/svg+xml" href="/images/logo/mark-onlight.svg" />
   <link rel="stylesheet" href="/styles/styles.css" />
   <link rel="stylesheet" href="/styles/pages.css" />

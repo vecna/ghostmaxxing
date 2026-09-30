@@ -40,6 +40,7 @@ const REFERENCES_PATH = path.join(ROOT, 'references', 'REFERENCES.json');
 const TEMPLATE_PATH = path.join(ROOT, 'references', 'templates', 'references.template.html');
 const OUTPUT_PATH = path.join(ROOT, 'references', 'index.html');
 const VALIDATOR_PATH = path.join(ROOT, 'references', 'validate-references.js');
+const SITE_URL = 'https://ghostmaxxing.vecna.eu';
 
 const TESTABILITY_LABEL = {
   direct: 'Direct testability',
@@ -243,6 +244,47 @@ function buildReferencesBody(sortedRefs, tagStats) {
   return { body: chunks.join('\n'), groups: activeGroups };
 }
 
+function structuredData(refs) {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': `${SITE_URL}/references/#webpage`,
+    name: 'Cultural references — Ghostmaxxing',
+    description: 'A curated technical and cultural genealogy of face-recognition camouflage, adversarial makeup, CV Dazzle, face obfuscation and physical-world attacks against computer vision systems.',
+    url: `${SITE_URL}/references/`,
+    inLanguage: 'en',
+    isPartOf: {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      url: `${SITE_URL}/`,
+      name: 'Ghostmaxxing',
+    },
+    publisher: {
+      '@type': 'Organization',
+      '@id': 'https://nina.watch/#organization',
+      name: 'NINA / Universal Digital Union',
+      url: 'https://nina.watch/',
+    },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: refs.length,
+      itemListElement: refs.map((ref, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': ref.type === 'research' ? 'ScholarlyArticle' : 'CreativeWork',
+          name: ref.title,
+          url: ref.links.canonical || ref.link,
+          description: ref.description,
+          author: ref.author,
+          datePublished: String(ref.year),
+          keywords: [...ref.intervention, ...ref.target, ...ref.domain].join(', '),
+        },
+      })),
+    },
+  }, null, 2).replace(/</g, '\\u003c');
+}
+
 function main() {
   // Fail loudly rather than generate a page from a broken/incomplete JSON.
   try {
@@ -286,7 +328,8 @@ function main() {
     .replace(/{{YEAR_MAX}}/g, String(yearMax))
     .replace('{{STATS_LINE}}', statsLine)
     .replace('{{REFERENCES_BODY}}', body)
-    .replace('{{GROUP_NAV}}', groupNav);
+    .replace('{{GROUP_NAV}}', groupNav)
+    .replace('{{SEO_STRUCTURED_DATA}}', structuredData(refs));
 
   fs.writeFileSync(OUTPUT_PATH, html);
   console.log(

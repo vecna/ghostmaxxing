@@ -8,19 +8,25 @@
     <meta name="theme-color" content="#f26a1b" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/images/logo/mark-color.svg">
-    <title>Ghostmaxxing</title>
+    <title>Home — Ghostmaxxing</title>
     <meta name="description"
       content="Ghostmaxxing is a public lab for testing face-recognition camouflage through browser experiments, Ghostyles, references, and reporting." />
-    <meta property="og:title" content="Ghostmaxxing" />
+    <meta property="og:title" content="Home — Ghostmaxxing" />
     <meta property="og:description"
       content="A public lab for testing face-recognition camouflage." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/images/social-card.svg" />
+    <meta property="og:url" content="https://ghostmaxxing.vecna.eu/" />
+    <meta property="og:image" content="https://ghostmaxxing.vecna.eu/images/social/ghostmaxxing-generic.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Ghostmaxxing" />
+    <meta name="twitter:title" content="Home — Ghostmaxxing" />
     <meta name="twitter:description"
       content="A public lab for testing face-recognition camouflage." />
-    <meta name="twitter:image" content="/images/social-card.svg" />
+    <meta name="twitter:image" content="https://ghostmaxxing.vecna.eu/images/social/ghostmaxxing-generic.jpg" />
+    <meta name="twitter:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -32,33 +38,43 @@
       "name": "Ghostmaxxing",
       "description": "A public lab for testing face-recognition camouflage.",
       "inLanguage": "en",
-      "publisher": { "@id": "https://ghostmaxxing.vecna.eu/#publisher" }
+      "publisher": { "@id": "https://nina.watch/#organization" }
     },
     {
       "@type": "Organization",
-      "@id": "https://ghostmaxxing.vecna.eu/#publisher",
-      "name": "Ghostmaxxing",
-      "url": "https://ghostmaxxing.vecna.eu/",
-      "logo": "https://ghostmaxxing.vecna.eu/images/logo/mark-color.svg",
-      "sameAs": ["https://github.com/vecna/ghostmaxxing"]
+      "@id": "https://nina.watch/#organization",
+      "name": "NINA / Universal Digital Union",
+      "url": "https://nina.watch/"
     },
     {
       "@type": "SoftwareApplication",
       "@id": "https://ghostmaxxing.vecna.eu/#app",
       "name": "Ghostmaxxing",
       "url": "https://ghostmaxxing.vecna.eu/lab.html",
-      "applicationCategory": "EducationalApplication",
+      "alternateName": "Ghòstati",
+      "applicationCategory": ["EducationalApplication", "SecurityApplication"],
       "applicationSubCategory": "Research instrument",
-      "operatingSystem": "Any browser with camera access",
-      "browserRequirements": "Requires WebGL, WebAssembly and getUserMedia",
+      "operatingSystem": "Web",
+      "browserRequirements": "A modern browser with webcam permission, WebGL and WebAssembly",
       "description": "A static, browser-side lab for testing face-recognition camouflage. A local recognition pipeline runs against the webcam feed; a baseline face is enrolled, altered with painted overlays or Ghostyle plugins, and re-tested in real time. All processing is client-side and no face data leaves the device.",
       "license": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
       "isAccessibleForFree": true,
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
       "codeRepository": "https://github.com/vecna/ghostmaxxing",
       "programmingLanguage": "JavaScript",
-      "author": { "@id": "https://ghostmaxxing.vecna.eu/#publisher" },
+      "author": {
+        "@type": "Person",
+        "name": "Claudio Agosti",
+        "url": "https://me.vecna.eu/"
+      },
+      "publisher": { "@id": "https://nina.watch/#organization" },
+      "sameAs": ["https://github.com/vecna/ghostmaxxing"],
       "keywords": "facial recognition, adversarial makeup, anti-biometric, computer vision, CV Dazzle, web AR",
+      "featureList": [
+        "Test local face matching with a webcam",
+        "Paint and apply Ghostyle interventions",
+        "Bake and retest face-anchored overlays"
+      ],
       "softwareHelp": "https://ghostmaxxing.vecna.eu/docs/"
     }
   ]
