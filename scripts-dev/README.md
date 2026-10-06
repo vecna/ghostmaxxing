@@ -92,7 +92,7 @@ npm run update:genealogy
 
 ## Rebuild and install the HTML site
 
-`npm run htmls` and `npm run htmls:install` regenerate functional docs, JSDoc, projects, references, genealogy and the code map, then run `npm run check:seo`. Put lasting changes in the source HTML, page builders, or templates: `projects/index.html`, `references/index.html`, `genealogy.html` and the generated docs are overwritten. The project and reference JSON-LD item lists are built from their JSON catalogues.
+`npm run htmls` and `npm run htmls:install` regenerate functional docs, JSDoc, projects, references, genealogy and the code map. Put lasting changes in the source HTML, page builders, or templates: `projects/index.html`, `references/index.html`, `genealogy.html` and the generated docs are overwritten. The project and reference JSON-LD item lists are built from their JSON catalogues.
 
 `npm run htmls:install` then runs `scripts-dev/install-client-interface.cjs`. That installer copies every root-level HTML file, the `projects/`, `references/`, `docs/` and other allow-listed directories, and selected deployable files from `web-files/` into `../gstmxx-backend/client-interface/`. It clears that destination before copying; use it only when replacing that client-interface directory is intended. Set `GSTMXX_CLIENT_BUILD_DIR` to stage into an isolated target (as the integration test does). Add root-served crawler files to `web-files/` and list them in the installer's `COPY_WEB_FILES`.
 

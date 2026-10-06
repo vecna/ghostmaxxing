@@ -38,6 +38,8 @@
     var cards = Array.prototype.slice.call(track.querySelectorAll('.story__card'));
     if (cards.length < 2) return;
 
+    if (!track.hasAttribute('tabindex')) track.setAttribute('tabindex', '0');
+
     var OPENS_ON = 1; // zero-based: the second card
     var current = OPENS_ON;
     var dots = [];
@@ -57,9 +59,18 @@
         return best;
     }
 
+    /* Marks each card as before, at, or after the current one so the CSS can
+       fade the peeking neighbours towards the page background. */
+    function markCards() {
+        cards.forEach(function (card, i) {
+            card.setAttribute('data-pos', i === current ? 'current' : (i < current ? 'before' : 'after'));
+        });
+    }
+
     function markCurrent(index) {
         if (index === current) return;
         current = index;
+        markCards();
         for (var i = 0; i < dots.length; i += 1) {
             var isHere = i === index;
             dots[i].classList.toggle('is-current', isHere);
@@ -116,6 +127,27 @@
         });
     });
 
+    dots.forEach(function (button, index) {
+        var isHere = index === current;
+        button.classList.toggle('is-current', isHere);
+        button.setAttribute('aria-current', isHere ? 'true' : 'false');
+    });
+
+    markCards();
+
+    var story = track.closest('.story');
+    if (story) {
+        story.addEventListener('keydown', function (event) {
+            if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+            if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+            if (!track.contains(event.target) && !controls.contains(event.target)) return;
+            if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+
+            event.preventDefault();
+            goTo(current + (event.key === 'ArrowRight' ? 1 : -1), true);
+        });
+    }
+
     var settling = null;
     track.addEventListener('scroll', function () {
         window.clearTimeout(settling);
@@ -133,13 +165,14 @@
     });
 
     controls.hidden = false;
-    markCurrent(-1);
 
     /* Opening position, after layout: offsetLeft is only meaningful once the
        cards have been laid out, and the images carry width and height so that
        happens before they load. */
     if (window.requestAnimationFrame) {
-        window.requestAnimationFrame(function () { goTo(OPENS_ON, false); });
+        window.requestAnimationFrame(function () {
+            if (current === OPENS_ON) goTo(OPENS_ON, false);
+        });
     } else {
         goTo(OPENS_ON, false);
     }

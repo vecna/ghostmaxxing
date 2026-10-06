@@ -128,6 +128,30 @@ body {
     scroll-snap-align: center;
     scroll-snap-stop: always;
     display: flex;
+    position: relative;
+}
+
+/* The neighbours peeking in at the sides fade from clear, at the edge next to
+   the current card, through cream at 50%, to the page background at 90% at
+   the outer edge. story.js sets data-pos; without it nothing is faded. */
+.story__card[data-pos="before"]::after,
+.story__card[data-pos="after"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.story__card[data-pos="before"]::after {
+    background: linear-gradient(to left, transparent 0%,
+        color-mix(in srgb, var(--gm-cream) 50%, transparent) 50%,
+        color-mix(in srgb, var(--gm-soil) 90%, transparent) 100%);
+}
+
+.story__card[data-pos="after"]::after {
+    background: linear-gradient(to right, transparent 0%,
+        color-mix(in srgb, var(--gm-cream) 50%, transparent) 50%,
+        color-mix(in srgb, var(--gm-soil) 90%, transparent) 100%);
 }
 
 /* align-items: stretch on the track plus a full-height figure means every

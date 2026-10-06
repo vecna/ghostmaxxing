@@ -52,8 +52,7 @@ npm start            # serves the repo and opens /lab.html
 server works:
 
 ```bash
-npm run serve        # static-only compatibility alias
-npm run serve:static # http://localhost:8080/ (frontend only)
+npm run serve        # http://localhost:8080/ (frontend only)
 npm run serve:integrated # stage the client, then serve it from gstmxx-backend
 npm run test:integration # isolated same-origin gallery lifecycle
 python3 -m http.server 8000

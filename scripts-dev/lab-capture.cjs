@@ -1124,9 +1124,7 @@ function summarise(options, baselineReadout, samples, detectedDazzled) {
    let outcome;
    if (faceLost) {
       outcome = 'no-face';
-      verdict = detectedDazzled === false
-         ? 'no face detected on the dazzled picture within 60s: the detector lost the face altogether (strongest result; --debug to confirm)'
-         : 'no face found on the dazzled picture: the detector lost the face altogether (strongest result)';
+      verdict = 'Success: the detector lost the face altogether'
    } else if (!distances.length) {
       outcome = 'no-reading';
       verdict = 'no distance was reported; re-run with --debug';
@@ -1221,9 +1219,10 @@ async function writeVisualLog(result, options) {
    // Readings: one column of text, then a distance bar against the threshold.
    const textTop = margin + 40 + panelH + 36;
    const mono = '18px monospace';
-   label(`identity saved from baseline, lab reported "${result.baselineState || '?'}"`, margin, textTop, '#c8d0e0', mono);
-   label(`readings on dazzled: ${result.samples.map((sample) => sample.num ?? '—').join('  ')}`, margin, textTop + 30, '#c8d0e0', mono);
-   label(`states: ${result.statesSeen.join(' / ') || '—'}`, margin, textTop + 60, '#c8d0e0', mono);
+   console.log(result.statesSeen);
+   // label(`identity saved from baseline, lab reported "${result.baselineState || '?'}"`, margin, textTop, '#c8d0e0', mono);
+   // label(`readings on dazzled: ${result.samples.map((sample) => sample.num ?? '—').join('  ')}`, margin, textTop + 30, '#c8d0e0', mono);
+   // label(`states: ${result.statesSeen.join(' / ') || '—'}`, margin, textTop + 60, '#c8d0e0', mono);
 
    const barX = margin;
    const barY = textTop + 90;

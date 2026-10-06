@@ -45,6 +45,20 @@ test.describe('Ghostmaxxing homepage story', () => {
     await expect(dots.nth(4)).toHaveClass(/is-current/);
   });
 
+  test('moves with left and right arrow keys while the carousel has focus', async ({ page }) => {
+    await page.goto('/index.html');
+    const track = page.locator('#storyTrack');
+    const dots = page.locator('.story__dot');
+
+    await expect(track).toHaveAttribute('tabindex', '0');
+    await track.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(dots.nth(2)).toHaveClass(/is-current/);
+
+    await page.keyboard.press('ArrowLeft');
+    await expect(dots.nth(1)).toHaveClass(/is-current/);
+  });
+
   test('never scrolls the page sideways, at any width', async ({ page }) => {
     for (const width of [320, 390, 768, 1440]) {
       await page.setViewportSize({ width, height: 800 });
