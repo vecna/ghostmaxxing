@@ -35,6 +35,8 @@
  *                      database; probe folded into --debug; timestamped
  *                      progress; DOM clicks, direct style injection and CDP
  *                      screenshots instead of Playwright waits; --version.
+ *   0.9.3  2026-10-06  render un-mirrors the lab (--mirror keeps the selfie
+ *                      view) and takes --label-scale for larger overlay text.
  *   0.9.2  2026-09-20  --feed: the fake webcam frame size is an option. render
  *                      defaults to "fit" (a 4:3 frame as tall as the source),
  *                      because at 640x480 every overlay the lab draws was
@@ -49,7 +51,23 @@ const { spawnSync } = require('node:child_process');
 const httpServer = require('http-server');
 const { chromium } = require('@playwright/test');
 
-const VERSION = '0.9.2';
+const VERSION = '0.9.3';
+
+/**
+ * render's browser window. 4:3, like the fake webcam frame, so the feed fills
+ * it edge to edge (the lab's video is object-fit: cover).
+ */
+const RENDER_VIEWPORT = { width: 1280, height: 960 };
+
+/** render captures at this device scale factor; --label-scale multiplies it. */
+const RENDER_CAPTURE_SCALE = 2;
+
+/**
+ * Upper bound for --label-scale. The viewport is divided by it, and under 700
+ * CSS px wide the lab switches to its phone layout (styles/lab.css), which is a
+ * different picture altogether. 1280 / 1.8 = 711.
+ */
+const LABEL_SCALE_MAX = 1.8;
 const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_RENDER_DIR = path.join(ROOT, 'scratch');
 const DEFAULT_SHOT_OUTPUT = path.join(ROOT, 'images', 'workshops');
@@ -79,6 +97,7 @@ const STORAGE = {
 const LAB_CHROME = [
    '.viewbar', '.rail', '.rec-dot', '.bottombar', '.scrim-top', '.scrim-bottom',
    '.status-pill', '#placeholder', '.screen', '#gm-pluginbar', '.locale-control',
+   '.gm-tool-back',
 ];
 
 // ---------------------------------------------------------------------------
@@ -132,6 +151,16 @@ render options:
   --aspect <w:h>         Crop aspect (4:5)
   --width <px>           Output width (1024)
   --quality <n>          JPEG quality 1-100 (82)
+  --mirror               Keep the lab's selfie mirror. By default render flips
+                         the lab back so the picture matches the photograph:
+                         the lab mirrors a front camera, and a photograph is
+                         not a selfie.
+  --label-scale <n>      Draw the lab's labels, box and landmark strokes this
+                         many times larger relative to the face (1 to 1.8,
+                         default 1). The lab sizes them in screen pixels, so
+                         the browser window is made smaller by this factor and
+                         the capture resolution raised to match; the face and
+                         the output size do not change.
 
 measure options:
   --dazzled <file>       The picture to measure against the baseline identity
@@ -234,6 +263,8 @@ function parseArgs(argv) {
       headed: false,
       keepOpen: 0,
       debug: false,
+      mirror: false,
+      labelScale: 1,
    };
 
    const file = (raw) => path.resolve(process.cwd(), raw);
@@ -250,6 +281,7 @@ function parseArgs(argv) {
       if (arg === '--headed') { options.headed = true; continue; }
       if (arg === '--debug') { options.debug = true; continue; }
       if (arg === '--save-identity') { options.saveIdentity = true; continue; }
+      if (arg === '--mirror') { options.mirror = true; continue; }
 
       const value = requireValue(argv, index, arg);
       index += 1;
@@ -289,6 +321,12 @@ function parseArgs(argv) {
             break;
          }
          case '--pad': options.pad = parseNumber(arg, value); break;
+         case '--label-scale': {
+            const scale = parseNumber(arg, value, { min: 1 });
+            if (scale > LABEL_SCALE_MAX) throw new Error(`--label-scale must be between 1 and ${LABEL_SCALE_MAX}: above that the lab switches to its phone layout.`);
+            options.labelScale = scale;
+            break;
+         }
          case '--width': options.width = Math.max(64, parseNumber(arg, value, { integer: true })); break;
          case '--quality': options.quality = Math.min(100, Math.max(1, parseNumber(arg, value, { integer: true }))); break;
          case '--record': options.record = parseNumber(arg, value); break;
@@ -481,7 +519,7 @@ async function launch(y4mFile, options) {
 async function openLab(y4mFile, options, baseUrl, { viewport, seed = {} } = {}) {
    const browser = await launch(y4mFile, options);
    const context = await browser.newContext({
-      viewport: viewport || { width: 1280, height: 960 },
+      viewport: viewport || RENDER_VIEWPORT,
       permissions: ['camera'],
       deviceScaleFactor: 2,
       locale: options.locale,
@@ -877,6 +915,39 @@ async function activateGhostyle(page, id, options) {
    progress(`Ghostyle "${id}" active`);
 }
 
+/**
+ * Flip the lab back to the photograph's orientation.
+ *
+ * camera.js mirrors #video and #overlay (scaleX(-1)) whenever the facing mode
+ * is "user", which is the only mode a fake webcam has, and the box, mesh and
+ * label canvases follow #overlay. The lab's own #mirrorToggle undoes it and
+ * keeps the lab's state in step (main.js), so label text is still drawn the
+ * right way round; setting the transform from outside would not. The button is
+ * hidden in the interface but still wired, and Element.click() does not care.
+ */
+async function unmirror(page) {
+   const state = () => withTimeout(page.evaluate(() => {
+      const overlay = document.getElementById('overlay');
+      const toggle = document.getElementById('mirrorToggle');
+      const mirrored = (overlay && overlay.style.transform || '').includes('scaleX(-1)');
+      return { mirrored, hasToggle: Boolean(toggle) };
+   }), 15000).catch(() => null);
+
+   let current = await state();
+   if (!current) throw new Error('the lab did not answer when asked whether it is mirrored. Re-run with --headed to watch it.');
+   if (!current.mirrored) { progress('lab is not mirrored'); return false; }
+   if (!current.hasToggle) throw new Error('the lab is mirrored and has no #mirrorToggle to undo it; pass --mirror to keep the selfie view.');
+
+   for (let attempt = 0; attempt < 3 && current.mirrored; attempt += 1) {
+      await withTimeout(page.evaluate(() => document.getElementById('mirrorToggle').click()), 15000).catch(() => {});
+      await page.waitForTimeout(600);
+      current = await state() || current;
+   }
+   if (current.mirrored) throw new Error('the lab stayed mirrored after three presses of #mirrorToggle. Re-run with --headed to watch it.');
+   progress('lab un-mirrored: the picture reads like the photograph');
+   return true;
+}
+
 // ---------------------------------------------------------------------------
 // Geometry
 // ---------------------------------------------------------------------------
@@ -977,7 +1048,16 @@ async function writeImage(buffer, file, options) {
 
 async function render(options, baseUrl, workDir) {
    const y4mFile = toY4m(options.baseline, workDir, 'baseline', options);
-   const session = await openLab(y4mFile, options, baseUrl);
+   // A smaller window makes the face smaller in CSS px while the lab's labels
+   // and strokes, sized in CSS px, stay put: that is what --label-scale is.
+   // The capture scale grows by the same factor so the saved pixels match.
+   const viewport = {
+      width: Math.round(RENDER_VIEWPORT.width / options.labelScale),
+      height: Math.round(RENDER_VIEWPORT.height / options.labelScale),
+   };
+   const captureScale = RENDER_CAPTURE_SCALE * options.labelScale;
+   if (options.labelScale !== 1) progress(`label scale ${options.labelScale}: window ${viewport.width}x${viewport.height}, capture at ${captureScale}x`);
+   const session = await openLab(y4mFile, options, baseUrl, { viewport });
    const { page, logs } = session;
    try {
       if (!session.detected) {
@@ -996,6 +1076,8 @@ async function render(options, baseUrl, workDir) {
          identity = saved ? await readoutWithRetry(page) : null;
       }
 
+      const flipped = options.mirror ? false : await unmirror(page);
+
       await hideLabChrome(page);
       const mode = await applyLayers(page, options);
       if (options.ghostyle) await activateGhostyle(page, options.ghostyle, options);
@@ -1013,16 +1095,18 @@ async function render(options, baseUrl, workDir) {
 
       progress('taking the picture');
       await freezeUi(page);
-      const written = await writeImage(await captureClip(page, clip), options.output, options);
+      const written = await writeImage(await captureClip(page, clip, captureScale), options.output, options);
 
       out();
       out(`source   : ${displayPath(options.baseline)}`);
       out(`feed     : ${options.feed.label}${options.feed.fit ? ' (4:3 frame as tall as the source, up to 1080)' : ''}`);
       out(`layers   : ${options.layers.join(', ')} (lab overlay mode: ${mode})${options.ghostyle ? `, ghostyle ${options.ghostyle}` : ''}`);
+      out(`mirror   : ${options.mirror ? 'kept (--mirror), the lab\'s selfie view' : flipped ? 'undone, reads like the photograph' : 'the lab was not mirrored'}`);
+      if (options.labelScale !== 1) out(`labels   : ${options.labelScale}x (window ${viewport.width}x${viewport.height}, captured at ${captureScale}x)`);
       if (options.saveIdentity) out(`identity : ${identity ? `saved, lab reports "${identity.state}"` : 'NOT saved'}`);
       if (geometry.face) {
          out(`face box : ${Math.round(geometry.face.width)}x${Math.round(geometry.face.height)} at ` +
-             `${Math.round(geometry.face.x)},${Math.round(geometry.face.y)}${geometry.mirrored ? ' (mirrored, flipped back)' : ''}`);
+             `${Math.round(geometry.face.x)},${Math.round(geometry.face.y)}${geometry.mirrored ? ' (mirrored, flipped back for the crop)' : ''}`);
       }
       out(`crop     : ${options.crop === 'face' && geometry.face ? `face, pad ${options.pad}, aspect ${options.aspect.join(':')}` : 'whole frame'}, ` +
           `${Math.round(clip.width)}x${Math.round(clip.height)} css px`);
@@ -1124,7 +1208,12 @@ function summarise(options, baselineReadout, samples, detectedDazzled) {
    let outcome;
    if (faceLost) {
       outcome = 'no-face';
-      verdict = 'Success: the detector lost the face altogether'
+      verdict = 'Success: the detector lost the face altogether';
+      /*
+      verdict = detectedDazzled === false
+         ? 'no face detected on the dazzled picture within 60s: the detector lost the face altogether (strongest result; --debug to confirm)'
+         : 'no face found on the dazzled picture: the detector lost the face altogether (strongest result)';
+         */
    } else if (!distances.length) {
       outcome = 'no-reading';
       verdict = 'no distance was reported; re-run with --debug';
@@ -1219,7 +1308,8 @@ async function writeVisualLog(result, options) {
    // Readings: one column of text, then a distance bar against the threshold.
    const textTop = margin + 40 + panelH + 36;
    const mono = '18px monospace';
-   console.log(result.statesSeen);
+
+   // I'm cleaning the look and feel of the readings
    // label(`identity saved from baseline, lab reported "${result.baselineState || '?'}"`, margin, textTop, '#c8d0e0', mono);
    // label(`readings on dazzled: ${result.samples.map((sample) => sample.num ?? '—').join('  ')}`, margin, textTop + 30, '#c8d0e0', mono);
    // label(`states: ${result.statesSeen.join(' / ') || '—'}`, margin, textTop + 60, '#c8d0e0', mono);
