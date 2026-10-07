@@ -38,15 +38,15 @@ body {
    styles/prose.css via class="gm-prose"; component links style themselves. */
 
 /* ---- The story carousel -------------------------------------------------
-   Eight cards on the browser's own horizontal scroller. Replaces the camera
+   Nine cards on the browser's own horizontal scroller. Replaces the camera
    stage, which moved to /about.html.
 
    Two rules shape everything below.
 
-   The bed is soil, not cream. Two of the eight cards ARE cream, because they
-   are the Ghostyle as a portable object rather than a photograph of a face,
-   and those two are the turns in the story. On a cream bed they would lose
-   their edge and stop being special. Photographs also sit better on a dark
+   The bed is soil, not cream. One of the nine cards IS cream, because it is
+   the Ghostyle as a portable object rather than a photograph of a face, and
+   that is the turn in the story. On a cream bed it would lose its edge and
+   stop being special. Photographs also sit better on a dark
    ground than on the orange.
 
    Vertical scroll belongs to the page. This carousel only ever moves
@@ -66,6 +66,9 @@ body {
     /* The old stage was 82vh. Three fifths of it, which is what the media box
        gets; the caption sits under that. */
     --story-media: 49vh;
+    /* The lab's match threshold. Every meter below places its tick here;
+       a reading is passed per card as style="--reading: 0.52". */
+    --story-threshold: 0.58;
 }
 
 .story__head {
@@ -175,8 +178,8 @@ body {
     background: var(--gm-green-deep);
 }
 
-/* The two Ghostyle-object cards are drawings on cream, not photographs:
-   nothing to crop into, so they are shown whole. */
+/* The Ghostyle-object card is a drawing on cream, not a photograph: nothing
+   to crop into, so it is shown whole. */
 .story__card--object .story__figure {
     background: var(--gm-cream);
 }
@@ -227,6 +230,136 @@ body {
     text-decoration: underline;
     text-decoration-thickness: 2px;
     text-underline-offset: .15em;
+}
+
+/* ---- The meter ------------------------------------------------------------
+   What lab-capture's visual log draws at the bottom of a measurement, cut
+   down to the three things a reader needs: where the threshold is, where the
+   reading landed, and the verdict in words. Pure CSS on the caption's own
+   width, so it is as wide as the caption on a phone and as wide as the
+   caption on a desktop, and never a picture of a bar.
+
+   One bar, two marks. The tick is the threshold, at --story-threshold along
+   the bar. The dot is the reading, at --reading. The dot's colour is the
+   verdict: pink is --accent-spent, the reading did not get past the line;
+   yellow is --accent-live, it did. Both sit on dark green, where tokens.css
+   allows the pink. A lost face has no reading, so no dot: the bar itself
+   turns to stripes, the tape from the beta notice, and the words carry it.
+
+   The numbers are in the text as well as in the custom property: the
+   property is placement, the text is what gets read. */
+
+.story__meter {
+    --reading: 0;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+        "bar bar bar"
+        "reading threshold verdict";
+    column-gap: .75rem;
+    row-gap: .45rem;
+    align-items: baseline;
+    margin: .9rem 0 0;
+    padding-top: .75rem;
+    border-top: 1px solid color-mix(in srgb, var(--gm-cream) 28%, transparent);
+    font-family: var(--mono);
+    font-size: var(--t-meta);
+    letter-spacing: .04em;
+    line-height: 1.2;
+    color: var(--gm-cream);
+}
+
+.story__meter-bar {
+    grid-area: bar;
+    position: relative;
+    display: block;
+    height: 6px;
+    /* Room above for the tick and the dot to stick out of the bar. */
+    margin-top: 6px;
+    background: color-mix(in srgb, var(--gm-cream) 26%, transparent);
+}
+
+/* The threshold tick: a 2px cream line, taller than the bar. */
+.story__meter-bar::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    left: calc(var(--story-threshold) * 100%);
+    width: 2px;
+    margin-left: -1px;
+    background: var(--gm-cream);
+}
+
+/* The reading dot, centred on its value. */
+.story__meter-bar::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: calc(var(--reading) * 100%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--gm-green-night);
+    transform: translate(-50%, -50%);
+    background: var(--accent-spent);
+}
+
+.story__meter--escaped .story__meter-bar::after {
+    background: var(--accent-live);
+}
+
+/* No face, no reading. The bar is striped and the dot is gone. */
+.story__meter--lost .story__meter-bar {
+    background: repeating-linear-gradient(
+        -45deg,
+        var(--gm-cream) 0,
+        var(--gm-cream) 5px,
+        transparent 5px,
+        transparent 10px
+    );
+}
+
+.story__meter--lost .story__meter-bar::after {
+    content: none;
+}
+
+.story__meter-reading,
+.story__meter-threshold,
+.story__meter-verdict {
+    white-space: nowrap;
+}
+
+.story__meter-reading {
+    grid-area: reading;
+}
+
+.story__meter-reading b {
+    font-weight: 700;
+    color: var(--accent-spent);
+}
+
+.story__meter--escaped .story__meter-reading b {
+    color: var(--accent-live);
+}
+
+.story__meter-threshold {
+    grid-area: threshold;
+    opacity: .72;
+}
+
+.story__meter-verdict {
+    grid-area: verdict;
+    justify-self: end;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-meta);
+    color: var(--accent-spent);
+}
+
+.story__meter--escaped .story__meter-verdict,
+.story__meter--lost .story__meter-verdict {
+    color: var(--accent-live);
 }
 
 /* ---- Controls ----------------------------------------------------------- */
@@ -347,6 +480,13 @@ body {
         max-width: 34ch;
         font-size: var(--t-lead);
         line-height: 1.45;
+    }
+
+    /* Not capped at 34ch like the text: the ch is the meter's own, smaller
+       mono, so the same number would make a much narrower bar. */
+    .story__meter {
+        margin-top: 1.4rem;
+        padding-top: 1rem;
     }
 }
 

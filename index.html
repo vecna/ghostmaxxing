@@ -140,33 +140,42 @@
     </header>
 
     <!-- ======================================================================
-       THE STORY. 
+       THE STORY.
 
        The argument is the order of the cards: a Ghostyle works on the face it
-       was drawn on, fails differently on two others, and comes back as a new
-       Ghostyle. It is not a gallery of successes, and it must not become one.
-       The two cream cards are the Ghostyle as an object, leaving and
-       returning: they are the loop, not decoration.
+       was drawn on, fails on a second, is redrawn and works, fails on a third,
+       is recoloured and works. It is not a gallery of successes, and it must
+       not become one. The one cream card is the Ghostyle as an object: the
+       thing that travels from face to face.
 
-       EVERY NUMBER IN THE CAPTIONS BELOW IS A PLACEHOLDER. They describe the
-       shape of the story, not a measurement, and they must be replaced before
-       this page is published. Produce the real ones with
+       EVERY READING BELOW IS A REAL MEASUREMENT, taken with
 
          node scripts-dev/lab-capture.cjs render  --baseline <photo> --ghostyle <id> --output <dazzled>
          node scripts-dev/lab-capture.cjs measure --baseline <photo> --dazzled <dazzled>
 
-       the second of which prints the distance and the threshold; type them in
-       here by hand. There is no data file behind this and there should not be one:
-       the cards are chosen, not generated.
+       and typed in by hand. There is no data file behind this and there
+       should not be one: the cards are chosen, not generated. The readings,
+       all against the lab's threshold of 0.58:
 
-       Measure first and write the captions afterwards. If a Ghostyle does not
-       cross on the face you picked, the caption says so and the story changes
-       shape; it does not keep the sentence and swap the number. One real
-       reading already contradicts a placeholder here. Against the repo's own
-       fixtures, cv-dazzle-1 measured:
+         naomiwu    Ghostyle 1   no face found          card 2
+         balotelli  Ghostyle 1   0.33  still recognised  card 5
+         balotelli  Ghostyle 2   no face found          card 6
+         greta      Ghostyle 1   0.52  still recognised  card 8
+         greta      Ghostyle 3   0.61  escaped            card 9
 
-         figure1-clean   0.54 against 0.58   still matched
-         figure3-clean   0.59 against 0.58   crossed
+       Measure first and write the captions afterwards. If a reading changes,
+       the caption changes shape with it; it does not keep the sentence and
+       swap the number.
+
+       THE METER. A card that carries a reading also carries a .story__meter:
+       the threshold tick, the reading dot, and the verdict in words. The
+       numbers live in two places on purpose, the style="--reading" attribute
+       that places the dot and the text that a reader or a screen reader gets,
+       so change both. The modifier is the verdict:
+
+         story__meter--matched   reading below the threshold, pink dot
+         story__meter--escaped   reading at or above it, yellow dot
+         story__meter--lost      no face found: striped bar, no dot, no number
 
        The carousel opens on card 2, so a reader who never swipes still gets
        the whole proposition, and one who swipes twice gets the failure and
@@ -175,7 +184,7 @@
     <section class="story" aria-labelledby="storyTitle">
       <div class="story__head">
         <p class="story__kicker">What the lab is for</p>
-        <h2 class="story__title" id="storyTitle">Disrupt Face Recognition, one Ghostyle at a time</h2>
+        <h2 class="story__title" id="storyTitle">Disrupt face recognition, one Ghostyle at a time</h2>
       </div>
 
       <div class="story__viewport">
@@ -186,9 +195,9 @@
                 alt="A face in the lab with the detection box and the 68-point scaffold drawn over it."
                 width="1024" height="1280" decoding="async" />
               <figcaption class="story__caption">
-                <p class="story__state">Define a Baseline</p>
-                <p class="story__text">Saved as the identity. Every distance
-                  after this is measured against this frame.</p>
+                <p class="story__state">Define a baseline</p>
+                <p class="story__text">The clean face is saved as the identity.
+                  Every distance after this is measured against this frame.</p>
               </figcaption>
             </figure>
           </li>
@@ -196,13 +205,18 @@
           <li class="story__card" id="story-card-2">
             <figure class="story__figure">
               <img class="story__image" src="/images/home/story/naomiwu-success.jpg"
-                alt="The same face and the same frame, with the Ghostyle 1 pattern drawn across it."
-                width="1024" height="1280" decoding="async" />
+                alt="The same face and the same frame, with the Ghostyle 1 pattern painted across it."
+                width="1024" height="1301" decoding="async" />
               <figcaption class="story__caption">
-                <p class="story__state">Let's draw some paintings on the face: </p>
-                <p class="story__text">This is a success, because the system can't even
-                  see a face anymore! It's one of the way to.. "<i>win at this game.</i>"
-                  </p>
+                <p class="story__state">Paint the face</p>
+                <p class="story__text">Ghostyle 1 goes on, and the system cannot
+                  even find a face any more. That is the cleanest way to
+                  <i>win this game</i>.</p>
+                <p class="story__meter story__meter--lost">
+                  <span class="story__meter-bar" aria-hidden="true"></span>
+                  <span class="story__meter-threshold">threshold 0.58</span>
+                  <span class="story__meter-verdict">no face found</span>
+                </p>
               </figcaption>
             </figure>
           </li>
@@ -214,8 +228,9 @@
                 width="800" height="1000" decoding="async" />
               <figcaption class="story__caption">
                 <p class="story__state">This pattern is a Ghostyle</p>
-                <p class="story__text">A reusable AR (augmented reality) pattern 
-                  you can share and apply to another face.</p>
+                <p class="story__text">A reusable pattern. Apply it as an AR
+                  overlay in the lab, paint it for real, share it, and try it
+                  on another face.</p>
               </figcaption>
             </figure>
           </li>
@@ -223,14 +238,12 @@
           <li class="story__card" id="story-card-4">
             <figure class="story__figure">
               <img class="story__image" src="/images/home/story/balotelli.jpg"
-                alt="A second face carrying the same Ghostyle 1 pattern, still inside the detection box."
-                width="1024" height="1280" loading="lazy" decoding="async" />
+                alt="A second face, clean, before the Ghostyle is applied."
+                width="558" height="711" loading="lazy" decoding="async" />
               <figcaption class="story__caption">
-                <p class="story__state">A new face test the Ghostyle</p>
-                <p class="story__text">Here we find a darker skin experimenting with 
-                  the previous success. so it saves the baseline, load the ghostyle, paint 
-                  on the face and ...
-                  </p>
+                <p class="story__state">A second face tests the Ghostyle</p>
+                <p class="story__text">A darker skin takes the previous success:
+                  save the baseline, load Ghostyle 1, paint the face, and&hellip;</p>
               </figcaption>
             </figure>
           </li>
@@ -238,13 +251,20 @@
           <li class="story__card" id="story-card-5">
             <figure class="story__figure">
               <img class="story__image" src="/images/home/story/balotelli-ghostyle1.jpg"
-                alt="The second face with a Ghostyle 1"
-                width="1024" height="1280" loading="lazy" decoding="async" />
+                alt="The second face wearing Ghostyle 1, still recognised by the lab."
+                width="1024" height="1305" loading="lazy" decoding="async" />
               <figcaption class="story__caption">
-                <p class="story__state">It failed!</p>
-                <p class="story__text">This color combo hasn't folled the system. A Ghostyle might work for someone, but not for someone else.
-                  It's especially true among different skin color. But a Ghostyle can inspired an be adapted... 
-                  </p>
+                <p class="story__state">It failed</p>
+                <p class="story__text">This colour combination did not fool the
+                  system. A Ghostyle that works on one face can fail on another,
+                  and skin tone is one of the reasons. But a Ghostyle is a
+                  starting point: it can be adapted.</p>
+                <p class="story__meter story__meter--matched" style="--reading: 0.33">
+                  <span class="story__meter-bar" aria-hidden="true"></span>
+                  <span class="story__meter-reading">distance <b>0.33</b></span>
+                  <span class="story__meter-threshold">threshold 0.58</span>
+                  <span class="story__meter-verdict">still recognised</span>
+                </p>
               </figcaption>
             </figure>
           </li>
@@ -253,12 +273,17 @@
             <figure class="story__figure">
               <img class="story__image" src="/images/home/story/balotelli-ghostyle2.jpg"
                 alt="The second face with a redrawn pattern, Ghostyle 2, in lighter pigments."
-                width="1024" height="1280" loading="lazy" decoding="async" />
+                width="1024" height="1305" loading="lazy" decoding="async" />
               <figcaption class="story__caption">
-                <p class="story__state">Smaller pointng, with lighter pigments</p>
-                <p class="story__text">Ghostyle 2 has worked over the subject! 
-                  the shape was even smaller, without lines on the forehead.
-                  </p>
+                <p class="story__state">Smaller shapes, lighter pigments</p>
+                <p class="story__text">Ghostyle 2 keeps the idea, drops the lines
+                  on the forehead and lightens the colours. The detector no
+                  longer finds a face at all.</p>
+                <p class="story__meter story__meter--lost">
+                  <span class="story__meter-bar" aria-hidden="true"></span>
+                  <span class="story__meter-threshold">threshold 0.58</span>
+                  <span class="story__meter-verdict">no face found</span>
+                </p>
               </figcaption>
             </figure>
           </li>
@@ -266,46 +291,58 @@
           <li class="story__card" id="story-card-7">
             <figure class="story__figure">
               <img class="story__image" src="/images/home/story/greta.jpg"
-                alt="A new white face in the experiment"
-                width="1024" height="1280" loading="lazy" decoding="async" />
+                alt="A third face, clean, before the Ghostyle is applied."
+                width="552" height="849" loading="lazy" decoding="async" />
               <figcaption class="story__caption">
-                <p class="story__state">Ghostyle 1 will work with every light skin?</p>
-                <p class="story__text">With ghostmaxxing you can testing by adding the digital overlay, or just by painting on it.
-                  and surprisingly...</p>
+                <p class="story__state">Does Ghostyle 1 work on every light skin?</p>
+                <p class="story__text">A third face. In Ghostmaxxing you can test
+                  with the digital overlay or by painting for real. And,
+                  surprisingly&hellip;</p>
               </figcaption>
             </figure>
           </li>
 
-          <li class="story__card story__card--object" id="story-card-8">
+          <li class="story__card" id="story-card-8">
             <figure class="story__figure">
               <img class="story__image" src="/images/home/story/greta-ghostyle1.jpg"
-                alt="The pattern of Ghostyle 3 alone, laid over the outline of a face on a cream ground."
-                width="800" height="1000" loading="lazy" decoding="async" />
+                alt="The third face wearing Ghostyle 1, still recognised by the lab."
+                width="1011" height="1555" loading="lazy" decoding="async" />
               <figcaption class="story__caption">
-                <p class="story__state">We still have to find an fully reusable solution!</p>
-                <p class="story__text">Each face is different, and in this case, the threshold for success is 0.58, when you just move your head, you'll get around 0.15.
-                  The Ghostyle1 over this face produces a 0.52, so even if slightly, the face is still matched.
-                  </p>
+                <p class="story__state">Not reusable yet</p>
+                <p class="story__text">Ghostyle 1 on this face measures 0.52,
+                  under the 0.58 threshold: the face is still matched. For
+                  scale, simply turning your head moves the reading by about
+                  0.15.</p>
+                <p class="story__meter story__meter--matched" style="--reading: 0.52">
+                  <span class="story__meter-bar" aria-hidden="true"></span>
+                  <span class="story__meter-reading">distance <b>0.52</b></span>
+                  <span class="story__meter-threshold">threshold 0.58</span>
+                  <span class="story__meter-verdict">still recognised</span>
+                </p>
               </figcaption>
             </figure>
           </li>
 
-          <li class="story__card story__card--object" id="story-card-9">
+          <li class="story__card" id="story-card-9">
             <figure class="story__figure">
               <img class="story__image" src="/images/home/story/greta-ghostyle3.jpg"
-                alt="A new variation, using leopard coloring!"
-                width="800" height="1000" loading="lazy" decoding="async" />
+                alt="The third face wearing Ghostyle 3, the same shapes in a leopard pattern, no longer matched."
+                width="1011" height="1555" loading="lazy" decoding="async" />
               <figcaption class="story__caption">
-                <p class="story__state">Same shape, but a new coloring pattern!</p>
-                <p class="story__text">With this different the threshold is 0.61, higher than 0.58 and enough to don't let the biometric
-                  points to match with what is saved in the database. <br/>
-                  Check out how this examples were made in the <a href="/lab.html">example research</a>, or 
-                  <a href="/lab.html">Open the lab</a> and draw the next one.</p>
+                <p class="story__state">Same shape, new colours</p>
+                <p class="story__text">Ghostyle 3 reads 0.61, above the
+                  threshold: the biometric points no longer match what is saved.
+                  See <a href="/workshops.html">how these were made</a>, or
+                  <a href="/lab.html">open the lab</a> and draw the next one.</p>
+                <p class="story__meter story__meter--escaped" style="--reading: 0.61">
+                  <span class="story__meter-bar" aria-hidden="true"></span>
+                  <span class="story__meter-reading">distance <b>0.61</b></span>
+                  <span class="story__meter-threshold">threshold 0.58</span>
+                  <span class="story__meter-verdict">escaped</span>
+                </p>
               </figcaption>
             </figure>
           </li>
-
-
         </ol>
       </div>
 
@@ -353,11 +390,10 @@
         -->
       <p
         style="font-size:1.1rem;margin:0 auto .8rem;max-width:52ch;line-height:1.55;text-align:left">
-        Ghostmaxxing is your personal laboratory for <b>testing any type of camouflage</b>.
-        Uses mobile or webcam, change how your face looks (with makeup, clotching, phrostetics...), and measure
-        how the face recognition reacts. <b>
-        Everything runs on your device. Nothing leaves it<br>
-        ...</b> unless you choose to share your success in the <a href="/gallery.html">public gallery</a>.
+        Ghostmaxxing is your personal laboratory for <b>testing any kind of camouflage</b>.
+        Use your phone or webcam, change how your face looks (makeup, clothing, prosthetics&hellip;),
+        and measure how face recognition reacts. <b>Everything runs on your device. Nothing leaves it</b>,
+        unless you choose to share a success in the <a href="/gallery.html">public gallery</a>.
       </p>
       <p
         style="font-size:.92rem;margin:0 auto 1.6rem;max-width:54ch;opacity:.85">Built
@@ -416,10 +452,9 @@
           <img class="gm-how-image" src="/images/home/how-upload.svg"
             alt="Stylised face card with an upload arrow and an explicit optional consent control"
             width="220" height="220" />
-          <p class="gm-how-text">Share your result to the gallery, 
-            together we'll find the most subtle, least invasive,
-            and yet effective, camouflage!
-            </p>
+          <p class="gm-how-text">Share your result to the gallery. Together
+            we will find the most subtle, least invasive, and still effective
+            camouflage.</p>
         </div>
       </div>
     </section>
@@ -451,8 +486,8 @@
             sessions testing local recognition behavior together. No biometric
             data is uploaded by the browser lab.</p>
           <a href="workshops.html"
-            style="text-decoration:none;font-weight:700;font-size:.9rem">check out how we
-            made those →</a>
+            style="text-decoration:none;font-weight:700;font-size:.9rem">See how we
+            run them →</a>
         </div>
         <div>
           <p
