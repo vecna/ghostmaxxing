@@ -652,11 +652,12 @@ The three files must already exist, as they do in the inspected repository.
 
 ## Edit and export
 
-Edit `scripts-dev/social-cards.html`. All four cards share the same font family
-and weight. The wordmark is 100px; the main copy is 78px (70px on the longer generic
-card). Artwork positions, sizes, colours and text can be adjusted in that page.
-The illustrations are embedded snapshots; later icon edits elsewhere will not
-change them automatically. Font and stylesheet paths use the existing checkout.
+Edit `scripts-dev/social-cards.html`. All five cards share the same font family
+and weight. Each has a 1200 × 630 landscape layout, a 1200 × 1200 square layout,
+and a 1500 × 500 wide layout with extra horizontal safe space for cropped embeds.
+Artwork positions, sizes, colours and text can be adjusted in that page. The
+illustrations are embedded snapshots; later icon edits elsewhere will not change
+them automatically. Font and stylesheet paths use the existing checkout.
 
 To export element screenshots on your machine:
 
@@ -671,21 +672,21 @@ Optional:
 ```sh
 node scripts-dev/build-social-cards.cjs --only generic
 node scripts-dev/build-social-cards.cjs --format png
+node scripts-dev/build-social-cards.cjs --variants square,wide
 node scripts-dev/build-social-cards.cjs --output /tmp/ghostmaxxing-cards
 ```
 
 The script starts a temporary local server, waits for the self-hosted font,
-checks dimensions and text overflow, and captures each card element. Only selected
-outputs are overwritten. `cards-manifest.json` describes the latest export.
-To preview manually, serve your repository and visit `/scripts-dev/social-cards.html`;
-add `?card=glasses`, `pole`, `canopy`, or `generic` to show one card.
+checks dimensions and text overflow, and captures each card element. By default it
+exports all three layouts. Landscape filenames are unchanged; square and wide files
+use `-square` and `-wide` suffixes. Only selected outputs are overwritten.
+`cards-manifest.json` describes the latest export. To preview manually, serve your
+repository and visit `/scripts-dev/social-cards.html`; add `?card=glasses` to show
+one card and `&variant=square` or `&variant=wide` to select a layout.
 
-Validation: JavaScript syntax and documentation preservation/idempotence were
-checked. The supplied JPEGs were rendered with a local Canvas/SVG renderer using
-the same font, copy and artwork, and visually inspected. They are not Playwright
-screenshots: the available browser's security policy blocked the local page.
-The Playwright export path therefore remains untested here. Browser text rendering
-may differ slightly from these supplied files.
+Validation: JavaScript syntax, output dimensions, font readiness, and text overflow
+are checked during export. The supplied JPEGs were rendered with Playwright and
+visually inspected in all three layouts.
 
 ## Use in link previews
 
@@ -709,3 +710,45 @@ descriptions, canonical URLs and `og:url` values. Replace old image tags rather
 than appending competing entries. Deploy the JPEGs along with the metadata changes.
 Adding these files alone does not switch existing Open Graph tags to the new cards.
 No current public-page HTML is overwritten by this package.
+
+<!-- ghostmaxxing-social-cards:start -->
+## Social cards
+
+Edit `scripts-dev/social-cards.html` to change copy, layout, or the embedded SVG artwork.
+All five cards use the existing Newsreader Bold (700) font and project colour tokens.
+Each card has 1200 × 630 landscape, 1200 × 1200 square, and 1500 × 500 wide
+layouts. Export uses an element screenshot at 1× device scale after fonts load.
+The page is maintainer tooling and has `noindex`.
+
+```sh
+npm ci
+npm run prepare:e2e
+node scripts-dev/build-social-cards.cjs
+node scripts-dev/build-social-cards.cjs --format png
+node scripts-dev/build-social-cards.cjs --only generic
+node scripts-dev/build-social-cards.cjs --variants square,wide
+```
+
+Default output: `images/social/ghostmaxxing-{glasses,pole,canopy,generic,gallery}.jpg`,
+their `-square` and `-wide` variants, plus `images/social/cards-manifest.json`.
+`--format png` exports PNG instead. `--variants` limits the exported layouts.
+`--output /path/to/folder` changes the destination. Existing named output files
+are overwritten. Images of the other format and unselected cards are retained.
+The manifest describes only the most recent selected export.
+
+Preview the layout at `/scripts-dev/social-cards.html` using a local server;
+`?card=generic` shows one card and `?card=generic&variant=wide` selects a layout.
+Export starts its own temporary localhost server, so no separately running server
+is needed. All artwork is embedded in the page; fonts and CSS are loaded from this
+checkout. Nothing is downloaded at export time. Changes to icons elsewhere do not
+automatically update the embedded artwork.
+
+Set each page's `og:image` and `twitter:image` to an absolute HTTPS URL for the
+chosen exported image. Use the selected variant's dimensions, the appropriate MIME
+type, and each page's own canonical URL and `og:url`. The exporter does not rewrite
+public-page metadata. `ghostmaxxing-generic.jpg` is the default general-purpose card.
+
+`--update-docs` refreshes a marked section in this README and in the relevant
+folder descriptions, preserving all text outside those sections. It performs
+only documentation updates and does not launch a browser.
+<!-- ghostmaxxing-social-cards:end -->

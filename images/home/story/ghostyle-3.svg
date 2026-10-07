@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img" aria-label="The same outlined face carrying Ghostyle 3: three hard-edged bars across the brow, one cheek and the jaw, instead of the filled blocks of Ghostyle 1.">
+  <title>Ghostyle 3</title>
+  <desc>The same outlined face carrying Ghostyle 3: three hard-edged bars across the brow, one cheek and the jaw, instead of the filled blocks of Ghostyle 1.</desc>
+  <rect width="800" height="1000" fill="#fff1cf"/>
+  <g>
+    <path d="M212,330 L470,222 L500,300 L242,408 Z" fill="#072e26"/>
+    <path d="M398,452 L548,398 L572,466 L422,520 Z" fill="#ff5f8f"/>
+    <path d="M256,556 L358,516 L380,574 L278,614 Z" fill="#f0c24a"/>
+  </g>
+
+  <g fill="none" stroke="#072e26" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M400,142 C280,142 188,238 188,370 C188,454 210,538 246,598 C294,676 348,718 400,718 C452,718 506,676 554,598 C590,538 612,454 612,370 C612,238 520,142 400,142 Z"/>
+    <path d="M214,312 C242,192 316,146 400,146 C484,146 558,192 586,312"/>
+    <path d="M328,690 L328,800 M472,690 L472,800"/>
+    <path d="M150,952 C200,842 272,806 322,800 L478,800 C528,806 600,842 650,952"/>
+    <ellipse cx="316" cy="398" rx="42" ry="23"/>
+    <ellipse cx="484" cy="398" rx="42" ry="23"/>
+    <path d="M268,344 C296,322 342,322 362,336"/>
+    <path d="M532,344 C504,322 458,322 438,336"/>
+    <path d="M400,382 L389,472 C384,494 400,504 418,496"/>
+    <path d="M344,586 C378,566 422,566 456,586 C422,610 378,610 344,586 Z"/>
+  </g>
+  <text x="56" y="960" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="28" font-weight="600" letter-spacing="4" fill="#072e26">GHOSTYLE 3</text>
+</svg>
