@@ -54,9 +54,42 @@
     <link rel="stylesheet" href="/styles/styles.css" />
     <link rel="stylesheet" href="/styles/pages.css" />
     <link rel="stylesheet" href="/styles/content-pages.css" />
+    <link rel="stylesheet" href="/styles/beta-notice.css" />
   </head>
 
   <body>
+
+    <div class="gm-beta" id="gmBeta" role="dialog" aria-modal="true" aria-labelledby="gmBetaTitle">
+      <div class="gm-beta__tape">
+        <h1 class="gm-beta__title" id="gmBetaTitle">This page is beta
+          <small>Still in development &middot; content may change</small>
+        </h1>
+      </div>
+      <button class="gm-beta__close" type="button" aria-label="Close the beta notice and continue to the page">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M4 4 20 20 M20 4 4 20" />
+        </svg>
+      </button>
+      <p class="gm-beta__hint" aria-hidden="true">Continue anyway</p>
+    </div>
+    <script>
+      (function () {
+        var el = document.getElementById('gmBeta');
+        var KEY = 'gm-beta:' + window.location.pathname;
+        var dismissed = false;
+        try { dismissed = sessionStorage.getItem(KEY) === '1'; } catch (e) {}
+        if (dismissed) { el.remove(); return; }
+        function close() {
+          try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+          el.remove();
+          document.removeEventListener('keydown', onKey);
+        }
+        function onKey(e) { if (e.key === 'Escape') close(); }
+        el.querySelector('.gm-beta__close').addEventListener('click', close);
+        document.addEventListener('keydown', onKey);
+        el.querySelector('.gm-beta__close').focus({ preventScroll: true });
+      })();
+    </script>
 
     <!-- ===== SITE HEADER: canonical. Byte-identical on every page. =========
    Only two things may differ per page: aria-current="page" on the link to
