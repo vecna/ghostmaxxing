@@ -3,11 +3,14 @@
  * @file Visibly label synthetic JPEG/PNG fixtures, overwriting each image once.
  * @example node scripts-dev/mark-ai-images.cjs --size 15% --dry-run
  * @example node scripts-dev/mark-ai-images.cjs --size 160 path/to/images
+ * @example node scripts-dev/mark-ai-images.cjs --padding-right 40 path/to/images
+ * @version 0.9.4
  */
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const { createCanvas, loadImage, registerFont } = require('canvas');
+const VERSION = '0.9.4';
 const ROOT = path.resolve(__dirname, '..');
 const DEFAULT = path.join(ROOT, 'tests/fixtures/synthetic-faces');
 let palette;
@@ -44,13 +47,16 @@ function badge(width) {
   return canvas;
 }
 
-/** Compare visible pixels, allowing JPEG rounding, without metadata or sidecars. */
-function existingBadge(ctx, width, height, margin) {
+/**
+ * Compare visible pixels, allowing JPEG rounding, without metadata or sidecars.
+ * Looks where `mark` would draw: `margin` from the bottom, `margin + paddingRight` from the right.
+ */
+function existingBadge(ctx, width, height, margin, paddingRight = 0) {
   const pixels = ctx.getImageData(0, 0, width, height).data;
   const ink = palette['gm-ink'].slice(1).match(/../g).map(x => parseInt(x, 16));
   const nearInk = (x, y) => ink.every((v, c) => Math.abs(pixels[(y * width + x) * 4 + c] - v) < 35);
-  const right = width - margin, bottom = height - margin;
-  for (let size = 48; size <= width - 2 * margin; size++) {
+  const right = width - margin - paddingRight, bottom = height - margin;
+  for (let size = 48; size <= right - margin; size++) {
     const h = Math.round(size / 3), left = right - size, top = bottom - h;
     if (top < margin) break;
     if (!nearInk(left, top) || !nearInk(right - 1, top) || !nearInk(left, bottom - 1)) continue;
@@ -70,8 +76,11 @@ function existingBadge(ctx, width, height, margin) {
   return null;
 }
 
-/** Read, skip an existing visible badge, or atomically replace a single image. */
-async function mark(file, size, dryRun) {
+/**
+ * Read, skip an existing visible badge, or atomically replace a single image.
+ * `paddingRight` (whole pixels, default 0) moves the badge further from the right edge.
+ */
+async function mark(file, size, dryRun, paddingRight = 0) {
   const stat = await fs.lstat(file);
   if (!stat.isFile()) throw new Error(`Not a regular file (symlinks are not followed): ${file}`);
   const bytes = await fs.readFile(file);
@@ -83,38 +92,84 @@ async function mark(file, size, dryRun) {
   const canvas = createCanvas(img.width, img.height), ctx = canvas.getContext('2d');
   ctx.drawImage(img, 0, 0);
   const margin = Math.max(4, Math.round(Math.min(img.width, img.height) * 0.01));
-  const found = existingBadge(ctx, img.width, img.height, margin);
+  const found = existingBadge(ctx, img.width, img.height, margin, paddingRight);
   if (found) return `SKIP ${file} (visible ${found}px badge)`;
   const w = Math.round(size.endsWith('%') ? img.width * parseFloat(size) / 100 : Number(size));
-  if (w < 48 || w > img.width - 2 * margin || Math.round(w / 3) > img.height - 2 * margin) {
-    throw new Error(`Badge size ${w}px does not fit ${img.width}×${img.height}; use at least 48px with room for margins: ${file}`);
+  if (w < 48 || w > img.width - 2 * margin - paddingRight || Math.round(w / 3) > img.height - 2 * margin) {
+    throw new Error(`Badge size ${w}px does not fit ${img.width}×${img.height}; use at least 48px with room for margins${paddingRight ? ` and ${paddingRight}px right padding` : ''}: ${file}`);
   }
-  if (dryRun) return `WOULD MARK ${file} (${w}px wide)`;
+  const detail = `${w}px wide${paddingRight ? `, ${paddingRight}px right padding` : ''}`;
+  if (dryRun) return `WOULD MARK ${file} (${detail})`;
   const stamp = badge(w);
-  ctx.drawImage(stamp, img.width - margin - stamp.width, img.height - margin - stamp.height);
+  ctx.drawImage(stamp, img.width - margin - paddingRight - stamp.width, img.height - margin - stamp.height);
   const output = jpeg ? canvas.toBuffer('image/jpeg', { quality: 0.98, chromaSubsampling: false }) : canvas.toBuffer('image/png');
   const temp = path.join(path.dirname(file), `.${path.basename(file)}.${randomUUID()}.tmp`);
   try {
     await fs.writeFile(temp, output, { flag: 'wx', mode: stat.mode });
     await fs.rename(temp, file);
   } finally { await fs.rm(temp, { force: true }); }
-  return `MARKED ${file} (${w}px wide)`;
+  return `MARKED ${file} (${detail})`;
 }
 
+const HELP = `mark-ai-images ${VERSION}
+
+Stamp a visible "AI Gen" badge in the bottom-right corner of JPEG/PNG images.
+Each image is overwritten once, atomically. No hidden mark, no metadata or sidecar files.
+
+Usage:
+  node scripts-dev/mark-ai-images.cjs [options] [file|directory ...]
+
+Arguments:
+  file|directory ...    Images or folders to mark. Folders are searched recursively
+                        for .jpg, .jpeg and .png. Symlinks are not followed.
+                        Default: tests/fixtures/synthetic-faces
+
+Options:
+  --size <width>        Badge width, as pixels (e.g. 160) or as a percentage of the
+                        image width (e.g. 15%). The height is always a third of the
+                        width. Minimum 48px. Default: 15%
+  --padding-right <px>  Extra space, in whole pixels, between the badge and the right
+                        edge of the image. It is added to the automatic margin (1% of
+                        the shorter side, at least 4px). Use it when the right side of
+                        an image is cropped when displayed, so the badge stays visible.
+                        Default: 0 (badge at the usual margin from the corner)
+  --dry-run             Report what would be marked (WOULD MARK / SKIP / ERROR) and
+                        write nothing.
+  -v, --version         Print the version and exit.
+  -h, --help            Print this help and exit.
+
+Behaviour:
+  An image that already shows a badge is skipped (SKIP), even if that badge has a
+  different size. The check looks where the badge would be drawn with the current
+  --padding-right, so an image marked with a different padding is not recognised.
+  Only JPEG and PNG are supported; animated PNG is refused. Errors are reported per
+  file and set a non-zero exit code.
+
+Examples:
+  node scripts-dev/mark-ai-images.cjs --size 15% --dry-run
+  node scripts-dev/mark-ai-images.cjs --size 160 path/to/images
+  node scripts-dev/mark-ai-images.cjs --padding-right 40 path/to/images`;
+
 async function main(args) {
-  let size = '15%', dryRun = false;
+  let size = '15%', paddingRight = '0', dryRun = false;
   const targets = [];
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--help' || args[i] === '-h') {
-      console.log('Usage: node scripts-dev/mark-ai-images.cjs [--size 15%|160] [--dry-run] [file|directory ...]\nDefault: tests/fixtures/synthetic-faces, recursively. Size is badge width.\nOverwrites JPEG/PNG; skips an existing badge even at another size. No hidden mark.');
+      console.log(HELP);
+      return;
+    }
+    if (args[i] === '--version' || args[i] === '-v') {
+      console.log(VERSION);
       return;
     }
     if (args[i] === '--dry-run') dryRun = true;
     else if (args[i] === '--size') size = args[++i] || '';
+    else if (args[i] === '--padding-right') paddingRight = args[++i] || '';
     else if (args[i].startsWith('-')) throw new Error(`Unknown option: ${args[i]}`);
     else targets.push(path.resolve(args[i]));
   }
   if (!/^\d+(?:\.\d+)?%?$/.test(size) || parseFloat(size) <= 0) throw new Error('--size must be a positive pixel width or percentage, e.g. 160 or 15%');
+  if (!/^\d+$/.test(paddingRight)) throw new Error('--padding-right must be a whole number of pixels, 0 or more, e.g. 40');
   await setup();
   const files = new Set();
   async function collect(target) {
@@ -129,7 +184,7 @@ async function main(args) {
   for (const target of targets.length ? targets : [DEFAULT]) await collect(target);
   if (!files.size) throw new Error('No JPEG/PNG images found');
   for (const file of [...files].sort()) {
-    try { console.log(await mark(file, size, dryRun)); }
+    try { console.log(await mark(file, size, dryRun, Number(paddingRight))); }
     catch (error) { console.error(`ERROR ${error.message}`); process.exitCode = 1; }
   }
 }
