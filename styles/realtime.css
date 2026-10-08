@@ -1,0 +1,688 @@
+/* ============================================================================
+   Ghostmaxxing — realtime.css
+   Page layer for realtime.html. Placement and page-local components only.
+
+   PALETTE CONTRACT
+   ----------------
+   This page draws from the LAB palette (lab.css: --ink, --panel, --fg, --dev,
+   --line ...), not the poster --gm-* system. tokens.css names lab.css as the
+   one deliberate exception and that still holds.
+
+   The prototype picked colours by appearance. Every colour used on this page
+   now goes through the --rt-* alias block below, so the MEANING is declared
+   once and the hex can move without hunting through draw calls.
+
+   Deliberate changes from the prototype:
+     --net was doing duty as a "threshold" colour. --net means "online zone"
+     in lab.css and this page has no online zone. Released.
+
+     .cell.on-high used --orange (#fd5503), the retired v1 poster orange.
+     Now --gm-bg (#f26a1b), the palette that won. This is the only place the
+     poster system reaches into the lab, and it is intentional: the equalizer's
+     hottest state is the one thing on this page that should agree with the
+     rest of the site.
+
+     .seg--home was never defined anywhere. The home link is now wrapped in
+     .selector, a real component in lab.css, which gives it the pill it was
+     missing. It was previously a transparent --muted glyph on dark video.
+
+   Layer: PAGE. Loaded after styles.css and lab.css. Defines no --gm-* value.
+   ========================================================================= */
+
+
+#ui-layer,
+#ui-layer * {
+  box-sizing: border-box;
+}
+
+
+/* --- Semantic aliases ------------------------------------------------------
+   Left column is a measuring instrument. Only two of its lines make a claim:
+
+     --rt-noise      measured, this session, from your baseline capture
+     --rt-threshold  cited, dlib/LFW default — external, benchmark-specific
+
+   Everything else is scaffolding and is deliberately quiet so those two read
+   as the only assertions on the plot. --rt-grid ticks carry no claim at all;
+   they exist so a value can be read off the trace. */
+
+#ui-layer {
+  --rt-trace: var(--cream);
+  --rt-threshold: var(--yellow);
+  --rt-noise: var(--dev);
+  --rt-grid: var(--line-soft);
+  --rt-gap: var(--faint);
+  --rt-plot-bg: var(--panel-2);
+
+  --rt-delta-low: var(--faint);
+  --rt-delta-med: var(--yellow);
+  --rt-delta-high: var(--gm-bg);
+
+  --rt-surface: rgba(12, 9, 6, 0.52);
+  --rt-surface-solid: rgba(12, 9, 6, 0.86);
+
+  /* Display exposure. Does NOT reach the detector — face-api reads raw video
+     frames and CSS filters apply at composite. Changing this cannot change a
+     descriptor, which is the point: it is a viewing control, not a variable. */
+  --rt-brightness: 0.85;
+
+  --rt-bar-h: 44px;
+  --rt-gutter: 24px;
+}
+
+
+/* --- Shell ---------------------------------------------------------------- */
+
+#ui-layer {
+  width: 100%;
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: 244px minmax(0, 1fr) 244px;
+  gap: 14px;
+  padding: 14px;
+}
+
+#ui-layer > * {
+  min-width: 0;
+  min-height: 0;
+}
+
+#ui-layer.hide-equalizer {
+  grid-template-columns: 244px minmax(0, 1fr);
+}
+
+#ui-layer.hide-equalizer #embedding-panel {
+  display: none;
+}
+
+.realtime-home {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: var(--z-chrome);
+}
+
+
+/* --- Panels --------------------------------------------------------------- */
+
+#graph-container,
+#embedding-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  background: var(--rt-surface);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+.panel-header {
+  flex: none;
+  border-bottom: 1px solid var(--line-soft);
+  padding: 11px 12px;
+}
+
+/* flex:1 + min-height:0 replaces the prototype's calc(100% - 92px) and
+   calc(100% - 66px), which hardcoded two different header heights and had
+   already drifted apart from each other. */
+.panel-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.panel-title,
+.panel-value,
+.panel-note {
+  margin: 0;
+}
+
+.panel-title {
+  font: 700 10px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--faint);
+}
+
+.panel-value {
+  margin-top: 7px;
+  font: 400 22px/1 var(--serif);
+  color: var(--yellow);
+  font-variant-numeric: tabular-nums;
+}
+
+.panel-note {
+  flex: none;
+  padding: 9px 12px;
+  border-top: 1px solid var(--line-soft);
+  color: var(--muted);
+  font: 10.5px/1.5 var(--mono);
+}
+
+.legend-row {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.legend-row + .legend-row {
+  margin-top: 4px;
+}
+
+.legend-swatch {
+  flex: none;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  transform: translateY(-3px);
+}
+
+.legend-swatch--noise {
+  background: var(--rt-noise);
+}
+
+.legend-swatch--threshold {
+  background: var(--rt-threshold);
+}
+
+.legend-value {
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.legend-note {
+  display: block;
+  margin-top: 6px;
+  color: var(--faint);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+
+/* --- Graph: virtualised scroll ---------------------------------------------
+   The canvas is sticky inside a tall spacer, so it always covers the scroll
+   viewport while the spacer supplies the scrollable height. Memory stays
+   constant regardless of session length, and we sidestep the ~32k px canvas
+   dimension cap that a naively-grown canvas would hit after ~45 minutes. */
+
+.graph-scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.graph-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.graph-scroll::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 3px;
+}
+
+.graph-spacer {
+  position: relative;
+  width: 100%;
+}
+
+#distance-graph {
+  position: sticky;
+  top: 0;
+  display: block;
+  width: 100%;
+}
+
+#distance-graph.is-clickable {
+  cursor: pointer;
+}
+
+.graph-follow {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--rt-surface-solid);
+  color: var(--fg);
+  font: 600 11px var(--sans);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.graph-follow[hidden] {
+  display: none;
+}
+
+.graph-follow:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+
+/* --- Centre stage --------------------------------------------------------- */
+
+#center-view {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--ink-deep);
+}
+
+#webcam {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  filter: brightness(var(--rt-brightness));
+}
+
+/* Scrim recedes as exposure rises, so turning the view up actually turns it
+   up. Negative opacity clamps to 0 in every engine. */
+.video-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: calc(1.3 - var(--rt-brightness));
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(12, 9, 6, 0.45) 0%,
+      rgba(12, 9, 6, 0.05) 40%,
+      rgba(12, 9, 6, 0.58) 100%
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(255, 231, 168, 0.04) 0,
+      rgba(255, 231, 168, 0.04) 1px,
+      transparent 1px,
+      transparent 12px
+    );
+}
+
+#status-pill {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(12, 9, 6, 0.6);
+  color: var(--muted);
+  font: 11px var(--mono);
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(8px);
+}
+
+#status-pill.is-warn {
+  color: var(--cream);
+  border-color: rgba(255, 231, 168, 0.28);
+}
+
+
+/* --- Baseline capture ----------------------------------------------------- */
+
+#calibration-ui {
+  position: absolute;
+  inset: 0 0 var(--rt-bar-h) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+#calibration-ui[hidden] {
+  display: none;
+}
+
+.capture-ring {
+  position: relative;
+  width: 116px;
+  height: 116px;
+  display: none;
+  place-items: center;
+}
+
+.capture-ring.is-active {
+  display: grid;
+}
+
+.capture-ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.capture-ring__track {
+  fill: rgba(12, 9, 6, 0.62);
+  stroke: var(--line);
+  stroke-width: 3;
+}
+
+/* Advances on ACCEPTED samples, never on elapsed time. If the arc stalls, the
+   frames are being rejected — the control diagnoses itself. */
+.capture-ring__arc {
+  fill: none;
+  stroke: var(--cream);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.18s linear;
+}
+
+.capture-ring__count {
+  position: relative;
+  color: var(--cream);
+  font: 400 30px/1 var(--serif);
+  font-variant-numeric: tabular-nums;
+}
+
+.capture-hint {
+  max-width: 22rem;
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+  font: 12px/1.5 var(--mono);
+  text-wrap: balance;
+}
+
+.capture-hint.is-blocking {
+  color: var(--cream);
+}
+
+.stage-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 9rem;
+  min-height: 44px;
+  padding: 0.72rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(20, 16, 12, 0.5);
+  color: var(--fg);
+  font: 600 13px var(--sans);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.stage-btn:hover {
+  border-color: rgba(255, 231, 168, 0.24);
+  background: rgba(33, 26, 18, 0.86);
+}
+
+.stage-btn:active {
+  transform: scale(0.97);
+}
+
+.stage-btn:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 3px;
+}
+
+.stage-btn[hidden] {
+  display: none;
+}
+
+
+/* --- Settings bar --------------------------------------------------------- */
+
+.settingsbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: var(--rt-bar-h);
+  padding: 0 12px;
+  background: linear-gradient(to top, rgba(12, 9, 6, 0.92), rgba(12, 9, 6, 0.58));
+  border-top: 1px solid var(--line-soft);
+  backdrop-filter: blur(10px);
+}
+
+.sb-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sb-spacer {
+  flex: 1;
+}
+
+.sb-label {
+  color: var(--faint);
+  font: 700 9px var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.sb-value {
+  min-width: 2.4rem;
+  color: var(--fg);
+  font: 10.5px var(--mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.settingsbar input[type="range"] {
+  width: 104px;
+  accent-color: var(--gm-bg);
+}
+
+.sb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg);
+  font: 600 11.5px var(--sans);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sb-btn:hover:not(:disabled) {
+  border-color: rgba(255, 231, 168, 0.26);
+  background: rgba(33, 26, 18, 0.7);
+}
+
+.sb-btn:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.sb-btn:focus-visible,
+.settingsbar .switch:focus-visible,
+.settingsbar input[type="range"]:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+.sb-btn--warn {
+  border-color: rgba(242, 106, 27, 0.45);
+  color: #ffb98b;
+}
+
+.sb-btn.is-confirming {
+  border-color: var(--gm-bg);
+  background: rgba(242, 106, 27, 0.14);
+  color: #ffd0b0;
+}
+
+.sb-count {
+  min-width: 1.5rem;
+  color: var(--muted);
+  font: 10.5px var(--mono);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+
+/* --- Capture viewer ------------------------------------------------------- */
+
+.viewer-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  background: rgba(6, 4, 3, 0.96);
+}
+
+.viewer-overlay[hidden] {
+  display: none;
+}
+
+.viewer-stage {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.viewer-stage img {
+  max-width: 100%;
+  max-height: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.viewer-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.viewer-meta {
+  flex: 1;
+  min-width: 0;
+  color: var(--muted);
+  font: 10.5px var(--mono);
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* --- Descriptor equalizer --------------------------------------------------
+   Level is fixed per cell at build time and only .is-on toggles at runtime, so
+   a steady face writes nothing to the DOM. The prototype rewrote all 1,280
+   className strings on every detection frame. */
+
+#embedding-bar {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px;
+  overflow: hidden;
+}
+
+.descriptor-row {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 1px;
+  flex: 1;
+  min-height: 2px;
+}
+
+.cell {
+  background: var(--panel-2);
+}
+
+.cell.lvl-low.is-on {
+  background: var(--rt-delta-low);
+}
+
+.cell.lvl-med.is-on {
+  background: var(--rt-delta-med);
+}
+
+.cell.lvl-high.is-on {
+  background: var(--rt-delta-high);
+}
+
+
+/* --- Narrow ---------------------------------------------------------------- */
+
+@media (max-width: 1050px) {
+  #ui-layer {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 170px 190px;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  #ui-layer.hide-equalizer {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 170px;
+  }
+
+  #center-view {
+    order: -1;
+  }
+
+  #ui-layer {
+    --rt-bar-h: 52px;
+  }
+
+  .settingsbar {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 7px 10px;
+  }
+
+  .sb-spacer {
+    display: none;
+  }
+
+  .capture-ring {
+    width: 96px;
+    height: 96px;
+  }
+}
+
+@media (pointer: coarse) {
+  .sb-btn {
+    min-height: 36px;
+    padding: 0 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capture-ring__arc,
+  .stage-btn {
+    transition: none;
+  }
+}

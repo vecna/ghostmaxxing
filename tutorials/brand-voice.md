@@ -17,15 +17,19 @@ Ghostmaxxing is not an invisibility product. It is a public-facing research lab,
 
 ## Theory of change
 
-Ghostmaxxing is designed to work as a research loop, not as a collection of unrelated pages. The loop below is the target operating model. Public copy must distinguish capabilities that are already available from integrations that are still being completed.
+[Ghostmaxxing](https://ghostmaxxing.vecna.eu) wants to play there, with a feedback loop, it’s [free software](https://github.com/vecna/ghostmaxxing) and oped data, designed this way:
 
-1. **Local experiments produce Ghostyles and test records.** People use the browser lab to make and test visual interventions under stated conditions.
-2. **The Fediverse becomes the federated data backend.** Ghostyles, public test records, limitations, references and project updates are represented and exchanged through ActivityPub rather than being confined to one website or application.
-3. **The Fediverse distributes the work.** Different communities, applications and instances can follow, question, reproduce and retest the research.
-4. **The lab reads from the same network.** Relevant updates arriving through the Fediverse become new inputs for the lab after validation and moderation. The network is both an output and an input of the research process.
-5. **Public visibility creates routes to private reporting.** The distributed work can reach people who know how face recognition systems are built, bought, operated or experienced.
-6. **Anonymous reports update the investigation.** Evidence from deployments, contracts, operators, affected people and technical insiders informs the archive, the threat model and the next round of tests.
-7. **The lab tests again.** New evidence changes the research questions and may produce new Ghostyles, revised limits or a clear finding that an earlier result no longer transfers.
+1. **Experiment locally.** Use the [browser lab](https://ghostmaxxing.vecna.eu/lab.html) to test makeup and other visual interventions against face recognition. Experiments remain in the browser unless you choose to upload them. Has been tried to find recurring “patterns”, but they mostly work when you talk to a Visual Model and you ask to mod a picture for you. [A catalogue of Ghostmaxxing visual interventions](https://ghostmaxxing.vecna.eu/images/various/ghostmaxxing-style-catalog-4x4.png)
+2. **Document what works!** (With the participant’s consent), a success can be saved/shared/and re-produced a **Ghostyles.** (which is a javascript capable of casting an overlay in realtime over a face - [check the example plugin](https://github.com/vecna/ghostmaxxing/blob/main/ghostyles/00-template.js)).
+3. Successful camouflage (via images, before-after, or videos) can be submitted to the [community gallery](https://ghostmaxxing.vecna.eu/gallery.html). Every submission is reviewed by a human moderator before publication. `This part of the project is still in beta.` [The Ghostmaxxing community gallery](https://cdn.hackernoon.com/images/4JE28BStmmgAtRRuN3Uh5uGnN1q2-zoa2yhd.jpeg)
+4. **Distribute the results.** Approved experiments, Ghostyles, images, videos, and project updates are published through separate [Fediverse accounts](https://ghostmaxxing.vecna.eu/fediverse.html). Readers can follow only the streams relevant to them. This ActivityPub integration, built with Fedify.
+5. **Bring results back into workshops.** The network is both an output and an input. Promising techniques can be reproduced and evaluated in [workshops](https://ghostmaxxing.vecna.eu/workshops.html), where participants test them under shared conditions. Facilitators can coordinate through the [Signal group](https://ghostmaxxing.vecna.eu/workshops.html#lets-connect). [Participants testing face paint during a Ghostmaxxing workshop](https://ghostmaxxing.vecna.eu/images/workshops/ws1-painting-1.jpg)
+6. **Collect evidence from the field.** The [reporting channel](https://ghostmaxxing.vecna.eu/report.html) accepts information from affected people, operators, developers, technical insiders, and people involved in procurement. These reports help map deployments, contracts, failures, and risks. The anonymous submission service is operated separately by [NINA](https://nina.watch).
+7. **Start the next round.** New techniques and findings are published through the [website](https://ghostmaxxing.vecna.eu/) and the Fediverse. Responses, reports, and reproduced results inform the next experiments. The loop then begins again.
+
+## #Status of the project
+
+**It's a working beta version**. The face [recognition technology uses the 2D Face API library and 3D MediaPipe face detection](https://ghostmaxxing.vecna.eu/docs). Contributions to the repository are welcome. Although the Fediverse integration and whistleblowing channels are established, they are not very well tested. Currently, the tool has been used to support workshops on the public stage. When the tool display a green color, it’s a go! your face fingerprint isn’t recognized anymore.
 
 In compact form:
 
