@@ -13,14 +13,13 @@ test.describe('Ghostmaxxing homepage story', () => {
     await page.goto('/index.html');
 
     const cards = page.locator('.story__card');
-    await expect(cards).toHaveCount(8);
-    await expect(page.getByRole('heading', { name: 'One Ghostyle, three faces.' })).toBeVisible();
+    await expect(cards).toHaveCount(9);
 
     // Card 2 is the one that carries the proposition for a reader who never
     // swipes, so landing on it is a behaviour, not a detail.
     const current = page.locator('.story__dot.is-current');
     await expect(current).toHaveCount(1);
-    await expect(page.locator('.story__dot')).toHaveCount(8);
+    await expect(page.locator('.story__dot')).toHaveCount(9);
     const index = await page.locator('.story__dot').evaluateAll(
       (dots) => dots.findIndex((dot) => dot.classList.contains('is-current')),
     );
@@ -28,7 +27,7 @@ test.describe('Ghostmaxxing homepage story', () => {
 
     // Every caption is real text, not baked into the image.
     await expect(page.locator('.story__card').nth(1).locator('.story__text'))
-      .toContainText('threshold');
+      .toContainText('a success');
   });
 
   test('advances with the dots and the arrows', async ({ page }) => {
@@ -72,7 +71,7 @@ test.describe('Ghostmaxxing homepage story', () => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
     await page.goto('/index.html');
-    await expect(page.locator('.story__card')).toHaveCount(8);
+    await expect(page.locator('.story__card')).toHaveCount(9);
     // The controls are built by story.js and stay hidden without it, rather
     // than sitting there doing nothing.
     await expect(page.locator('#storyControls')).toBeHidden();

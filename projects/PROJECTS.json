@@ -580,7 +580,7 @@
       ],
       "description": "Kate Bertash’s garments carry plausible number plates to inject false records into licence-plate databases, not hide faces. Demonstrated at DEF CON 27 against OpenALPR and commercial mobile readers; garments have not been sold since around 2023.",
       "image": {
-        "src": "/images/projects/adversarial-fashion.webp",
+        "src": "/images/projects/adversarial-fashion.png",
         "alt": "A shirt printed with rows of vehicle number plates.",
         "source_url": "https://www.katebertash.com/adversarial-fashion",
         "credit": "Kate Bertash",
