@@ -24,10 +24,23 @@ test.describe('Ghostmaxxing homepage story', () => {
       (dots) => dots.findIndex((dot) => dot.classList.contains('is-current')),
     );
     expect(index).toBe(1);
+    await expect(page.locator('#story-card-2')).toHaveAttribute('aria-current', 'true');
+    await expect(page.locator('.story__card[aria-current="true"]')).toHaveCount(1);
+
+    // Check the physical scroll position as well as the controls: story-card-2
+    // must actually occupy the centre, with story-card-1 behind it.
+    await expect.poll(() => page.locator('#storyTrack').evaluate((track) => {
+      const midpoint = track.getBoundingClientRect().left + track.clientWidth / 2;
+      return Array.from(track.querySelectorAll('.story__card')).reduce((nearest, card) => {
+        const box = card.getBoundingClientRect();
+        const gap = Math.abs(box.left + box.width / 2 - midpoint);
+        return gap < nearest.gap ? { id: card.id, gap } : nearest;
+      }, { id: '', gap: Infinity }).id;
+    })).toBe('story-card-2');
 
     // Every caption is real text, not baked into the image.
     await expect(page.locator('.story__card').nth(1).locator('.story__text'))
-      .toContainText('a success');
+      .toContainText('cannot even find a face');
   });
 
   test('advances with the dots and the arrows', async ({ page }) => {
@@ -44,18 +57,71 @@ test.describe('Ghostmaxxing homepage story', () => {
     await expect(dots.nth(4)).toHaveClass(/is-current/);
   });
 
-  test('moves with left and right arrow keys while the carousel has focus', async ({ page }) => {
+  test('reopens on story-card-2 after a reload from another card', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/index.html');
+
+    await page.locator('.story__dot').nth(6).click();
+    await expect(page.locator('#story-card-7')).toHaveAttribute('aria-current', 'true');
+
+    await page.reload();
+    await expect(page.locator('#story-card-2')).toHaveAttribute('aria-current', 'true');
+    await expect(page.locator('.story__card[aria-current="true"]')).toHaveCount(1);
+  });
+
+  test('advances by clicking the visible side previews', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/index.html');
+      const track = page.locator('#storyTrack');
+      const dots = page.locator('.story__dot');
+      const box = await track.boundingBox();
+      expect(box).not.toBeNull();
+
+      // The carousel opens on card 2. Its neighbouring cards remain visible
+      // as narrow slices at the left and right edges of the track.
+      await page.mouse.click(box.x + 4, box.y + 30);
+      await expect(dots.nth(0)).toHaveClass(/is-current/);
+      await expect(page.locator('#story-card-1 .story__state')).toHaveText('Define a baseline');
+
+      await page.goto('/index.html');
+      const resetBox = await track.boundingBox();
+      expect(resetBox).not.toBeNull();
+      await page.mouse.click(resetBox.x + resetBox.width - 4, resetBox.y + 30);
+      await expect(dots.nth(2)).toHaveClass(/is-current/);
+
+      await page.mouse.click(resetBox.x + 4, resetBox.y + 30);
+      await expect(dots.nth(1)).toHaveClass(/is-current/);
+    }
+  });
+
+  test('moves with left and right arrow keys before and after interaction', async ({ page }) => {
     await page.goto('/index.html');
     const track = page.locator('#storyTrack');
     const dots = page.locator('.story__dot');
 
     await expect(track).toHaveAttribute('tabindex', '0');
-    await track.focus();
+    await expect(page.locator('body')).toBeFocused();
     await page.keyboard.press('ArrowRight');
     await expect(dots.nth(2)).toHaveClass(/is-current/);
 
     await page.keyboard.press('ArrowLeft');
     await expect(dots.nth(1)).toHaveClass(/is-current/);
+
+    await track.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(dots.nth(2)).toHaveClass(/is-current/);
+
+    // Keyboard navigation must keep working when a control owns the focus.
+    const next = page.locator('.story__arrow[data-story-step="1"]');
+    await next.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(dots.nth(3)).toHaveClass(/is-current/);
+
+    await dots.nth(5).focus();
+    await page.keyboard.press('ArrowLeft');
+    await expect(dots.nth(2)).toHaveClass(/is-current/);
   });
 
   test('never scrolls the page sideways, at any width', async ({ page }) => {
@@ -67,7 +133,7 @@ test.describe('Ghostmaxxing homepage story', () => {
     }
   });
 
-  test('works without JavaScript: all eight cards stay readable', async ({ browser }) => {
+  test('works without JavaScript: all nine cards stay readable', async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
     await page.goto('/index.html');

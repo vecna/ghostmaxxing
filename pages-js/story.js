@@ -1,31 +1,8 @@
-/* The homepage story carousel.
+/* Homepage story carousel.
  *
- * Eight cards, and the argument is their order: a Ghostyle works on the face
- * it was drawn on, fails in two different ways on two other faces, and comes
- * back as a new Ghostyle. See the comment above the markup in index.html.
- *
- * Three decisions worth keeping:
- *
- *   It opens on card 2, not card 1. Card 1 is the baseline, which is a setup
- *   rather than a claim, and most people look at one card and leave. Landing
- *   on the Ghostyle that worked means a reader who never swipes still gets the
- *   whole proposition, and the baseline is one swipe backwards for anyone who
- *   wonders what it crossed from.
- *
- *   The scroller is the browser's, not ours. Horizontal swipe is a free
- *   gesture on a phone: vertical scroll still belongs to the page, so this
- *   carousel can never trap someone the way a pinned scroll sequence does.
- *   Momentum, rubber-banding and keyboard arrows all come from the platform.
- *   scroll-snap-stop: always is set in the CSS so one flick cannot skip from
- *   card 2 to card 6 and lose the failure that the story turns on.
- *
- *   Nothing moves on its own. An auto-advancing carousel decides what you look
- *   at, which is a strange thing to build for a project about machines
- *   deciding what to look at, and it would need a pause control to be
- *   accessible anyway.
- *
- * Without this file the track is still a horizontal scroller with all eight
- * cards in it. Only the dots, the arrows and the opening position are lost.
+ * The browser owns the horizontal scroller and scroll snapping. JavaScript
+ * adds the opening position, dots, buttons, keyboard navigation and clickable
+ * side previews. Nothing advances automatically.
  */
 (function () {
     'use strict';
@@ -38,84 +15,78 @@
     var cards = Array.prototype.slice.call(track.querySelectorAll('.story__card'));
     if (cards.length < 2) return;
 
-    if (!track.hasAttribute('tabindex')) track.setAttribute('tabindex', '0');
-
-    var OPENS_ON = 1; // zero-based: the second card
-    var current = OPENS_ON;
+    var START_INDEX = 1; // story-card-2
+    var current = -1;
     var dots = [];
+    var scrollTimer = null;
 
-    /* The card whose centre is nearest the viewport centre. Reading the
-       positions is more reliable than counting scroll steps: the snap points
-       are the browser's and it is free to land where it likes. */
+    track.setAttribute('tabindex', '0');
+
     function nearestCard() {
-        var mid = track.scrollLeft + track.clientWidth / 2;
-        var best = 0;
-        var bestGap = Infinity;
-        for (var i = 0; i < cards.length; i += 1) {
-            var centre = cards[i].offsetLeft + cards[i].offsetWidth / 2;
-            var gap = Math.abs(centre - mid);
-            if (gap < bestGap) { bestGap = gap; best = i; }
-        }
-        return best;
+        var trackBox = track.getBoundingClientRect();
+        var trackCentre = trackBox.left + trackBox.width / 2;
+        var nearest = 0;
+        var nearestGap = Infinity;
+
+        cards.forEach(function (card, index) {
+            var cardBox = card.getBoundingClientRect();
+            var cardCentre = cardBox.left + cardBox.width / 2;
+            var gap = Math.abs(cardCentre - trackCentre);
+            if (gap < nearestGap) {
+                nearest = index;
+                nearestGap = gap;
+            }
+        });
+
+        return nearest;
     }
 
-    /* Marks each card as before, at, or after the current one so the CSS can
-       fade the peeking neighbours towards the page background. */
-    function markCards() {
-        cards.forEach(function (card, i) {
-            card.setAttribute('data-pos', i === current ? 'current' : (i < current ? 'before' : 'after'));
+    function setCurrent(index) {
+        current = index;
+
+        cards.forEach(function (card, cardIndex) {
+            if (cardIndex === index) {
+                card.setAttribute('aria-current', 'true');
+            } else {
+                card.removeAttribute('aria-current');
+            }
+        });
+
+        dots.forEach(function (dot, dotIndex) {
+            var isCurrent = dotIndex === index;
+            dot.classList.toggle('is-current', isCurrent);
+            dot.setAttribute('aria-current', isCurrent ? 'true' : 'false');
         });
     }
 
-    function markCurrent(index) {
-        if (index === current) return;
-        current = index;
-        markCards();
-        for (var i = 0; i < dots.length; i += 1) {
-            var isHere = i === index;
-            dots[i].classList.toggle('is-current', isHere);
-            dots[i].setAttribute('aria-current', isHere ? 'true' : 'false');
-        }
-    }
-
-    /* A smooth scroll fires dozens of scroll events on its way, and the
-       handler below would read the card it is passing over as the current one.
-       While a programmatic scroll is in flight the handler stands down, or a
-       second tap on an arrow acts on whichever card the animation happened to
-       be crossing. */
-    var movingUntil = 0;
-
     function goTo(index, smooth) {
-        var clamped = Math.max(0, Math.min(cards.length - 1, index));
-        var card = cards[clamped];
+        var targetIndex = Math.max(0, Math.min(cards.length - 1, index));
+        var card = cards[targetIndex];
         var left = card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
-        if (smooth && !prefersStill()) {
-            movingUntil = Date.now() + 700;
-            track.scrollTo({ left: left, behavior: 'smooth' });
-        } else {
-            movingUntil = Date.now() + 120;
-            track.scrollLeft = left;
-        }
-        markCurrent(clamped);
+        var reduceMotion = window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        track.scrollTo({
+            left: left,
+            behavior: smooth && !reduceMotion ? 'smooth' : 'auto'
+        });
+        setCurrent(targetIndex);
     }
 
-    function prefersStill() {
-        return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    }
-
-    /* Dots. Buttons, not decoration: they are the only affordance for a reader
-       who is not going to drag anything, and a label that says which card it
-       is beats "slide 4 of 8" read out with no idea what is on it. */
     cards.forEach(function (card, index) {
         var state = card.querySelector('.story__state');
         var label = state ? state.textContent.trim() : 'Card ' + (index + 1);
         var item = document.createElement('li');
         var button = document.createElement('button');
+
         button.type = 'button';
         button.className = 'story__dot';
         button.setAttribute('aria-label', (index + 1) + ' of ' + cards.length + ': ' + label);
         button.setAttribute('aria-current', 'false');
-        button.addEventListener('click', function () { goTo(index, true); });
+        button.addEventListener('click', function () {
+            goTo(index, true);
+        });
+
         item.appendChild(button);
         dotList.appendChild(item);
         dots.push(button);
@@ -123,57 +94,41 @@
 
     Array.prototype.forEach.call(controls.querySelectorAll('[data-story-step]'), function (button) {
         button.addEventListener('click', function () {
-            goTo(current + Number(button.getAttribute('data-story-step')), true);
+            var step = Number(button.getAttribute('data-story-step'));
+            goTo(current + step, true);
         });
     });
 
-    dots.forEach(function (button, index) {
-        var isHere = index === current;
-        button.classList.toggle('is-current', isHere);
-        button.setAttribute('aria-current', isHere ? 'true' : 'false');
+    track.addEventListener('click', function (event) {
+        var card = event.target.closest('.story__card');
+        if (!card || !track.contains(card)) return;
+
+        var index = cards.indexOf(card);
+        if (index < 0 || index === current) return;
+
+        event.preventDefault();
+        goTo(index, true);
     });
 
-    markCards();
+    document.addEventListener('keydown', function (event) {
+        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+        if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
 
-    var story = track.closest('.story');
-    if (story) {
-        story.addEventListener('keydown', function (event) {
-            if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-            if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-            if (!track.contains(event.target) && !controls.contains(event.target)) return;
-            if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+        event.preventDefault();
+        goTo(current + (event.key === 'ArrowRight' ? 1 : -1), true);
+    });
 
-            event.preventDefault();
-            goTo(current + (event.key === 'ArrowRight' ? 1 : -1), true);
-        });
-    }
-
-    var settling = null;
     track.addEventListener('scroll', function () {
-        window.clearTimeout(settling);
-        settling = window.setTimeout(function () {
-            if (Date.now() < movingUntil) return;
-            markCurrent(nearestCard());
-        }, 90);
+        window.clearTimeout(scrollTimer);
+        scrollTimer = window.setTimeout(function () {
+            setCurrent(nearestCard());
+        }, 100);
     }, { passive: true });
-
-    window.addEventListener('resize', function () {
-        /* A resize changes every offsetLeft, so the scroll position now points
-           at the wrong card. Put the reader back on the one they were reading
-           rather than wherever the arithmetic landed. */
-        goTo(current, false);
-    });
 
     controls.hidden = false;
 
-    /* Opening position, after layout: offsetLeft is only meaningful once the
-       cards have been laid out, and the images carry width and height so that
-       happens before they load. */
-    if (window.requestAnimationFrame) {
-        window.requestAnimationFrame(function () {
-            if (current === OPENS_ON) goTo(OPENS_ON, false);
-        });
-    } else {
-        goTo(OPENS_ON, false);
-    }
+    window.addEventListener('pageshow', function () {
+        goTo(START_INDEX, false);
+    }, { once: true });
 }());

@@ -134,29 +134,6 @@ body {
     position: relative;
 }
 
-/* The neighbours peeking in at the sides fade from clear, at the edge next to
-   the current card, through cream at 50%, to the page background at 90% at
-   the outer edge. story.js sets data-pos; without it nothing is faded. */
-.story__card[data-pos="before"]::after,
-.story__card[data-pos="after"]::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-}
-
-.story__card[data-pos="before"]::after {
-    background: linear-gradient(to left, transparent 0%,
-        color-mix(in srgb, var(--gm-cream) 50%, transparent) 50%,
-        color-mix(in srgb, var(--gm-soil) 90%, transparent) 100%);
-}
-
-.story__card[data-pos="after"]::after {
-    background: linear-gradient(to right, transparent 0%,
-        color-mix(in srgb, var(--gm-cream) 50%, transparent) 50%,
-        color-mix(in srgb, var(--gm-soil) 90%, transparent) 100%);
-}
-
 /* align-items: stretch on the track plus a full-height figure means every
    card is as tall as the tallest one. Captions differ in length, and a track
    whose height changes as you swipe moves the page under your thumb. */
@@ -178,13 +155,13 @@ body {
     background: var(--gm-green-deep);
 }
 
-/* The Ghostyle-object card is a drawing on cream, not a photograph: nothing
-   to crop into, so it is shown whole. */
-.story__card--object .story__figure {
+/* The cream card contains a drawing rather than a photograph, so the image is
+   shown whole instead of being cropped. */
+.story__card--cream-bg .story__figure {
     background: var(--gm-cream);
 }
 
-.story__card--object .story__image {
+.story__card--cream-bg .story__image {
     object-fit: contain;
     background: var(--gm-cream);
 }
@@ -196,7 +173,7 @@ body {
     background: var(--gm-green-night);
 }
 
-.story__card--object .story__caption {
+.story__card--cream-bg .story__caption {
     background: var(--gm-cream);
 }
 
@@ -210,7 +187,7 @@ body {
     color: var(--gm-yellow);
 }
 
-.story__card--object .story__state {
+.story__card--cream-bg .story__state {
     color: var(--gm-green);
 }
 
@@ -221,7 +198,7 @@ body {
     color: var(--gm-cream);
 }
 
-.story__card--object .story__text {
+.story__card--cream-bg .story__text {
     color: var(--gm-ink);
 }
 
