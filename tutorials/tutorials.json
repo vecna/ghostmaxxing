@@ -29,6 +29,9 @@
   "lab-screenshots": {
      "title": "(internal) Lab screenshots and distance measurements"
   },
+  "video-loader": {
+     "title": "(internal) Seekable Video Loader architecture"
+  },
   "aigen-image-labeler": {
      "title": "(internal) AI Gen image labeler"
   },

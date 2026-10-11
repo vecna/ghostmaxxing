@@ -26,3 +26,8 @@ JPEG/PNG files in place; `--dry-run` previews the selection. The marker uses the
 project font and colour tokens and skips existing visible badges. Marking
 changes test inputs and re-encodes JPEGs; restore unmarked files from Git before
 changing badge sizes or comparing against an earlier unmarked baseline.
+
+Large makeup tutorials and event recordings may be placed directly in this
+folder for local Video Loader calibration. They are git-ignored by source ID or
+filename, are never copied or modified by the analyser, and are not required by
+CI. See `tutorials/video-loader.md` for the manual validation order.

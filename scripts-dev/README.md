@@ -22,6 +22,7 @@ Run the commands below from the `ghostmaxxing` repository root. Most scripts res
 | Draw the lab's layers on a picture | `node scripts-dev/lab-capture.cjs render --baseline <file> --layers landmarks --output <file>` | One picture with the lab's overlays (needs `ffmpeg`) |
 | Measure the distance between two pictures | `node scripts-dev/lab-capture.cjs measure --baseline <file> --dazzled <file>` | Readings and verdict on stdout; `--output-visual-log <file>` for a composite picture |
 | Capture the workshop screenshots | `node scripts-dev/lab-capture.cjs shots --baseline <file> --dazzled <file>` | Three JPEGs in `images/workshops/` |
+| Analyse a seekable makeup video | `npm run analyze:video -- <video> --output <directory>` | Report JSON/HTML, selected JPEGs, and a separate NDJSON technical log |
 | Generate a code map and viewer | `npm run codemap` | `codemap/codemap.json`, `codemap/codemap.html` |
 | Export UI translations | `npm run i18n:extract` | POT and pipe-delimited CSV under `translations/` |
 | Extract public copy | `node scripts-dev/extract-text-only.js` | `EXTRACTED-text-YYYY-MM-DD.md` |
@@ -364,6 +365,37 @@ Choose checks for the changed behaviour. `check` does not rebuild docs, verify t
 
 When adding or changing a script, record its exact command, inputs, outputs, overwrite behaviour and failure conditions here. Update the task index and the short folder description. Keep executable behaviour separate from intended future behaviour, and document scripts without npm aliases as well as those exposed through `package.json`.
 
+## Analyse an existing makeup video
+
+Source: `scripts-dev/video-loader.cjs`. This Playwright script controls the
+same file input and public API as `loader.html`; it does not emulate a webcam or
+convert the source to Y4M.
+
+```sh
+npm run analyze:video -- video.webm \
+  --output /tmp/video-analysis \
+  --baseline-time 18 \
+  --sample-interval 0.5
+
+node scripts-dev/video-loader.cjs replay-log \
+  /tmp/video-analysis/analysis.ndjson \
+  --output /tmp/video-analysis/replay
+
+node scripts-dev/video-loader.cjs extract-clips \
+  /tmp/video-analysis/analysis.ndjson \
+  video.webm \
+  --output /tmp/video-analysis/clips
+```
+
+`analyze` writes `report.json`, portable `report.html`, selected JPEG evidence
+under `frames/`, and `analysis.ndjson`. Report images and technical telemetry
+remain separate artifacts. `replay-log` needs no video or model inference.
+`extract-clips` verifies the source byte size and sampled fingerprint recorded
+in the log, then uses ffmpeg to re-encode logged event windows as H.264/AAC MP4
+files. The source is read in place and never overwritten. Detailed signal semantics, baseline
+selection, story ordering, failure preservation, and calibration policy are in
+`tutorials/video-loader.md`.
+
 ## Draw the lab's layers on a picture and measure the distance
 
 Source: `scripts-dev/lab-capture.cjs`. Run from the repository root.
@@ -564,9 +596,8 @@ script that produced it.
 `figureN-painted.jpeg` pairs: the same generated face bare and with
 adversarial makeup. Nobody is depicted, so they can appear in documentation
 and be re-rendered at any time. Any of them is a valid `--baseline` or
-`--dazzled`. `scripts-dev/build-face-fixtures.cjs` still builds concatenated
-`.y4m` clips from them for anyone who wants a single clean-then-painted feed;
-`lab-capture.cjs` no longer needs those, since it converts pictures itself.
+`--dazzled`. `lab-capture.cjs` converts these inputs for its own specialised
+fake-camera workflow. The separate seekable Video Loader does not use Y4M.
 
 To measure the whole set, loop in the shell:
 

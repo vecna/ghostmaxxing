@@ -444,13 +444,13 @@ async function captureLab(context, run) {
 async function captureLoader(context, run) {
    const page = await preparePage(context, run.baseUrl, 'loader.html', run.locale);
    try {
-      await page.waitForFunction(() => document.getElementById('statusDot')?.classList.contains('live'), undefined, {
+      await page.waitForFunction(() => window.gstmxxVideoLoader?.isModelsReady(), undefined, {
          timeout: 90000,
       });
       await run.capture(page, 'loader-01-empty', {
          page: 'loader.html',
          purpose: 'The Loader before selecting a local video.',
-         locator: '.loader-band--stage',
+         locator: '.loader-stage',
       });
 
       await page.setInputFiles('#videoFile', LOADER_VIDEO);
@@ -469,15 +469,21 @@ async function captureLoader(context, run) {
       await run.capture(page, 'loader-02-video-loaded', {
          page: 'loader.html',
          purpose: `The committed MP4 loaded at ${capturedTime.toFixed(3)} seconds with active controls.`,
-         locator: '.loader-band--stage',
+         locator: '.loader-stage',
       });
 
-      await page.locator('#recordFaceBtn').click();
-      await page.locator('#loaderLog .loader-entry').first().waitFor({ state: 'visible' });
+      await page.evaluate(async () => {
+         const duration = document.getElementById('video').duration;
+         await window.gstmxxVideoLoader.analyze({
+            start: 0,
+            end: Math.min(duration, 12),
+            sampleIntervalSeconds: 1,
+         });
+      });
       await run.capture(page, 'loader-03-record-result', {
          page: 'loader.html',
-         purpose: 'A frame-level Record face result with timestamped diagnostic metadata.',
-         locator: '.loader-band--log',
+         purpose: 'The model-separated timeline and report after a bounded local-video analysis.',
+         locator: '.loader-report',
       });
    } finally {
       await page.close();
