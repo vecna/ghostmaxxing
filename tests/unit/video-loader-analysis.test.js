@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buildAnchoredEmbeddingBaseline,
+  buildAnchoredFaceBaseline,
   buildEmbeddingBaseline,
   buildFaceBaseline,
   cosineSimilarity,
@@ -40,6 +42,23 @@ describe('video-loader analysis policy', () => {
     expect(faceBaseline.spread).toBeGreaterThanOrEqual(0);
   });
 
+  it('keeps the explicitly selected frame as the anchored model reference', () => {
+    const embeddings = [[1, 0], [0.99, 0.1], [0.98, -0.1]];
+    const embeddingBaseline = buildAnchoredEmbeddingBaseline(embeddings, 0, {
+      minimumDelta: 0.02,
+      madMultiplier: 4,
+    });
+    expect(embeddingBaseline.embedding).toEqual(embeddings[0]);
+    expect(embeddingBaseline.referenceIndex).toBe(0);
+    expect(embeddingBaseline.triggerThreshold).toBeGreaterThanOrEqual(0.02);
+
+    const descriptors = [[0, 0], [0.02, 0], [0.04, 0]];
+    const faceBaseline = buildAnchoredFaceBaseline(descriptors, 0);
+    expect(faceBaseline.descriptor).toEqual(descriptors[0]);
+    expect(faceBaseline.referenceIndex).toBe(0);
+    expect(faceBaseline.spread).toBeCloseTo(0.02);
+  });
+
   it('triggers on sustained drift, face return, jump, and heartbeat without queueing frames', () => {
     const detector = createTriggerDetector({
       heartbeatSeconds: 4,
@@ -69,5 +88,50 @@ describe('video-loader analysis policy', () => {
     expect(sustained.shouldVerify).toBe(true);
     expect(sustained.reasons).toContain('visual-drift-sustained');
     expect(sustained.reasons).toContain('visual-drift-jump');
+  });
+
+  it('keeps MediaPipe gaps and unusable crops as diagnostics rather than face-api evidence', () => {
+    const detector = createTriggerDetector({
+      heartbeatSeconds: 4,
+      minimumFaceApiGapSeconds: 0.5,
+    });
+    detector.evaluate({
+      mediaTime: 0,
+      facePresent: true,
+      comparable: true,
+      visualDrift: 0.01,
+      visualThreshold: 0.05,
+    });
+    detector.markFaceApi(0);
+
+    const lost = detector.evaluate({
+      mediaTime: 1,
+      facePresent: false,
+      comparable: false,
+      visualDrift: null,
+      visualThreshold: 0.05,
+    });
+    expect(lost.shouldVerify).toBe(false);
+    expect(lost.observations).toContain('mediapipe-face-lost');
+
+    const unusableReturn = detector.evaluate({
+      mediaTime: 5,
+      facePresent: true,
+      comparable: false,
+      visualDrift: null,
+      visualThreshold: 0.05,
+    });
+    expect(unusableReturn.reasons).toContain('mediapipe-face-returned');
+    expect(unusableReturn.shouldVerify).toBe(false);
+
+    const usableHeartbeat = detector.evaluate({
+      mediaTime: 6,
+      facePresent: true,
+      comparable: true,
+      visualDrift: 0.01,
+      visualThreshold: 0.05,
+    });
+    expect(usableHeartbeat.reasons).toContain('identity-heartbeat');
+    expect(usableHeartbeat.shouldVerify).toBe(true);
   });
 });

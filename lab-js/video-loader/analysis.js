@@ -11,7 +11,11 @@
 export const DEFAULT_FACE_DISTANCE_THRESHOLD = 0.6;
 
 /**
- * Computes Euclidean distance between equal-length vectors.
+ * Computes Euclidean distance between equal-length vectors. The Video Loader
+ * uses this metric for face-api descriptors: `buildFaceBaseline()` uses it to
+ * choose the representative descriptor and measure baseline spread, while the
+ * controller uses it to compare later face-api checks with that baseline and
+ * the configured `0.6` identity-distance threshold.
  *
  * @param {ArrayLike<number>} left First vector.
  * @param {ArrayLike<number>} right Second vector.
@@ -29,7 +33,10 @@ export function euclideanDistance(left, right) {
 }
 
 /**
- * Computes cosine similarity between equal-length vectors.
+ * Computes cosine similarity between equal-length vectors. It is used only
+ * for MediaPipe ImageEmbedder vectors from aligned face crops. The baseline
+ * medoid and every later visual-drift sample use `1 - cosineSimilarity(...)`;
+ * this value is a generic appearance-change signal, not an identity score.
  *
  * @param {ArrayLike<number>} left First vector.
  * @param {ArrayLike<number>} right Second vector.
@@ -51,7 +58,10 @@ export function cosineSimilarity(left, right) {
 }
 
 /**
- * Returns the median without mutating the caller's collection.
+ * Returns the median without mutating the caller's collection. Baseline
+ * construction uses it to summarise face-api descriptor spread and the centre
+ * of ImageEmbedder drift; `medianAbsoluteDeviation()` calls it again to derive
+ * the adaptive visual-change threshold from baseline noise.
  *
  * @param {number[]} values Numeric values.
  * @returns {number} Median, or zero for an empty collection.
@@ -75,7 +85,12 @@ export function medianAbsoluteDeviation(values) {
 }
 
 /**
- * Picks the real vector with the smallest total distance to its peers.
+ * Picks the real vector with the smallest total distance to its peers. Both
+ * baseline builders use this helper: cosine distance selects a representative
+ * ImageEmbedder vector, and Euclidean distance selects a representative
+ * face-api descriptor. Keeping an observed vector, instead of an arithmetic
+ * mean, also lets the controller associate the visual baseline with a real
+ * sampled timestamp.
  *
  * @param {Array<ArrayLike<number>>} vectors Candidate vectors.
  * @param {function(ArrayLike<number>, ArrayLike<number>): number} metric Distance metric.
@@ -149,6 +164,59 @@ export function buildFaceBaseline(descriptors) {
 }
 
 /**
+ * Uses the human-selected ImageEmbedder vector as the actual baseline while
+ * nearby vectors estimate normal visual noise. The Video Loader uses this
+ * variant only for an explicitly anchored baseline, ensuring that later
+ * visual drift is computed from the frame the person selected rather than a
+ * medoid several seconds later.
+ *
+ * @param {Array<ArrayLike<number>>} embeddings Nearby stable embeddings.
+ * @param {number} referenceIndex Index of the explicitly selected frame.
+ * @param {object} [options] Adaptive-trigger tuning.
+ * @param {number} [options.minimumDelta] Minimum drift above baseline noise.
+ * @param {number} [options.madMultiplier] Robust-noise multiplier.
+ * @returns {{embedding: number[], referenceIndex: number, medianDrift: number, mad: number, triggerThreshold: number, drifts: number[]}} Anchored baseline model.
+ */
+export function buildAnchoredEmbeddingBaseline(embeddings, referenceIndex, options = {}) {
+   if (!embeddings[referenceIndex]) throw new Error('Anchored embedding baseline requires a valid reference index.');
+   const minimumDelta = options.minimumDelta ?? 0.025;
+   const madMultiplier = options.madMultiplier ?? 6;
+   const embedding = Array.from(embeddings[referenceIndex]);
+   const drifts = embeddings.map((candidate) => visualDrift(candidate, embedding));
+   const medianDrift = median(drifts);
+   const mad = medianAbsoluteDeviation(drifts);
+   return {
+      embedding,
+      referenceIndex,
+      medianDrift,
+      mad,
+      triggerThreshold: medianDrift + Math.max(minimumDelta, mad * madMultiplier),
+      drifts,
+   };
+}
+
+/**
+ * Uses the face-api descriptor from the human-selected frame as the identity
+ * baseline and measures nearby descriptor spread around it. The Video Loader
+ * uses this for explicit baseline selection so every later L2 distance truly
+ * originates from the visible baseline card.
+ *
+ * @param {Array<ArrayLike<number>>} descriptors Nearby stable descriptors.
+ * @param {number} referenceIndex Index of the selected frame descriptor.
+ * @returns {{descriptor: number[], referenceIndex: number, spread: number}} Anchored face-api baseline.
+ */
+export function buildAnchoredFaceBaseline(descriptors, referenceIndex) {
+   if (!descriptors[referenceIndex]) throw new Error('Anchored face baseline requires a valid reference index.');
+   const descriptor = Array.from(descriptors[referenceIndex]);
+   const distances = descriptors.map((candidate) => euclideanDistance(candidate, descriptor));
+   return {
+      descriptor,
+      referenceIndex,
+      spread: median(distances),
+   };
+}
+
+/**
  * Computes ImageEmbedder visual drift from a baseline embedding.
  *
  * @param {ArrayLike<number>} embedding Current aligned-face embedding.
@@ -215,14 +283,14 @@ export function createTriggerDetector(options = {}) {
             recentVotes = [];
          }
 
-         if (sample.facePresent && sample.mediaTime - lastFaceApiAt >= heartbeatSeconds) {
+         if (sample.comparable && sample.mediaTime - lastFaceApiAt >= heartbeatSeconds) {
             reasons.push('identity-heartbeat');
          }
 
          previousPresence = sample.facePresent;
          const outsideCooldown = sample.mediaTime - lastFaceApiAt >= minimumFaceApiGapSeconds;
          return {
-            shouldVerify: sample.facePresent && reasons.length > 0 && outsideCooldown,
+            shouldVerify: sample.facePresent && sample.comparable && reasons.length > 0 && outsideCooldown,
             reasons: [...new Set(reasons)],
             observations,
          };

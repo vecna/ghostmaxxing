@@ -23,13 +23,13 @@ EXTRACTED-text-*.md
 # Generated technical reference
 /docs/jsdoc/
 
-# Local long-form research videos. Small committed fixtures remain available to CI.
-/tests/fixtures/screencast-with-overlay.mp4
-/tests/fixtures/*[[]hpAi9PM0uAM[]].webm
-/tests/fixtures/*[[]SJWOErYvxVI[]].webm
-/tests/fixtures/*[[]PD-Cc5XpY5w[]].webm
-/tests/fixtures/*[[]suny-SfWufU[]].webm
-/tests/fixtures/*[[]HilDlfMxQKQ[]].mkv
+# Local research videos. The small synthetic MP4 remains committed for CI.
+/tests/fixtures/*.mp4
+/tests/fixtures/*.webm
+/tests/fixtures/*.mkv
+/tests/fixtures/*.mov
+/tests/fixtures/*.m4v
+!/tests/fixtures/my-moving-face.mp4
 
 # Local measurements produced while calibrating model thresholds.
 /tests/fixtures/synthetic-faces/lab-measurements.json

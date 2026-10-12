@@ -16,6 +16,8 @@ import {
 } from '../config.js';
 import {
    DEFAULT_FACE_DISTANCE_THRESHOLD,
+   buildAnchoredEmbeddingBaseline,
+   buildAnchoredFaceBaseline,
    buildEmbeddingBaseline,
    buildFaceBaseline,
    createTriggerDetector,
@@ -28,6 +30,7 @@ import {
    buildReport,
    createAnalysisSession,
    recordEvidenceObservation,
+   recordManualFrameCheck,
    selectEventFrame,
    serializeTechnicalLog,
 } from './session.js';
@@ -37,6 +40,8 @@ import {
  * @property {number} sampleIntervalSeconds Media-time interval between lightweight samples.
  * @property {number} baselineEmbeddingSamples Stable ImageEmbedder samples required.
  * @property {number} baselineFaceSamples Stable face-api descriptors required.
+ * @property {number} anchoredBaselineEmbeddingSamples Comparable neighbours used around a selected frame.
+ * @property {number} anchoredBaselineFaceSamples Face descriptors used around a selected frame.
  * @property {number} faceDistanceThreshold Face-api L2 distance threshold.
  * @property {number} heartbeatSeconds Maximum media-time gap between face-api checks.
  * @property {number} minimumFaceApiGapSeconds Minimum media-time gap between face-api checks.
@@ -48,6 +53,8 @@ import {
  * @property {number} maximumBaselineYawStep Largest accepted approximate yaw change.
  * @property {number} maximumBaselineScaleStep Largest accepted face-width ratio change.
  * @property {number} maximumBaselineFaceSpread Largest accepted face-api baseline spread.
+ * @property {number} maximumAnchoredBaselineFaceSpread Largest spread accepted around a human-selected frame.
+ * @property {number} anchoredBaselineWindowSeconds Maximum local calibration span after a selected frame.
  * @property {number} alignedCropSize ImageEmbedder crop edge in pixels.
  * @property {number} evidenceRefinementRadiusSeconds Neighbourhood around a confirmed event.
  * @property {number} evidenceRefinementStepSeconds MediaPipe-only refinement cadence.
@@ -59,6 +66,8 @@ export const DEFAULT_VIDEO_LOADER_CONFIG = Object.freeze({
    sampleIntervalSeconds: 0.5,
    baselineEmbeddingSamples: 8,
    baselineFaceSamples: 3,
+   anchoredBaselineEmbeddingSamples: 4,
+   anchoredBaselineFaceSamples: 3,
    faceDistanceThreshold: DEFAULT_FACE_DISTANCE_THRESHOLD,
    heartbeatSeconds: 4,
    minimumFaceApiGapSeconds: 0.75,
@@ -70,6 +79,8 @@ export const DEFAULT_VIDEO_LOADER_CONFIG = Object.freeze({
    maximumBaselineYawStep: 0.15,
    maximumBaselineScaleStep: 0.15,
    maximumBaselineFaceSpread: 0.3,
+   maximumAnchoredBaselineFaceSpread: 0.5,
+   anchoredBaselineWindowSeconds: 3,
    alignedCropSize: 224,
    evidenceRefinementRadiusSeconds: 1,
    evidenceRefinementStepSeconds: 0.2,
@@ -419,6 +430,23 @@ export function createVideoAnalysisController(video, overrides = {}) {
    }
 
    /**
+    * Creates an empty analysis state for the already loaded source. This is
+    * used when a failed or completed run is intentionally started again; a
+    * resume operation keeps the existing session instead.
+    *
+    * @returns {object} Fresh session for the current source.
+    */
+   function resetLoadedSourceSession() {
+      const source = structuredClone(session.source);
+      const models = structuredClone(session.models);
+      session = createAnalysisSession(source, config);
+      session.models = models;
+      appendJournal(session, 'source-reused', { source: session.source });
+      triggerDetector.reset();
+      return session;
+   }
+
+   /**
     * Runs face-api recognition against the current decoded frame.
     *
     * @returns {Promise<object|null>} Detection with landmarks and descriptor.
@@ -427,6 +455,96 @@ export function createVideoAnalysisController(video, overrides = {}) {
       session.summary.faceApiRuns += 1;
       const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 });
       return faceapi.detectSingleFace(video, options).withFaceLandmarks().withFaceDescriptor();
+   }
+
+   /**
+    * Compares one person-selected source timestamp with the established
+    * baseline. The explicit request runs both detector families immediately,
+    * stores one lightweight sample, captures the native frame, and creates a
+    * manual story entry without pretending that it passed automatic voting.
+    *
+    * @param {number} mediaTime Source timestamp requested by the person.
+    * @returns {Promise<object>} Created manual evidence event.
+    */
+   async function analyzeFrame(mediaTime) {
+      if (!sourceFile || !session) throw new Error('Load a local video before analysing a frame.');
+      if (!modelsReady) await loadModels();
+      if (!session.baseline) throw new Error('Complete baseline acquisition before analysing an individual frame.');
+      if (session.status === 'analysing') throw new Error('Pause the running analysis before inspecting an individual frame.');
+
+      const target = Math.max(0, Math.min(video.duration, Number(mediaTime)));
+      if (!Number.isFinite(target)) throw new Error('The requested frame timestamp is invalid.');
+      await seekVideo(video, target);
+      const mediaPipeResult = faceLandmarker.detect(video);
+      const landmarks = mediaPipeResult?.faceLandmarks?.[0] || null;
+      let geometry = null;
+      let quality = null;
+      let embedding = null;
+      let comparable = false;
+      if (landmarks) {
+         geometry = drawAlignedFaceCrop(video, landmarks, cropCanvas);
+         const measured = measureCropQuality(cropCanvas);
+         quality = {
+            sharpness: measured.sharpness,
+            luma: measured.luma,
+            clippedRatio: measured.clippedRatio,
+            exposed: measured.exposed,
+         };
+         comparable = geometry.comparable && quality.exposed;
+         if (comparable) embedding = unpackEmbedding(imageEmbedder.embed(cropCanvas));
+      }
+      const drift = comparable && embedding
+         ? visualDrift(embedding, session.baseline.embedding)
+         : null;
+      const detection = await runFaceApi();
+      const faceDistance = detection?.descriptor
+         ? euclideanDistance(detection.descriptor, session.baseline.descriptor)
+         : null;
+      const interpretation = !comparable
+         ? 'not-comparable'
+         : !detection
+            ? 'no-2d-face'
+            : faceDistance >= config.faceDistanceThreshold
+               ? 'above-threshold'
+               : 'below-threshold';
+      const sample = appendSample(session, {
+         phase: 'manual',
+         mediaTime: target,
+         facePresent: !!landmarks,
+         comparable,
+         visualDrift: drift,
+         visualThreshold: session.baseline.visualTriggerThreshold,
+         geometry,
+         quality,
+      });
+      const observation = {
+         mediaTime: target,
+         outcome: interpretation === 'above-threshold' || interpretation === 'no-2d-face'
+            ? 'divergent'
+            : interpretation === 'below-threshold' ? 'matched' : 'not-comparable',
+         mediaPipeComparable: comparable,
+         faceApiDetected: !!detection,
+         faceDistance,
+         faceThreshold: config.faceDistanceThreshold,
+         visualDrift: drift,
+         reasons: ['manual-frame-check'],
+         quality,
+      };
+      appendJournal(session, 'face-api-result', { ...observation, origin: 'manual' });
+      const frame = captureSourceFrame(
+         video,
+         target,
+         quality?.sharpness || 0,
+         'manual-frame-check',
+      );
+      const event = recordManualFrameCheck(session, {
+         mediaTime: target,
+         interpretation,
+         observation,
+         frame,
+      });
+      notify('manual-frame-checked', { event, sample });
+      return event;
    }
 
    /**
@@ -540,20 +658,35 @@ export function createVideoAnalysisController(video, overrides = {}) {
     *
     * @param {Array<object>} embeddingSamples Accepted embedding samples.
     * @param {Array<object>} faceSamples Accepted face-api samples.
-    * @param {object} representativeFrame Frame nearest the embedding medoid.
+    * @param {object} representativeFrame Visible baseline frame.
+    * @param {number|null} anchoredMediaTime Human-selected timestamp, or null for automatic search.
     * @returns {object} Stored session baseline.
     */
-   function finaliseBaseline(embeddingSamples, faceSamples, representativeFrame) {
-      const embeddingBaseline = buildEmbeddingBaseline(
-         embeddingSamples.map((sample) => sample.embedding),
-         {
+   function finaliseBaseline(embeddingSamples, faceSamples, representativeFrame, anchoredMediaTime = null) {
+      const embeddingVectors = embeddingSamples.map((sample) => sample.embedding);
+      const faceDescriptors = faceSamples.map((sample) => sample.descriptor);
+      const embeddingReferenceIndex = anchoredMediaTime === null
+         ? null
+         : embeddingSamples.findIndex((sample) => Math.abs(sample.mediaTime - anchoredMediaTime) < 0.001);
+      const faceReferenceIndex = anchoredMediaTime === null
+         ? null
+         : faceSamples.findIndex((sample) => Math.abs(sample.mediaTime - anchoredMediaTime) < 0.001);
+      const embeddingBaseline = anchoredMediaTime === null
+         ? buildEmbeddingBaseline(embeddingVectors, {
             minimumDelta: config.minimumVisualDelta,
             madMultiplier: config.visualMadMultiplier,
-         },
-      );
-      const faceBaseline = buildFaceBaseline(faceSamples.map((sample) => sample.descriptor));
+         })
+         : buildAnchoredEmbeddingBaseline(embeddingVectors, embeddingReferenceIndex, {
+            minimumDelta: config.minimumVisualDelta,
+            madMultiplier: config.visualMadMultiplier,
+         });
+      const faceBaseline = anchoredMediaTime === null
+         ? buildFaceBaseline(faceDescriptors)
+         : buildAnchoredFaceBaseline(faceDescriptors, faceReferenceIndex);
       session.baseline = {
          mediaTime: representativeFrame.mediaTime,
+         selectionMode: anchoredMediaTime === null ? 'automatic-search' : 'selected-frame',
+         selectedMediaTime: anchoredMediaTime,
          embedding: embeddingBaseline.embedding,
          descriptor: faceBaseline.descriptor,
          faceSpread: faceBaseline.spread,
@@ -564,6 +697,8 @@ export function createVideoAnalysisController(video, overrides = {}) {
       };
       appendJournal(session, 'baseline-ready', {
          mediaTime: session.baseline.mediaTime,
+         selectionMode: session.baseline.selectionMode,
+         selectedMediaTime: session.baseline.selectedMediaTime,
          faceSpread: session.baseline.faceSpread,
          embeddingMedianDrift: session.baseline.embeddingMedianDrift,
          embeddingMad: session.baseline.embeddingMad,
@@ -578,18 +713,56 @@ export function createVideoAnalysisController(video, overrides = {}) {
     * @param {object} [options] Scan range and baseline search start.
     * @param {number} [options.start] First source timestamp.
     * @param {number} [options.end] Last source timestamp.
-    * @param {number} [options.baselineTime] Baseline search start.
+    * @param {number} [options.baselineTime] Baseline timestamp or automatic-search start.
+    * @param {'anchored'|'search'} [options.baselineSelectionMode] Whether baselineTime is exact or a search start.
     * @param {number} [options.sampleIntervalSeconds] Coarse scan cadence.
+    * @param {boolean} [options.resume] Continue a previously cancelled scan.
     * @returns {Promise<object>} Completed or cancelled session.
     */
    async function analyze(options = {}) {
       if (!sourceFile || !session) throw new Error('Load a local video before starting analysis.');
       if (!modelsReady) await loadModels();
-      const start = Math.max(0, Number(options.start ?? 0));
-      const end = Math.min(video.duration, Number(options.end ?? video.duration));
-      const baselineTime = Math.max(start, Math.min(end, Number(options.baselineTime ?? start)));
-      const step = Math.max(0.1, Number(options.sampleIntervalSeconds ?? config.sampleIntervalSeconds));
+      const resumeRequested = options.resume === true;
+      if (resumeRequested && session.status !== 'cancelled') {
+         throw new Error('Only a cancelled analysis can be resumed.');
+      }
+      if (!resumeRequested && session.status !== 'idle') resetLoadedSourceSession();
+      const previousRange = session.config.analysisRange;
+      const start = Math.max(0, Number(resumeRequested ? previousRange?.start ?? 0 : options.start ?? 0));
+      const end = Math.min(
+         video.duration,
+         Number(resumeRequested ? previousRange?.end ?? video.duration : options.end ?? video.duration),
+      );
+      const baselineTime = Math.max(start, Math.min(
+         end,
+         Number(resumeRequested ? session.config.baselineSearchStart ?? start : options.baselineTime ?? start),
+      ));
+      const baselineSelectionMode = resumeRequested
+         ? session.config.baselineSelectionMode ?? 'search'
+         : options.baselineSelectionMode === 'anchored' ? 'anchored' : 'search';
+      const anchoredBaseline = baselineSelectionMode === 'anchored';
+      const baselineSearchEnd = anchoredBaseline
+         ? Math.min(end, baselineTime + config.anchoredBaselineWindowSeconds)
+         : end;
+      const step = Math.max(0.1, Number(
+         resumeRequested ? session.config.sampleIntervalSeconds : options.sampleIntervalSeconds ?? config.sampleIntervalSeconds,
+      ));
       if (!(end > start)) throw new Error('Analysis end time must be greater than start time.');
+
+      const previousScanSamples = session.samples.filter((sample) => sample.phase === 'scan');
+      const lastScanSample = previousScanSamples.at(-1) || null;
+      const resumeWithBaseline = resumeRequested && !!session.baseline;
+      const resumeMediaTime = resumeWithBaseline && lastScanSample
+         ? Math.min(end, lastScanSample.mediaTime + step)
+         : start;
+      const scanSampleTotal = Math.ceil((end - start) / step) + 1;
+      let scanSampleIndex = previousScanSamples.length;
+      const baselineEmbeddingSamplesRequired = anchoredBaseline
+         ? config.anchoredBaselineEmbeddingSamples
+         : config.baselineEmbeddingSamples;
+      const baselineFaceSamplesRequired = anchoredBaseline
+         ? config.anchoredBaselineFaceSamples
+         : config.baselineFaceSamples;
 
       cancelRequested = false;
       video.pause();
@@ -597,19 +770,31 @@ export function createVideoAnalysisController(video, overrides = {}) {
       session.config.sampleIntervalSeconds = step;
       session.config.analysisRange = { start, end };
       session.config.baselineSearchStart = baselineTime;
+      session.config.baselineSelectionMode = baselineSelectionMode;
+      session.config.baselineSearchEnd = baselineSearchEnd;
       session.config.baselineSampleIntervalSeconds = Math.min(step, 0.25);
-      appendJournal(session, 'analysis-started', {
+      appendJournal(session, resumeRequested ? 'analysis-resumed' : 'analysis-started', {
          start,
          end,
          baselineTime,
+         baselineSelectionMode,
+         baselineSearchEnd,
          sampleIntervalSeconds: step,
+         resumeMediaTime: resumeRequested ? resumeMediaTime : null,
       });
-      notify('analysis-started', { start, end });
+      notify(resumeRequested ? 'analysis-resumed' : 'analysis-started', {
+         start,
+         end,
+         resumeMediaTime: resumeRequested ? resumeMediaTime : null,
+         scanSampleIndex,
+         scanSampleTotal,
+      });
 
       /** @type {Array<{mediaTime: number, embedding: number[], quality: object, signature: number[], geometry: object}>} */
       const embeddingSamples = [];
       /** @type {Array<{mediaTime: number, descriptor: number[]}>} */
       const faceSamples = [];
+      let anchoredBaselineFailure = null;
 
       /**
        * Drops an unstable baseline run while retaining the reason in the
@@ -634,10 +819,11 @@ export function createVideoAnalysisController(video, overrides = {}) {
          faceSamples.length = 0;
       }
 
-      let phase = 'baseline';
-      let mediaTime = baselineTime;
+      let phase = resumeWithBaseline ? 'scan' : 'baseline';
+      let mediaTime = resumeWithBaseline ? resumeMediaTime : baselineTime;
       while (mediaTime <= end + 0.0001) {
          if (cancelRequested) break;
+         if (phase === 'baseline' && mediaTime > baselineSearchEnd + 0.0001) break;
          const currentTime = Math.min(mediaTime, end);
          await seekVideo(video, currentTime);
          const mediaPipeResult = faceLandmarker.detect(video);
@@ -670,26 +856,41 @@ export function createVideoAnalysisController(video, overrides = {}) {
                || yawStep > config.maximumBaselineYawStep
                || scaleStep > config.maximumBaselineScaleStep;
             if (unstable) {
-               resetBaselineCandidate('appearance-or-pose-discontinuity', currentTime, {
-                  appearanceStep,
-                  continuityDrift,
-                  rollStep,
-                  yawStep,
-                  scaleStep,
+               const detail = { appearanceStep, continuityDrift, rollStep, yawStep, scaleStep };
+               if (anchoredBaseline) {
+                  appendJournal(session, 'anchored-baseline-neighbour-skipped', {
+                     reason: 'appearance-or-pose-discontinuity',
+                     mediaTime: currentTime,
+                     ...detail,
+                  });
+               } else {
+                  resetBaselineCandidate('appearance-or-pose-discontinuity', currentTime, detail);
+               }
+            }
+            if (!unstable || !anchoredBaseline) {
+               embeddingSamples.push({
+                  mediaTime: currentTime,
+                  embedding,
+                  quality,
+                  signature: appearanceSignature,
+                  geometry,
                });
             }
-            embeddingSamples.push({
-               mediaTime: currentTime,
-               embedding,
-               quality,
-               signature: appearanceSignature,
-               geometry,
-            });
-            if (embeddingSamples.length >= config.baselineEmbeddingSamples) {
-               const verificationSamples = [...embeddingSamples]
+            if (embeddingSamples.length >= baselineEmbeddingSamplesRequired) {
+               const rankedVerificationSamples = [...embeddingSamples]
                   .sort((left, right) => right.quality.sharpness - left.quality.sharpness)
-                  .slice(0, config.baselineFaceSamples)
+                  .filter((sample) => !anchoredBaseline
+                     || Math.abs(sample.mediaTime - baselineTime) >= 0.001);
+               const selectedSample = anchoredBaseline
+                  ? embeddingSamples.find((sample) => Math.abs(sample.mediaTime - baselineTime) < 0.001)
+                  : null;
+               const verificationSamples = [
+                  ...(selectedSample ? [selectedSample] : []),
+                  ...rankedVerificationSamples,
+               ]
+                  .slice(0, baselineFaceSamplesRequired)
                   .sort((left, right) => left.mediaTime - right.mediaTime);
+               faceSamples.length = 0;
                for (const candidate of verificationSamples) {
                   await seekVideo(video, candidate.mediaTime);
                   const detection = await runFaceApi();
@@ -701,38 +902,85 @@ export function createVideoAnalysisController(video, overrides = {}) {
                   }
                }
 
-               if (faceSamples.length >= config.baselineFaceSamples) {
-                  const provisionalFaceBaseline = buildFaceBaseline(faceSamples.map((sample) => sample.descriptor));
-                  if (provisionalFaceBaseline.spread <= config.maximumBaselineFaceSpread) {
-                     const provisionalEmbeddingBaseline = buildEmbeddingBaseline(
-                        embeddingSamples.map((sample) => sample.embedding),
-                        {
-                           minimumDelta: config.minimumVisualDelta,
-                           madMultiplier: config.visualMadMultiplier,
-                        },
-                     );
-                     const representative = embeddingSamples[provisionalEmbeddingBaseline.medoidIndex];
-                     await seekVideo(video, representative.mediaTime);
-                     const representativeFrame = captureSourceFrame(
-                        video,
-                        representative.mediaTime,
-                        representative.quality.sharpness,
-                        'baseline-embedding-medoid',
-                     );
-                     finaliseBaseline(embeddingSamples, faceSamples, representativeFrame);
-                     triggerDetector.markFaceApi(currentTime);
-                     notify('baseline-ready');
+               if (faceSamples.length >= baselineFaceSamplesRequired) {
+                  const selectedFaceIndex = anchoredBaseline
+                     ? faceSamples.findIndex((sample) => Math.abs(sample.mediaTime - baselineTime) < 0.001)
+                     : -1;
+                  if (anchoredBaseline && selectedFaceIndex < 0) {
+                     resetBaselineCandidate('selected-frame-face-api-missing', currentTime);
+                     anchoredBaselineFailure = 'face-api-could-not-describe-the-selected-frame';
                   } else {
-                     resetBaselineCandidate('face-descriptor-spread', currentTime, {
-                        faceSpread: provisionalFaceBaseline.spread,
-                     });
+                     const provisionalFaceBaseline = anchoredBaseline
+                        ? buildAnchoredFaceBaseline(
+                           faceSamples.map((sample) => sample.descriptor),
+                           selectedFaceIndex,
+                        )
+                        : buildFaceBaseline(faceSamples.map((sample) => sample.descriptor));
+                     const maximumFaceSpread = anchoredBaseline
+                        ? config.maximumAnchoredBaselineFaceSpread
+                        : config.maximumBaselineFaceSpread;
+                     if (provisionalFaceBaseline.spread <= maximumFaceSpread) {
+                        const provisionalEmbeddingBaseline = buildEmbeddingBaseline(
+                           embeddingSamples.map((sample) => sample.embedding),
+                           {
+                              minimumDelta: config.minimumVisualDelta,
+                              madMultiplier: config.visualMadMultiplier,
+                           },
+                        );
+                        const representative = anchoredBaseline
+                           ? selectedSample
+                           : embeddingSamples[provisionalEmbeddingBaseline.medoidIndex];
+                        await seekVideo(video, representative.mediaTime);
+                        const representativeFrame = captureSourceFrame(
+                           video,
+                           representative.mediaTime,
+                           representative.quality.sharpness,
+                           anchoredBaseline ? 'baseline-selected-frame' : 'baseline-embedding-medoid',
+                        );
+                        finaliseBaseline(
+                           embeddingSamples,
+                           faceSamples,
+                           representativeFrame,
+                           anchoredBaseline ? baselineTime : null,
+                        );
+                        triggerDetector.markFaceApi(currentTime);
+                        notify('baseline-ready');
+                     } else {
+                        resetBaselineCandidate('face-descriptor-spread', currentTime, {
+                           faceSpread: provisionalFaceBaseline.spread,
+                        });
+                        if (anchoredBaseline) anchoredBaselineFailure = 'selected-frame-descriptors-are-not-stable';
+                     }
                   }
                } else {
-                  resetBaselineCandidate('face-api-baseline-incomplete', currentTime);
+                  const selectedFaceAvailable = faceSamples.some(
+                     (sample) => Math.abs(sample.mediaTime - baselineTime) < 0.001,
+                  );
+                  if (anchoredBaseline && selectedFaceAvailable) {
+                     appendJournal(session, 'anchored-baseline-face-sample-incomplete', {
+                        mediaTime: currentTime,
+                        acceptedDescriptors: faceSamples.length,
+                        requiredDescriptors: baselineFaceSamplesRequired,
+                     });
+                  } else {
+                     resetBaselineCandidate('face-api-baseline-incomplete', currentTime);
+                     if (anchoredBaseline) {
+                        anchoredBaselineFailure = 'face-api-could-not-describe-the-selected-frame';
+                     }
+                  }
                }
             }
          } else if (!session.baseline && embeddingSamples.length) {
-            resetBaselineCandidate('non-comparable-frame', currentTime);
+            if (anchoredBaseline) {
+               appendJournal(session, 'anchored-baseline-neighbour-skipped', {
+                  reason: 'non-comparable-frame',
+                  mediaTime: currentTime,
+               });
+            } else {
+               resetBaselineCandidate('non-comparable-frame', currentTime);
+            }
+         } else if (!session.baseline && anchoredBaseline && currentTime === baselineTime) {
+            anchoredBaselineFailure = 'selected-frame-is-not-comparable';
          }
 
          const drift = session.baseline && embedding
@@ -748,6 +996,10 @@ export function createVideoAnalysisController(video, overrides = {}) {
             geometry,
             quality,
          });
+         if (phase === 'scan') {
+            scanSampleIndex += 1;
+            session.config.lastScanMediaTime = currentTime;
+         }
 
          if (session.baseline && phase === 'scan') {
             const decision = triggerDetector.evaluate(sample);
@@ -764,6 +1016,7 @@ export function createVideoAnalysisController(video, overrides = {}) {
                const observation = {
                   mediaTime: currentTime,
                   outcome: divergent ? 'divergent' : 'matched',
+                  mediaPipeComparable: comparable,
                   faceApiDetected: !!detection,
                   faceDistance,
                   faceThreshold: config.faceDistanceThreshold,
@@ -789,7 +1042,14 @@ export function createVideoAnalysisController(video, overrides = {}) {
             sample,
             phase,
             progress: phase === 'baseline' ? 0 : (currentTime - start) / (end - start),
+            baselineAcceptedSamples: phase === 'baseline' ? embeddingSamples.length : null,
+            baselineRequiredSamples: baselineEmbeddingSamplesRequired,
+            baselineAcceptedDescriptors: phase === 'baseline' ? faceSamples.length : null,
+            baselineRequiredDescriptors: baselineFaceSamplesRequired,
+            scanSampleIndex,
+            scanSampleTotal,
          });
+         if (anchoredBaselineFailure && phase === 'baseline') break;
          if (session.baseline && phase === 'baseline') {
             phase = 'scan';
             mediaTime = start;
@@ -807,17 +1067,62 @@ export function createVideoAnalysisController(video, overrides = {}) {
 
       if (!session.baseline && !cancelRequested) {
          session.status = 'failed';
-         appendJournal(session, 'analysis-failed', { reason: 'baseline-not-found' });
-         notify('analysis-failed', { reason: 'baseline-not-found' });
+         const selectedEmbeddingAvailable = embeddingSamples.some(
+            (sample) => Math.abs(sample.mediaTime - baselineTime) < 0.001,
+         );
+         const selectedDescriptorAvailable = faceSamples.some(
+            (sample) => Math.abs(sample.mediaTime - baselineTime) < 0.001,
+         );
+         const reason = anchoredBaselineFailure || (anchoredBaseline
+            ? selectedEmbeddingAvailable && embeddingSamples.length < baselineEmbeddingSamplesRequired
+               ? 'selected-frame-neighbours-insufficient'
+               : selectedDescriptorAvailable && faceSamples.length < baselineFaceSamplesRequired
+                  ? 'selected-frame-descriptors-insufficient'
+               : 'selected-frame-window-incomplete'
+            : 'baseline-not-found');
+         const failureDetail = {
+            reason,
+            baselineTime,
+            baselineSearchEnd,
+            acceptedEmbeddings: embeddingSamples.length,
+            requiredEmbeddings: baselineEmbeddingSamplesRequired,
+            acceptedDescriptors: faceSamples.length,
+            requiredDescriptors: baselineFaceSamplesRequired,
+         };
+         appendJournal(session, 'analysis-failed', failureDetail);
+         notify('analysis-failed', failureDetail);
+         if (anchoredBaseline) {
+            if (reason === 'selected-frame-neighbours-insufficient') {
+               throw new Error(`The selected baseline at ${baselineTime.toFixed(3)} s had only ${embeddingSamples.length} of ${baselineEmbeddingSamplesRequired} comparable nearby frames. Choose a steadier moment and try again.`);
+            }
+            if (reason === 'selected-frame-descriptors-insufficient') {
+               throw new Error(`The selected baseline at ${baselineTime.toFixed(3)} s had only ${faceSamples.length} of ${baselineFaceSamplesRequired} nearby face-api descriptors. Choose a clearer interval and try again.`);
+            }
+            throw new Error(`The selected baseline at ${baselineTime.toFixed(3)} s could not produce a stable local reference (${reason}). Choose a clearer frame and try again.`);
+         }
          throw new Error('No stable face baseline was found in the selected interval.');
       }
 
       session.status = cancelRequested ? 'cancelled' : 'complete';
       session.updatedAt = new Date().toISOString();
+      if (cancelRequested && Number.isFinite(session.config.lastScanMediaTime)) {
+         await seekVideo(video, session.config.lastScanMediaTime);
+      }
       appendJournal(session, cancelRequested ? 'analysis-cancelled' : 'analysis-complete', {
          summary: session.summary,
+         lastScanMediaTime: session.config.lastScanMediaTime ?? null,
+         scanSampleIndex,
+         scanSampleTotal,
       });
-      notify(session.status === 'complete' ? 'analysis-complete' : 'analysis-cancelled');
+      const cancelledProgress = Number.isFinite(session.config.lastScanMediaTime)
+         ? Math.max(0, Math.min(1, (session.config.lastScanMediaTime - start) / (end - start)))
+         : 0;
+      notify(session.status === 'complete' ? 'analysis-complete' : 'analysis-cancelled', {
+         progress: session.status === 'complete' ? 1 : cancelledProgress,
+         mediaTime: session.config.lastScanMediaTime ?? null,
+         scanSampleIndex,
+         scanSampleTotal,
+      });
       return session;
    }
 
@@ -856,6 +1161,7 @@ export function createVideoAnalysisController(video, overrides = {}) {
       loadModels,
       loadFile,
       analyze,
+      analyzeFrame,
       cancel,
       exportBundle,
       getSession: () => session,

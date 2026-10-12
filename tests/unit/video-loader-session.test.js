@@ -6,6 +6,7 @@ import {
   buildReport,
   createAnalysisSession,
   recordEvidenceObservation,
+  recordManualFrameCheck,
   redoEditorialCommand,
   selectEventFrame,
   serializeTechnicalLog,
@@ -79,6 +80,7 @@ describe('video-loader session', () => {
     recordEvidenceObservation(current, {
       mediaTime: 2,
       outcome: 'divergent',
+      mediaPipeComparable: true,
       faceApiDetected: false,
       faceDistance: null,
       faceThreshold: 0.6,
@@ -87,6 +89,7 @@ describe('video-loader session', () => {
     const event = recordEvidenceObservation(current, {
       mediaTime: 3,
       outcome: 'divergent',
+      mediaPipeComparable: true,
       faceApiDetected: false,
       faceDistance: null,
       faceThreshold: 0.6,
@@ -95,6 +98,31 @@ describe('video-loader session', () => {
     expect(event.status).toBe('confirmed');
     expect(event.classification).toBe('detector-divergence');
     expect(event.reviewRequired).toBe(true);
+  });
+
+  it('does not confirm missing detections from unusable MediaPipe crops', () => {
+    const current = session();
+    recordEvidenceObservation(current, {
+      mediaTime: 2,
+      outcome: 'divergent',
+      mediaPipeComparable: false,
+      faceApiDetected: false,
+      faceDistance: null,
+      faceThreshold: 0.6,
+      reasons: ['identity-heartbeat'],
+    });
+    const event = recordEvidenceObservation(current, {
+      mediaTime: 3,
+      outcome: 'divergent',
+      mediaPipeComparable: false,
+      faceApiDetected: false,
+      faceDistance: null,
+      faceThreshold: 0.6,
+      reasons: ['identity-heartbeat'],
+    });
+    expect(event.status).toBe('candidate');
+    expect(event.classification).toBe('unclassified');
+    expect(current.summary.confirmedEvents).toBe(0);
   });
 
   it('supports reversible editorial choices', () => {
@@ -114,6 +142,57 @@ describe('video-loader session', () => {
     expect(event.promoted).toBe(true);
   });
 
+  it('stores a requested frame as a distinct manual story check', () => {
+    const current = session();
+    current.baseline = {
+      mediaTime: 1,
+      descriptor: [0, 0],
+      faceSpread: 0.02,
+      embeddingMedianDrift: 0.01,
+      embeddingMad: 0.002,
+      visualTriggerThreshold: 0.04,
+      frame: null,
+    };
+    const event = recordManualFrameCheck(current, {
+      mediaTime: 6,
+      interpretation: 'above-threshold',
+      observation: {
+        mediaTime: 6,
+        outcome: 'divergent',
+        mediaPipeComparable: true,
+        faceApiDetected: true,
+        faceDistance: 0.72,
+        faceThreshold: 0.6,
+        visualDrift: 0.11,
+        reasons: ['manual-frame-check'],
+      },
+      frame: {
+        mediaTime: 6,
+        dataUrl: 'data:image/jpeg;base64,manual',
+        width: 1920,
+        height: 1080,
+        sharpness: 0.2,
+        reason: 'manual-frame-check',
+      },
+    });
+
+    expect(event).toMatchObject({
+      origin: 'manual',
+      classification: 'manual-frame-check',
+      status: 'confirmed',
+    });
+    expect(current.summary.manualChecks).toBe(1);
+    expect(current.summary.confirmedEvents).toBe(0);
+    expect(current.editorial.storyOrder).toEqual(['baseline', event.id]);
+    expect(buildReport(current).events[0]).toMatchObject({
+      origin: 'manual',
+      interpretation: 'above-threshold',
+    });
+    const log = serializeTechnicalLog(current);
+    expect(log).toContain('manual-frame-checked');
+    expect(log).not.toContain('base64,manual');
+  });
+
   it('keeps source time fixed while a person reorders the story', () => {
     const current = session();
     current.baseline = {
@@ -127,6 +206,7 @@ describe('video-loader session', () => {
     recordEvidenceObservation(current, {
       mediaTime: 1,
       outcome: 'divergent',
+      mediaPipeComparable: true,
       faceApiDetected: false,
       faceDistance: null,
       faceThreshold: 0.6,
@@ -135,17 +215,17 @@ describe('video-loader session', () => {
     const event = recordEvidenceObservation(current, {
       mediaTime: 2,
       outcome: 'divergent',
+      mediaPipeComparable: true,
       faceApiDetected: false,
       faceDistance: null,
       faceThreshold: 0.6,
       reasons: [],
     });
-    expect(current.editorial.storyOrder).toEqual([event.id, 'baseline']);
-    expect(applyEditorialCommand(current, { type: 'move-earlier', eventId: 'baseline' })).toBe(true);
+    expect(current.editorial.storyOrder).toEqual(['baseline', event.id]);
+    expect(applyEditorialCommand(current, { type: 'move-later', eventId: 'baseline' })).toBe(false);
+    expect(applyEditorialCommand(current, { type: 'move-earlier', eventId: event.id })).toBe(false);
     expect(current.editorial.storyOrder).toEqual(['baseline', event.id]);
     expect(event.anchorMediaTime).toBe(1);
     expect(buildReport(current).storyOrder).toEqual(['baseline', event.id]);
-    expect(undoEditorialCommand(current)).toBe(true);
-    expect(current.editorial.storyOrder).toEqual([event.id, 'baseline']);
   });
 });

@@ -8,7 +8,10 @@ It is intentionally independent from the live-camera state owned by
 FaceLandmarker and ImageEmbedder sampling, sparse face-api verification,
 baseline acquisition, and native-resolution evidence capture. It retains no
 pixel queue: only selected evidence frames survive, while neighbouring frames
-can be recovered later by seeking the original source.
+can be recovered later by seeking the original source. A person can also ask
+for an immediate comparison at the current source position after the baseline
+exists; that manual check is stored separately from automatically confirmed
+events.
 
 `analysis.js` contains pure numeric helpers and the trigger state machine. Its
 default face-api identity distance is `0.6`; ImageEmbedder drift is maintained

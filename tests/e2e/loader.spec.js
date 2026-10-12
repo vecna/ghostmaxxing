@@ -114,14 +114,21 @@ test.describe('seekable Video Loader', () => {
     await page.setInputFiles('#videoFile', path.join(process.cwd(), 'tests/fixtures/my-moving-face.mp4'));
 
     await expect.poll(() => page.evaluate(() => window.gstmxxVideoLoader?.isSourceLoaded())).toBe(true);
+    await expect(page.locator('#startAnalysisBtn')).toBeDisabled();
+    await page.locator('#selectBaseBtn').click();
     await expect(page.locator('#startAnalysisBtn')).toBeEnabled();
     await page.evaluate(() => window.gstmxxVideoLoader.analyze({ end: 6, sampleIntervalSeconds: 0.5 }));
 
-    await expect(page.locator('#analysisProgressLabel')).toHaveText('100%');
+    await expect(page.locator('#analysisProgressLabel')).toContainText('complete');
     await expect(page.locator('#reportSummary')).toContainText('confirmed event');
+    await expect(page.locator('.loader-event--reference h3')).toContainText('Baseline · distance reference');
     await expect(page.locator('.loader-event--confirmed')).toHaveCount(1);
     await expect(page.locator('#downloadReportBtn')).toBeEnabled();
     await expect(page.locator('#downloadLogBtn')).toBeEnabled();
+    const baselineTimeLink = page.locator('.loader-event--reference .loader-time-link');
+    await expect(baselineTimeLink).toBeEnabled();
+    await baselineTimeLink.click();
+    await expect.poll(() => page.locator('#video').evaluate(video => video.currentTime)).toBeCloseTo(0, 2);
 
     const exported = await page.evaluate(() => {
       const bundle = window.gstmxxVideoLoader.exportBundle();
@@ -134,6 +141,7 @@ test.describe('seekable Video Loader', () => {
         fingerprint: bundle.report.source.fingerprint,
         eventFrameReason: bundle.report.events[0]?.selectedFrame?.reason,
         storyOrder: bundle.report.storyOrder,
+        baselineTime: bundle.report.baseline?.mediaTime,
       };
     });
     expect(exported).toMatchObject({
@@ -149,6 +157,80 @@ test.describe('seekable Video Loader', () => {
     expect(exported.frames).toContain('baseline');
     expect(exported.frames).toHaveLength(2);
     expect(exported.eventFrameReason).toMatch(/^refined-/);
-    expect(exported.storyOrder).toContain('baseline');
+    expect(exported.baselineTime).toBe(0);
+    expect(exported.storyOrder[0]).toBe('baseline');
+
+    await page.locator('#videoSeek').fill('3');
+    await page.locator('#analyzeFrameBtn').click();
+    await expect(page.locator('.loader-event--manual h3')).toContainText('Manual frame check');
+    await expect(page.locator('#analysisMessage')).toContainText('Frame added at 00:03.000');
+    const manualExport = await page.evaluate(() => {
+      const bundle = window.gstmxxVideoLoader.exportBundle();
+      return {
+        manualChecks: bundle.report.summary.manualChecks,
+        manualOrigin: bundle.report.events.find(event => event.origin === 'manual')?.origin,
+        logHasManualCheck: bundle.technicalLog.includes('manual-frame-checked'),
+      };
+    });
+    expect(manualExport).toEqual({
+      manualChecks: 1,
+      manualOrigin: 'manual',
+      logHasManualCheck: true,
+    });
+  });
+
+  test('pauses at a scan checkpoint and resumes without rebuilding the baseline', async ({ page }) => {
+    await page.addInitScript(() => {
+      CanvasRenderingContext2D.prototype.drawImage = function drawImage() {};
+      CanvasRenderingContext2D.prototype.getImageData = function getImageData(x, y, width, height) {
+        const data = new Uint8ClampedArray(width * height * 4);
+        for (let offset = 0; offset < data.length; offset += 4) {
+          data[offset] = 128;
+          data[offset + 1] = 128;
+          data[offset + 2] = 128;
+          data[offset + 3] = 255;
+        }
+        return { data, width, height };
+      };
+    });
+    await page.goto('/loader.html');
+    await expect.poll(() => page.evaluate(() => window.gstmxxVideoLoader?.isModelsReady())).toBe(true);
+    await page.setInputFiles('#videoFile', path.join(process.cwd(), 'tests/fixtures/my-moving-face.mp4'));
+    await expect.poll(() => page.evaluate(() => window.gstmxxVideoLoader?.isSourceLoaded())).toBe(true);
+    await page.locator('#selectBaseBtn').click();
+
+    const result = await page.evaluate(async () => {
+      let pauseRequested = false;
+      const onSample = event => {
+        if (!pauseRequested && event.detail.progress >= 0.25) {
+          pauseRequested = true;
+          window.gstmxxVideoLoader.cancel();
+        }
+      };
+      window.addEventListener('gstmxx-video-loader:sample', onSample);
+      const paused = await window.gstmxxVideoLoader.analyze({ end: 6, sampleIntervalSeconds: 0.5 });
+      window.removeEventListener('gstmxx-video-loader:sample', onSample);
+      const pausedSnapshot = {
+        status: paused.status,
+        baselineTime: paused.baseline.mediaTime,
+        samples: paused.samples.filter(sample => sample.phase === 'scan').length,
+        lastScanMediaTime: paused.config.lastScanMediaTime,
+      };
+      const completed = await window.gstmxxVideoLoader.resume();
+      return {
+        paused: pausedSnapshot,
+        completedStatus: completed.status,
+        completedSamples: completed.samples.filter(sample => sample.phase === 'scan').length,
+        resumedJournal: completed.journal.some(entry => entry.type === 'analysis-resumed'),
+      };
+    });
+
+    expect(result.paused.status).toBe('cancelled');
+    expect(result.paused.baselineTime).toBe(0);
+    expect(result.paused.lastScanMediaTime).toBeGreaterThan(0);
+    expect(result.completedStatus).toBe('complete');
+    expect(result.completedSamples).toBeGreaterThan(result.paused.samples);
+    expect(result.resumedJournal).toBe(true);
+    await expect(page.locator('#analysisProgressLabel')).toContainText('complete');
   });
 });

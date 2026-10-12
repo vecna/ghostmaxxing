@@ -371,6 +371,12 @@ Source: `scripts-dev/video-loader.cjs`. This Playwright script controls the
 same file input and public API as `loader.html`; it does not emulate a webcam or
 convert the source to Y4M.
 
+Passing `--baseline-time` anchors the visible frame and both model references
+to that exact decoded timestamp; nearby comparable frames only calibrate noise.
+If the selected frame cannot produce a valid local reference, analysis fails
+with diagnostics rather than drifting to a later scene. Omitting the option
+keeps the CLI's automatic stable-run search.
+
 ```sh
 npm run analyze:video -- video.webm \
   --output /tmp/video-analysis \
@@ -387,9 +393,15 @@ node scripts-dev/video-loader.cjs extract-clips \
   --output /tmp/video-analysis/clips
 ```
 
-`analyze` writes `report.json`, portable `report.html`, selected JPEG evidence
-under `frames/`, and `analysis.ndjson`. Report images and technical telemetry
-remain separate artifacts. `replay-log` needs no video or model inference.
+`analyze` writes `report.json`, portable `report.html`, `timeline.svg`, selected
+JPEG evidence under `frames/`, and `analysis.ndjson`. Report images and
+technical telemetry remain separate artifacts. `replay-log` does not run an
+analysis and does not generate another log: it reads the existing NDJSON and
+writes a diagnostic `report.replayed.json` plus `timeline.svg`. This verifies
+that archived telemetry remains usable without the source video or model
+inference, and provides an input for future report renderers. The replayed JSON
+also retains candidate events that the editorial report omits, so it is a
+diagnostic projection rather than a replacement for the original report.
 `extract-clips` verifies the source byte size and sampled fingerprint recorded
 in the log, then uses ffmpeg to re-encode logged event windows as H.264/AAC MP4
 files. The source is read in place and never overwritten. Detailed signal semantics, baseline

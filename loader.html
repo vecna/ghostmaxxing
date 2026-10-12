@@ -56,41 +56,64 @@
       <div id="viewer" class="loader-viewer">
         <div id="placeholder" class="loader-placeholder">Select a local MP4, WebM, or compatible video to begin.</div>
         <video id="video" controls playsinline preload="metadata"></video>
+        <div id="analysisLockNotice" class="loader-viewer-lock" hidden>Analysis controls the video position</div>
       </div>
 
       <div class="loader-source-controls">
-        <label class="file-control">
-          <span>Select local video</span>
-          <input id="videoFile" type="file" accept="video/*,.mkv" />
-        </label>
-        <div class="loader-seek" aria-label="Video position">
+        <div class="loader-source-file">
+          <span class="loader-control-label">Source</span>
+          <label class="file-control">
+            <span id="sourceFileAction">Select local video</span>
+            <input id="videoFile" type="file" accept="video/*,.mkv" />
+          </label>
+          <div class="loader-source-file__identity">
+            <strong id="sourceFileName">No video selected</strong>
+            <span id="sourceFileMeta">Local files remain on this device.</span>
+          </div>
+        </div>
+        <div class="loader-seek" aria-label="Precise source position">
+          <span class="loader-seek__name">Viewing</span>
           <span id="currentTimeLabel">00:00.000</span>
           <input id="videoSeek" type="range" min="0" max="0" step="0.001" value="0" disabled />
           <span id="durationLabel">00:00.000</span>
         </div>
+        <button id="analyzeFrameBtn" type="button" disabled>Analyse this frame</button>
       </div>
 
       <div class="loader-analysis-controls" aria-label="Analysis controls">
-        <label>
-          <span>Sample every</span>
-          <select id="sampleInterval">
-            <option value="0.25">0.25 seconds</option>
-            <option value="0.5" selected>0.5 seconds</option>
-            <option value="1">1 second</option>
-            <option value="2">2 seconds</option>
-          </select>
-        </label>
-        <label>
-          <span>Find distance reference after</span>
-          <input id="baselineTime" type="number" min="0" step="0.1" value="0" inputmode="decimal" />
-          <span>seconds</span>
-        </label>
-        <button id="useCurrentTimeBtn" type="button" disabled>Use current video time</button>
-        <button id="startAnalysisBtn" class="loader-primary" type="button" disabled>Analyse video</button>
-        <button id="cancelAnalysisBtn" type="button" disabled>Stop after this sample</button>
-        <div class="loader-progress">
-          <progress id="analysisProgress" max="100" value="0"></progress>
-          <span id="analysisProgressLabel">0%</span>
+        <div class="loader-control-group loader-analysis-plan">
+          <span class="loader-control-label">Analysis plan</span>
+          <div id="analysisSettings" class="loader-analysis-settings">
+            <label>
+              <span>Sample every</span>
+              <select id="sampleInterval">
+                <option value="0.25">0.25 seconds</option>
+                <option value="0.5" selected>0.5 seconds</option>
+                <option value="1">1 second</option>
+                <option value="2">2 seconds</option>
+              </select>
+            </label>
+            <div class="loader-base-picker">
+              <button id="selectBaseBtn" type="button" disabled>Select base at 00:00.000</button>
+              <span id="selectedBaseLabel" aria-live="polite">No base selected. Scrub the video, then select the displayed frame.</span>
+            </div>
+          </div>
+        </div>
+        <div class="loader-control-group loader-run-state">
+          <span class="loader-control-label">Run</span>
+          <div class="loader-run-state__action">
+            <button id="startAnalysisBtn" class="loader-primary" type="button" disabled>Analyse video</button>
+            <button id="cancelAnalysisBtn" type="button" disabled hidden>Pause after this sample</button>
+          </div>
+          <div class="loader-progress" aria-label="Analysis sample progress">
+            <span class="loader-progress__name">Analysis samples</span>
+            <progress id="analysisProgress" max="100" value="0"></progress>
+            <span id="analysisProgressLabel" aria-live="polite">0 / —</span>
+          </div>
+        </div>
+        <div id="analysisMessage" class="loader-analysis-message" role="alert" hidden>
+          <strong id="analysisMessageTitle"></strong>
+          <span id="analysisMessageBody"></span>
         </div>
       </div>
     </section>
@@ -103,10 +126,16 @@
           <p id="reportSummary" class="loader-report__summary">No video analysed yet.</p>
         </div>
         <div class="loader-report__actions">
-          <button id="undoEditBtn" type="button" disabled>Undo</button>
-          <button id="redoEditBtn" type="button" disabled>Redo</button>
-          <button id="downloadReportBtn" type="button" disabled>Download report</button>
-          <button id="downloadLogBtn" type="button" disabled>Download technical log</button>
+          <div class="loader-action-group" aria-label="Edit history">
+            <span>History</span>
+            <button id="undoEditBtn" type="button" disabled>Undo</button>
+            <button id="redoEditBtn" type="button" disabled>Redo</button>
+          </div>
+          <div class="loader-action-group" aria-label="Export analysis">
+            <span>Export</span>
+            <button id="downloadReportBtn" type="button" disabled>Download report</button>
+            <button id="downloadLogBtn" type="button" disabled>Download technical log</button>
+          </div>
         </div>
       </header>
 
@@ -116,13 +145,13 @@
       </div>
 
       <p class="loader-story-note">
-        Source timestamps stay factual. Use “Move earlier” and “Move later” to choose the narrative order independently—for example, when a finished-look teaser appears before the tutorial itself.
+        The baseline stays first because every distance starts there. Source timestamps remain factual; use “Move earlier” and “Move later” to arrange the later evidence independently of source chronology.
       </p>
 
       <figure class="loader-timeline-figure">
-        <canvas id="analysisTimeline" aria-label="Analysis timeline with separate MediaPipe, ImageEmbedder, and face-api lanes"></canvas>
+        <canvas id="analysisTimeline" aria-label="Analysis timeline with separate MediaPipe coverage, ImageEmbedder, and face-api lanes"></canvas>
         <figcaption>
-          MediaPipe presence and visual drift are frequent signals. face-api distance is sampled only at verification points; its dashed line is the 0.6 threshold.
+          MediaPipe coverage is diagnostic context, not evidence by itself. ImageEmbedder drift is frequent generic-image change measured as 1 − cosine similarity. face-api L2 distance is sampled only on comparable frames; × means no 2D face was returned. Each dashed line prints the active numeric trigger or decision threshold beside it.
         </figcaption>
       </figure>
 
