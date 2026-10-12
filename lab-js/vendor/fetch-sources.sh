@@ -27,7 +27,11 @@ fetch "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js-models@master/f
 fetch "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js-models@master/face_expression/face_expression_model-shard1" "face_expression_model-shard1"
 fetch "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js-models@master/age_gender_model/age_gender_model-shard1" "age_gender_model-shard1"
 
-# MediaPipe Tasks Vision @ 0.10.35 runtime files.
+# MediaPipe Tasks Vision @ 0.10.35 bundle, source map, and runtime files.
+# Keep the bundle byte-for-byte aligned with the upstream file: the source map
+# describes the minified one-line bundle and is invalid after pretty-printing.
+fetch "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/vision_bundle.mjs" "tasks-vision@0.10.35.js"
+fetch "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/vision_bundle.mjs.map" "vision_bundle_mjs.js.map"
 fetch "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm/vision_wasm_internal.js" "wasm/vision_wasm_internal.js"
 fetch "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm/vision_wasm_internal.wasm" "wasm/vision_wasm_internal.wasm"
 
