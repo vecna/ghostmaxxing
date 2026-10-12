@@ -75,13 +75,13 @@
       </div>
     </section>
 
-    <section id="center-view" aria-label="Webcam, baseline capture and controls">
-      <video id="webcam" autoplay muted playsinline></video>
+    <section id="center-view" aria-label="Camera or local video, baseline capture and controls">
+      <video id="webcam" class="source-camera" autoplay muted playsinline></video>
       <div class="video-scrim"></div>
       <div id="status-pill" aria-live="polite">Loading models…</div>
 
       <div id="calibration-ui">
-        <div id="capture-ring" class="capture-ring" role="progressbar" aria-valuemin="0" aria-valuemax="12" aria-valuenow="0" aria-label="Baseline samples collected">
+        <div id="capture-ring" class="capture-ring" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" aria-label="Baseline samples collected">
           <svg viewBox="0 0 116 116" aria-hidden="true">
             <circle class="capture-ring__track" cx="58" cy="58" r="54" />
             <circle class="capture-ring__arc" id="capture-ring-arc" cx="58" cy="58" r="54" />
@@ -105,9 +105,32 @@
         </div>
       </div>
 
+      <div id="session-bar" class="sessionbar" aria-label="Makeup experiment phases" hidden>
+        <div class="sessionbar__state">
+          <span class="sb-label">Experiment</span>
+          <strong id="session-step">Ready</strong>
+          <span id="session-result">Mark when you begin applying a change.</span>
+        </div>
+        <button id="btn-start-change" class="sb-btn" type="button" disabled>Start makeup step</button>
+        <button id="btn-measure-change" class="sb-btn sessionbar__measure" type="button" disabled>Measure this step</button>
+      </div>
+
       <div id="settings-bar" class="settingsbar" aria-label="View and capture controls">
         <div class="sb-group">
-          <label class="sb-label" for="brightness-input">View</label>
+          <details class="source-menu">
+            <summary class="sb-btn">Source</summary>
+            <div class="source-menu__popover">
+              <span class="source-menu__state">Using <strong id="source-state">camera</strong></span>
+              <button id="btn-open-video" class="sb-btn" type="button">Open local video</button>
+              <input id="video-upload" class="source-file" type="file" accept="video/*,.mkv" />
+              <button id="btn-use-camera" class="sb-btn" type="button" hidden>Use camera</button>
+              <span class="source-menu__note">The file stays on this device.</span>
+            </div>
+          </details>
+        </div>
+
+        <div class="sb-group">
+          <label class="sb-label" for="brightness-input">Display</label>
           <input
             id="brightness-input"
             type="range"
@@ -152,8 +175,18 @@
         <p class="panel-title">Descriptor Delta</p>
         <p class="panel-value"><span id="tracking-state">NO BASELINE</span></p>
       </header>
-      <div class="panel-body">
-        <div id="embedding-bar" aria-label="128 descriptor rows"></div>
+      <div class="panel-body descriptor-body">
+        <section class="radial-panel" aria-label="All 128 descriptor deltas as a radial fingerprint">
+          <canvas id="radial-graph"></canvas>
+          <div class="radial-legend">
+            <span><i class="radial-live"></i>live</span>
+            <span><i class="radial-measured"></i>measured step</span>
+          </div>
+          <p>128 latent coordinates; not facial regions.</p>
+        </section>
+        <div class="equalizer-panel">
+          <div id="embedding-bar" aria-label="128 descriptor rows"></div>
+        </div>
       </div>
     </section>
 

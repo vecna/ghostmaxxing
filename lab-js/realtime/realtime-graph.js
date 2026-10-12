@@ -19,12 +19,13 @@
  *
  * Rendering is virtualised: the canvas is sticky and sized to the scroll
  * viewport, a spacer supplies the scroll height, and only the visible slice is
- * drawn. Memory is constant, so session length is unbounded. Growing one tall
- * canvas instead would hit the ~32k px dimension cap after ~45 minutes and
- * hold ~30MB on the way there.
+ * drawn. Render work and canvas memory stay bounded; compact timeline entries
+ * grow with the session. Growing one tall canvas instead would hit the ~32k px
+ * dimension cap after ~45 minutes and hold ~30MB on the way there.
  */
 
 const GAP_BLOCK_PX = 30;
+const EVENT_BLOCK_PX = 24;
 const AXIS_STRIP_PX = 17;
 const PAD_LEFT = 6;
 const GUTTER_RIGHT = 24;
@@ -128,7 +129,9 @@ export function createGraph(options) {
    * @returns {number} Entry height.
    */
   function entryHeight(entry) {
-    return entry.kind === 'gap' ? GAP_BLOCK_PX : pxPerSample;
+    if (entry.kind === 'gap') return GAP_BLOCK_PX;
+    if (entry.kind === 'event') return EVENT_BLOCK_PX;
+    return pxPerSample;
   }
 
   /**
@@ -228,6 +231,9 @@ export function createGraph(options) {
       grid: token(canvasEl, '--rt-grid', 'rgba(255,231,168,0.08)'),
       gap: token(canvasEl, '--rt-gap', '#8a7b6a'),
       faint: token(canvasEl, '--rt-gap', '#8a7b6a'),
+      applying: token(canvasEl, '--rt-phase-applying', 'rgba(242,106,27,0.13)'),
+      measuring: token(canvasEl, '--rt-phase-measuring', 'rgba(127,227,176,0.13)'),
+      event: token(canvasEl, '--rt-event', '#f3c747'),
     };
 
     const scrollTop = scrollEl.scrollTop;
@@ -275,6 +281,24 @@ export function createGraph(options) {
       const firstIndex = indexAt(Math.max(0, scrollTop - GAP_BLOCK_PX));
       const limit = scrollTop + viewportH;
 
+      // Session phases remain visible behind the trace. They are declared by
+      // the operator and therefore describe workflow, not an inferred cause.
+      for (let i = firstIndex; i < entries.length; i += 1) {
+        const top = tops[i];
+        if (top > limit) break;
+        const entry = entries[i];
+        const y = top - scrollTop;
+        if (entry.kind === 'sample' && entry.phase === 'applying') {
+          ctx.fillStyle = colors.applying;
+          ctx.fillRect(PAD_LEFT, y, plotWidth, pxPerSample);
+        } else if (entry.kind === 'sample' && entry.phase === 'measuring') {
+          ctx.fillStyle = colors.measuring;
+          ctx.fillRect(PAD_LEFT, y, plotWidth, pxPerSample);
+        } else if (entry.kind === 'event') {
+          drawEvent(entry, y, colors, plotWidth);
+        }
+      }
+
       ctx.lineWidth = 2;
       ctx.strokeStyle = colors.trace;
       ctx.lineJoin = 'round';
@@ -288,13 +312,15 @@ export function createGraph(options) {
         const entry = entries[i];
         const y = top - scrollTop;
 
-        if (entry.kind === 'gap') {
+        if (entry.kind === 'gap' || entry.kind === 'event') {
           if (penDown) {
             ctx.stroke();
             ctx.beginPath();
             penDown = false;
           }
-          drawGap(entry, y, colors, plotWidth);
+          // Events were already painted in the phase-background pass. They
+          // interrupt the trace, but they are not absence blocks.
+          if (entry.kind === 'gap') drawGap(entry, y, colors, plotWidth);
           continue;
         }
 
@@ -376,7 +402,7 @@ export function createGraph(options) {
     ctx.lineTo(PAD_LEFT + plotWidth, Math.round(y + GAP_BLOCK_PX) + 0.5);
     ctx.stroke();
 
-    const label = `no face · ${formatDuration(endT - entry.t)}`;
+    const label = `${entry.label || 'no face'} · ${formatDuration(endT - entry.t)}`;
     ctx.font = '9px ui-monospace, SFMono-Regular, Menlo, monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -388,6 +414,31 @@ export function createGraph(options) {
     ctx.fillRect(cx - metrics.width / 2 - 5, cy - 7, metrics.width + 10, 14);
     ctx.fillStyle = colors.gap;
     ctx.fillText(label, cx, cy);
+  }
+
+  /**
+   * Draws an operator-declared session event.
+   *
+   * @param {object} entry Timeline event.
+   * @param {number} y Canvas y.
+   * @param {object} colors Resolved palette.
+   * @param {number} plotWidth Plot width.
+   * @returns {void}
+   */
+  function drawEvent(entry, y, colors, plotWidth) {
+    ctx.fillStyle = entry.phase === 'measuring' ? colors.measuring : colors.applying;
+    ctx.fillRect(PAD_LEFT, y, plotWidth, EVENT_BLOCK_PX);
+    ctx.strokeStyle = colors.event;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(PAD_LEFT, Math.round(y) + 0.5);
+    ctx.lineTo(PAD_LEFT + plotWidth, Math.round(y) + 0.5);
+    ctx.stroke();
+    ctx.fillStyle = colors.event;
+    ctx.font = '9px ui-monospace, SFMono-Regular, Menlo, monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(entry.label, PAD_LEFT + plotWidth / 2, y + EVENT_BLOCK_PX / 2);
   }
 
   /**
@@ -506,11 +557,12 @@ export function createGraph(options) {
    *
    * @param {number} t Epoch milliseconds of the sample.
    * @param {number} value Averaged distance for the tick.
+   * @param {string} [phase] Operator-declared session phase.
    * @returns {number} Index of the appended entry.
    */
-  function pushSample(t, value) {
+  function pushSample(t, value, phase = 'ready') {
     openGapIndex = -1;
-    const entry = { kind: 'sample', t, value, seq: sampleSeq };
+    const entry = { kind: 'sample', t, value, phase, seq: sampleSeq };
     sampleSeq += 1;
     tops.push(contentHeight);
     entries.push(entry);
@@ -525,14 +577,21 @@ export function createGraph(options) {
    * Opens an absence block, or extends the one already open.
    *
    * @param {number} t Epoch milliseconds when the face was last seen.
+   * @param {string} [label] Human-readable exclusion reason.
    * @returns {void}
    */
-  function beginGap(t) {
+  function beginGap(t, label = 'no face') {
     if (openGapIndex !== -1) {
+      const open = entries[openGapIndex];
+      if (open.label !== label) {
+        endGap(t);
+        beginGap(t, label);
+        return;
+      }
       draw();
       return;
     }
-    const entry = { kind: 'gap', t, endT: null };
+    const entry = { kind: 'gap', t, endT: null, label };
     tops.push(contentHeight);
     entries.push(entry);
     contentHeight += GAP_BLOCK_PX;
@@ -552,6 +611,25 @@ export function createGraph(options) {
     if (openGapIndex === -1) return;
     entries[openGapIndex].endT = t;
     openGapIndex = -1;
+    draw();
+  }
+
+  /**
+   * Adds an operator-declared phase marker to the timeline.
+   *
+   * @param {number} t Epoch milliseconds.
+   * @param {string} phase Session phase.
+   * @param {string} label Visible marker label.
+   * @returns {void}
+   */
+  function addEvent(t, phase, label) {
+    endGap(t);
+    const entry = { kind: 'event', t, phase, label };
+    tops.push(contentHeight);
+    entries.push(entry);
+    contentHeight += EVENT_BLOCK_PX;
+    syncSpacer();
+    if (follow) scrollToNow();
     draw();
   }
 
@@ -674,22 +752,25 @@ export function createGraph(options) {
     pushSample,
     beginGap,
     endGap,
+    addEvent,
     markLatestCapture,
     clearCapture,
     setNoiseFloor,
     /**
      * Reports timeline size for diagnostics and tests.
      *
-     * @returns {{samples: number, gaps: number, following: boolean}} Snapshot.
+     * @returns {{samples: number, gaps: number, events: number, following: boolean}} Snapshot.
      */
     stats() {
       let samples = 0;
       let gaps = 0;
+      let events = 0;
       for (const entry of entries) {
         if (entry.kind === 'gap') gaps += 1;
+        else if (entry.kind === 'event') events += 1;
         else samples += 1;
       }
-      return { samples, gaps, following: follow };
+      return { samples, gaps, events, following: follow };
     },
     /**
      * Disconnects observers held by the graph.

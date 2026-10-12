@@ -57,6 +57,12 @@
   --rt-delta-low: var(--faint);
   --rt-delta-med: var(--yellow);
   --rt-delta-high: var(--gm-bg);
+  --rt-radial-live: var(--cream);
+  --rt-radial-measured: var(--gm-bg);
+  --rt-radial-measured-fill: rgba(242, 106, 27, 0.25);
+  --rt-phase-applying: rgba(242, 106, 27, 0.13);
+  --rt-phase-measuring: rgba(127, 227, 176, 0.13);
+  --rt-event: var(--yellow);
 
   --rt-surface: rgba(12, 9, 6, 0.52);
   --rt-surface-solid: rgba(12, 9, 6, 0.86);
@@ -67,6 +73,8 @@
   --rt-brightness: 0.85;
 
   --rt-bar-h: 44px;
+  --rt-session-h: 54px;
+  --rt-controls-stack: calc(var(--rt-bar-h) + var(--rt-session-h));
   --rt-gutter: 24px;
 }
 
@@ -284,8 +292,17 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scaleX(-1);
   filter: brightness(var(--rt-brightness));
+}
+
+#webcam.source-camera {
+  transform: scaleX(-1);
+}
+
+#webcam.source-video {
+  height: calc(100% - var(--rt-controls-stack));
+  object-fit: contain;
+  transform: none;
 }
 
 /* Scrim recedes as exposure rises, so turning the view up actually turns it
@@ -336,7 +353,7 @@
 
 #calibration-ui {
   position: absolute;
-  inset: 0 0 var(--rt-bar-h) 0;
+  inset: 0 0 var(--rt-controls-stack) 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -444,6 +461,55 @@
 
 /* --- Settings bar --------------------------------------------------------- */
 
+.sessionbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--rt-bar-h);
+  z-index: 6;
+  min-height: var(--rt-session-h);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-top: 1px solid var(--line-soft);
+  background: rgba(12, 9, 6, 0.82);
+  backdrop-filter: blur(10px);
+}
+
+.sessionbar[hidden] {
+  display: none;
+}
+
+.sessionbar__state {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 8px;
+  align-items: baseline;
+}
+
+.sessionbar__state strong {
+  color: var(--yellow);
+  font: 600 11px var(--mono);
+  text-transform: uppercase;
+}
+
+.sessionbar__state > span:last-child {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  color: var(--muted);
+  font: 10px/1.35 var(--mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sessionbar__measure {
+  border-color: rgba(127, 227, 176, 0.45);
+  color: var(--dev);
+}
+
 .settingsbar {
   position: absolute;
   left: 0;
@@ -504,6 +570,61 @@
   font: 600 11.5px var(--sans);
   white-space: nowrap;
   cursor: pointer;
+}
+
+.sb-btn[hidden] {
+  display: none;
+}
+
+.source-menu {
+  position: relative;
+}
+
+.source-menu > summary {
+  list-style: none;
+}
+
+.source-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.source-menu[open] > summary {
+  background: rgba(33, 26, 18, 0.86);
+}
+
+.source-menu__popover {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  z-index: 12;
+  width: 210px;
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--rt-surface-solid);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+}
+
+.source-menu__state,
+.source-menu__note {
+  color: var(--muted);
+  font: 10px/1.4 var(--mono);
+}
+
+.source-menu__state strong {
+  color: var(--fg);
+}
+
+.source-file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .sb-btn:hover:not(:disabled) {
@@ -599,6 +720,64 @@
    a steady face writes nothing to the DOM. The prototype rewrote all 1,280
    className strings on every detection frame. */
 
+.descriptor-body {
+  display: grid;
+  grid-template-rows: minmax(150px, 0.45fr) minmax(0, 1fr);
+}
+
+.radial-panel {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  padding: 8px 8px 6px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+#radial-graph {
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+}
+
+.radial-legend {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  color: var(--muted);
+  font: 8.5px var(--mono);
+}
+
+.radial-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.radial-legend i {
+  width: 12px;
+  height: 2px;
+}
+
+.radial-live {
+  background: var(--rt-radial-live);
+}
+
+.radial-measured {
+  background: var(--rt-radial-measured);
+}
+
+.radial-panel p {
+  margin: 4px 0 0;
+  color: var(--faint);
+  font: 8.5px/1.35 var(--mono);
+  text-align: center;
+}
+
+.equalizer-panel {
+  position: relative;
+  min-height: 0;
+}
+
 #embedding-bar {
   position: absolute;
   inset: 0;
@@ -655,12 +834,14 @@
 
   #ui-layer {
     --rt-bar-h: 52px;
+    --rt-session-h: 66px;
   }
 
   .settingsbar {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 8px 12px;
     padding: 7px 10px;
+    overflow-x: auto;
   }
 
   .sb-spacer {
@@ -670,6 +851,30 @@
   .capture-ring {
     width: 96px;
     height: 96px;
+  }
+
+  .sessionbar {
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 5px 8px;
+  }
+
+  .sessionbar__state {
+    flex-basis: 100%;
+  }
+
+  .descriptor-body {
+    grid-template-columns: 180px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .radial-panel {
+    border-right: 1px solid var(--line-soft);
+    border-bottom: 0;
+  }
+
+  #radial-graph {
+    min-height: 110px;
   }
 }
 

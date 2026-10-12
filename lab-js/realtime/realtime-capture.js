@@ -20,7 +20,7 @@ const LM_RIGHT_EYE_OUTER = 45;
 const LM_NOSE_TIP = 30;
 
 const DEFAULT_GATE = {
-  minScore: 0.9,
+  minScore: 0.85,
   minBoxWidthRatio: 0.25,
   edgeMarginRatio: 0.02,
   maxRollDegrees: 8,
@@ -29,6 +29,71 @@ const DEFAULT_GATE = {
   maxLuma: 0.86,
   maxClippedRatio: 0.02,
 };
+
+const DEFAULT_COMPARISON = {
+  maxRollDelta: 4,
+  maxYawDelta: 0.055,
+  maxScaleDelta: 0.08,
+  maxCenterDelta: 0.065,
+  maxLumaDelta: 0.1,
+};
+
+const CONDITION_KEYS = [
+  'rollDegrees',
+  'yawOffset',
+  'boxWidthRatio',
+  'centerXRatio',
+  'centerYRatio',
+  'luma',
+];
+
+/**
+ * Averages the capture conditions accepted during one temporal window.
+ *
+ * @param {object[]} readings Per-frame 2D pose, framing and light metrics.
+ * @returns {object|null} Mean condition profile, or null when unavailable.
+ */
+export function summarizeConditions(readings) {
+  const usable = readings.filter(Boolean);
+  if (!usable.length) return null;
+  const profile = {};
+  for (const key of CONDITION_KEYS) {
+    const values = usable.map((reading) => reading[key]).filter(Number.isFinite);
+    if (values.length) profile[key] = values.reduce((sum, value) => sum + value, 0) / values.length;
+  }
+  return Object.keys(profile).length ? profile : null;
+}
+
+/**
+ * Checks whether a live frame is comparable with the baseline conditions.
+ * This is deliberately a 2D nuisance gate, not pose correction: rejected
+ * frames are omitted rather than mathematically transformed into a result.
+ *
+ * @param {object|null} baseline Baseline condition profile.
+ * @param {object|null} current Current frame conditions.
+ * @param {object} [overrides] Partial tolerance overrides.
+ * @returns {{ok: boolean, reason: string, differences: object}} Comparison verdict.
+ */
+export function compareConditions(baseline, current, overrides = {}) {
+  if (!baseline || !current) return { ok: true, reason: '', differences: {} };
+  const limits = { ...DEFAULT_COMPARISON, ...overrides };
+  const difference = (key) => Math.abs((current[key] ?? 0) - (baseline[key] ?? 0));
+  const differences = Object.fromEntries(CONDITION_KEYS.map((key) => [key, difference(key)]));
+
+  if (
+    differences.rollDegrees > limits.maxRollDelta ||
+    differences.yawOffset > limits.maxYawDelta ||
+    differences.boxWidthRatio > limits.maxScaleDelta ||
+    differences.centerXRatio > limits.maxCenterDelta ||
+    differences.centerYRatio > limits.maxCenterDelta
+  ) {
+    return { ok: false, reason: 'Return to the baseline pose and framing.', differences };
+  }
+  if (differences.luma > limits.maxLumaDelta) {
+    return { ok: false, reason: 'Lighting differs too much from the baseline.', differences };
+  }
+  return { ok: true, reason: '', differences };
+}
 
 /**
  * Euclidean distance between two descriptors.
@@ -167,6 +232,38 @@ function analyseCrop(video, box, scratch) {
 }
 
 /**
+ * Estimates illumination from pixels outside the detected face box. Makeup can
+ * legitimately darken the face crop; using the surrounding frame makes the
+ * light comparison less likely to erase the very intervention being studied.
+ *
+ * @param {HTMLVideoElement} video Source video element.
+ * @param {{x: number, y: number, width: number, height: number}} box Face box.
+ * @param {{canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D}} scratch Scratch surface.
+ * @returns {number} Mean normalized luma outside the face box.
+ */
+function analyseAmbientLuma(video, box, scratch) {
+  const size = scratch.canvas.width;
+  scratch.ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, size, size);
+  const { data } = scratch.ctx.getImageData(0, 0, size, size);
+  const left = (box.x / video.videoWidth) * size;
+  const right = ((box.x + box.width) / video.videoWidth) * size;
+  const top = (box.y / video.videoHeight) * size;
+  const bottom = ((box.y + box.height) / video.videoHeight) * size;
+  let sum = 0;
+  let count = 0;
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      if (x >= left && x <= right && y >= top && y <= bottom) continue;
+      const offset = (y * size + x) * 4;
+      sum += (data[offset] * 0.299 + data[offset + 1] * 0.587 + data[offset + 2] * 0.114) / 255;
+      count += 1;
+    }
+  }
+  return count ? sum / count : Number.NaN;
+}
+
+/**
  * Creates the frame quality gate.
  *
  * @param {HTMLVideoElement} video Source video element.
@@ -182,9 +279,13 @@ export function createQualityGate(video, overrides = {}) {
      * Judges one detection against every framing and quality rule.
      *
      * @param {*} detection face-api detection with landmarks and descriptor.
+     * @param {object} [options] Evaluation mode.
+     * @param {boolean} [options.allowAppearanceChanges=false] Do not let face-crop
+     *   exposure or detector-score changes reject an intervention frame.
      * @returns {{ok: boolean, reason: string, sharpness: number}} Verdict.
      */
-    evaluate(detection) {
+    evaluate(detection, options = {}) {
+      const { allowAppearanceChanges = false } = options;
       const reject = (reason) => ({ ok: false, reason, sharpness: 0 });
 
       const box = detection?.detection?.box;
@@ -195,7 +296,11 @@ export function createQualityGate(video, overrides = {}) {
       const videoW = video.videoWidth || 1;
       const videoH = video.videoHeight || 1;
 
-      if (score < limits.minScore) return reject('Low confidence — improve the lighting.');
+      if (!allowAppearanceChanges && score < limits.minScore) {
+        return reject(
+          `Detector confidence is low (${score.toFixed(2)}). Hold a frontal, steady pose and check glare or shadows.`,
+        );
+      }
       if (box.width < videoW * limits.minBoxWidthRatio) return reject('Move closer to the camera.');
 
       const marginX = videoW * limits.edgeMarginRatio;
@@ -212,23 +317,37 @@ export function createQualityGate(video, overrides = {}) {
       const nose = points[LM_NOSE_TIP];
       if (!leftEye || !rightEye || !nose) return reject('Landmarks incomplete.');
 
-      const rollDegrees = Math.abs(
-        (Math.atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x) * 180) / Math.PI,
-      );
-      if (rollDegrees > limits.maxRollDegrees) return reject('Level your head.');
+      const rollDegrees =
+        (Math.atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x) * 180) / Math.PI;
+      if (Math.abs(rollDegrees) > limits.maxRollDegrees) return reject('Level your head.');
 
       const interocular = Math.hypot(rightEye.x - leftEye.x, rightEye.y - leftEye.y) || 1;
       const eyeMidX = (leftEye.x + rightEye.x) / 2;
-      const yawOffset = Math.abs(nose.x - eyeMidX) / interocular;
-      if (yawOffset > limits.maxYawOffset) return reject('Look straight at the camera.');
+      const yawOffset = (nose.x - eyeMidX) / interocular;
+      if (Math.abs(yawOffset) > limits.maxYawOffset) return reject('Look straight at the camera.');
 
+      const ambientLuma = analyseAmbientLuma(video, box, scratch);
       const crop = analyseCrop(video, box, scratch);
-      if (crop.luma < limits.minLuma) return reject('Too dark — add some light.');
-      if (crop.luma > limits.maxLuma || crop.clipped > limits.maxClippedRatio) {
-        return reject('Overexposed — reduce the light.');
+      if (!allowAppearanceChanges) {
+        if (crop.luma < limits.minLuma) return reject('Too dark — add some light.');
+        if (crop.luma > limits.maxLuma || crop.clipped > limits.maxClippedRatio) {
+          return reject('Overexposed — reduce the light.');
+        }
       }
 
-      return { ok: true, reason: '', sharpness: crop.sharpness };
+      return {
+        ok: true,
+        reason: '',
+        sharpness: crop.sharpness,
+        metrics: {
+          rollDegrees,
+          yawOffset,
+          boxWidthRatio: box.width / videoW,
+          centerXRatio: (box.x + box.width / 2) / videoW,
+          centerYRatio: (box.y + box.height / 2) / videoH,
+          luma: Number.isFinite(ambientLuma) ? ambientLuma : crop.luma,
+        },
+      };
     },
   };
 }
@@ -251,7 +370,9 @@ export function createBaselineCollector(options) {
   const { targetSamples, minDurationMs, timeoutMs, maxSpread } = options;
 
   let descriptors = [];
+  let conditions = [];
   let startedAt = 0;
+  let lastAcceptedAt = 0;
   let active = false;
 
   return {
@@ -262,7 +383,9 @@ export function createBaselineCollector(options) {
      */
     start() {
       descriptors = [];
+      conditions = [];
       startedAt = Date.now();
+      lastAcceptedAt = 0;
       active = true;
     },
 
@@ -274,6 +397,8 @@ export function createBaselineCollector(options) {
     cancel() {
       active = false;
       descriptors = [];
+      conditions = [];
+      lastAcceptedAt = 0;
     },
 
     /**
@@ -288,14 +413,15 @@ export function createBaselineCollector(options) {
     /**
      * Offers one gated frame to the collector.
      *
-     * @param {{ok: boolean, reason: string}} verdict Quality gate verdict.
+     * @param {{ok: boolean, reason: string, metrics?: object}} verdict Quality gate verdict.
      * @param {Float32Array|number[]} descriptor Descriptor for the frame.
      * @returns {{status: string, accepted: number, target: number, reason?: string, baseline?: object}} Progress.
      */
     offer(verdict, descriptor) {
       if (!active) return { status: 'idle', accepted: 0, target: targetSamples };
 
-      const elapsed = Date.now() - startedAt;
+      const now = Date.now();
+      const elapsed = now - startedAt;
 
       if (!verdict.ok) {
         if (elapsed > timeoutMs) {
@@ -304,7 +430,7 @@ export function createBaselineCollector(options) {
             status: 'failed',
             accepted: descriptors.length,
             target: targetSamples,
-            reason: verdict.reason,
+            reason: `Not enough clean frames before the capture timed out. Last rejection: ${verdict.reason}`,
           };
         }
         return {
@@ -315,12 +441,30 @@ export function createBaselineCollector(options) {
         };
       }
 
-      if (descriptors.length < targetSamples) descriptors.push(Array.from(descriptor));
+      // Space observations across the whole requested window. Without this,
+      // a fast detector could fill the array in one short burst and merely
+      // wait out minDurationMs without observing the rest of the interval.
+      const sampleIntervalMs = targetSamples > 1 ? minDurationMs / (targetSamples - 1) : 0;
+      const sampleDue = descriptors.length === 0 || now - lastAcceptedAt >= sampleIntervalMs;
+      if (descriptors.length < targetSamples && sampleDue) {
+        descriptors.push(Array.from(descriptor));
+        if (verdict.metrics) conditions.push(verdict.metrics);
+        lastAcceptedAt = now;
+      }
 
       const enoughSamples = descriptors.length >= targetSamples;
       const enoughTime = elapsed >= minDurationMs;
 
       if (!enoughSamples || !enoughTime) {
+        if (elapsed > timeoutMs) {
+          active = false;
+          return {
+            status: 'failed',
+            accepted: descriptors.length,
+            target: targetSamples,
+            reason: 'Not enough clean frames before the capture timed out.',
+          };
+        }
         return { status: 'collecting', accepted: descriptors.length, target: targetSamples };
       }
 
@@ -348,6 +492,7 @@ export function createBaselineCollector(options) {
           noiseFloor: result.spread,
           capturedAt: Date.now(),
           samples: descriptors.length,
+          conditions: summarizeConditions(conditions),
         },
       };
     },

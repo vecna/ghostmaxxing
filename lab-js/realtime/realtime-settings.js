@@ -17,7 +17,15 @@
 
 const SETTINGS_KEY = 'gstmxx.realtime.settings';
 const BASELINE_KEY = 'gstmxx.realtime.baseline';
-const BASELINE_FORMAT = 1;
+const BASELINE_FORMAT = 2;
+const CONDITION_KEYS = [
+  'rollDegrees',
+  'yawOffset',
+  'boxWidthRatio',
+  'centerXRatio',
+  'centerYRatio',
+  'luma',
+];
 
 const DEFAULT_SETTINGS = {
   brightness: 0.85,
@@ -63,7 +71,7 @@ export function saveSettings(settings) {
  * The baseline is a biometric template. It never leaves the device, and
  * "Delete baseline" removes it outright rather than flipping a flag.
  *
- * @returns {{descriptor: number[], noiseFloor: number, capturedAt: number}|null} Stored baseline.
+ * @returns {{descriptor: number[], noiseFloor: number, capturedAt: number, sourceKind: 'camera', conditions: object}|null} Stored baseline.
  */
 export function loadBaseline() {
   try {
@@ -72,7 +80,13 @@ export function loadBaseline() {
     const parsed = JSON.parse(raw);
     if (parsed.format !== BASELINE_FORMAT) return null;
     if (!Array.isArray(parsed.descriptor) || parsed.descriptor.length !== 128) return null;
+    if (parsed.descriptor.some((value) => !Number.isFinite(value))) return null;
     if (!Number.isFinite(parsed.noiseFloor)) return null;
+    if (!Number.isFinite(parsed.capturedAt)) return null;
+    if (parsed.sourceKind !== 'camera') return null;
+    if (!parsed.conditions || CONDITION_KEYS.some((key) => !Number.isFinite(parsed.conditions[key]))) {
+      return null;
+    }
     return parsed;
   } catch {
     return null;

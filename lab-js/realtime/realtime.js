@@ -20,9 +20,11 @@ import {
   createBaselineCollector,
   createSpikeDetector,
   createFrameBuffer,
+  compareConditions,
   euclidean,
 } from './realtime-capture.js';
 import { createGallery } from './realtime-gallery.js';
+import { createRadialGraph } from './realtime-radial.js';
 import {
   createSettings,
   guardDestructive,
@@ -35,6 +37,13 @@ const APP_STATES = {
   NO_BASELINE: 'NO BASELINE',
   CAPTURING: 'CAPTURING',
   TRACKING: 'TRACKING',
+};
+
+const SESSION_PHASES = {
+  IDLE: 'idle',
+  READY: 'ready',
+  APPLYING: 'applying',
+  MEASURING: 'measuring',
 };
 
 const DESCRIPTOR_SIZE = 128;
@@ -52,10 +61,14 @@ const SAMPLES_PER_SECOND = 3;
 /** Long enough that a blink or a head turn does not punch a hole in the trace. */
 const NO_FACE_DEBOUNCE_MS = 1500;
 
-const BASELINE_TARGET_SAMPLES = 12;
+const BASELINE_TARGET_SAMPLES = 8;
 const BASELINE_MIN_MS = 3000;
-const BASELINE_TIMEOUT_MS = 15000;
+const BASELINE_TIMEOUT_MS = 30000;
 const BASELINE_MAX_SPREAD = 0.2;
+const MEASUREMENT_TARGET_SAMPLES = 8;
+const MEASUREMENT_MIN_MS = 3000;
+const MEASUREMENT_TIMEOUT_MS = 30000;
+const MEASUREMENT_MAX_SPREAD = 0.2;
 
 const SPIKE_SUSTAIN_MS = 1500;
 const SPIKE_BEST_MARGIN = 0.05;
@@ -85,6 +98,15 @@ const runtime = {
   faceMissing: false,
   lastFaceAt: 0,
   stream: null,
+  sourceKind: 'camera',
+  sourceEpoch: 0,
+  sourceObjectUrl: null,
+  lastDetectionScore: null,
+  lastDescriptorLength: 0,
+  comparisonExcluded: false,
+  sessionPhase: SESSION_PHASES.IDLE,
+  sessionStep: 0,
+  lastMeasurement: null,
 };
 
 const els = {
@@ -96,6 +118,7 @@ const els = {
   graphSpacer: document.getElementById('graph-spacer'),
   graphCanvas: document.getElementById('distance-graph'),
   graphFollow: document.getElementById('graph-follow'),
+  radialCanvas: document.getElementById('radial-graph'),
   legendNoise: document.getElementById('legend-noise'),
   calibrationUi: document.getElementById('calibration-ui'),
   captureRing: document.getElementById('capture-ring'),
@@ -111,6 +134,15 @@ const els = {
   brightness: document.getElementById('brightness-input'),
   brightnessValue: document.getElementById('brightness-value'),
   toggleEqualizer: document.getElementById('toggle-equalizer'),
+  sessionBar: document.getElementById('session-bar'),
+  sessionStep: document.getElementById('session-step'),
+  sessionResult: document.getElementById('session-result'),
+  btnStartChange: document.getElementById('btn-start-change'),
+  btnMeasureChange: document.getElementById('btn-measure-change'),
+  videoUpload: document.getElementById('video-upload'),
+  btnOpenVideo: document.getElementById('btn-open-video'),
+  btnUseCamera: document.getElementById('btn-use-camera'),
+  sourceState: document.getElementById('source-state'),
   statusPill: document.getElementById('status-pill'),
   distanceValue: document.getElementById('distance-value'),
   trackingState: document.getElementById('tracking-state'),
@@ -124,9 +156,11 @@ const els = {
 };
 
 let graph = null;
+let radialGraph = null;
 let gallery = null;
 let qualityGate = null;
 let baselineCollector = null;
+let measurementCollector = null;
 let spikeDetector = null;
 let frameBuffer = null;
 
@@ -161,7 +195,67 @@ function setTrackingState(state) {
  */
 function setDistanceValue(value) {
   if (!els.distanceValue) return;
-  els.distanceValue.textContent = Number.isFinite(value) ? value.toFixed(3) : '0.000';
+  els.distanceValue.textContent = Number.isFinite(value) ? value.toFixed(3) : '—';
+}
+
+/**
+ * Computes signed per-coordinate descriptor deltas.
+ *
+ * @param {Float32Array|number[]} baseline Baseline descriptor.
+ * @param {Float32Array|number[]} current Current descriptor.
+ * @returns {Float32Array} Signed deltas in descriptor order.
+ */
+function descriptorDelta(baseline, current) {
+  const delta = new Float32Array(DESCRIPTOR_SIZE);
+  for (let index = 0; index < DESCRIPTOR_SIZE; index += 1) {
+    delta[index] = current[index] - baseline[index];
+  }
+  return delta;
+}
+
+/** Returns a compact local-video time suffix for timeline events. */
+function mediaTimeSuffix() {
+  if (runtime.sourceKind !== 'video' || !Number.isFinite(els.video.currentTime)) return '';
+  const total = Math.max(0, els.video.currentTime);
+  const minutes = Math.floor(total / 60);
+  const seconds = (total % 60).toFixed(1).padStart(4, '0');
+  return ` · ${minutes}:${seconds}`;
+}
+
+/** Reflects the declared experiment phase in the workflow controls. */
+function syncSessionControls() {
+  const hasBaseline = Boolean(runtime.baseline);
+  els.sessionBar.hidden = !hasBaseline;
+  els.btnStartChange.disabled = !hasBaseline || runtime.sessionPhase === SESSION_PHASES.MEASURING;
+  els.btnMeasureChange.disabled = runtime.sessionPhase !== SESSION_PHASES.APPLYING;
+
+  if (!hasBaseline) {
+    els.sessionStep.textContent = 'Ready';
+    els.sessionResult.textContent = 'Capture a clean baseline first.';
+    return;
+  }
+
+  if (runtime.sessionPhase === SESSION_PHASES.APPLYING) {
+    els.sessionStep.textContent = `Step ${runtime.sessionStep + 1} · applying`;
+    els.sessionResult.textContent = 'Live readings continue, but this interval is marked as application time.';
+    els.btnStartChange.textContent = 'Applying…';
+  } else if (runtime.sessionPhase === SESSION_PHASES.MEASURING) {
+    els.sessionStep.textContent = `Step ${runtime.sessionStep + 1} · measuring`;
+    els.sessionResult.textContent = 'Collecting a comparable temporal window…';
+    els.btnStartChange.textContent = 'Start makeup step';
+  } else {
+    els.sessionStep.textContent = runtime.sessionStep ? `Step ${runtime.sessionStep} measured` : 'Ready';
+    els.sessionResult.textContent = runtime.lastMeasurement
+      ? `Snapshot d=${runtime.lastMeasurement.distance.toFixed(3)} · spread ±${runtime.lastMeasurement.spread.toFixed(3)}`
+      : 'Mark when you begin applying a change.';
+    els.btnStartChange.textContent = runtime.sessionStep ? 'Start next step' : 'Start makeup step';
+  }
+}
+
+/** Changes the declared experiment phase and redraws its controls. */
+function setSessionPhase(phase) {
+  runtime.sessionPhase = phase;
+  syncSessionControls();
 }
 
 /**
@@ -222,6 +316,7 @@ function updateEqualizer(baseline, current) {
     }
     runtime.equalizerLit[i] = lit;
   }
+  if (radialGraph) radialGraph.setLive(descriptorDelta(baseline, current));
 }
 
 /**
@@ -235,6 +330,7 @@ function resetEqualizer() {
     for (const cell of cells) cell.classList.remove('is-on');
     runtime.equalizerLit[i] = 0;
   }
+  if (radialGraph) radialGraph.setLive(null);
 }
 
 /**
@@ -279,17 +375,44 @@ function syncBaselineControls() {
     els.legendNoise.textContent = hasBaseline ? runtime.baseline.noiseFloor.toFixed(3) : '—';
   }
   if (graph) graph.setNoiseFloor(hasBaseline ? runtime.baseline.noiseFloor : null);
+  syncSessionControls();
+}
+
+/**
+ * Starts or resumes a selected local video before a declared session action.
+ *
+ * @param {string} failureMessage Status shown when autoplay is rejected.
+ * @returns {Promise<boolean>} Whether the action may continue.
+ */
+async function ensureLocalVideoPlaying(failureMessage) {
+  if (runtime.sourceKind !== 'video' || !els.video.paused) return true;
+  try {
+    if (els.video.ended) els.video.currentTime = 0;
+    await els.video.play();
+    return true;
+  } catch {
+    setStatus(failureMessage, true);
+    return false;
+  }
 }
 
 /**
  * Begins a baseline capture run.
  *
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function startBaselineCapture() {
+async function startBaselineCapture() {
+  const playing = await ensureLocalVideoPlaying(
+    'Play the local video before capturing a baseline.',
+  );
+  if (!playing) return;
   runtime.appState = APP_STATES.CAPTURING;
   runtime.baseline = null;
   runtime.distanceBuffer = [];
+  runtime.comparisonExcluded = false;
+  runtime.sessionStep = 0;
+  runtime.lastMeasurement = null;
+  setSessionPhase(SESSION_PHASES.IDLE);
   clearBaseline();
 
   setTrackingState(APP_STATES.CAPTURING);
@@ -299,6 +422,7 @@ function startBaselineCapture() {
   graph.setNoiseFloor(null);
   spikeDetector.reset();
   frameBuffer.clear();
+  if (radialGraph) radialGraph.reset();
 
   setCalibrationVisible(true);
   if (els.captureRing) els.captureRing.classList.add('is-active');
@@ -338,12 +462,17 @@ function adoptBaseline(baseline, restored = false) {
   runtime.appState = APP_STATES.TRACKING;
   runtime.distanceBuffer = [];
   runtime.faceMissing = false;
+  runtime.comparisonExcluded = false;
+  runtime.sessionStep = 0;
+  runtime.lastMeasurement = null;
+  setSessionPhase(SESSION_PHASES.READY);
 
   setTrackingState(APP_STATES.TRACKING);
   setDistanceValue(0);
   resetEqualizer();
   spikeDetector.reset();
   frameBuffer.clear();
+  if (radialGraph) radialGraph.reset();
 
   if (els.captureRing) els.captureRing.classList.remove('is-active');
   syncBaselineControls();
@@ -364,8 +493,13 @@ function adoptBaseline(baseline, restored = false) {
 function deleteBaseline() {
   runtime.baseline = null;
   runtime.appState = APP_STATES.NO_BASELINE;
+  runtime.comparisonExcluded = false;
+  runtime.sessionStep = 0;
+  runtime.lastMeasurement = null;
+  setSessionPhase(SESSION_PHASES.IDLE);
   clearBaseline();
   baselineCollector.cancel();
+  measurementCollector.cancel();
 
   setTrackingState(APP_STATES.NO_BASELINE);
   setDistanceValue(0);
@@ -373,6 +507,7 @@ function deleteBaseline() {
   graph.reset();
   spikeDetector.reset();
   frameBuffer.clear();
+  if (radialGraph) radialGraph.reset();
 
   if (els.captureRing) els.captureRing.classList.remove('is-active');
   syncBaselineControls();
@@ -410,9 +545,87 @@ function processBaselineFrame(detection) {
     return;
   }
   if (progress.status === 'done') {
-    saveBaseline(progress.baseline);
+    // Camera baselines can be restored against the same physical source. A
+    // local video's blob URL disappears on reload, so persisting that template
+    // would silently compare the next camera session with the wrong source.
+    if (runtime.sourceKind === 'camera') {
+      saveBaseline({ ...progress.baseline, sourceKind: 'camera' });
+    } else {
+      clearBaseline();
+    }
     adoptBaseline(progress.baseline, false);
   }
+}
+
+/** Marks the beginning of one operator-declared makeup change. */
+async function startMakeupStep() {
+  if (!runtime.baseline || runtime.appState !== APP_STATES.TRACKING) return;
+  const playing = await ensureLocalVideoPlaying(
+    'Play the local video before marking the makeup step.',
+  );
+  if (!playing) return;
+  measurementCollector.cancel();
+  frameBuffer.clear();
+  setSessionPhase(SESSION_PHASES.APPLYING);
+  graph.addEvent(
+    Date.now(),
+    SESSION_PHASES.APPLYING,
+    `step ${runtime.sessionStep + 1}: applying${mediaTimeSuffix()}`,
+  );
+  setStatus('Application interval marked. When this piece is finished, measure the result.');
+}
+
+/** Starts a temporal measurement window for the current declared change. */
+async function startStepMeasurement() {
+  if (!runtime.baseline || runtime.sessionPhase !== SESSION_PHASES.APPLYING) return;
+  const playing = await ensureLocalVideoPlaying(
+    'Play the local video before measuring this step.',
+  );
+  if (!playing) return;
+  measurementCollector.start();
+  frameBuffer.clear();
+  setSessionPhase(SESSION_PHASES.MEASURING);
+  graph.addEvent(
+    Date.now(),
+    SESSION_PHASES.MEASURING,
+    `step ${runtime.sessionStep + 1}: measuring${mediaTimeSuffix()}`,
+  );
+  setStatus('Measuring this step — hold the baseline pose and lighting.');
+}
+
+/**
+ * Publishes an aggregated step measurement and saves its sharpest frame.
+ *
+ * @param {object} snapshot Temporal-window result returned by the collector.
+ * @returns {Promise<void>}
+ */
+async function completeStepMeasurement(snapshot) {
+  const distance = euclidean(runtime.baseline.descriptor, snapshot.descriptor);
+  const delta = descriptorDelta(runtime.baseline.descriptor, snapshot.descriptor);
+  runtime.sessionStep += 1;
+  runtime.lastMeasurement = {
+    distance,
+    spread: snapshot.noiseFloor,
+    descriptor: snapshot.descriptor,
+    conditions: snapshot.conditions,
+    capturedAt: snapshot.capturedAt,
+  };
+
+  if (radialGraph) radialGraph.setMeasured(delta);
+  updateEqualizer(runtime.baseline.descriptor, snapshot.descriptor);
+  graph.addEvent(
+    Date.now(),
+    SESSION_PHASES.MEASURING,
+    `step ${runtime.sessionStep}: snapshot d=${distance.toFixed(3)}${mediaTimeSuffix()}`,
+  );
+
+  const best = frameBuffer.best();
+  if (best) await storeCapture(best.canvas, distance, `step-${runtime.sessionStep}`);
+  frameBuffer.clear();
+  setSessionPhase(SESSION_PHASES.READY);
+  setStatus(
+    `Step ${runtime.sessionStep} measured: d=${distance.toFixed(3)}, temporal spread ±${snapshot.noiseFloor.toFixed(3)}.`,
+  );
 }
 
 /**
@@ -422,10 +635,63 @@ function processBaselineFrame(detection) {
  * @returns {Promise<void>}
  */
 async function processTrackingFrame(detection) {
+  // Makeup may legitimately change detector confidence and the exposure inside
+  // the face crop. Comparability is based on pose, framing and ambient light so
+  // the intervention itself is not filtered away.
+  const quality = qualityGate.evaluate(detection, { allowAppearanceChanges: true });
+  const comparable = quality.ok
+    ? compareConditions(runtime.baseline.conditions, quality.metrics)
+    : { ok: false, reason: quality.reason };
+
+  if (!comparable.ok) {
+    runtime.distanceBuffer = [];
+    runtime.comparisonExcluded = true;
+    resetEqualizer();
+    setDistanceValue(Number.NaN);
+    els.btnShutter.disabled = true;
+    graph.beginGap(Date.now(), 'pose/light excluded');
+
+    if (runtime.sessionPhase === SESSION_PHASES.MEASURING) {
+      const progress = measurementCollector.offer(
+        { ok: false, reason: comparable.reason },
+        detection.descriptor,
+      );
+      els.sessionResult.textContent = `Waiting for comparable frames: ${comparable.reason}`;
+      if (progress.status === 'failed') {
+        measurementCollector.cancel();
+        setSessionPhase(SESSION_PHASES.APPLYING);
+        setStatus(`Measurement paused. ${progress.reason}`, true);
+      }
+    } else {
+      setStatus(`${comparable.reason} This frame is excluded from the measurement.`, true);
+    }
+    return;
+  }
+
+  if (runtime.comparisonExcluded) {
+    runtime.comparisonExcluded = false;
+    graph.endGap(Date.now());
+  }
+  els.btnShutter.disabled = false;
+
   const distance = euclidean(runtime.baseline.descriptor, detection.descriptor);
   runtime.distanceBuffer.push(distance);
   setDistanceValue(distance);
   updateEqualizer(runtime.baseline.descriptor, detection.descriptor);
+
+  if (runtime.sessionPhase === SESSION_PHASES.MEASURING) {
+    const progress = measurementCollector.offer(quality, detection.descriptor);
+    if (quality.ok) frameBuffer.push(quality.sharpness, distance);
+    if (progress.status === 'collecting') {
+      els.sessionResult.textContent = `Comparable samples ${progress.accepted}/${progress.target}`;
+    } else if (progress.status === 'done') {
+      await completeStepMeasurement(progress.baseline);
+    } else if (progress.status === 'failed') {
+      setSessionPhase(SESSION_PHASES.APPLYING);
+      setStatus(`Could not measure this step. ${progress.reason}`, true);
+    }
+    return;
+  }
 
   if (distance > MATCH_THRESHOLD) {
     setStatus(`Past the 0.60 match threshold — reads as a different person.`);
@@ -435,12 +701,13 @@ async function processTrackingFrame(detection) {
     setStatus(`Above the noise floor, below 0.60 — still reads as a match.`);
   }
 
+  // Declared application intervals use an explicit temporal snapshot. Automatic
+  // "best" captures remain available only while the experiment is otherwise idle.
+  if (runtime.sessionPhase === SESSION_PHASES.APPLYING) return;
+
   const verdict = spikeDetector.update(distance);
   if (!verdict.candidate) return;
 
-  // The gate's crop analysis only runs while a spike is live, so ordinary
-  // tracking never pays for the getImageData.
-  const quality = qualityGate.evaluate(detection);
   if (quality.ok) frameBuffer.push(quality.sharpness, distance);
 
   if (!verdict.capture) return;
@@ -516,11 +783,16 @@ function processNoFace() {
     runtime.distanceBuffer = [];
     resetEqualizer();
     setDistanceValue(0);
+    if (els.btnShutter) els.btnShutter.disabled = true;
     setStatus('No face — measurement paused.');
   }
 
   if (runtime.appState === APP_STATES.TRACKING) {
-    graph.beginGap(runtime.lastFaceAt);
+    graph.beginGap(runtime.lastFaceAt, 'no face');
+  }
+
+  if (runtime.sessionPhase === SESSION_PHASES.MEASURING) {
+    els.sessionResult.textContent = 'Waiting for the face to return.';
   }
 
   if (runtime.appState === APP_STATES.CAPTURING) {
@@ -555,16 +827,26 @@ async function onFrame() {
   if (!els.video || els.video.readyState < 2) return;
 
   runtime.detectorBusy = true;
+  const sourceEpoch = runtime.sourceEpoch;
   try {
     const detection = await faceapi
       .detectSingleFace(els.video, DETECTOR_OPTIONS)
       .withFaceLandmarks()
       .withFaceDescriptor();
 
+    // A camera detection can still be resolving while a local file is being
+    // selected. Never publish results produced for the previous source.
+    if (sourceEpoch !== runtime.sourceEpoch) return;
+
     if (!detection || !detection.descriptor) {
+      runtime.lastDetectionScore = null;
+      runtime.lastDescriptorLength = 0;
       processNoFace();
       return;
     }
+
+    runtime.lastDetectionScore = detection.detection?.score ?? null;
+    runtime.lastDescriptorLength = detection.descriptor.length;
 
     processFaceReturned();
 
@@ -597,7 +879,7 @@ function flushDistanceBuffer() {
   const sum = runtime.distanceBuffer.reduce((acc, value) => acc + value, 0);
   const average = sum / runtime.distanceBuffer.length;
   runtime.distanceBuffer = [];
-  graph.pushSample(Date.now(), average);
+  graph.pushSample(Date.now(), average, runtime.sessionPhase);
 }
 
 /**
@@ -636,11 +918,18 @@ function stopLoops() {
  * @returns {void}
  */
 function stopStream() {
-  if (!runtime.stream) return;
-  for (const track of runtime.stream.getTracks()) track.stop();
+  if (runtime.stream) {
+    for (const track of runtime.stream.getTracks()) track.stop();
+  }
   runtime.stream = null;
   runtime.streamStopped = true;
-  if (els.video) els.video.srcObject = null;
+  if (els.video?.srcObject) els.video.srcObject = null;
+}
+
+/** Releases the object URL used by a local-video source. */
+function releaseLocalVideo() {
+  if (runtime.sourceObjectUrl) URL.revokeObjectURL(runtime.sourceObjectUrl);
+  runtime.sourceObjectUrl = null;
 }
 
 /**
@@ -651,6 +940,17 @@ function stopStream() {
 async function initWebcam() {
   if (!els.video) throw new Error('Missing #webcam element');
 
+  runtime.sourceEpoch += 1;
+  runtime.lastDetectionScore = null;
+  runtime.lastDescriptorLength = 0;
+  releaseLocalVideo();
+  els.video.pause();
+  els.video.removeAttribute('src');
+  els.video.load();
+  els.video.controls = false;
+  els.video.classList.remove('source-video');
+  els.video.classList.add('source-camera');
+
   runtime.stream = await navigator.mediaDevices.getUserMedia({
     video: { facingMode: 'user',
              width: { ideal: 1080 },
@@ -659,8 +959,76 @@ async function initWebcam() {
     audio: false,
   });
   runtime.streamStopped = false;
+  runtime.sourceKind = 'camera';
   els.video.srcObject = runtime.stream;
   await els.video.play();
+  els.sourceState.textContent = 'camera';
+  els.btnUseCamera.hidden = true;
+}
+
+/**
+ * Replaces the camera with a local, seekable video. The file never leaves the
+ * browser; changing source invalidates the source-specific baseline.
+ *
+ * @param {File} file Local video chosen by the operator.
+ * @returns {Promise<void>}
+ */
+async function useLocalVideo(file) {
+  if (!file) return;
+  runtime.sourceEpoch += 1;
+  runtime.lastDetectionScore = null;
+  runtime.lastDescriptorLength = 0;
+  stopLoops();
+  stopStream();
+  releaseLocalVideo();
+  deleteBaseline();
+
+  runtime.sourceKind = 'video';
+  runtime.sourceObjectUrl = URL.createObjectURL(file);
+  els.video.srcObject = null;
+  els.video.src = runtime.sourceObjectUrl;
+  els.video.controls = true;
+  els.video.loop = false;
+  els.video.classList.remove('source-camera');
+  els.video.classList.add('source-video');
+  els.sourceState.textContent = `local video · ${file.name}`;
+  els.btnUseCamera.hidden = false;
+
+  await new Promise((resolve, reject) => {
+    const ready = () => {
+      cleanup();
+      resolve();
+    };
+    const failed = () => {
+      cleanup();
+      reject(new Error('The selected video could not be decoded.'));
+    };
+    const cleanup = () => {
+      els.video.removeEventListener('loadeddata', ready);
+      els.video.removeEventListener('error', failed);
+    };
+    els.video.addEventListener('loadeddata', ready, { once: true });
+    els.video.addEventListener('error', failed, { once: true });
+    els.video.load();
+  });
+
+  startLoops();
+  setStatus('Local video ready. Play or seek it, then capture a clean baseline.');
+}
+
+/** Returns from a local-video experiment to the live camera. */
+async function useCameraSource() {
+  stopLoops();
+  deleteBaseline();
+  setStatus('Connecting the camera…');
+  try {
+    await initWebcam();
+    startLoops();
+    setStatus('Camera ready. Capture a baseline to start measuring.');
+  } catch (err) {
+    console.error('failed to switch to camera:', err);
+    setStatus('Camera unavailable. You can still open a local video.', true);
+  }
 }
 
 /**
@@ -710,15 +1078,15 @@ async function handleVisible() {
   }
 
   try {
-    if (runtime.streamStopped) {
+    if (runtime.sourceKind === 'camera' && runtime.streamStopped) {
       setStatus('Reconnecting the camera…');
       await initWebcam();
-    } else if (els.video) {
+    } else if (runtime.sourceKind === 'camera' && els.video) {
       await els.video.play();
     }
     if (runtime.appState === APP_STATES.TRACKING) runtime.lastFaceAt = Date.now();
     startLoops();
-    setStatus('Camera live.');
+    setStatus(runtime.sourceKind === 'camera' ? 'Camera live.' : 'Local video ready.');
   } catch (err) {
     console.error('failed to resume camera:', err);
     setStatus('Could not reconnect the camera.', true);
@@ -736,6 +1104,8 @@ function teardown() {
   if (runtime.hiddenStopTimerId) window.clearTimeout(runtime.hiddenStopTimerId);
   runtime.hiddenStopTimerId = null;
   if (graph) graph.destroy();
+  if (radialGraph) radialGraph.destroy();
+  releaseLocalVideo();
 }
 
 /**
@@ -745,6 +1115,23 @@ function teardown() {
  */
 function bindListeners() {
   els.btnBaselineStart.addEventListener('click', startBaselineCapture);
+  els.btnStartChange.addEventListener('click', startMakeupStep);
+  els.btnMeasureChange.addEventListener('click', startStepMeasurement);
+  els.btnOpenVideo.addEventListener('click', () => els.videoUpload.click());
+
+  els.videoUpload.addEventListener('change', async () => {
+    const [file] = els.videoUpload.files || [];
+    if (!file) return;
+    try {
+      await useLocalVideo(file);
+    } catch (err) {
+      console.error('failed to open local video:', err);
+      setStatus(err.message || 'Could not open the selected video.', true);
+    } finally {
+      els.videoUpload.value = '';
+    }
+  });
+  els.btnUseCamera.addEventListener('click', useCameraSource);
 
   guardDestructive(els.btnBaseline, 'Delete baseline', 'Delete — sure?', deleteBaseline);
   guardDestructive(els.btnDeleteAll, 'Delete all', 'Delete all — sure?', () => gallery.deleteAll());
@@ -781,7 +1168,7 @@ window.gstmxxRealtime = {
    * @returns {object} State snapshot.
    */
   getState() {
-    const stats = graph ? graph.stats() : { samples: 0, gaps: 0, following: true };
+    const stats = graph ? graph.stats() : { samples: 0, gaps: 0, events: 0, following: true };
     return {
       appState: runtime.appState,
       hasBaseline: Boolean(runtime.baseline),
@@ -793,10 +1180,23 @@ window.gstmxxRealtime = {
       distanceBufferLength: runtime.distanceBuffer.length,
       sampleCount: stats.samples,
       gapCount: stats.gaps,
+      eventCount: stats.events,
       following: stats.following,
       captureCount: gallery ? gallery.size() : 0,
       running: runtime.running,
       streamStopped: runtime.streamStopped,
+      sourceKind: runtime.sourceKind,
+      lastDetectionScore: runtime.lastDetectionScore,
+      lastDescriptorLength: runtime.lastDescriptorLength,
+      sessionPhase: runtime.sessionPhase,
+      sessionStep: runtime.sessionStep,
+      lastMeasurement: runtime.lastMeasurement
+        ? {
+            distance: runtime.lastMeasurement.distance,
+            spread: runtime.lastMeasurement.spread,
+            capturedAt: runtime.lastMeasurement.capturedAt,
+          }
+        : null,
     };
   },
   /**
@@ -807,6 +1207,10 @@ window.gstmxxRealtime = {
   triggerCalibration() {
     startBaselineCapture();
   },
+  /** Marks the beginning of a declared makeup step. */
+  startMakeupStep,
+  /** Starts the temporal snapshot for the declared makeup step. */
+  measureStep: startStepMeasurement,
   /**
    * Releases camera and loops.
    *
@@ -846,6 +1250,11 @@ export async function initRealtime() {
     onMarkerClick: (captureId) => gallery.open(captureId),
   });
 
+  radialGraph = createRadialGraph({
+    canvasEl: els.radialCanvas,
+    maxDelta: MAX_DELTA,
+  });
+
   gallery = createGallery({
     viewerEl: els.viewer,
     imageEl: els.viewerImage,
@@ -878,6 +1287,12 @@ export async function initRealtime() {
     timeoutMs: BASELINE_TIMEOUT_MS,
     maxSpread: BASELINE_MAX_SPREAD,
   });
+  measurementCollector = createBaselineCollector({
+    targetSamples: MEASUREMENT_TARGET_SAMPLES,
+    minDurationMs: MEASUREMENT_MIN_MS,
+    timeoutMs: MEASUREMENT_TIMEOUT_MS,
+    maxSpread: MEASUREMENT_MAX_SPREAD,
+  });
   spikeDetector = createSpikeDetector({
     sustainMs: SPIKE_SUSTAIN_MS,
     bestMargin: SPIKE_BEST_MARGIN,
@@ -897,16 +1312,25 @@ export async function initRealtime() {
   }
 
   await loadModels();
-  await initWebcam();
+  let sourceReady = false;
+  try {
+    await initWebcam();
+    sourceReady = true;
+  } catch (err) {
+    runtime.streamStopped = true;
+    console.error('camera unavailable:', err);
+    els.sourceState.textContent = 'camera unavailable';
+    setStatus('Camera unavailable. Open a local video from Source.', true);
+  }
 
   // A stored baseline skips straight to tracking. The trace itself is not
   // restored: replaying old history and appending new samples would draw one
   // continuous line across a discontinuity that could be days wide.
-  const stored = loadBaseline();
+  const stored = sourceReady ? loadBaseline() : null;
   if (stored) adoptBaseline(stored, true);
   else {
     syncBaselineControls();
-    setStatus('Camera ready. Capture a baseline to start measuring.');
+    if (sourceReady) setStatus('Camera ready. Capture a baseline to start measuring.');
   }
 
   startLoops();

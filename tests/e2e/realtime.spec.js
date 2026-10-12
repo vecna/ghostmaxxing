@@ -1,19 +1,88 @@
 import { test, expect } from '@playwright/test';
+import path from 'node:path';
 
 /**
- * These run without a camera. getUserMedia rejects in headless Chromium unless
- * --use-fake-device-for-media-stream is set, so anything past initWebcam() is
- * out of scope here: the page is asserted up to the point where it needs a
- * camera, plus the pure functions that do not.
+ * The default project uses a Y4M fake camera. The workflow test additionally
+ * selects a seekable local video with setInputFiles and deterministic model
+ * output, which exercises the same advanced source a researcher can use.
  */
 
 const MODULE_PATHS = [
-  '/lab-js/realtime.js',
-  '/lab-js/realtime-graph.js',
-  '/lab-js/realtime-capture.js',
-  '/lab-js/realtime-gallery.js',
-  '/lab-js/realtime-settings.js',
+  '/lab-js/realtime/realtime.js',
+  '/lab-js/realtime/realtime-graph.js',
+  '/lab-js/realtime/realtime-capture.js',
+  '/lab-js/realtime/realtime-gallery.js',
+  '/lab-js/realtime/realtime-radial.js',
+  '/lab-js/realtime/realtime-settings.js',
 ];
+
+async function mockRealtimeModels(page) {
+  await page.addInitScript(() => {
+    window.__rtDescriptorShift = 0;
+    window.__rtAppearanceChange = false;
+    window.__rtPoseShift = 0;
+    window.__rtImageReads = 0;
+    const originalGetImageData = CanvasRenderingContext2D.prototype.getImageData;
+    CanvasRenderingContext2D.prototype.getImageData = function getImageData(x, y, width, height) {
+      if (!width || !height) return originalGetImageData.call(this, x, y, width, height);
+      const data = new Uint8ClampedArray(width * height * 4);
+      window.__rtImageReads += 1;
+      // Each quality pass reads ambient pixels first and the face crop second.
+      // During the intervention only the face is darkened; ambient light stays
+      // comparable, so the appearance change must not be filtered away.
+      const value = window.__rtAppearanceChange && window.__rtImageReads % 2 === 0 ? 5 : 128;
+      for (let offset = 0; offset < data.length; offset += 4) {
+        data[offset] = value;
+        data[offset + 1] = value;
+        data[offset + 2] = value;
+        data[offset + 3] = 255;
+      }
+      return { data, width, height };
+    };
+  });
+  await page.route('/lab-js/vendor/face-api.js', route => {
+    route.fulfill({
+      contentType: 'application/javascript',
+      body: `
+        (() => {
+          window.faceapi = {
+            TinyFaceDetectorOptions: class TinyFaceDetectorOptions { constructor(options) { this.options = options; } },
+            nets: {
+              tinyFaceDetector: { loadFromUri: async () => {} },
+              faceLandmark68Net: { loadFromUri: async () => {} },
+              faceRecognitionNet: { loadFromUri: async () => {} },
+            },
+            detectSingleFace: input => {
+              const width = input.videoWidth || 640;
+              const height = input.videoHeight || 480;
+              const faceSize = width * 0.5;
+              const positions = Array.from({ length: 68 }, () => ({ x: width * 0.5, y: height * 0.42 }));
+              positions[36] = { x: width * 0.4, y: height * 0.4 };
+              positions[45] = { x: width * 0.6, y: height * 0.4 };
+              positions[30] = { x: width * (0.5 + (window.__rtPoseShift || 0)), y: height * 0.45 };
+              return {
+                withFaceLandmarks: () => ({
+                  withFaceDescriptor: async () => {
+                  const descriptor = new Float32Array(128);
+                  descriptor[0] = window.__rtDescriptorShift || 0;
+                  return {
+                    landmarks: { positions },
+                    descriptor,
+                    detection: {
+                      score: window.__rtAppearanceChange ? 0.4 : 0.99,
+                      box: { x: width * 0.25, y: height * 0.22, width: faceSize, height: faceSize },
+                    },
+                  };
+                  },
+                }),
+              };
+            },
+          };
+        })();
+      `,
+    });
+  });
+}
 
 test.describe('Realtime page', () => {
   test('loads html, css and every module without 404 responses', async ({ page }) => {
@@ -51,6 +120,8 @@ test.describe('Realtime page', () => {
       triggerCalibration: typeof window.gstmxxRealtime.triggerCalibration,
       teardown: typeof window.gstmxxRealtime.teardown,
       resume: typeof window.gstmxxRealtime.resume,
+      startMakeupStep: typeof window.gstmxxRealtime.startMakeupStep,
+      measureStep: typeof window.gstmxxRealtime.measureStep,
     }));
 
     expect(shape).toEqual({
@@ -58,6 +129,8 @@ test.describe('Realtime page', () => {
       triggerCalibration: 'function',
       teardown: 'function',
       resume: 'function',
+      startMakeupStep: 'function',
+      measureStep: 'function',
     });
   });
 
@@ -160,7 +233,7 @@ test.describe('Realtime page', () => {
     await page.goto('/realtime.html');
 
     const result = await page.evaluate(async () => {
-      const { medoid, euclidean } = await import('/lab-js/realtime-capture.js');
+      const { medoid, euclidean } = await import('/lab-js/realtime/realtime-capture.js');
       const tight = [
         [0, 0, 0],
         [0.01, 0, 0],
@@ -185,7 +258,7 @@ test.describe('Realtime page', () => {
     await page.goto('/realtime.html');
 
     const header = await page.evaluate(async () => {
-      const { buildZip } = await import('/lab-js/realtime-gallery.js');
+      const { buildZip } = await import('/lab-js/realtime/realtime-gallery.js');
       const blob = buildZip([
         { name: 'a.jpg', bytes: new Uint8Array([1, 2, 3]), date: new Date(2026, 0, 1) },
       ]);
@@ -201,10 +274,116 @@ test.describe('Realtime page', () => {
     await page.goto('/realtime.html');
 
     const labels = await page.evaluate(async () => {
-      const { formatDuration } = await import('/lab-js/realtime-graph.js');
+      const { formatDuration } = await import('/lab-js/realtime/realtime-graph.js');
       return [formatDuration(4000), formatDuration(492000), formatDuration(7500000)];
     });
 
     expect(labels).toEqual(['4s', '8m 12s', '2h 5m']);
+  });
+
+  test('extracts a real 128D face-api descriptor from an uploaded video', async ({ page }) => {
+    await page.goto('/realtime.html');
+    await expect.poll(() => page.evaluate(() => window.gstmxxRealtime?.getState().running)).toBe(true);
+
+    await page.setInputFiles(
+      '#video-upload',
+      path.join(process.cwd(), 'tests/fixtures/my-moving-face.mp4'),
+    );
+    await expect.poll(() => page.evaluate(() => window.gstmxxRealtime.getState().sourceKind)).toBe('video');
+    await expect.poll(
+      () => page.evaluate(() => {
+        const state = window.gstmxxRealtime.getState();
+        return { descriptorLength: state.lastDescriptorLength, score: state.lastDetectionScore };
+      }),
+      { timeout: 45000 },
+    ).toEqual({ descriptorLength: 128, score: expect.any(Number) });
+    expect(await page.evaluate(() => window.gstmxxRealtime.getState().lastDetectionScore)).toBeGreaterThan(0.5);
+  });
+
+  test('measures a declared makeup step from a seekable local video', async ({ page }) => {
+    await mockRealtimeModels(page);
+    await page.goto('/realtime.html');
+    await expect.poll(() => page.evaluate(() => window.gstmxxRealtime?.getState().running)).toBe(true);
+
+    await page.setInputFiles(
+      '#video-upload',
+      path.join(process.cwd(), 'tests/fixtures/my-moving-face.mp4'),
+    );
+    await expect.poll(() => page.evaluate(() => window.gstmxxRealtime.getState().sourceKind)).toBe('video');
+    await expect(page.locator('#webcam')).toHaveJSProperty('controls', true);
+
+    await page.locator('#btn-baseline-start').click();
+    await expect.poll(
+      () => page.evaluate(() => window.gstmxxRealtime.getState().appState),
+      { timeout: 20000 },
+    ).toBe('TRACKING');
+
+    await expect.poll(
+      () => page.evaluate(() => window.gstmxxRealtime.getState().sampleCount),
+    ).toBeGreaterThan(0);
+    const pausedAt = await page.evaluate(() => {
+      const video = document.getElementById('webcam');
+      video.pause();
+      return video.currentTime;
+    });
+    await page.locator('#btn-start-change').click();
+    await expect(page.locator('#webcam')).toHaveJSProperty('paused', false);
+    await expect.poll(
+      () => page.evaluate(() => document.getElementById('webcam').currentTime),
+    ).toBeGreaterThan(pausedAt + 0.05);
+    const applyingSampleCount = await page.evaluate(
+      () => window.gstmxxRealtime.getState().sampleCount,
+    );
+    await expect.poll(
+      () => page.evaluate(() => window.gstmxxRealtime.getState().sampleCount),
+    ).toBeGreaterThan(applyingSampleCount);
+
+    await page.evaluate(() => { window.__rtPoseShift = 0.02; });
+    await page.locator('#btn-measure-change').click();
+    await expect(page.locator('#distance-value')).toHaveText('—');
+    await expect(page.locator('#session-result')).toContainText('baseline pose');
+
+    await page.evaluate(() => {
+      window.__rtPoseShift = 0;
+      window.__rtDescriptorShift = 0.2;
+      window.__rtAppearanceChange = true;
+    });
+
+    await expect.poll(
+      () => page.evaluate(() => {
+        const state = window.gstmxxRealtime.getState();
+        return { step: state.sessionStep, phase: state.sessionPhase, captures: state.captureCount };
+      }),
+      { timeout: 20000 },
+    ).toEqual({ step: 1, phase: 'ready', captures: 1 });
+    const state = await page.evaluate(() => window.gstmxxRealtime.getState());
+    expect(state.sessionPhase).toBe('ready');
+    expect(state.lastMeasurement.distance).toBeCloseTo(0.2, 3);
+    expect(state.lastMeasurement.spread).toBeCloseTo(0, 3);
+    expect(state.eventCount).toBeGreaterThanOrEqual(3);
+    expect(state.captureCount).toBe(1);
+    await expect(page.locator('#session-result')).toContainText('Snapshot d=0.200');
+    await expect(page.locator('#radial-graph')).toBeVisible();
+
+    // Local-video baselines are intentionally session-only: after reload the
+    // original blob is gone and must never be confused with the camera source.
+    await page.reload();
+    await expect.poll(() => page.evaluate(() => window.gstmxxRealtime?.getState().running)).toBe(true);
+    expect(await page.evaluate(() => window.gstmxxRealtime.getState().hasBaseline)).toBe(false);
+  });
+
+  test('keeps local-video analysis available when camera permission fails', async ({ page }) => {
+    await mockRealtimeModels(page);
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'mediaDevices', {
+        configurable: true,
+        value: { getUserMedia: async () => { throw new Error('permission denied'); } },
+      });
+    });
+    await page.goto('/realtime.html');
+    await expect(page.locator('#status-pill')).toContainText('Camera unavailable');
+    await expect(page.locator('#video-upload')).toBeAttached();
+    await expect.poll(() => page.evaluate(() => window.gstmxxRealtime.getState().running)).toBe(true);
+    await expect(page.locator('#btn-baseline-start')).toBeVisible();
   });
 });
