@@ -132,9 +132,9 @@ export function clearBaseline() {
  * @param {HTMLButtonElement} button Button to guard.
  * @param {string} idleLabel Label in the resting state.
  * @param {string} confirmLabel Label while awaiting confirmation.
- * @param {() => void} onConfirm Action to run on the second click.
+ * @param {function(): void} onConfirm Action to run on the second click.
  * @param {number} [timeoutMs] Time before the button reverts.
- * @returns {{reset: () => void}} Guard handle.
+ * @returns {object} Guard handle exposing `reset()`.
  */
 export function guardDestructive(button, idleLabel, confirmLabel, onConfirm, timeoutMs = 4000) {
   let armed = false;
@@ -177,7 +177,7 @@ export function guardDestructive(button, idleLabel, confirmLabel, onConfirm, tim
  * @param {HTMLElement} options.brightnessValueEl Brightness readout.
  * @param {HTMLButtonElement} options.equalizerEl Equalizer switch.
  * @param {HTMLElement} options.layoutEl Grid root toggled by the equalizer switch.
- * @param {() => void} options.onLayoutChange Called after a layout-affecting change.
+ * @param {function(): void} options.onLayoutChange Called after a layout-affecting change.
  * @returns {object} Settings controller.
  */
 export function createSettings(options) {

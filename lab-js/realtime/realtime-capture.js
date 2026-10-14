@@ -413,9 +413,9 @@ export function createBaselineCollector(options) {
     /**
      * Offers one gated frame to the collector.
      *
-     * @param {{ok: boolean, reason: string, metrics?: object}} verdict Quality gate verdict.
+     * @param {object} verdict Quality gate verdict.
      * @param {Float32Array|number[]} descriptor Descriptor for the frame.
-     * @returns {{status: string, accepted: number, target: number, reason?: string, baseline?: object}} Progress.
+     * @returns {object} Collector progress and, when complete, the temporal medoid.
      */
     offer(verdict, descriptor) {
       if (!active) return { status: 'idle', accepted: 0, target: targetSamples };

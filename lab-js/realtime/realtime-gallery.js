@@ -50,7 +50,7 @@ function openDb() {
  *
  * @param {IDBDatabase} db Open database.
  * @param {IDBTransactionMode} mode Transaction mode.
- * @param {(store: IDBObjectStore) => IDBRequest} work Callback issuing the request.
+ * @param {function(IDBObjectStore): IDBRequest} work Callback issuing the request.
  * @returns {Promise<*>} Request result.
  */
 function run(db, mode, work) {
@@ -275,9 +275,9 @@ function download(blob, filename) {
  * @param {HTMLImageElement} options.imageEl Viewer image element.
  * @param {HTMLElement} options.metaEl Viewer metadata line.
  * @param {HTMLElement} options.countEl Settings-bar count element.
- * @param {(count: number) => void} options.onCountChange Count change callback.
- * @param {(captureId: string) => void} options.onDelete Deletion callback.
- * @param {(message: string) => void} options.onStatus Status message callback.
+ * @param {function(number): void} options.onCountChange Count change callback.
+ * @param {function(string): void} options.onDelete Deletion callback.
+ * @param {function(string): void} options.onStatus Status message callback.
  * @returns {object} Gallery controller.
  */
 export function createGallery(options) {

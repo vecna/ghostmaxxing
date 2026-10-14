@@ -6,8 +6,9 @@ the surrounding research does and does not support. It is written so that
 someone who has never opened the code can judge whether a reading from this tool
 means anything.
 
-**Scope.** Covers `realtime.html`, `realtime.css`, and the `realtime-*.js`
-modules. The 2D/3D effect pipelines in `lab.html` use different models
+**Scope.** Covers `realtime.html`, `styles/realtime.css`,
+`lab-js/realtime/realtime.js`, and its `realtime-*.js` modules. The 2D/3D effect
+pipelines in `lab.html` use different models
 (MediaPipe FaceLandmarker, MobileNetV3 ImageEmbedder) and are out of scope here.
 
 **Status of claims.** Every threshold in this document is tagged with its
@@ -55,8 +56,8 @@ descriptor of your face captured before a makeup session, and a descriptor of
 your face right now, both produced by dlib's face recognition ResNet as shipped
 in face-api.js.
 
-That number tells you how far one specific, seven-year-old, publicly-available
-model has moved you in its own embedding space. It does **not** tell you:
+That number tells you how far one specific, publicly available 2017 model has
+moved you in its own embedding space. It does **not** tell you:
 
 - whether you would be recognised by any deployed surveillance system
 - whether the makeup would work on a different model
@@ -66,13 +67,19 @@ model has moved you in its own embedding space. It does **not** tell you:
 What it is genuinely good for is **iteration**. If you are developing a makeup
 technique, you need a fast local signal to compare variant A against variant B.
 This gives you that, cheaply, offline, on your own device, without sending a
-face anywhere. Treat it as a rehearsal instrument, not a verdict.
+face anywhere. It can take either a live camera or a local video, mark the
+operator-declared application intervals, and measure each finished step over a
+short temporal window. Treat it as a rehearsal instrument, not a verdict.
 
 The rest of this document explains why that framing is the correct one.
 
 ---
 
 ## 2. The pipeline
+
+The input is either the live camera or a video file selected from the device.
+The local file is read through a temporary object URL; it is not uploaded or
+persisted. Both inputs go through the same 2D face-api pipeline below.
 
 Three separate models run in sequence on each frame. They are frequently
 conflated in public discussion, and the distinction matters because
@@ -440,12 +447,17 @@ Rationale: raw per-frame distance is noisy, and the graph's job is trend
 legibility, not maximum temporal resolution. The numeric readout is unsmoothed
 and updates per frame, so instantaneous values remain visible.
 
+Baseline and declared-step measurements use a different aggregation path. Each
+collects eight accepted descriptors distributed over at least three seconds,
+then selects their medoid. A step is therefore represented by a temporal window,
+not by the frame that happened to be visible when the button was pressed.
+
 ### 9.2 The quality gate
 
-`realtime-capture.js → createQualityGate()`. Every frame considered for a
-baseline or a saved capture must clear all of:
+`realtime-capture.js → createQualityGate()`. Baseline frames use the strict gate
+below:
 
-**Confidence.** Detector score ≥ 0.90, well above the 0.5 reporting floor in
+**Confidence.** Detector score ≥ 0.85, above the 0.5 reporting floor in
 `DETECTOR_OPTIONS`. A frame that barely registered as a face produces a
 correspondingly unreliable descriptor.
 
@@ -494,6 +506,20 @@ that false-negative inequities are substantially caused by under-exposure of
 dark-skinned subjects. Refusing to build a baseline from an under-exposed frame
 is a small, concrete mitigation.
 
+Intervention frames deliberately use a different mode. Detector confidence and
+face-crop exposure are not rejection criteria, because makeup may change exactly
+those signals. Scale, framing, roll and yaw must still pass. The frame is then
+compared with the baseline's averaged 2D conditions: roll, yaw proxy, face-box
+scale and centre, plus ambient luminance sampled **outside** the face box. A
+frame beyond those relative tolerances is omitted from both the timeline and a
+declared-step measurement.
+
+This is exclusion, not correction. The software does not rotate, relight or
+otherwise normalise a changed frame back to the baseline. The checks reduce
+obvious pose, framing and room-light confounds, but they cannot prove that the
+remaining distance came only from makeup. Pitch is not estimated, and ambient
+luminance is a deliberately simple 2D proxy.
+
 ### 9.3 Medoid baseline
 
 Given N accepted descriptors, compute the pairwise distance matrix and select the
@@ -511,8 +537,8 @@ spread = (1/(N−1)) Σ_j d(x_medoid, xⱼ)
    — no systematic offset gets baked into the reference.
 3. It is naturally robust to one marginal frame slipping the gate. The mean is not.
 
-Cost is O(N²) in distance computations. At N = 12 that is 66 comparisons of
-128-element vectors, computed once. Irrelevant.
+Cost is O(N²) in distance computations. At N = 8 that is 28 comparisons of
+128-element vectors, computed once for the baseline and once per declared step.
 
 ### 9.4 The noise floor
 
@@ -520,9 +546,12 @@ Cost is O(N²) in distance computations. At N = 12 that is 66 comparisons of
 about the face has changed. It is the tool's only empirical reference line, and
 the most useful number it produces.
 
-Without it you cannot distinguish "the makeup did something" from "I moved my
-head." With it, a reading of 0.09 against a measured floor of 0.06 is visibly
-nothing, and a reading of 0.55 against the same floor is visibly something.
+Without it you cannot tell whether a small movement in the descriptor exceeds
+the variability of the baseline window. With it, a reading of 0.09 against a
+measured floor of 0.06 is weak evidence, while a reading of 0.55 against the
+same floor is a much larger model-local effect. The relative-condition gate in
+§9.2 removes obvious head and light changes; neither mechanism can guarantee
+that all nuisance variation has been removed.
 
 If spread exceeds 0.20 (**UNTUNED**) the batch is rejected outright — the subject
 moved or the lighting flickered, and accepting it would set a floor so high that
@@ -537,6 +566,10 @@ triggers:
 - **Threshold crossing** — the first time the run clears 0.60, held for ≥ 1.5s
 
 Plus a manual shutter, because no heuristic catches everything.
+
+Automatic spike capture is active only while the session is in its ready state.
+During an operator-declared application interval and its measurement window,
+the explicit step snapshot is the record of interest.
 
 The frame written to disk is the **sharpest** observed across the sustain window,
 not whichever frame tripped the trigger. Rationale: a single frame at 0.50 is as
@@ -557,6 +590,27 @@ diffuse across the embedding, and for nothing else. Work such as
 (which uses this exact dlib model) examines what structure embeddings do carry;
 per-dimension interpretation is not part of it.
 
+### 9.7 Declared makeup steps and the radial fingerprint
+
+After setting a baseline, the operator controls the experiment semantics:
+
+1. **Start makeup step** marks the beginning of an application interval.
+2. **Measure this step** begins an eight-sample, minimum-three-second window.
+3. The tool stores the window medoid as the step snapshot, reports its distance
+   and temporal spread, and keeps the sharpest accepted thumbnail.
+
+The timeline changes background during application and measurement and draws a
+labelled event line for each transition. With a local video, events also include
+the media time, so pause, seek and replay can be used as an experiment fixture.
+The controls resume a paused local video before beginning a marked interval.
+
+The radial plot uses all 128 absolute component deltas. The live reading is an
+outline; the most recent measured step is a filled shape. It can make two
+descriptor-change patterns easier to compare than 128 equalizer rows, but it
+does not add new information and it is not a map of facial regions. Spoke order
+is merely descriptor index order, and rotation or local peaks have no semantic
+interpretation.
+
 ---
 
 ## 10. Every threshold, and where it came from
@@ -573,7 +627,8 @@ That is the complete list. One number.
 
 | Quantity | Source |
 |---|---|
-| Noise floor | Medoid spread over 12 gated frames, this session |
+| Baseline noise floor | Medoid spread over 8 gated frames, this session |
+| Step temporal spread | Medoid spread over 8 comparable frames, this step |
 
 ### Chosen
 
@@ -584,24 +639,33 @@ That is the complete list. One number.
 | `SAMPLES_PER_SECOND` | 3 | Smoothing vs. responsiveness. |
 | `NO_FACE_DEBOUNCE_MS` | 1500 | Longer than a blink or head turn. |
 | `GAP_BLOCK_PX` | 30 | Fixed height for a collapsed absence. |
-| `BASELINE_TARGET_SAMPLES` | 12 | Enough for a stable medoid; ~4s at typical detector rates. |
-| `BASELINE_MIN_MS` | 3000 | Prevents 12 frames of a single instant. |
-| `BASELINE_TIMEOUT_MS` | 15000 | Fails loudly rather than hanging. |
+| `BASELINE_TARGET_SAMPLES` | 8 | A compact temporal medoid rather than one frame. |
+| `BASELINE_MIN_MS` | 3000 | Distributes accepted frames across the interval. |
+| `BASELINE_TIMEOUT_MS` | 30000 | Leaves time to respond to a diagnostic rejection. |
+| `MEASUREMENT_TARGET_SAMPLES` | 8 | Uses the same temporal aggregation for every declared step. |
+| `MEASUREMENT_MIN_MS` | 3000 | Distributes accepted comparison frames across the interval. |
+| `MEASUREMENT_TIMEOUT_MS` | 30000 | Fails explicitly when comparable frames cannot be collected. |
 | `SPIKE_SUSTAIN_MS` | 1500 | ~4–5 samples at 3 Hz. |
 | `SPIKE_BEST_MARGIN` | 0.05 | Avoids capturing noise as a personal best. |
 | `SPIKE_COOLDOWN_MS` | 8000 | Keeps the gallery to keepers. |
-| `minScore` | 0.90 | Detector floor is 0.5; the baseline deserves better. |
+| `minScore` | 0.85 | Detector floor is 0.5; used only for strict baseline capture. |
 | `minBoxWidthRatio` | 0.25 | Recognition net input is 150×150. |
 | `maxRollDegrees` | 8 | Tight enough to matter, loose enough to achieve. |
 | `maxYawOffset` | 0.12 | As above; proxy metric, see §9.2. |
-| `MAX_DELTA` | 0.15 | Equalizer scaling only. Purely visual. |
+| `maxRollDelta` | 4° | Relative 2D comparison tolerance; frames beyond it are omitted. |
+| `maxYawDelta` | 0.055 | Relative yaw-proxy tolerance. |
+| `maxScaleDelta` | 0.08 | Relative face-box width tolerance. |
+| `maxCenterDelta` | 0.065 | Relative horizontal or vertical centre tolerance. |
+| `maxLumaDelta` | 0.10 | Relative ambient-luminance tolerance, measured outside the face box. |
+| `MAX_DELTA` | 0.15 | Equalizer and radial scaling only. Purely visual. |
 
 ### Untuned — needs empirical calibration
 
 | Constant | Value | Why it needs work |
 |---|---|---|
-| `BASELINE_MAX_SPREAD` | 0.20 | Should be derived from observed spread distributions across cameras and subjects. Currently a guess. |
+| `BASELINE_MAX_SPREAD` / `MEASUREMENT_MAX_SPREAD` | 0.20 | Should be derived from observed spread distributions across cameras and subjects. Currently a guess. |
 | `minLuma` / `maxLuma` | 0.18 / 0.86 | Should be validated across skin tones specifically, given §6.2. A gate tuned on light skin would systematically reject dark-skinned subjects and is exactly the failure NIST documents. **This is the highest-priority calibration task in the codebase.** |
+| Relative condition tolerances | values above | Need repeated-camera and repeated-subject studies. They reduce confounds but are not calibrated guarantees of pose or illumination invariance. |
 
 ### Inherited from `config.js`
 
@@ -792,18 +856,22 @@ project, not something the current page does.
   own measured noise floor
 - Let you **compare two makeup variants** on the same face, same session, same
   camera — the comparison it is actually built for
-- Show **which direction** a change pushes the descriptor, and whether the change
-  is diffuse or concentrated
-- Give you a **timestamped, watermarked record** with the measurement burned in,
-  so a result is reproducible and citable rather than anecdotal
+- Mark operator-declared application intervals and aggregate each finished step
+  over time instead of reporting only one clicked frame
+- Show whether component changes are diffuse or concentrated, with an equalizer
+  and a radial fingerprint that preserve all 128 absolute deltas
+- Give you a **timestamped, watermarked record** with the measurement burned in;
+  local-video events also retain their media time
 - Do all of this **offline, on-device**, with no face leaving the machine
 
 ### It cannot
 
 - Tell you whether any deployed system would recognise you
 - Tell you whether the technique transfers to another model
-- Account for camera, angle, distance or lighting conditions other than the ones
-  you are sitting in
+- Prove invariance to pose or lighting. It omits frames with sufficiently large
+  2D pose, framing or ambient-light differences; it does not correct them and
+  does not estimate pitch
+- Map a descriptor dimension or radial spoke to a facial feature or makeup line
 - Tell you anything about **detection** evasion — if the detector loses you, the
   tool records a gap, not a success
 - Establish that a technique works for anyone other than you
@@ -811,27 +879,35 @@ project, not something the current page does.
 
 ### Methodological hygiene, if you want the results to mean something
 
-1. **Re-baseline whenever lighting or camera changes.** A baseline captured under
-   different light is a different experiment.
+1. **Re-baseline whenever source, lighting or camera setup changes.** A baseline
+   captured under different conditions is a different experiment.
 2. **Report the noise floor with every result.** A distance without its noise
    floor is uninterpretable.
-3. **Compare within a session.** Cross-session comparison confounds makeup with
+3. **Use the declared-step controls.** Mark the start of application, then
+   measure only after returning to the baseline pose and lighting.
+4. **Compare within a session.** Cross-session comparison confounds makeup with
    lighting, camera position and time of day.
-4. **Vary pose deliberately and record the envelope.** If a result only holds at
-   one exact angle, it is not a result.
-5. **Never report a peak.** Report a sustained value with its duration.
+5. **Repeat the step.** One accepted temporal window is stronger than a peak,
+   but it is still one small sample. Report distance, baseline noise floor and
+   step temporal spread together.
+6. **Test pose separately.** Deliberately vary yaw, roll and pitch in a separate
+   protocol rather than treating excluded frames as proof of invariance.
 
 ---
 
 ## 14. Privacy and data handling
 
-The tool stores two categories of data, both local, both deletable.
+The tool keeps the following local records. None is transmitted.
 
 | Data | Store | Deletion |
 |---|---|---|
-| Baseline descriptor + noise floor + timestamp | `localStorage` (`gstmxx.realtime.baseline`) | "Delete baseline" — removes the key |
-| Spike captures (watermarked JPEGs) | IndexedDB (`gstmxx-realtime` / `captures`) | "Delete all", or per-capture in the viewer |
+| Camera baseline descriptor + noise floor + averaged conditions + timestamp | `localStorage` (`gstmxx.realtime.baseline`, format 2) | "Delete baseline" — removes the key |
+| Local-video baseline | Memory for the current page session | Change source, delete baseline, or close the page |
+| Spike, manual and declared-step captures (watermarked JPEGs) | IndexedDB (`gstmxx-realtime` / `captures`) | "Delete all", or per-capture in the viewer |
 | View settings | `localStorage` (`gstmxx.realtime.settings`) | Browser storage clear |
+
+The selected video is exposed to the page through a temporary browser object
+URL. The file and that URL are not stored in IndexedDB or `localStorage`.
 
 **Why IndexedDB for captures.** `localStorage` caps near 5MB per origin, is
 shared with everything else the site stores, and inflates binary by ~33% through
@@ -998,7 +1074,7 @@ commit SHAs and record the SHA alongside results.
 
 ---
 
-*Sources current as of August 2026. The EU AI Act sections describe recent and
+*Sources current as of October 2026. The EU AI Act sections describe recent and
 evolving provisions — verify against the consolidated text before relying on
 them. If you re-run `fetch-sources.sh`, record the resulting commit SHAs: the
 upstream model references are unpinned, and an unnoticed model change invalidates

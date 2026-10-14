@@ -87,7 +87,7 @@ function token(el, name, fallback) {
  * @param {number} options.samplesPerSecond Sample cadence used for layout.
  * @param {number} options.maxDistance Right edge of the distance axis.
  * @param {number} options.threshold Cited match threshold line.
- * @param {(captureId: string) => void} options.onMarkerClick Marker click handler.
+ * @param {function(string): void} options.onMarkerClick Marker click handler.
  * @returns {object} Graph controller.
  */
 export function createGraph(options) {
@@ -105,9 +105,9 @@ export function createGraph(options) {
 
   const ctx = canvasEl.getContext('2d');
 
-  /** @type {Array<{kind: string, t: number, value?: number, endT?: number, seq?: number, captureId?: string}>} */
+  /** @type {Array<object>} */
   let entries = [];
-  /** @type {number[]} Virtual top offset of each entry, in CSS pixels. */
+  /** @type {number[]} */
   let tops = [];
   let contentHeight = 0;
   let sampleSeq = 0;

@@ -32,6 +32,12 @@
   "video-loader": {
      "title": "(internal) Seekable Video Loader architecture"
   },
+  "realtime": {
+     "title": "Latent Space Visualizer"
+  },
+  "realtime-fr-method": {
+     "title": "Realtime Visualizer: Methodology, Sources and Limits"
+  },
   "aigen-image-labeler": {
      "title": "(internal) AI Gen image labeler"
   },

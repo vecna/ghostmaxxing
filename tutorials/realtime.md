@@ -1,65 +1,112 @@
 # Latent Space Visualizer
 
 **Project:** Ghostmaxxing
-**Audience:** researchers and facilitators studying how a face descriptor moves
-**Status:** ⚠️ NOT RELEASED YET — this page is written ahead of launch and is
-deliberately kept out of the docs build. It is not registered in
-`tutorials/tutorials.json` and is not linked from the site. See the RELEASE
-TOGGLE in `docs/index.html` for how to publish it.
 
----
+**Audience:** people iterating on physical makeup and researchers inspecting
+face-descriptor drift
 
-## 1. What it is
+**Status:** experimental
 
-The Latent Space Visualizer (`realtime.html`) is a real-time debugger for **face
-descriptor drift**. You record a baseline face signature from the webcam, and the
-tool then shows, live, how far the current face has moved from that baseline —
-numerically, historically, and per-dimension.
+The Latent Space Visualizer (`realtime.html`) is a local, real-time instrument
+for comparing a face-api/dlib descriptor with a baseline. It is designed around
+a makeup session: capture the untreated state, tell the tool when application
+starts, then ask it to measure each finished step over a short window.
 
-It answers a question the main lab abstracts away: *when a look changes the match
-result, what exactly is moving in the descriptor?*
+It reports what this one browser model did under the tested conditions. It does
+not establish protection from another recognition system.
 
-## 2. The three panels
+## 1. Choose a source
 
-- **Distance (left).** The live descriptor distance to your baseline, plus a
-  scrolling history graph. The reference line sits at the match threshold
-  (`0.6` in this tool).
-- **Webcam + calibration (centre).** The live video, a status pill, a countdown
-  used when setting the baseline, and a **Set Baseline** button.
-- **Descriptor Delta (right).** A 128-cell "equalizer": one cell per dimension of
-  the face descriptor, coloured by how much that dimension has shifted from the
-  baseline. This is where you can *see* which parts of the signature a given
-  makeup stroke, head turn, or lighting change disturbs.
+The default source is the camera. Open **Source → Open local video** to use a
+recording instead. The file remains on the device and can be paused, sought and
+replayed with the browser's video controls.
 
-## 3. How to use it
+Changing source invalidates the current baseline. Camera baselines can be
+restored after reload; local-video baselines last only for the current page
+session because the temporary file URL does not survive a reload.
 
-1. Open the page and allow camera access; models load automatically.
-2. Sit in a neutral pose and press **Set Baseline**. A short countdown captures a
-   clean baseline descriptor. The state moves from `CALIBRATING` to `TRACKING`.
-3. Change something — apply makeup, turn your head, change the light — and watch:
-   - the **Distance** value and graph move;
-   - the **Descriptor Delta** equalizer light up on the dimensions that shifted.
-4. Re-press **Set Baseline** any time to re-anchor.
+## 2. Capture a baseline
 
-## 4. Reading the numbers
+1. Return to a neutral, frontal pose and keep the room light steady.
+2. Press **Set baseline**.
+3. Hold the pose while the ring collects eight accepted samples across at least
+   three seconds.
 
-- Distance is a descriptor distance: **lower means more similar** to the
-  baseline. Crossing the threshold line is the moment the pipeline would stop
-  treating the current face as the baseline face.
-- The equalizer is a *diagnostic*, not a score. A large delta on many dimensions
-  usually corresponds to a large distance, but the point is to build intuition
-  about which changes matter, not to read an exact value off a single cell.
+The tool rejects baseline frames when detection confidence is low, the face is
+too small or clipped, the head roll/yaw is too large, or the face crop is badly
+under- or overexposed. The message in the pill names the current rejection; it
+is not a generic lighting warning.
 
-## 5. Limits
+The resulting medoid becomes the baseline. Its average spread is shown as the
+session noise floor.
 
-- This is a **local, conditional** view of one browser pipeline's descriptor.
-  Movement here is not proof of real-world protection, and the threshold shown is
-  this tool's own reference, not a universal cut-off.
-- The visualizer studies the descriptor path; it does not bake or export a
-  Ghostyle. When a look you found here is worth keeping, reproduce and bake it in
-  the main lab (`lab.html`).
+## 3. Measure a makeup step
 
-## 6. Privacy
+1. Press **Start makeup step** before applying one change. The timeline marks
+   the event and shades the application interval.
+2. Apply the change. You may leave the frame; a sustained absence becomes one
+   collapsed gap rather than a long run of false zeroes.
+3. Return to the baseline pose and light, then press **Measure this step**.
+4. Hold still while eight comparable samples are collected across at least
+   three seconds.
 
-The baseline descriptor and all per-frame computation stay in the browser.
-Nothing is uploaded.
+The result is the medoid of that window, not a single clicked frame. The tool
+shows its distance from the original baseline and its temporal spread, updates
+the measured radial shape, and saves the sharpest accepted frame as a step
+thumbnail. Repeat with **Start next step** for cumulative changes.
+
+With a local video, phase markers include the media time. Starting or measuring
+a step resumes a paused video, so the collection window can advance instead of
+silently sampling one frozen frame.
+
+## 4. What gets excluded
+
+After baseline capture, the software permits appearance changes that may lower
+detector confidence or darken the face crop. It still excludes frames whose 2D
+pose, face-box size/position, or ambient luminance differs too much from the
+baseline. Ambient light is estimated outside the face box so dark makeup is
+less likely to be mistaken for a room-light change.
+
+This is a nuisance gate, not full pose or lighting normalisation. It does not
+measure pitch, cannot know that makeup caused the remaining change, and cannot
+separate every shadow from every intervention.
+
+## 5. Read the three panels
+
+- **Distance.** The live Euclidean distance and a scrolling timeline. The noise
+  floor is measured from this baseline; `0.60` is dlib's documented LFW
+  operating point. The space between them is deliberately uncalibrated.
+- **Source and experiment.** Camera or local video, baseline progress, phase
+  controls, status, capture controls and local gallery actions. **Display** only
+  changes CSS brightness; it does not change pixels seen by the model.
+- **Descriptor Delta.** The equalizer and radial fingerprint show the absolute
+  change in all 128 descriptor coordinates. The live radial outline can be
+  compared with the filled shape from the latest measured step.
+
+Descriptor dimensions are not facial regions. A radial spoke cannot identify
+which cheek, eyebrow or makeup line caused a change. These views can show
+whether two 128-value patterns differ; they cannot explain the face semantically.
+
+## 6. Captures and privacy
+
+Manual, sustained-spike and declared-step captures are saved as watermarked
+JPEGs in browser IndexedDB. Camera baselines and view settings use localStorage.
+The selected video itself is neither uploaded nor persisted by the page.
+
+**Delete baseline** removes the persisted camera descriptor but deliberately
+does not erase the gallery. Use **Delete all** or delete individual captures in
+the viewer when those records are no longer needed.
+
+A 128-value face descriptor is biometric data. Treat exported images and local
+browser storage accordingly, even though this page does not transmit them.
+
+## 7. Interpreting a result
+
+Report the measured step distance together with the baseline noise floor and
+the step's temporal spread. Compare steps within one session, re-baseline after
+changing the source or setup, and repeat promising measurements. A high value is
+evidence of movement in this specific 2017 dlib embedding under these conditions;
+it is not evidence of evasion against a deployed system.
+
+For thresholds, algorithms, research provenance and limitations, read
+[Realtime Visualizer: Methodology, Sources and Limits](/docs/jsdoc/tutorials/realtime-fr-method).

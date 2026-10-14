@@ -356,6 +356,7 @@ The package provides the following additional commands:
 | `npm run test:unit:watch` | Starts interactive Vitest |
 | `npm run prepare:e2e` | Installs Playwright Chromium |
 | `npm run test:e2e` | Runs Playwright tests |
+| `npm run test:e2e:realtime` | Runs only the Latent Space Visualizer Playwright suite, including local-video measurement |
 | `npm run test:e2e:ui` | Opens the Playwright test UI |
 | `npm test` | Runs unit tests, then end-to-end tests |
 

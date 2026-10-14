@@ -1,6 +1,6 @@
 # Ghostmaxxing
 <!-- coverage-badge:start -->
-[![Unit Test Coverage](https://img.shields.io/badge/coverage-96.79%25-green)](coverage/)
+[![Unit Test Coverage](https://img.shields.io/badge/coverage-88.94%25-green)](coverage/)
 <!-- coverage-badge:end -->
 
 [![CI](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml/badge.svg)](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml)
@@ -76,6 +76,7 @@ npm run check              # validator + unit tests (run before proposing change
 npm run test:unit          # Vitest unit tests
 npm run test:unit -- --coverage
 npm run test:e2e           # Playwright browser tests
+npm run test:e2e:realtime  # Focused realtime camera/video workflow
 npm run docs               # generate the JSDoc site into docs/jsdoc/
 npm run validate:ghostyles # validate every ghostyle in ghostyles/
 npm run validate:ghostyle -- ghostyles/your-slug.js   # validate one
