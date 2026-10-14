@@ -12,6 +12,7 @@ const MODULE_PATHS = [
   '/lab-js/realtime/realtime-graph.js',
   '/lab-js/realtime/realtime-capture.js',
   '/lab-js/realtime/realtime-gallery.js',
+  '/lab-js/realtime/realtime-guide.js',
   '/lab-js/realtime/realtime-radial.js',
   '/lab-js/realtime/realtime-settings.js',
 ];
@@ -21,6 +22,7 @@ async function mockRealtimeModels(page) {
     window.__rtDescriptorShift = 0;
     window.__rtAppearanceChange = false;
     window.__rtPoseShift = 0;
+    window.__rtNoFace = false;
     window.__rtImageReads = 0;
     const originalGetImageData = CanvasRenderingContext2D.prototype.getImageData;
     CanvasRenderingContext2D.prototype.getImageData = function getImageData(x, y, width, height) {
@@ -63,6 +65,7 @@ async function mockRealtimeModels(page) {
               return {
                 withFaceLandmarks: () => ({
                   withFaceDescriptor: async () => {
+                  if (window.__rtNoFace) return null;
                   const descriptor = new Float32Array(128);
                   descriptor[0] = window.__rtDescriptorShift || 0;
                   return {
@@ -148,6 +151,7 @@ test.describe('Realtime page', () => {
     // No control may move the threshold: it is the one number here with a
     // citable provenance, and a moved threshold means nothing.
     await expect(page.locator('#settings-bar input[type="range"]')).toHaveCount(1);
+    await page.locator('.source-menu > summary').click();
     await expect(page.locator('#settings-bar #brightness-input')).toBeVisible();
   });
 
@@ -158,8 +162,52 @@ test.describe('Realtime page', () => {
     await expect(legend).toContainText('Noise floor');
     await expect(legend).toContainText('Match threshold');
     await expect(legend).toContainText('0.60');
-    await expect(legend).toContainText('LFW');
     await expect(page.locator('#legend-noise')).toHaveText('—');
+
+    const help = page.locator('#threshold-help');
+    const tooltip = page.locator('#threshold-tooltip');
+    await expect(tooltip).toBeHidden();
+    await help.click();
+    await expect(help).toHaveAttribute('aria-expanded', 'true');
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toContainText('LFW');
+    await tooltip.click();
+    await expect(help).toHaveAttribute('aria-expanded', 'false');
+    await expect(tooltip).toBeHidden();
+
+    const outsideGuide = page.locator('[data-quality="outside-guide"]');
+    await expect(outsideGuide).toHaveAttribute('aria-pressed', 'true');
+    await outsideGuide.click();
+    await expect(outsideGuide).toHaveAttribute('aria-pressed', 'false');
+    expect(
+      await page.evaluate(() => window.gstmxxRealtime.getState().qualityVisible['outside-guide']),
+    ).toBe(false);
+    await outsideGuide.click();
+  });
+
+  test('keeps the home control clear of the distance status', async ({ page }) => {
+    await page.goto('/realtime.html');
+
+    const [homeBox, qualityBox] = await Promise.all([
+      page.locator('.realtime-home').boundingBox(),
+      page.locator('#distance-quality').boundingBox(),
+    ]);
+    expect(homeBox).not.toBeNull();
+    expect(qualityBox).not.toBeNull();
+    expect(homeBox.x + homeBox.width).toBeLessThanOrEqual(qualityBox.x);
+
+    const statusLayout = await page.locator('#status-pill').evaluate((element) => ({
+      whiteSpace: getComputedStyle(element).whiteSpace,
+      overflow: getComputedStyle(element).overflow,
+      lines: element.querySelectorAll('#status-text').length,
+    }));
+    expect(statusLayout).toEqual({ whiteSpace: 'nowrap', overflow: 'hidden', lines: 1 });
+
+    const distanceLayout = await page.locator('#distance-quality').evaluate((element) => ({
+      whiteSpace: getComputedStyle(element).whiteSpace,
+      fitsOneLine: element.scrollHeight <= element.clientHeight,
+    }));
+    expect(distanceLayout).toEqual({ whiteSpace: 'nowrap', fitsOneLine: true });
   });
 
   test('equalizer toggle collapses the right column and persists', async ({ page }) => {
@@ -186,12 +234,15 @@ test.describe('Realtime page', () => {
 
   test('brightness control moves only the display variable', async ({ page }) => {
     await page.goto('/realtime.html');
+    await page.locator('.source-menu > summary').click();
 
     const slider = page.locator('#brightness-input');
     await slider.fill('1.2');
     await slider.dispatchEvent('input');
 
     await expect(page.locator('#brightness-value')).toHaveText('1.20');
+    await expect(page.locator('.source-menu__popover #brightness-input')).toHaveCount(1);
+    expect(await slider.evaluate((element) => Boolean(element.closest('.source-menu__popover')))).toBe(true);
 
     const applied = await page.evaluate(() =>
       document.getElementById('ui-layer').style.getPropertyValue('--rt-brightness'),
@@ -207,7 +258,10 @@ test.describe('Realtime page', () => {
     await expect(deleteAll).toHaveText('Delete all');
 
     // Baseline controls stay hidden until a baseline exists.
-    await expect(page.locator('#btn-baseline')).toBeHidden();
+    const resetBaseline = page.locator('.source-menu__popover #btn-baseline');
+    await expect(resetBaseline).toHaveCount(1);
+    await expect(resetBaseline).toBeHidden();
+    await expect(resetBaseline).toHaveText('Reset baseline');
     await expect(page.locator('#btn-shutter')).toBeDisabled();
     await expect(page.locator('#calibration-ui')).toBeVisible();
     await expect(page.locator('#btn-baseline-start')).toBeVisible();
@@ -312,21 +366,60 @@ test.describe('Realtime page', () => {
     await expect.poll(() => page.evaluate(() => window.gstmxxRealtime.getState().sourceKind)).toBe('video');
     await expect(page.locator('#webcam')).toHaveJSProperty('controls', true);
 
+    await expect(page.locator('#capture-ring')).toHaveAttribute('aria-valuemax', '5');
     await page.locator('#btn-baseline-start').click();
+    await expect(page.locator('.capture-ring__target')).toBeVisible();
+    await expect(page.locator('#capture-hint')).toContainText('centre dot');
+    await expect(page.locator('#capture-ring-count')).toHaveText(/[0-5]\/5/);
+    await expect(page.locator('#capture-progress-detail')).toContainText('clean');
+    const captureMetaBackground = await page.locator('#capture-progress-detail').evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    expect(captureMetaBackground).not.toBe('rgba(0, 0, 0, 0)');
     await expect.poll(
       () => page.evaluate(() => window.gstmxxRealtime.getState().appState),
       { timeout: 20000 },
     ).toBe('TRACKING');
 
+    const showGuide = page.locator('#btn-show-guide');
+    await expect(showGuide).toBeEnabled();
+    await showGuide.click();
+    await expect(page.locator('#baseline-guide')).toHaveClass(/is-visible/);
+    await expect(page.locator('#baseline-guide')).toHaveClass(/is-fading/, { timeout: 1400 });
+    await expect(page.locator('#baseline-guide')).not.toHaveClass(/is-visible/, { timeout: 2200 });
+
+    await page.locator('.source-menu > summary').click();
+    await expect(page.locator('.source-menu__popover #btn-baseline')).toBeVisible();
+    await page.locator('.source-menu > summary').click();
+
     await expect.poll(
       () => page.evaluate(() => window.gstmxxRealtime.getState().sampleCount),
     ).toBeGreaterThan(0);
+    await page.evaluate(() => { window.__rtNoFace = true; });
+    await expect.poll(
+      () => page.evaluate(() => window.gstmxxRealtime.getState().qualityCounts['no-face']),
+    ).toBeGreaterThan(0);
+    const beforeNoFaceFilter = await page.evaluate(() => window.gstmxxRealtime.getState());
+    const noFaceFilter = page.locator('[data-quality="no-face"]');
+    await noFaceFilter.click();
+    const afterNoFaceFilter = await page.evaluate(() => window.gstmxxRealtime.getState());
+    expect(afterNoFaceFilter.visibleSampleCount).toBe(
+      afterNoFaceFilter.sampleCount - afterNoFaceFilter.qualityCounts['no-face'],
+    );
+    expect(afterNoFaceFilter.visibleSampleCount).toBeLessThan(beforeNoFaceFilter.visibleSampleCount);
+    expect(afterNoFaceFilter.timelineVirtualHeight).toBeLessThan(
+      beforeNoFaceFilter.timelineVirtualHeight,
+    );
+    await noFaceFilter.click();
+    await page.evaluate(() => { window.__rtNoFace = false; });
     const pausedAt = await page.evaluate(() => {
       const video = document.getElementById('webcam');
       video.pause();
       return video.currentTime;
     });
     await page.locator('#btn-start-change').click();
+    await expect(page.locator('#btn-start-change')).toHaveClass(/is-status/);
+    await expect(page.locator('#btn-start-change')).toBeDisabled();
     await expect(page.locator('#webcam')).toHaveJSProperty('paused', false);
     await expect.poll(
       () => page.evaluate(() => document.getElementById('webcam').currentTime),
@@ -340,14 +433,37 @@ test.describe('Realtime page', () => {
 
     await page.evaluate(() => { window.__rtPoseShift = 0.02; });
     await page.locator('#btn-measure-change').click();
-    await expect(page.locator('#distance-value')).toHaveText('—');
+    await expect(page.locator('#distance-value')).toHaveText('0.000');
+    await expect(page.locator('#distance-quality-main')).toHaveText('NO DISTANCE');
+    await expect(page.locator('#distance-quality-detail')).toHaveText('OUTSIDE GUIDE');
     await expect(page.locator('#session-result')).toContainText('baseline pose');
+    await expect.poll(
+      () => page.evaluate(() => window.gstmxxRealtime.getState().statusQuality),
+      { timeout: 4000 },
+    ).toBe('outside-guide');
+    await expect(page.locator('#status-swatch')).toHaveAttribute('data-quality', 'outside-guide');
+    await expect(page.locator('#status-text')).toContainText('yaw proxy');
+    const excludedSampleCount = await page.evaluate(
+      () => window.gstmxxRealtime.getState().sampleCount,
+    );
+    await expect.poll(
+      () => page.evaluate(() => window.gstmxxRealtime.getState().sampleCount),
+    ).toBeGreaterThan(excludedSampleCount);
+    expect(
+      await page.evaluate(() => window.gstmxxRealtime.getState().qualityCounts['outside-guide']),
+    ).toBeGreaterThan(0);
 
     await page.evaluate(() => {
       window.__rtPoseShift = 0;
       window.__rtDescriptorShift = 0.2;
       window.__rtAppearanceChange = true;
     });
+    await expect(page.locator('#distance-value')).toHaveText('0.200');
+    // The raw frame state has already recovered, but the readable projection
+    // keeps the previous instruction for its minimum dwell interval.
+    expect(await page.evaluate(() => window.gstmxxRealtime.getState().statusQuality)).toBe(
+      'outside-guide',
+    );
 
     await expect.poll(
       () => page.evaluate(() => {

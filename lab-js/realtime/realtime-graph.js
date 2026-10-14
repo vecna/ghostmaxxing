@@ -10,12 +10,10 @@
  *    panel and a trace's steepness meant nothing. Every sample now occupies
  *    the same number of pixels. The visible window is 60 seconds, always.
  *
- * 2. COLLAPSED GAPS. An absence is drawn as a fixed-height break labelled with
- *    its real duration, not as a proportional stretch of empty axis. The
- *    working session is: measure, walk to the mirror, apply makeup for eight
- *    minutes, come back. Drawn to scale that is ~5,700px of nothing wedged
- *    between the two measurements you are actually trying to compare. The
- *    elapsed time is not lost, it just isn't spatialised.
+ * 2. CONTINUOUS QUALITY STATES. Descriptor values keep flowing when pose,
+ *    framing or light are not comparable, but their background says why they
+ *    are excluded from measurements. No-face ticks keep time without inventing
+ *    a value. Each state can be hidden non-destructively from the legend.
  *
  * Rendering is virtualised: the canvas is sticky and sized to the scroll
  * viewport, a spacer supplies the scroll height, and only the visible slice is
@@ -114,6 +112,12 @@ export function createGraph(options) {
   let openGapIndex = -1;
 
   let noiseFloor = null;
+  const qualityVisible = new Map([
+    ['valid', true],
+    ['outside-guide', true],
+    ['lighting', true],
+    ['no-face', true],
+  ]);
   let follow = true;
   let programmaticScroll = false;
 
@@ -131,6 +135,7 @@ export function createGraph(options) {
   function entryHeight(entry) {
     if (entry.kind === 'gap') return GAP_BLOCK_PX;
     if (entry.kind === 'event') return EVENT_BLOCK_PX;
+    if (qualityVisible.get(entry.status || 'valid') === false) return 0;
     return pxPerSample;
   }
 
@@ -233,7 +238,11 @@ export function createGraph(options) {
       faint: token(canvasEl, '--rt-gap', '#8a7b6a'),
       applying: token(canvasEl, '--rt-phase-applying', 'rgba(242,106,27,0.13)'),
       measuring: token(canvasEl, '--rt-phase-measuring', 'rgba(127,227,176,0.13)'),
-      event: token(canvasEl, '--rt-event', '#f3c747'),
+      eventApplying: token(canvasEl, '--rt-event-applying', '#f26a1b'),
+      eventMeasuring: token(canvasEl, '--rt-event-measuring', '#7fe3b0'),
+      outsideGuide: token(canvasEl, '--rt-quality-outside', 'rgba(242,106,27,0.22)'),
+      lighting: token(canvasEl, '--rt-quality-light', 'rgba(243,199,71,0.20)'),
+      noFace: token(canvasEl, '--rt-quality-no-face', 'rgba(138,123,106,0.24)'),
     };
 
     const scrollTop = scrollEl.scrollTop;
@@ -288,6 +297,9 @@ export function createGraph(options) {
         if (top > limit) break;
         const entry = entries[i];
         const y = top - scrollTop;
+        if (entry.kind === 'sample' && qualityVisible.get(entry.status || 'valid') === false) {
+          continue;
+        }
         if (entry.kind === 'sample' && entry.phase === 'applying') {
           ctx.fillStyle = colors.applying;
           ctx.fillRect(PAD_LEFT, y, plotWidth, pxPerSample);
@@ -296,6 +308,17 @@ export function createGraph(options) {
           ctx.fillRect(PAD_LEFT, y, plotWidth, pxPerSample);
         } else if (entry.kind === 'event') {
           drawEvent(entry, y, colors, plotWidth);
+        }
+        if (entry.kind === 'sample' && qualityVisible.get(entry.status) !== false) {
+          const qualityColor = {
+            'outside-guide': colors.outsideGuide,
+            lighting: colors.lighting,
+            'no-face': colors.noFace,
+          }[entry.status];
+          if (qualityColor) {
+            ctx.fillStyle = qualityColor;
+            ctx.fillRect(PAD_LEFT, y, plotWidth, pxPerSample);
+          }
         }
       }
 
@@ -312,7 +335,9 @@ export function createGraph(options) {
         const entry = entries[i];
         const y = top - scrollTop;
 
-        if (entry.kind === 'gap' || entry.kind === 'event') {
+        const hiddenQuality = entry.kind === 'sample' && qualityVisible.get(entry.status || 'valid') === false;
+        if (hiddenQuality) continue;
+        if (entry.kind === 'gap' || entry.kind === 'event' || entry.value == null) {
           if (penDown) {
             ctx.stroke();
             ctx.beginPath();
@@ -349,6 +374,7 @@ export function createGraph(options) {
         if (top > limit) break;
         const entry = entries[i];
         if (entry.kind !== 'sample') continue;
+        if (qualityVisible.get(entry.status || 'valid') === false) continue;
         const yMid = top - scrollTop + pxPerSample / 2;
 
         if (entry.seq % labelEvery === 0) {
@@ -359,7 +385,9 @@ export function createGraph(options) {
           ctx.fillText(formatClock(entry.t), PAD_LEFT + 2, yMid);
         }
 
-        if (entry.captureId) drawMarker(yMid, colors);
+        if (entry.captureId && entry.value != null && qualityVisible.get(entry.status) !== false) {
+          drawMarker(yMid, colors);
+        }
       }
     }
 
@@ -426,15 +454,24 @@ export function createGraph(options) {
    * @returns {void}
    */
   function drawEvent(entry, y, colors, plotWidth) {
+    // Opaque base deliberately masks the vertical threshold/noise/grid lines;
+    // event labels must remain readable where those references cross them.
+    ctx.fillStyle = colors.plotBg;
+    ctx.fillRect(PAD_LEFT, y, plotWidth, EVENT_BLOCK_PX);
     ctx.fillStyle = entry.phase === 'measuring' ? colors.measuring : colors.applying;
     ctx.fillRect(PAD_LEFT, y, plotWidth, EVENT_BLOCK_PX);
-    ctx.strokeStyle = colors.event;
+    const eventColor = entry.phase === 'measuring'
+      ? colors.eventMeasuring
+      : colors.eventApplying;
+    ctx.strokeStyle = eventColor;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(PAD_LEFT, Math.round(y) + 0.5);
     ctx.lineTo(PAD_LEFT + plotWidth, Math.round(y) + 0.5);
+    ctx.moveTo(PAD_LEFT, Math.round(y + EVENT_BLOCK_PX) + 0.5);
+    ctx.lineTo(PAD_LEFT + plotWidth, Math.round(y + EVENT_BLOCK_PX) + 0.5);
     ctx.stroke();
-    ctx.fillStyle = colors.event;
+    ctx.fillStyle = eventColor;
     ctx.font = '9px ui-monospace, SFMono-Regular, Menlo, monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -556,13 +593,14 @@ export function createGraph(options) {
    * Appends one measured sample at the live edge.
    *
    * @param {number} t Epoch milliseconds of the sample.
-   * @param {number} value Averaged distance for the tick.
+   * @param {number|null} value Averaged raw distance, or null when no face exists.
    * @param {string} [phase] Operator-declared session phase.
+   * @param {'valid'|'outside-guide'|'lighting'|'no-face'} [status] Comparability state.
    * @returns {number} Index of the appended entry.
    */
-  function pushSample(t, value, phase = 'ready') {
+  function pushSample(t, value, phase = 'ready', status = 'valid') {
     openGapIndex = -1;
-    const entry = { kind: 'sample', t, value, phase, seq: sampleSeq };
+    const entry = { kind: 'sample', t, value, phase, status, seq: sampleSeq };
     sampleSeq += 1;
     tops.push(contentHeight);
     entries.push(entry);
@@ -673,6 +711,15 @@ export function createGraph(options) {
     draw();
   }
 
+  /** Shows or hides one quality state without deleting its samples. */
+  function setQualityVisible(status, visible) {
+    if (!qualityVisible.has(status)) return;
+    qualityVisible.set(status, Boolean(visible));
+    relayout();
+    if (follow) scrollToNow();
+    draw();
+  }
+
   /**
    * Clears the timeline and returns to the live edge.
    *
@@ -708,6 +755,7 @@ export function createGraph(options) {
     for (let i = Math.max(0, index - 3); i <= Math.min(entries.length - 1, index + 3); i += 1) {
       const entry = entries[i];
       if (entry.kind !== 'sample' || !entry.captureId) continue;
+      if (qualityVisible.get(entry.status || 'valid') === false) continue;
       const centre = tops[i] + pxPerSample / 2;
       if (Math.abs(centre - virtualY) <= MARKER_RADIUS + 3) return entry.captureId;
     }
@@ -756,21 +804,37 @@ export function createGraph(options) {
     markLatestCapture,
     clearCapture,
     setNoiseFloor,
+    setQualityVisible,
     /**
      * Reports timeline size for diagnostics and tests.
      *
-     * @returns {{samples: number, gaps: number, events: number, following: boolean}} Snapshot.
+     * @returns {object} Timeline counts and filter state.
      */
     stats() {
       let samples = 0;
+      let visibleSamples = 0;
       let gaps = 0;
       let events = 0;
+      const quality = { valid: 0, 'outside-guide': 0, lighting: 0, 'no-face': 0 };
       for (const entry of entries) {
         if (entry.kind === 'gap') gaps += 1;
         else if (entry.kind === 'event') events += 1;
-        else samples += 1;
+        else {
+          samples += 1;
+          if (qualityVisible.get(entry.status || 'valid') !== false) visibleSamples += 1;
+          quality[entry.status || 'valid'] = (quality[entry.status || 'valid'] || 0) + 1;
+        }
       }
-      return { samples, gaps, events, following: follow };
+      return {
+        samples,
+        visibleSamples,
+        virtualHeight: contentHeight,
+        gaps,
+        events,
+        following: follow,
+        quality,
+        qualityVisible: Object.fromEntries(qualityVisible),
+      };
     },
     /**
      * Disconnects observers held by the graph.

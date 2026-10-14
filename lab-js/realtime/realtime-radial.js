@@ -1,10 +1,31 @@
 /**
  * @module realtime-radial
  * @description
- * A compact fingerprint of all 128 descriptor deltas. The spokes are latent
- * coordinates, not facial regions: the plot can compare the shape of two
- * changes, but it cannot say that one spoke belongs to an eyebrow or cheek.
+ * A compact distribution of descriptor change. Absolute deltas are ranked,
+ * then reduced into 16 RMS bands. The spokes are magnitudes, not stable latent
+ * coordinates or facial regions.
  */
+
+/**
+ * Sorts absolute descriptor deltas and reduces them to equal-sized RMS bands.
+ * Ranking makes the plot legible while deliberately discarding coordinate
+ * identity: it compares the distribution of change, not where change lives.
+ *
+ * @param {Float32Array|number[]} values Descriptor deltas.
+ * @param {number} [bandCount=16] Number of ranked bands.
+ * @returns {number[]} Ascending RMS magnitudes.
+ */
+export function rankedDeltaBands(values, bandCount = 16) {
+  const ranked = Array.from(values || [], (value) => Number.isFinite(value) ? Math.abs(value) : 0)
+    .sort((a, b) => a - b);
+  if (!ranked.length || bandCount < 1) return [];
+  return Array.from({ length: Math.min(bandCount, ranked.length) }, (_, index) => {
+    const start = Math.floor((index * ranked.length) / bandCount);
+    const end = Math.max(start + 1, Math.floor(((index + 1) * ranked.length) / bandCount));
+    const band = ranked.slice(start, end);
+    return Math.sqrt(band.reduce((sum, value) => sum + value * value, 0) / band.length);
+  });
+}
 
 /**
  * Converts descriptor deltas to radial points.
@@ -126,11 +147,11 @@ export function createRadialGraph({ canvasEl, maxDelta = 0.15 }) {
   return {
     draw,
     setLive(values) {
-      live = values ? Array.from(values) : null;
+      live = values ? rankedDeltaBands(values) : null;
       draw();
     },
     setMeasured(values) {
-      measured = values ? Array.from(values) : null;
+      measured = values ? rankedDeltaBands(values) : null;
       draw();
     },
     reset() {

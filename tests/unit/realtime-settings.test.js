@@ -15,6 +15,11 @@ const conditions = {
   centerYRatio: 0.5,
   luma: 0.6,
 };
+const guide = {
+  aspectRatio: 4 / 3,
+  box: { x: 0.2, y: 0.1, width: 0.5, height: 0.7 },
+  landmarks: Array.from({ length: 68 }, (_, index) => ({ x: index / 100, y: index / 200 })),
+};
 
 describe('realtime baseline persistence', () => {
   beforeEach(() => localStorage.clear());
@@ -26,6 +31,7 @@ describe('realtime baseline persistence', () => {
       noiseFloor: 0.01,
       capturedAt: 1234,
       sourceKind: 'camera',
+      guide,
     };
 
     saveBaseline(baseline);
@@ -41,11 +47,15 @@ describe('realtime baseline persistence', () => {
       noiseFloor: 0.01,
       capturedAt: 1234,
       sourceKind: 'camera',
-      format: 2,
+      format: 3,
+      guide,
     };
 
-    localStorage.setItem(key, JSON.stringify({ ...valid, format: 1 }));
+    localStorage.setItem(key, JSON.stringify({ ...valid, format: 2 }));
     expect(loadBaseline()).toBeNull();
+
+    localStorage.setItem(key, JSON.stringify(valid));
+    expect(loadBaseline()).toMatchObject({ guide });
 
     localStorage.setItem(key, JSON.stringify({ ...valid, sourceKind: 'video' }));
     expect(loadBaseline()).toBeNull();
@@ -61,7 +71,7 @@ describe('realtime baseline persistence', () => {
   });
 
   it('deletes the stored biometric template', () => {
-    saveBaseline({ descriptor, conditions, noiseFloor: 0.01, sourceKind: 'camera' });
+    saveBaseline({ descriptor, conditions, guide, noiseFloor: 0.01, sourceKind: 'camera' });
     clearBaseline();
     expect(loadBaseline()).toBeNull();
   });

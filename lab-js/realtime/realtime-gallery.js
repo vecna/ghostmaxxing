@@ -63,7 +63,7 @@ function run(db, mode, work) {
 }
 
 /**
- * Formats a timestamp for watermarks and filenames.
+ * Formats a timestamp for filenames.
  *
  * @param {number} timestamp Epoch milliseconds.
  * @param {boolean} [fileSafe] Whether to avoid characters illegal in filenames.
@@ -78,17 +78,95 @@ function stamp(timestamp, fileSafe = false) {
 }
 
 /**
- * Burns provenance into the frame.
+ * Formats the only measurement claim shown with a saved frame.
  *
- * The measurement travels with the image on purpose. An exported frame carrying
- * only a date is a selfie; one carrying the distance, the measured noise floor
- * and the threshold it was judged against is a record.
+ * @param {object} meta Measurement metadata.
+ * @param {number} meta.distance Distance at capture.
+ * @param {number} meta.threshold Match threshold used for the verdict.
+ * @returns {string} Human-readable distance and verdict.
+ */
+export function formatCaptureMeasurement(meta) {
+  const threshold = Number.isFinite(meta.threshold) ? meta.threshold : 0.6;
+  const distance = Number.isFinite(meta.distance) ? meta.distance : NaN;
+  const formattedDistance = Number.isFinite(distance) ? distance.toFixed(3) : '—';
+  const verdict = Number.isFinite(distance) && distance <= threshold
+    ? 'still match'
+    : 'different person';
+  return `distance ${formattedDistance}/${threshold.toFixed(2)} · ${verdict}`;
+}
+
+/** Draws the project mark using the same geometry as mark-small-mono-cream.svg. */
+function drawLogoMark(ctx, x, y, size) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(size / 64, size / 64);
+  ctx.strokeStyle = '#fff1cf';
+  ctx.fillStyle = '#fff1cf';
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  ctx.save();
+  ctx.translate(1, 10);
+  ctx.scale(0.45, 0.45);
+  ctx.lineWidth = 7.5;
+  ctx.beginPath();
+  ctx.moveTo(8, 44);
+  ctx.lineTo(2, 32);
+  ctx.moveTo(92, 44);
+  ctx.lineTo(98, 32);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(50, 45);
+  ctx.bezierCurveTo(65, 25, 90, 25, 90, 45);
+  ctx.bezierCurveTo(90, 65, 65, 65, 50, 45);
+  ctx.bezierCurveTo(35, 25, 10, 25, 10, 45);
+  ctx.bezierCurveTo(10, 65, 35, 65, 50, 45);
+  ctx.closePath();
+  ctx.stroke();
+  for (const cx of [28, 72]) {
+    ctx.beginPath();
+    ctx.arc(cx, 45, 8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(13, 36);
+  ctx.scale(0.4, 0.4);
+  ctx.lineWidth = 9;
+  ctx.beginPath();
+  ctx.moveTo(80, 26);
+  ctx.lineTo(80, 84);
+  ctx.moveTo(80, 30);
+  ctx.lineTo(44, 30);
+  ctx.moveTo(52, 30);
+  ctx.lineTo(52, 40);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(17, 40);
+  ctx.lineTo(75, 40);
+  ctx.arcTo(82, 40, 82, 47, 7);
+  ctx.lineTo(82, 63);
+  ctx.arcTo(82, 70, 75, 70, 7);
+  ctx.lineTo(17, 70);
+  ctx.arcTo(10, 70, 10, 63, 7);
+  ctx.lineTo(10, 47);
+  ctx.arcTo(10, 40, 17, 40, 7);
+  ctx.closePath();
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(32, 55, 11.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  ctx.restore();
+}
+
+/**
+ * Burns the project mark and the distance verdict into the frame.
  *
  * @param {HTMLCanvasElement} source Frame to watermark.
  * @param {object} meta Measurement metadata.
- * @param {number} meta.t Capture timestamp.
  * @param {number} meta.distance Distance at capture.
- * @param {number} meta.noiseFloor Measured session noise floor.
  * @param {number} meta.threshold Cited match threshold.
  * @returns {HTMLCanvasElement} Watermarked canvas.
  */
@@ -104,25 +182,26 @@ export function watermark(source, meta) {
   ctx.fillStyle = '#0c0906';
   ctx.fillRect(0, source.height, canvas.width, barHeight);
 
-  const fontSize = Math.max(10, Math.round(barHeight * 0.42));
+  const markSize = Math.max(24, Math.round(barHeight * 0.82));
+  const markX = 12;
+  const markY = source.height + (barHeight - markSize) / 2;
+  drawLogoMark(ctx, markX, markY, markSize);
+
+  const detail = formatCaptureMeasurement(meta);
+  const textX = markX + markSize + 12;
+  const availableWidth = Math.max(0, canvas.width - textX - 12);
+  let fontSize = Math.max(9, Math.round(barHeight * 0.36));
   ctx.font = `${fontSize}px ui-monospace, SFMono-Regular, Menlo, monospace`;
+  while (fontSize > 8 && ctx.measureText(detail).width > availableWidth) {
+    fontSize -= 1;
+    ctx.font = `${fontSize}px ui-monospace, SFMono-Regular, Menlo, monospace`;
+  }
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left';
 
   const y = source.height + barHeight / 2;
   ctx.fillStyle = '#ffe7a8';
-  ctx.fillText('ghostmaxxing', 12, y);
-
-  const detail = [
-    stamp(meta.t),
-    `d=${meta.distance.toFixed(3)}`,
-    `noise ±${meta.noiseFloor.toFixed(3)}`,
-    `dlib t=${meta.threshold.toFixed(2)}`,
-  ].join('  ·  ');
-
-  ctx.fillStyle = '#b9a892';
-  ctx.textAlign = 'right';
-  ctx.fillText(detail, canvas.width - 12, y);
+  ctx.fillText(detail, textX, y, availableWidth);
 
   return canvas;
 }
@@ -355,7 +434,7 @@ export function createGallery(options) {
     openId = id;
 
     imageEl.src = openUrl;
-    metaEl.textContent = `${stamp(record.t)}  ·  d=${record.distance.toFixed(3)}  ·  noise ±${record.noiseFloor.toFixed(3)}  ·  ${record.kind}`;
+    metaEl.textContent = formatCaptureMeasurement(record);
     viewerEl.hidden = false;
   }
 

@@ -64,6 +64,48 @@ export function summarizeConditions(readings) {
   return Object.keys(profile).length ? profile : null;
 }
 
+/** Returns the median finite value from a list, or zero for an empty list. */
+function median(values) {
+  const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
+  if (!sorted.length) return 0;
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+/**
+ * Builds one robust, normalized 2D reference guide from accepted frames.
+ * This geometry is deliberately separate from the descriptor medoid: it is
+ * only a visual alignment aid and never participates in distance arithmetic.
+ *
+ * @param {object[]} guides Per-frame normalized face boxes and 68 landmarks.
+ * @returns {object|null} Coordinate-wise median guide.
+ */
+export function summarizeGuides(guides) {
+  const usable = guides.filter((guide) =>
+    guide &&
+    Number.isFinite(guide.aspectRatio) &&
+    Array.isArray(guide.landmarks) &&
+    guide.landmarks.length === 68,
+  );
+  if (!usable.length) return null;
+  const coordinate = (read) => median(usable.map(read));
+  return {
+    aspectRatio: coordinate((guide) => guide.aspectRatio),
+    box: {
+      x: coordinate((guide) => guide.box.x),
+      y: coordinate((guide) => guide.box.y),
+      width: coordinate((guide) => guide.box.width),
+      height: coordinate((guide) => guide.box.height),
+    },
+    landmarks: Array.from({ length: 68 }, (_, index) => ({
+      x: coordinate((guide) => guide.landmarks[index].x),
+      y: coordinate((guide) => guide.landmarks[index].y),
+    })),
+  };
+}
+
 /**
  * Checks whether a live frame is comparable with the baseline conditions.
  * This is deliberately a 2D nuisance gate, not pose correction: rejected
@@ -72,27 +114,52 @@ export function summarizeConditions(readings) {
  * @param {object|null} baseline Baseline condition profile.
  * @param {object|null} current Current frame conditions.
  * @param {object} [overrides] Partial tolerance overrides.
- * @returns {{ok: boolean, reason: string, differences: object}} Comparison verdict.
+ * @returns {{ok: boolean, reason: string, reasons: string[], differences: object}} Comparison verdict.
  */
 export function compareConditions(baseline, current, overrides = {}) {
-  if (!baseline || !current) return { ok: true, reason: '', differences: {} };
+  if (!baseline || !current) return { ok: true, reason: '', reasons: [], differences: {} };
   const limits = { ...DEFAULT_COMPARISON, ...overrides };
   const difference = (key) => Math.abs((current[key] ?? 0) - (baseline[key] ?? 0));
   const differences = Object.fromEntries(CONDITION_KEYS.map((key) => [key, difference(key)]));
+  const reasons = [];
 
   if (
     differences.rollDegrees > limits.maxRollDelta ||
-    differences.yawOffset > limits.maxYawDelta ||
-    differences.boxWidthRatio > limits.maxScaleDelta ||
+    differences.yawOffset > limits.maxYawDelta
+  ) {
+    const details = [];
+    if (differences.rollDegrees > limits.maxRollDelta) {
+      details.push(`roll Δ${differences.rollDegrees.toFixed(1)}°; limit ${limits.maxRollDelta}°`);
+    }
+    if (differences.yawOffset > limits.maxYawDelta) {
+      details.push(
+        `yaw proxy Δ${differences.yawOffset.toFixed(3)}; limit ${limits.maxYawDelta.toFixed(3)}`,
+      );
+    }
+    reasons.push(`Head angle differs from the baseline pose (${details.join(', ')}).`);
+  }
+  if (differences.boxWidthRatio > limits.maxScaleDelta) {
+    reasons.push(
+      current.boxWidthRatio > baseline.boxWidthRatio
+        ? 'Face size differs from the baseline framing. Move slightly farther from the camera.'
+        : 'Face size differs from the baseline framing. Move slightly closer to the camera.',
+    );
+  }
+  if (
     differences.centerXRatio > limits.maxCenterDelta ||
     differences.centerYRatio > limits.maxCenterDelta
   ) {
-    return { ok: false, reason: 'Return to the baseline pose and framing.', differences };
+    reasons.push('Face position differs from the baseline framing. Re-centre it in the frame.');
   }
   if (differences.luma > limits.maxLumaDelta) {
-    return { ok: false, reason: 'Lighting differs too much from the baseline.', differences };
+    reasons.push(
+      `Room lighting differs from the baseline (luma Δ${differences.luma.toFixed(2)}; limit ${limits.maxLumaDelta.toFixed(2)}).`,
+    );
   }
-  return { ok: true, reason: '', differences };
+  if (reasons.length) {
+    return { ok: false, reason: reasons[0], reasons, differences };
+  }
+  return { ok: true, reason: '', reasons: [], differences };
 }
 
 /**
@@ -282,26 +349,49 @@ export function createQualityGate(video, overrides = {}) {
      * @param {object} [options] Evaluation mode.
      * @param {boolean} [options.allowAppearanceChanges=false] Do not let face-crop
      *   exposure or detector-score changes reject an intervention frame.
-     * @returns {{ok: boolean, reason: string, sharpness: number}} Verdict.
+     * @returns {{ok: boolean, reason: string, reasons: string[], code: string, sharpness: number}} Verdict.
      */
     evaluate(detection, options = {}) {
       const { allowAppearanceChanges = false } = options;
-      const reject = (reason) => ({ ok: false, reason, sharpness: 0 });
+      const reject = (code, reason) => ({
+        ok: false,
+        code,
+        reason,
+        reasons: [reason],
+        failures: [{ code, reason }],
+        sharpness: 0,
+      });
 
       const box = detection?.detection?.box;
       const score = detection?.detection?.score ?? 0;
       const points = detection?.landmarks?.positions;
-      if (!box || !points) return reject('No usable detection.');
+      if (!box || !points) return reject('detection', 'No usable face detection.');
 
       const videoW = video.videoWidth || 1;
       const videoH = video.videoHeight || 1;
+      const guide = {
+        aspectRatio: videoW / videoH,
+        box: {
+          x: box.x / videoW,
+          y: box.y / videoH,
+          width: box.width / videoW,
+          height: box.height / videoH,
+        },
+        landmarks: points.map((point) => ({ x: point.x / videoW, y: point.y / videoH })),
+      };
+
+      const failures = [];
+      const fail = (code, reason) => failures.push({ code, reason });
 
       if (!allowAppearanceChanges && score < limits.minScore) {
-        return reject(
-          `Detector confidence is low (${score.toFixed(2)}). Hold a frontal, steady pose and check glare or shadows.`,
+        fail(
+          'confidence',
+          `Face detected, but confidence is low (${score.toFixed(2)}; target ${limits.minScore.toFixed(2)}). Hold still and check glare or shadows.`,
         );
       }
-      if (box.width < videoW * limits.minBoxWidthRatio) return reject('Move closer to the camera.');
+      if (box.width < videoW * limits.minBoxWidthRatio) {
+        fail('scale', 'Face detected, but it is too small in the frame. Move closer.');
+      }
 
       const marginX = videoW * limits.edgeMarginRatio;
       const marginY = videoH * limits.edgeMarginRatio;
@@ -310,43 +400,80 @@ export function createQualityGate(video, overrides = {}) {
         box.y < marginY ||
         box.x + box.width > videoW - marginX ||
         box.y + box.height > videoH - marginY;
-      if (clipsFrame) return reject('Centre your face in the frame.');
+      if (clipsFrame) fail('framing', 'Face detected, but it is too close to an edge. Centre it in the frame.');
 
       const leftEye = points[LM_LEFT_EYE_OUTER];
       const rightEye = points[LM_RIGHT_EYE_OUTER];
       const nose = points[LM_NOSE_TIP];
-      if (!leftEye || !rightEye || !nose) return reject('Landmarks incomplete.');
+      if (!leftEye || !rightEye || !nose) return reject('landmarks', 'Face detected, but its landmarks are incomplete.');
 
       const rollDegrees =
         (Math.atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x) * 180) / Math.PI;
-      if (Math.abs(rollDegrees) > limits.maxRollDegrees) return reject('Level your head.');
+      if (Math.abs(rollDegrees) > limits.maxRollDegrees) {
+        fail(
+          'roll',
+          `Face detected, but the head is tilted (${Math.abs(rollDegrees).toFixed(1)}°; target ≤ ${limits.maxRollDegrees}°). Level it and hold still.`,
+        );
+      }
 
       const interocular = Math.hypot(rightEye.x - leftEye.x, rightEye.y - leftEye.y) || 1;
       const eyeMidX = (leftEye.x + rightEye.x) / 2;
       const yawOffset = (nose.x - eyeMidX) / interocular;
-      if (Math.abs(yawOffset) > limits.maxYawOffset) return reject('Look straight at the camera.');
+      if (Math.abs(yawOffset) > limits.maxYawOffset) {
+        fail(
+          'yaw',
+          `Face detected, but the head is turned (yaw proxy ${Math.abs(yawOffset).toFixed(2)}; target ≤ ${limits.maxYawOffset.toFixed(2)}). Face the camera and hold still.`,
+        );
+      }
 
       const ambientLuma = analyseAmbientLuma(video, box, scratch);
       const crop = analyseCrop(video, box, scratch);
       if (!allowAppearanceChanges) {
-        if (crop.luma < limits.minLuma) return reject('Too dark — add some light.');
-        if (crop.luma > limits.maxLuma || crop.clipped > limits.maxClippedRatio) {
-          return reject('Overexposed — reduce the light.');
+        if (crop.luma < limits.minLuma) {
+          fail('underexposed', 'Face detected, but the face crop is too dark. Add some light.');
         }
+        if (crop.luma > limits.maxLuma || crop.clipped > limits.maxClippedRatio) {
+          fail(
+            'overexposed',
+            `Face detected, but the face crop is overexposed (clipped ${(crop.clipped * 100).toFixed(1)}%; target ≤ ${(limits.maxClippedRatio * 100).toFixed(1)}%). Reduce glare or direct light.`,
+          );
+        }
+      }
+
+      const metrics = {
+        rollDegrees,
+        yawOffset,
+        boxWidthRatio: box.width / videoW,
+        centerXRatio: (box.x + box.width / 2) / videoW,
+        centerYRatio: (box.y + box.height / 2) / videoH,
+        luma: Number.isFinite(ambientLuma) ? ambientLuma : crop.luma,
+        faceLuma: crop.luma,
+        clippedRatio: crop.clipped,
+        detectorScore: score,
+      };
+
+      if (failures.length) {
+        return {
+          ok: false,
+          code: failures[0].code,
+          reason: failures[0].reason,
+          reasons: failures.map((failure) => failure.reason),
+          failures,
+          sharpness: crop.sharpness,
+          metrics,
+          guide,
+        };
       }
 
       return {
         ok: true,
+        code: '',
         reason: '',
+        reasons: [],
+        failures: [],
         sharpness: crop.sharpness,
-        metrics: {
-          rollDegrees,
-          yawOffset,
-          boxWidthRatio: box.width / videoW,
-          centerXRatio: (box.x + box.width / 2) / videoW,
-          centerYRatio: (box.y + box.height / 2) / videoH,
-          luma: Number.isFinite(ambientLuma) ? ambientLuma : crop.luma,
-        },
+        metrics,
+        guide,
       };
     },
   };
@@ -371,8 +498,14 @@ export function createBaselineCollector(options) {
 
   let descriptors = [];
   let conditions = [];
+  let guides = [];
   let startedAt = 0;
   let lastAcceptedAt = 0;
+  let firstAcceptedAt = 0;
+  let lastObservationId = null;
+  let attempted = 0;
+  let rejected = 0;
+  let duplicates = 0;
   let active = false;
 
   return {
@@ -384,8 +517,14 @@ export function createBaselineCollector(options) {
     start() {
       descriptors = [];
       conditions = [];
+      guides = [];
       startedAt = Date.now();
       lastAcceptedAt = 0;
+      firstAcceptedAt = 0;
+      lastObservationId = null;
+      attempted = 0;
+      rejected = 0;
+      duplicates = 0;
       active = true;
     },
 
@@ -398,7 +537,13 @@ export function createBaselineCollector(options) {
       active = false;
       descriptors = [];
       conditions = [];
+      guides = [];
       lastAcceptedAt = 0;
+      firstAcceptedAt = 0;
+      lastObservationId = null;
+      attempted = 0;
+      rejected = 0;
+      duplicates = 0;
     },
 
     /**
@@ -415,57 +560,78 @@ export function createBaselineCollector(options) {
      *
      * @param {object} verdict Quality gate verdict.
      * @param {Float32Array|number[]} descriptor Descriptor for the frame.
+     * @param {object} [observation] Source timing and identity.
+     * @param {number} [observation.sourceTimeMs] Media time for a local video.
+     * @param {string|number} [observation.id] Stable id for one source frame.
      * @returns {object} Collector progress and, when complete, the temporal medoid.
      */
-    offer(verdict, descriptor) {
+    offer(verdict, descriptor, observation = {}) {
       if (!active) return { status: 'idle', accepted: 0, target: targetSamples };
 
       const now = Date.now();
       const elapsed = now - startedAt;
+      attempted += 1;
+
+      const progress = (status, extra = {}) => ({
+        status,
+        accepted: descriptors.length,
+        target: targetSamples,
+        attempted,
+        rejected,
+        duplicates,
+        ...extra,
+      });
 
       if (!verdict.ok) {
+        rejected += 1;
         if (elapsed > timeoutMs) {
           active = false;
-          return {
-            status: 'failed',
-            accepted: descriptors.length,
-            target: targetSamples,
+          return progress('failed', {
             reason: `Not enough clean frames before the capture timed out. Last rejection: ${verdict.reason}`,
-          };
+            reasons: verdict.reasons || [verdict.reason],
+          });
         }
-        return {
-          status: 'blocked',
-          accepted: descriptors.length,
-          target: targetSamples,
+        return progress('blocked', {
           reason: verdict.reason,
-        };
+          reasons: verdict.reasons || [verdict.reason],
+        });
       }
+
+      if (observation.id != null && observation.id === lastObservationId) {
+        duplicates += 1;
+        return progress('waiting', { reason: 'Waiting for the video to advance to a new frame.' });
+      }
+      if (observation.id != null) lastObservationId = observation.id;
+
+      const sampleTime = Number.isFinite(observation.sourceTimeMs)
+        ? observation.sourceTimeMs
+        : now;
 
       // Space observations across the whole requested window. Without this,
       // a fast detector could fill the array in one short burst and merely
       // wait out minDurationMs without observing the rest of the interval.
       const sampleIntervalMs = targetSamples > 1 ? minDurationMs / (targetSamples - 1) : 0;
-      const sampleDue = descriptors.length === 0 || now - lastAcceptedAt >= sampleIntervalMs;
+      const sampleDue = descriptors.length === 0 || sampleTime - lastAcceptedAt >= sampleIntervalMs;
       if (descriptors.length < targetSamples && sampleDue) {
         descriptors.push(Array.from(descriptor));
         if (verdict.metrics) conditions.push(verdict.metrics);
-        lastAcceptedAt = now;
+        if (verdict.guide) guides.push(verdict.guide);
+        lastAcceptedAt = sampleTime;
+        if (descriptors.length === 1) firstAcceptedAt = sampleTime;
       }
 
       const enoughSamples = descriptors.length >= targetSamples;
-      const enoughTime = elapsed >= minDurationMs;
+      const enoughTime =
+        descriptors.length > 0 && lastAcceptedAt - firstAcceptedAt >= minDurationMs;
 
       if (!enoughSamples || !enoughTime) {
         if (elapsed > timeoutMs) {
           active = false;
-          return {
-            status: 'failed',
-            accepted: descriptors.length,
-            target: targetSamples,
+          return progress('failed', {
             reason: 'Not enough clean frames before the capture timed out.',
-          };
+          });
         }
-        return { status: 'collecting', accepted: descriptors.length, target: targetSamples };
+        return progress('collecting');
       }
 
       const result = medoid(descriptors);
@@ -475,26 +641,21 @@ export function createBaselineCollector(options) {
       // during collection. Accepting it would set a noise floor so high that
       // real results disappear underneath it.
       if (result.spread > maxSpread) {
-        return {
-          status: 'failed',
-          accepted: descriptors.length,
-          target: targetSamples,
+        return progress('failed', {
           reason: 'Too much movement during capture.',
-        };
+        });
       }
 
-      return {
-        status: 'done',
-        accepted: descriptors.length,
-        target: targetSamples,
+      return progress('done', {
         baseline: {
           descriptor: result.descriptor,
           noiseFloor: result.spread,
           capturedAt: Date.now(),
           samples: descriptors.length,
           conditions: summarizeConditions(conditions),
+          guide: summarizeGuides(guides),
         },
-      };
+      });
     },
   };
 }

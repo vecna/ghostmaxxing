@@ -6,6 +6,7 @@ import {
   euclidean,
   medoid,
   summarizeConditions,
+  summarizeGuides,
 } from '../../lab-js/realtime/realtime-capture.js';
 
 describe('realtime temporal measurement helpers', () => {
@@ -34,6 +35,21 @@ describe('realtime temporal measurement helpers', () => {
     });
   });
 
+  it('builds the visual guide from coordinate medians', () => {
+    const makeGuide = (offset) => ({
+      aspectRatio: 4 / 3,
+      box: { x: 0.2 + offset, y: 0.1, width: 0.5, height: 0.7 },
+      landmarks: Array.from({ length: 68 }, (_, index) => ({
+        x: index / 100 + offset,
+        y: index / 200,
+      })),
+    });
+    const guide = summarizeGuides([makeGuide(0), makeGuide(0.2), makeGuide(0.1)]);
+    expect(guide.box.x).toBeCloseTo(0.3);
+    expect(guide.landmarks).toHaveLength(68);
+    expect(guide.landmarks[10].x).toBeCloseTo(0.2);
+  });
+
   it('excludes pose and light changes but accepts comparable frames', () => {
     const baseline = {
       rollDegrees: 0,
@@ -46,11 +62,22 @@ describe('realtime temporal measurement helpers', () => {
     expect(compareConditions(baseline, { ...baseline, yawOffset: 0.03 }).ok).toBe(true);
     expect(compareConditions(baseline, { ...baseline, rollDegrees: 7 })).toMatchObject({
       ok: false,
-      reason: 'Return to the baseline pose and framing.',
+      reason: 'Head angle differs from the baseline pose (roll Δ7.0°; limit 4°).',
     });
     expect(compareConditions(baseline, { ...baseline, luma: 0.7 })).toMatchObject({
       ok: false,
-      reason: 'Lighting differs too much from the baseline.',
+      reason: 'Room lighting differs from the baseline (luma Δ0.20; limit 0.10).',
+    });
+    expect(compareConditions(baseline, {
+      ...baseline,
+      boxWidthRatio: 0.6,
+      centerXRatio: 0.7,
+    })).toMatchObject({
+      ok: false,
+      reasons: [
+        'Face size differs from the baseline framing. Move slightly farther from the camera.',
+        'Face position differs from the baseline framing. Re-centre it in the frame.',
+      ],
     });
   });
 
@@ -71,17 +98,23 @@ describe('realtime temporal measurement helpers', () => {
       centerYRatio: 0.5,
       luma: 0.5,
     };
+    const guide = {
+      aspectRatio: 4 / 3,
+      box: { x: 0.2, y: 0.1, width: 0.5, height: 0.7 },
+      landmarks: Array.from({ length: 68 }, () => ({ x: 0.5, y: 0.5 })),
+    };
     collector.start();
-    expect(collector.offer({ ok: true, reason: '', metrics }, [0, 0]).status).toBe('collecting');
+    expect(collector.offer({ ok: true, reason: '', metrics, guide }, [0, 0]).status).toBe('collecting');
     vi.advanceTimersByTime(500);
-    expect(collector.offer({ ok: true, reason: '', metrics }, [0.01, 0]).status).toBe('collecting');
+    expect(collector.offer({ ok: true, reason: '', metrics, guide }, [0.01, 0]).status).toBe('collecting');
     vi.advanceTimersByTime(500);
-    const result = collector.offer({ ok: true, reason: '', metrics }, [0.02, 0]);
+    const result = collector.offer({ ok: true, reason: '', metrics, guide }, [0.02, 0]);
     expect(result.status).toBe('done');
     expect(result.baseline.descriptor).toEqual([0.01, 0]);
     for (const [key, value] of Object.entries(metrics)) {
       expect(result.baseline.conditions[key]).toBeCloseTo(value);
     }
+    expect(result.baseline.guide).toEqual(guide);
   });
 
   it('keeps post-baseline appearance changes measurable', () => {
@@ -116,7 +149,8 @@ describe('realtime temporal measurement helpers', () => {
 
       expect(gate.evaluate(detection)).toMatchObject({
         ok: false,
-        reason: 'Detector confidence is low (0.40). Hold a frontal, steady pose and check glare or shadows.',
+        code: 'confidence',
+        reason: 'Face detected, but confidence is low (0.40; target 0.85). Hold still and check glare or shadows.',
       });
       expect(gate.evaluate(detection, { allowAppearanceChanges: true })).toMatchObject({
         ok: true,
@@ -129,5 +163,70 @@ describe('realtime temporal measurement helpers', () => {
     } finally {
       getContext.mockImplementation(previous);
     }
+  });
+
+  it('reports every failed quality check while keeping a primary reason', () => {
+    const getContext = HTMLCanvasElement.prototype.getContext;
+    const previous = getContext.getMockImplementation();
+    const pixels = new Uint8ClampedArray(96 * 96 * 4).fill(255);
+    getContext.mockImplementation(() => ({
+      drawImage: vi.fn(),
+      getImageData: vi.fn(() => ({ data: pixels })),
+    }));
+
+    try {
+      const video = { videoWidth: 640, videoHeight: 480 };
+      const positions = Array.from({ length: 68 }, () => ({ x: 320, y: 220 }));
+      positions[36] = { x: 256, y: 180 };
+      positions[45] = { x: 384, y: 220 };
+      positions[30] = { x: 380, y: 230 };
+      const gate = createQualityGate(video);
+      const verdict = gate.evaluate({
+        detection: { score: 0.4, box: { x: 0, y: 0, width: 120, height: 120 } },
+        landmarks: { positions },
+      });
+
+      expect(verdict.ok).toBe(false);
+      expect(verdict.code).toBe('confidence');
+      expect(verdict.failures.map(({ code }) => code)).toEqual([
+        'confidence',
+        'scale',
+        'framing',
+        'roll',
+        'yaw',
+        'overexposed',
+      ]);
+      expect(verdict.reasons).toHaveLength(6);
+    } finally {
+      getContext.mockImplementation(previous);
+    }
+  });
+
+  it('uses media time and ignores a repeated local-video frame', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-12T10:00:00Z'));
+    const collector = createBaselineCollector({
+      targetSamples: 2,
+      minDurationMs: 1000,
+      timeoutMs: 5000,
+      maxSpread: 0.2,
+    });
+    const verdict = { ok: true, reason: '', metrics: {} };
+
+    collector.start();
+    expect(collector.offer(verdict, [0, 0], { sourceTimeMs: 2000, id: '2.000' })).toMatchObject({
+      status: 'collecting',
+      accepted: 1,
+    });
+    vi.advanceTimersByTime(1500);
+    expect(collector.offer(verdict, [0, 0], { sourceTimeMs: 2000, id: '2.000' })).toMatchObject({
+      status: 'waiting',
+      accepted: 1,
+      duplicates: 1,
+    });
+    expect(collector.offer(verdict, [0.01, 0], { sourceTimeMs: 3000, id: '3.000' })).toMatchObject({
+      status: 'done',
+      accepted: 2,
+    });
   });
 });

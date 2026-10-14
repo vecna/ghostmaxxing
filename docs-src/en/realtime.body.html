@@ -5,7 +5,7 @@
         <p class="content-page__deck">The visualizer uses only the 2D face-api/dlib path. It excludes sufficiently different pose, framing, and ambient-light frames; it does not mathematically correct them or predict another recognition system.</p>
         <div class="content-page__actions">
           <a class="docs-link docs-link--primary" href="/realtime.html">Open the Visualizer &#8599;</a>
-          <a class="docs-link" href="/docs/jsdoc/tutorials/realtime-fr-method">Read the methodology</a>
+          <a class="docs-link" href="/docs/jsdoc/tutorials/realtime">Read how it works and why</a>
         </div>
       </section>
 
@@ -15,16 +15,16 @@
             <span class="docs-eyebrow">Input</span>
             <h2>Use the camera or a local video.</h2>
             <p>The camera is the default. Open <strong>Source</strong> to select a local video; the file remains on this device and can be paused, sought, and replayed. Changing source invalidates the current baseline.</p>
-            <div class="docs-note"><p><strong>Display</strong> changes only how bright the video looks on screen. The model reads the original video pixels, so this control cannot improve lighting or change a measurement.</p></div>
+            <div class="docs-note"><p><strong>Source → Brightness</strong> changes only how bright the video looks on screen. The model reads the original video pixels, so this control cannot improve lighting or change a measurement.</p></div>
           </section>
 
           <section id="procedure">
             <span class="docs-eyebrow">Session workflow</span>
             <h2>Baseline, application, measurement.</h2>
             <div class="docs-step-list">
-              <div class="docs-step"><span class="docs-step__number">01</span><div><h3>Set the baseline</h3><p>Use a neutral frontal pose and stable light, then press <strong>Set baseline</strong>. Hold still while eight accepted samples are distributed across at least three seconds.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">01</span><div><h3>Set the baseline</h3><p>Use a neutral frontal pose and stable light, then press <strong>Set baseline</strong>. Hold still and follow the centre target while five accepted samples are distributed across at least two seconds.</p></div></div>
               <div class="docs-step"><span class="docs-step__number">02</span><div><h3>Start one makeup step</h3><p>Press <strong>Start makeup step</strong> before applying one change. The timeline marks the event and shades the application interval.</p></div></div>
-              <div class="docs-step"><span class="docs-step__number">03</span><div><h3>Return to comparable conditions</h3><p>Finish the change, then return to the baseline pose, framing, and room light. Leaving the frame during application produces one collapsed gap in the timeline.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">03</span><div><h3>Return to comparable conditions</h3><p>Finish the change, then return to the baseline pose, framing, and room light. Leaving the frame during application produces a marked no-face interval without an invented distance line.</p></div></div>
               <div class="docs-step"><span class="docs-step__number">04</span><div><h3>Measure the step</h3><p>Press <strong>Measure this step</strong> and hold still. Eight comparable frames over at least three seconds become one temporal snapshot.</p></div></div>
               <div class="docs-step"><span class="docs-step__number">05</span><div><h3>Read and repeat</h3><p>Record the distance, baseline noise floor, and step temporal spread together. Use <strong>Start next step</strong> for the next cumulative change.</p></div></div>
             </div>
@@ -45,7 +45,7 @@
               <tbody>
                 <tr><td><strong>Distance timeline</strong></td><td>Smoothed live distance, gaps, phase backgrounds, event lines, measured noise floor, and the cited 0.60 dlib reference.</td><td>That the space between the two reference lines has a calibrated meaning.</td></tr>
                 <tr><td><strong>Equalizer</strong></td><td>Absolute change for each of 128 descriptor coordinates.</td><td>That one row corresponds to a facial region.</td></tr>
-                <tr><td><strong>Radial fingerprint</strong></td><td>All 128 deltas as a live outline and the latest measured step as a filled shape.</td><td>That a spoke or direction identifies a makeup line, cheek, or eyebrow.</td></tr>
+                <tr><td><strong>Radial distribution</strong></td><td>All 128 deltas sorted into 16 ranked RMS bands, with the live reading as an outline and the latest measured step as a filled shape.</td><td>That a spoke or direction identifies a makeup line, cheek, or eyebrow.</td></tr>
                 <tr><td><strong>Step capture</strong></td><td>The sharpest accepted frame from the measurement window, watermarked with local result metadata.</td><td>That one model-local result transfers to a deployed system.</td></tr>
               </tbody>
             </table>

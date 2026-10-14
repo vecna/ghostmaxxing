@@ -42,9 +42,9 @@ comparable, and lets the operator mark and aggregate successive makeup steps.
 The input may be a live camera or a local video. The timeline, equalizer, and
 radial fingerprint are different views of the same descriptor-distance session.
 
-Begin with the [functional guide](/docs/guides/realtime.html), then read the
-[methodology and limits](/docs/jsdoc/tutorials/realtime-fr-method) before interpreting
-the threshold, noise floor, or per-coordinate plots.
+Begin with the [functional guide](/docs/guides/realtime.html), then use the
+[combined operating guide and methodology](/docs/jsdoc/tutorials/realtime) before
+interpreting the threshold, noise floor, or per-coordinate plots.
 
 ## Runtime architecture
 

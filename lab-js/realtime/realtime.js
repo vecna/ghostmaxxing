@@ -25,6 +25,7 @@ import {
 } from './realtime-capture.js';
 import { createGallery } from './realtime-gallery.js';
 import { createRadialGraph } from './realtime-radial.js';
+import { canUseGuideShortcut, createBaselineGuide } from './realtime-guide.js';
 import {
   createSettings,
   guardDestructive,
@@ -58,11 +59,11 @@ const GRAPH_MAX_DISTANCE = 1.25;
 const GRAPH_WINDOW_SECONDS = 60;
 const SAMPLES_PER_SECOND = 3;
 
-/** Long enough that a blink or a head turn does not punch a hole in the trace. */
+/** Long enough that a blink does not put controls into a paused UI state. */
 const NO_FACE_DEBOUNCE_MS = 1500;
 
-const BASELINE_TARGET_SAMPLES = 8;
-const BASELINE_MIN_MS = 3000;
+const BASELINE_TARGET_SAMPLES = 5;
+const BASELINE_MIN_MS = 2000;
 const BASELINE_TIMEOUT_MS = 30000;
 const BASELINE_MAX_SPREAD = 0.2;
 const MEASUREMENT_TARGET_SAMPLES = 8;
@@ -75,6 +76,7 @@ const SPIKE_BEST_MARGIN = 0.05;
 const SPIKE_COOLDOWN_MS = 8000;
 const FRAME_BUFFER_SLOTS = 5;
 const CAPTURE_MAX_WIDTH = 960;
+const STATUS_MIN_DWELL_MS = 1500;
 
 /** Grace period before a hidden tab loses the camera entirely. */
 const HIDDEN_STOP_DELAY_MS = 45000;
@@ -96,6 +98,7 @@ const runtime = {
   running: false,
   streamStopped: false,
   faceMissing: false,
+  timelineNoFace: false,
   lastFaceAt: 0,
   stream: null,
   sourceKind: 'camera',
@@ -107,6 +110,7 @@ const runtime = {
   sessionPhase: SESSION_PHASES.IDLE,
   sessionStep: 0,
   lastMeasurement: null,
+  hasValidDescriptorView: false,
 };
 
 const els = {
@@ -119,12 +123,15 @@ const els = {
   graphCanvas: document.getElementById('distance-graph'),
   graphFollow: document.getElementById('graph-follow'),
   radialCanvas: document.getElementById('radial-graph'),
+  radialValidity: document.getElementById('radial-validity'),
+  guideCanvas: document.getElementById('baseline-guide'),
   legendNoise: document.getElementById('legend-noise'),
   calibrationUi: document.getElementById('calibration-ui'),
   captureRing: document.getElementById('capture-ring'),
   captureRingArc: document.getElementById('capture-ring-arc'),
   captureRingCount: document.getElementById('capture-ring-count'),
   captureHint: document.getElementById('capture-hint'),
+  captureProgressDetail: document.getElementById('capture-progress-detail'),
   btnBaselineStart: document.getElementById('btn-baseline-start'),
   btnBaseline: document.getElementById('btn-baseline'),
   btnShutter: document.getElementById('btn-shutter'),
@@ -139,12 +146,20 @@ const els = {
   sessionResult: document.getElementById('session-result'),
   btnStartChange: document.getElementById('btn-start-change'),
   btnMeasureChange: document.getElementById('btn-measure-change'),
+  btnShowGuide: document.getElementById('btn-show-guide'),
   videoUpload: document.getElementById('video-upload'),
   btnOpenVideo: document.getElementById('btn-open-video'),
   btnUseCamera: document.getElementById('btn-use-camera'),
   sourceState: document.getElementById('source-state'),
   statusPill: document.getElementById('status-pill'),
+  statusText: document.getElementById('status-text'),
+  statusSwatch: document.getElementById('status-swatch'),
+  thresholdHelp: document.getElementById('threshold-help'),
+  thresholdTooltip: document.getElementById('threshold-tooltip'),
   distanceValue: document.getElementById('distance-value'),
+  distanceQuality: document.getElementById('distance-quality'),
+  distanceQualityMain: document.getElementById('distance-quality-main'),
+  distanceQualityDetail: document.getElementById('distance-quality-detail'),
   trackingState: document.getElementById('tracking-state'),
   viewer: document.getElementById('photo-viewer'),
   viewerImage: document.getElementById('viewer-image'),
@@ -163,18 +178,72 @@ let baselineCollector = null;
 let measurementCollector = null;
 let spikeDetector = null;
 let frameBuffer = null;
+let baselineGuide = null;
+
+const statusDisplay = {
+  key: '',
+  quality: 'neutral',
+  shownAt: 0,
+  pending: null,
+  timer: null,
+};
 
 /**
  * Writes the floating status message over the video stage.
  *
  * @param {string} message Message to display.
  * @param {boolean} [warn] Whether the message needs emphasis.
+ * @param {'neutral'|'valid'|'outside-guide'|'lighting'|'no-face'} [quality] Timeline state.
+ * @param {string} [key] Stable state identity; numeric details may vary per frame.
+ * @param {string} [details] Full text exposed as a native tooltip.
  * @returns {void}
  */
-function setStatus(message, warn = false) {
-  if (!els.statusPill) return;
-  els.statusPill.textContent = message;
-  els.statusPill.classList.toggle('is-warn', warn);
+function setStatus(message, warn = false, quality = 'neutral', key = message, details = message) {
+  if (!els.statusPill || !els.statusText || !els.statusSwatch) return;
+
+  const render = (next) => {
+    statusDisplay.key = next.key;
+    statusDisplay.quality = next.quality;
+    statusDisplay.shownAt = Date.now();
+    statusDisplay.pending = null;
+    statusDisplay.timer = null;
+    els.statusText.textContent = next.message;
+    els.statusPill.title = next.details;
+    els.statusPill.classList.toggle('is-warn', next.warn);
+    els.statusSwatch.dataset.quality = next.quality;
+  };
+
+  const next = { message, warn, quality, key, details };
+  if (quality === 'neutral' || !statusDisplay.key || statusDisplay.quality === 'neutral') {
+    if (statusDisplay.timer) window.clearTimeout(statusDisplay.timer);
+    render(next);
+    return;
+  }
+
+  if (statusDisplay.key === key && statusDisplay.quality === quality) {
+    return;
+  }
+
+  const remaining = STATUS_MIN_DWELL_MS - (Date.now() - statusDisplay.shownAt);
+  if (remaining <= 0) {
+    if (statusDisplay.timer) window.clearTimeout(statusDisplay.timer);
+    render(next);
+    return;
+  }
+
+  statusDisplay.pending = next;
+  if (statusDisplay.timer) window.clearTimeout(statusDisplay.timer);
+  statusDisplay.timer = window.setTimeout(() => {
+    if (statusDisplay.pending) render(statusDisplay.pending);
+  }, remaining);
+}
+
+/** Shows or hides the threshold explainer without occupying persistent space. */
+function setThresholdTooltipVisible(visible) {
+  if (!els.thresholdHelp || !els.thresholdTooltip) return;
+  els.thresholdTooltip.hidden = !visible;
+  els.thresholdHelp.setAttribute('aria-expanded', String(visible));
+  if (visible) els.thresholdTooltip.focus();
 }
 
 /**
@@ -196,6 +265,38 @@ function setTrackingState(state) {
 function setDistanceValue(value) {
   if (!els.distanceValue) return;
   els.distanceValue.textContent = Number.isFinite(value) ? value.toFixed(3) : '—';
+}
+
+/** Labels whether the numeric readout is measurement-grade or raw context. */
+function setDistanceQuality(status) {
+  if (!els.distanceQuality || !els.distanceQualityMain || !els.distanceQualityDetail) return;
+  const labels = {
+    valid: { main: 'VALID DISTANCE', detail: '' },
+    'outside-guide': { main: 'NO DISTANCE', detail: 'OUTSIDE GUIDE' },
+    lighting: { main: 'NO DISTANCE', detail: 'LIGHTING CHANGED' },
+    'no-face': { main: 'NO DISTANCE', detail: 'NO FACE' },
+  };
+  const label = labels[status] || labels.valid;
+  els.distanceQualityMain.textContent = label.main;
+  els.distanceQualityDetail.textContent = label.detail;
+  els.distanceQualityDetail.hidden = !label.detail;
+  els.distanceQuality.dataset.quality = status;
+}
+
+/** Marks whether the descriptor panels show a current or frozen valid frame. */
+function setDescriptorValidity(valid) {
+  if (!els.radialValidity) return;
+  if (valid) {
+    runtime.hasValidDescriptorView = true;
+    els.radialValidity.textContent = 'LIVE VALID';
+    els.radialValidity.dataset.validity = 'live';
+  } else if (runtime.hasValidDescriptorView) {
+    els.radialValidity.textContent = 'LAST VALID FRAME';
+    els.radialValidity.dataset.validity = 'stale';
+  } else {
+    els.radialValidity.textContent = 'WAITING FOR VALID FRAME';
+    delete els.radialValidity.dataset.validity;
+  }
 }
 
 /**
@@ -225,9 +326,12 @@ function mediaTimeSuffix() {
 /** Reflects the declared experiment phase in the workflow controls. */
 function syncSessionControls() {
   const hasBaseline = Boolean(runtime.baseline);
+  const applying = runtime.sessionPhase === SESSION_PHASES.APPLYING;
+  const measuring = runtime.sessionPhase === SESSION_PHASES.MEASURING;
   els.sessionBar.hidden = !hasBaseline;
-  els.btnStartChange.disabled = !hasBaseline || runtime.sessionPhase === SESSION_PHASES.MEASURING;
-  els.btnMeasureChange.disabled = runtime.sessionPhase !== SESSION_PHASES.APPLYING;
+  els.btnStartChange.disabled = !hasBaseline || applying || measuring;
+  els.btnStartChange.classList.toggle('is-status', applying);
+  els.btnMeasureChange.disabled = !applying;
 
   if (!hasBaseline) {
     els.sessionStep.textContent = 'Ready';
@@ -345,8 +449,46 @@ function setRingProgress(accepted, target) {
   const ratio = Math.max(0, Math.min(1, accepted / target));
   els.captureRingArc.style.strokeDasharray = String(RING_CIRCUMFERENCE);
   els.captureRingArc.style.strokeDashoffset = String(RING_CIRCUMFERENCE * (1 - ratio));
-  if (els.captureRingCount) els.captureRingCount.textContent = String(accepted);
-  if (els.captureRing) els.captureRing.setAttribute('aria-valuenow', String(accepted));
+  if (els.captureRingCount) els.captureRingCount.textContent = `${accepted}/${target}`;
+  if (els.captureRing) {
+    const previous = Number(els.captureRing.dataset.accepted || 0);
+    els.captureRing.setAttribute('aria-valuenow', String(accepted));
+    els.captureRing.setAttribute('aria-valuemax', String(target));
+    els.captureRing.dataset.accepted = String(accepted);
+    if (accepted > previous) {
+      els.captureRing.classList.remove('is-sampled');
+      void els.captureRing.offsetWidth;
+      els.captureRing.classList.add('is-sampled');
+    }
+  }
+}
+
+/** Returns source-relative timing so a paused video cannot be sampled twice. */
+function currentObservation() {
+  if (runtime.sourceKind !== 'video' || !Number.isFinite(els.video.currentTime)) return {};
+  const sourceTimeMs = els.video.currentTime * 1000;
+  return {
+    sourceTimeMs,
+    id: `${runtime.sourceEpoch}:${sourceTimeMs.toFixed(3)}`,
+  };
+}
+
+/** Updates the diagnostic line below the baseline target. */
+function setCaptureProgressDetail(progress, faceDetected = true) {
+  if (!els.captureProgressDetail || !progress) return;
+  els.captureProgressDetail.hidden = false;
+  const state = faceDetected ? 'face detected' : 'no face';
+  const excluded = progress.rejected || 0;
+  const duplicate = progress.duplicates ? ` · ${progress.duplicates} repeated video frames ignored` : '';
+  els.captureProgressDetail.textContent =
+    `${state} · ${progress.accepted}/${progress.target} clean · ${excluded} excluded${duplicate}`;
+}
+
+/** Joins every failed quality check instead of hiding all but the first one. */
+function qualityMessage(progress) {
+  const reasons = progress?.reasons?.filter(Boolean) || [];
+  if (!reasons.length) return progress?.reason || 'This frame is not usable.';
+  return reasons.join(' Also: ');
 }
 
 /**
@@ -368,6 +510,7 @@ function syncBaselineControls() {
   const hasBaseline = Boolean(runtime.baseline);
   if (els.btnBaseline) els.btnBaseline.hidden = !hasBaseline;
   if (els.btnShutter) els.btnShutter.disabled = !hasBaseline;
+  if (els.btnShowGuide) els.btnShowGuide.disabled = !hasBaseline || !baselineGuide?.hasGuide();
   setCalibrationVisible(!hasBaseline);
   if (els.btnBaselineStart) els.btnBaselineStart.hidden = false;
 
@@ -412,6 +555,7 @@ async function startBaselineCapture() {
   runtime.comparisonExcluded = false;
   runtime.sessionStep = 0;
   runtime.lastMeasurement = null;
+  runtime.hasValidDescriptorView = false;
   setSessionPhase(SESSION_PHASES.IDLE);
   clearBaseline();
 
@@ -423,6 +567,9 @@ async function startBaselineCapture() {
   spikeDetector.reset();
   frameBuffer.clear();
   if (radialGraph) radialGraph.reset();
+  if (baselineGuide) baselineGuide.setGuide(null);
+  setDistanceQuality('valid');
+  setDescriptorValidity(false);
 
   setCalibrationVisible(true);
   if (els.captureRing) els.captureRing.classList.add('is-active');
@@ -432,7 +579,11 @@ async function startBaselineCapture() {
   if (els.legendNoise) els.legendNoise.textContent = '—';
 
   setRingProgress(0, BASELINE_TARGET_SAMPLES);
-  setHint('Hold still and look at the camera.', true);
+  if (els.captureProgressDetail) {
+    els.captureProgressDetail.hidden = false;
+    els.captureProgressDetail.textContent = `face not sampled yet · 0/${BASELINE_TARGET_SAMPLES} clean · 0 excluded`;
+  }
+  setHint('Keep your face still and look at the centre dot for 2 seconds.', true);
   setStatus('Capturing baseline…');
   baselineCollector.start();
 }
@@ -462,9 +613,11 @@ function adoptBaseline(baseline, restored = false) {
   runtime.appState = APP_STATES.TRACKING;
   runtime.distanceBuffer = [];
   runtime.faceMissing = false;
+  runtime.timelineNoFace = false;
   runtime.comparisonExcluded = false;
   runtime.sessionStep = 0;
   runtime.lastMeasurement = null;
+  runtime.hasValidDescriptorView = false;
   setSessionPhase(SESSION_PHASES.READY);
 
   setTrackingState(APP_STATES.TRACKING);
@@ -473,15 +626,22 @@ function adoptBaseline(baseline, restored = false) {
   spikeDetector.reset();
   frameBuffer.clear();
   if (radialGraph) radialGraph.reset();
+  if (baselineGuide) {
+    baselineGuide.setGuide(baseline.guide);
+    baselineGuide.show();
+  }
+  setDistanceQuality('valid');
+  setDescriptorValidity(false);
 
   if (els.captureRing) els.captureRing.classList.remove('is-active');
+  if (els.captureProgressDetail) els.captureProgressDetail.hidden = true;
   syncBaselineControls();
 
   if (restored) {
     const age = formatDuration(Date.now() - baseline.capturedAt);
     setStatus(`Baseline restored, captured ${age} ago. Noise floor ${baseline.noiseFloor.toFixed(3)}.`);
   } else {
-    setStatus(`Baseline set. Noise floor ${baseline.noiseFloor.toFixed(3)} — anything below that is not a result.`);
+    setStatus(`Baseline set. Noise floor ${baseline.noiseFloor.toFixed(3)} — readings below it are within baseline variation.`);
   }
 }
 
@@ -496,6 +656,7 @@ function deleteBaseline() {
   runtime.comparisonExcluded = false;
   runtime.sessionStep = 0;
   runtime.lastMeasurement = null;
+  runtime.hasValidDescriptorView = false;
   setSessionPhase(SESSION_PHASES.IDLE);
   clearBaseline();
   baselineCollector.cancel();
@@ -508,8 +669,12 @@ function deleteBaseline() {
   spikeDetector.reset();
   frameBuffer.clear();
   if (radialGraph) radialGraph.reset();
+  if (baselineGuide) baselineGuide.setGuide(null);
+  setDistanceQuality('valid');
+  setDescriptorValidity(false);
 
   if (els.captureRing) els.captureRing.classList.remove('is-active');
+  if (els.captureProgressDetail) els.captureProgressDetail.hidden = true;
   syncBaselineControls();
   setHint('Capture a reference of your bare face before you start.');
   setStatus('Baseline deleted. Saved captures are kept.');
@@ -523,16 +688,21 @@ function deleteBaseline() {
  */
 function processBaselineFrame(detection) {
   const verdict = qualityGate.evaluate(detection);
-  const progress = baselineCollector.offer(verdict, detection.descriptor);
+  const progress = baselineCollector.offer(verdict, detection.descriptor, currentObservation());
 
   setRingProgress(progress.accepted, progress.target);
+  setCaptureProgressDetail(progress, true);
 
   if (progress.status === 'blocked') {
+    setHint(qualityMessage(progress), true);
+    return;
+  }
+  if (progress.status === 'waiting') {
     setHint(progress.reason, true);
     return;
   }
   if (progress.status === 'collecting') {
-    setHint('Hold still and look at the camera.', true);
+    setHint('Keep your face still and look at the centre dot.', true);
     return;
   }
   if (progress.status === 'failed') {
@@ -641,46 +811,61 @@ async function processTrackingFrame(detection) {
   const quality = qualityGate.evaluate(detection, { allowAppearanceChanges: true });
   const comparable = quality.ok
     ? compareConditions(runtime.baseline.conditions, quality.metrics)
-    : { ok: false, reason: quality.reason };
+    : quality;
+  const distance = euclidean(runtime.baseline.descriptor, detection.descriptor);
 
   if (!comparable.ok) {
-    runtime.distanceBuffer = [];
+    const exclusionReason = qualityMessage(comparable);
+    const hasLightDifference = comparable.reasons?.some((reason) =>
+      /light|luma/i.test(reason),
+    );
+    const hasGeometryDifference = comparable.reasons?.some((reason) =>
+      !/light|luma/i.test(reason),
+    );
+    const timelineStatus = hasLightDifference && !hasGeometryDifference
+      ? 'lighting'
+      : 'outside-guide';
+    runtime.distanceBuffer.push({ value: distance, status: timelineStatus });
     runtime.comparisonExcluded = true;
-    resetEqualizer();
-    setDistanceValue(Number.NaN);
+    setDistanceValue(distance);
+    setDistanceQuality(timelineStatus);
+    setDescriptorValidity(false);
     els.btnShutter.disabled = true;
-    graph.beginGap(Date.now(), 'pose/light excluded');
+    setStatus(
+      comparable.reason || exclusionReason,
+      true,
+      timelineStatus,
+      `excluded:${timelineStatus}`,
+      `${exclusionReason} Raw distance is shown, but this frame is excluded from measurements.`,
+    );
 
     if (runtime.sessionPhase === SESSION_PHASES.MEASURING) {
       const progress = measurementCollector.offer(
-        { ok: false, reason: comparable.reason },
+        { ok: false, reason: comparable.reason, reasons: comparable.reasons },
         detection.descriptor,
+        currentObservation(),
       );
-      els.sessionResult.textContent = `Waiting for comparable frames: ${comparable.reason}`;
+      els.sessionResult.textContent = `Waiting for comparable frames: ${exclusionReason}`;
       if (progress.status === 'failed') {
         measurementCollector.cancel();
         setSessionPhase(SESSION_PHASES.APPLYING);
         setStatus(`Measurement paused. ${progress.reason}`, true);
       }
-    } else {
-      setStatus(`${comparable.reason} This frame is excluded from the measurement.`, true);
     }
     return;
   }
 
-  if (runtime.comparisonExcluded) {
-    runtime.comparisonExcluded = false;
-    graph.endGap(Date.now());
-  }
+  runtime.comparisonExcluded = false;
   els.btnShutter.disabled = false;
 
-  const distance = euclidean(runtime.baseline.descriptor, detection.descriptor);
-  runtime.distanceBuffer.push(distance);
+  runtime.distanceBuffer.push({ value: distance, status: 'valid' });
   setDistanceValue(distance);
+  setDistanceQuality('valid');
   updateEqualizer(runtime.baseline.descriptor, detection.descriptor);
+  setDescriptorValidity(true);
 
   if (runtime.sessionPhase === SESSION_PHASES.MEASURING) {
-    const progress = measurementCollector.offer(quality, detection.descriptor);
+    const progress = measurementCollector.offer(quality, detection.descriptor, currentObservation());
     if (quality.ok) frameBuffer.push(quality.sharpness, distance);
     if (progress.status === 'collecting') {
       els.sessionResult.textContent = `Comparable samples ${progress.accepted}/${progress.target}`;
@@ -694,11 +879,26 @@ async function processTrackingFrame(detection) {
   }
 
   if (distance > MATCH_THRESHOLD) {
-    setStatus(`Past the 0.60 match threshold — reads as a different person.`);
+    setStatus(
+      'Past the 0.60 match threshold — reads as a different person.',
+      false,
+      'valid',
+      'valid:threshold',
+    );
   } else if (distance <= runtime.baseline.noiseFloor) {
-    setStatus('Inside the noise floor — nothing has changed yet.');
+    setStatus(
+      'Inside baseline variation — no change is distinguishable from the baseline noise.',
+      false,
+      'valid',
+      'valid:noise',
+    );
   } else {
-    setStatus(`Above the noise floor, below 0.60 — still reads as a match.`);
+    setStatus(
+      'Above the noise floor, below 0.60 — still reads as a match.',
+      false,
+      'valid',
+      'valid:between',
+    );
   }
 
   // Declared application intervals use an explicit temporal snapshot. Automatic
@@ -767,28 +967,32 @@ async function captureNow() {
 /**
  * Handles a frame in which no face was found.
  *
- * After the debounce the timeline stops advancing entirely and the absence is
- * drawn as one collapsed block. Nothing is sampled until a face returns, so
- * stepping away to apply makeup costs no scroll and produces no readings.
+ * The timeline marks absence immediately with a no-value quality tick. The UI
+ * waits through a short debounce before disabling controls or announcing a
+ * pause, so a blink remains harmless without erasing elapsed time.
  *
  * @returns {void}
  */
 function processNoFace() {
   const now = Date.now();
+  runtime.timelineNoFace = true;
+  runtime.distanceBuffer = [];
   if (!runtime.lastFaceAt) runtime.lastFaceAt = now;
   if (now - runtime.lastFaceAt < NO_FACE_DEBOUNCE_MS) return;
 
   if (!runtime.faceMissing) {
     runtime.faceMissing = true;
-    runtime.distanceBuffer = [];
-    resetEqualizer();
-    setDistanceValue(0);
+    setDistanceValue(Number.NaN);
+    setDistanceQuality('no-face');
+    setDescriptorValidity(false);
     if (els.btnShutter) els.btnShutter.disabled = true;
-    setStatus('No face — measurement paused.');
-  }
-
-  if (runtime.appState === APP_STATES.TRACKING) {
-    graph.beginGap(runtime.lastFaceAt, 'no face');
+    if (runtime.appState === APP_STATES.CAPTURING) {
+      setStatus('No face detected — baseline capture is waiting.');
+    } else if (runtime.appState === APP_STATES.TRACKING) {
+      setStatus('No face — measurement paused.', false, 'no-face', 'no-face');
+    } else {
+      setStatus('No face detected. Enter the frame, then set a baseline.');
+    }
   }
 
   if (runtime.sessionPhase === SESSION_PHASES.MEASURING) {
@@ -796,7 +1000,23 @@ function processNoFace() {
   }
 
   if (runtime.appState === APP_STATES.CAPTURING) {
-    setHint('Step into frame.', true);
+    const progress = baselineCollector.offer(
+      { ok: false, reason: 'No face detected.', reasons: ['No face detected.'] },
+      null,
+      currentObservation(),
+    );
+    setRingProgress(progress.accepted, progress.target);
+    setCaptureProgressDetail(progress, false);
+    if (progress.status === 'failed') {
+      if (els.captureRing) els.captureRing.classList.remove('is-active');
+      if (els.btnBaselineStart) els.btnBaselineStart.hidden = false;
+      runtime.appState = APP_STATES.NO_BASELINE;
+      setTrackingState(APP_STATES.NO_BASELINE);
+      setHint(`Could not get a clean read. ${progress.reason}`, true);
+      setStatus('Baseline capture abandoned.', true);
+    } else {
+      setHint('No face detected. Centre your face on the target and hold still.', true);
+    }
   }
 }
 
@@ -807,10 +1027,10 @@ function processNoFace() {
  */
 function processFaceReturned() {
   const now = Date.now();
+  runtime.timelineNoFace = false;
   if (runtime.faceMissing) {
     runtime.faceMissing = false;
-    graph.endGap(now);
-    setStatus('Face back — reading resuming.');
+    setStatus('Face back — reading resuming.', false, 'valid', 'face-returned');
   }
   runtime.lastFaceAt = now;
 }
@@ -870,16 +1090,18 @@ async function onFrame() {
  */
 function flushDistanceBuffer() {
   if (runtime.appState !== APP_STATES.TRACKING) return;
-  if (runtime.faceMissing) {
-    graph.draw();
+  if (runtime.timelineNoFace) {
+    graph.pushSample(Date.now(), null, runtime.sessionPhase, 'no-face');
     return;
   }
   if (!runtime.distanceBuffer.length) return;
 
-  const sum = runtime.distanceBuffer.reduce((acc, value) => acc + value, 0);
-  const average = sum / runtime.distanceBuffer.length;
+  const status = runtime.distanceBuffer[runtime.distanceBuffer.length - 1].status;
+  const matching = runtime.distanceBuffer.filter((reading) => reading.status === status);
+  const sum = matching.reduce((acc, reading) => acc + reading.value, 0);
+  const average = sum / matching.length;
   runtime.distanceBuffer = [];
-  graph.pushSample(Date.now(), average, runtime.sessionPhase);
+  graph.pushSample(Date.now(), average, runtime.sessionPhase, status);
 }
 
 /**
@@ -1101,10 +1323,14 @@ async function handleVisible() {
 function teardown() {
   stopLoops();
   stopStream();
+  if (statusDisplay.timer) window.clearTimeout(statusDisplay.timer);
+  statusDisplay.timer = null;
+  statusDisplay.pending = null;
   if (runtime.hiddenStopTimerId) window.clearTimeout(runtime.hiddenStopTimerId);
   runtime.hiddenStopTimerId = null;
   if (graph) graph.destroy();
   if (radialGraph) radialGraph.destroy();
+  if (baselineGuide) baselineGuide.destroy();
   releaseLocalVideo();
 }
 
@@ -1118,6 +1344,15 @@ function bindListeners() {
   els.btnStartChange.addEventListener('click', startMakeupStep);
   els.btnMeasureChange.addEventListener('click', startStepMeasurement);
   els.btnOpenVideo.addEventListener('click', () => els.videoUpload.click());
+  els.btnShowGuide.addEventListener('click', () => baselineGuide?.show());
+
+  for (const toggle of document.querySelectorAll('.quality-toggle')) {
+    toggle.addEventListener('click', () => {
+      const visible = toggle.getAttribute('aria-pressed') !== 'true';
+      toggle.setAttribute('aria-pressed', String(visible));
+      graph.setQualityVisible(toggle.dataset.quality, visible);
+    });
+  }
 
   els.videoUpload.addEventListener('change', async () => {
     const [file] = els.videoUpload.files || [];
@@ -1133,8 +1368,16 @@ function bindListeners() {
   });
   els.btnUseCamera.addEventListener('click', useCameraSource);
 
-  guardDestructive(els.btnBaseline, 'Delete baseline', 'Delete — sure?', deleteBaseline);
+  guardDestructive(els.btnBaseline, 'Reset baseline', 'Reset — sure?', deleteBaseline);
   guardDestructive(els.btnDeleteAll, 'Delete all', 'Delete all — sure?', () => gallery.deleteAll());
+
+  els.thresholdHelp.addEventListener('click', () => {
+    setThresholdTooltipVisible(els.thresholdTooltip.hidden);
+  });
+  els.thresholdTooltip.addEventListener('click', () => setThresholdTooltipVisible(false));
+  els.thresholdTooltip.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') setThresholdTooltipVisible(false);
+  });
 
   els.btnShutter.addEventListener('click', captureNow);
   els.btnDownloadAll.addEventListener('click', () => gallery.downloadAll());
@@ -1146,6 +1389,16 @@ function bindListeners() {
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && gallery.isOpen()) gallery.close();
+    if (event.key === 'Escape') setThresholdTooltipVisible(false);
+    if (
+      event.code === 'Space' &&
+      !event.repeat &&
+      runtime.baseline &&
+      canUseGuideShortcut(event.target)
+    ) {
+      event.preventDefault();
+      baselineGuide?.show();
+    }
   });
 
   document.addEventListener('visibilitychange', () => {
@@ -1179,8 +1432,14 @@ window.gstmxxRealtime = {
       faceMissing: runtime.faceMissing,
       distanceBufferLength: runtime.distanceBuffer.length,
       sampleCount: stats.samples,
+      visibleSampleCount: stats.visibleSamples,
+      timelineVirtualHeight: stats.virtualHeight,
       gapCount: stats.gaps,
       eventCount: stats.events,
+      qualityCounts: stats.quality,
+      qualityVisible: stats.qualityVisible,
+      statusQuality: statusDisplay.quality,
+      statusKey: statusDisplay.key,
       following: stats.following,
       captureCount: gallery ? gallery.size() : 0,
       running: runtime.running,
@@ -1253,6 +1512,12 @@ export async function initRealtime() {
   radialGraph = createRadialGraph({
     canvasEl: els.radialCanvas,
     maxDelta: MAX_DELTA,
+  });
+
+  baselineGuide = createBaselineGuide({
+    canvasEl: els.guideCanvas,
+    videoEl: els.video,
+    stageEl: els.centerView,
   });
 
   gallery = createGallery({

@@ -17,7 +17,7 @@
 
 const SETTINGS_KEY = 'gstmxx.realtime.settings';
 const BASELINE_KEY = 'gstmxx.realtime.baseline';
-const BASELINE_FORMAT = 2;
+const BASELINE_FORMAT = 3;
 const CONDITION_KEYS = [
   'rollDegrees',
   'yawOffset',
@@ -69,9 +69,9 @@ export function saveSettings(settings) {
  * Reads a persisted baseline.
  *
  * The baseline is a biometric template. It never leaves the device, and
- * "Delete baseline" removes it outright rather than flipping a flag.
+ * "Reset baseline" removes it outright rather than flipping a flag.
  *
- * @returns {{descriptor: number[], noiseFloor: number, capturedAt: number, sourceKind: 'camera', conditions: object}|null} Stored baseline.
+ * @returns {{descriptor: number[], noiseFloor: number, capturedAt: number, sourceKind: 'camera', conditions: object, guide: object}|null} Stored baseline.
  */
 export function loadBaseline() {
   try {
@@ -85,6 +85,17 @@ export function loadBaseline() {
     if (!Number.isFinite(parsed.capturedAt)) return null;
     if (parsed.sourceKind !== 'camera') return null;
     if (!parsed.conditions || CONDITION_KEYS.some((key) => !Number.isFinite(parsed.conditions[key]))) {
+      return null;
+    }
+    if (
+      !parsed.guide ||
+      !Number.isFinite(parsed.guide.aspectRatio) ||
+      !parsed.guide.box ||
+      ['x', 'y', 'width', 'height'].some((key) => !Number.isFinite(parsed.guide.box[key])) ||
+      !Array.isArray(parsed.guide.landmarks) ||
+      parsed.guide.landmarks.length !== 68 ||
+      parsed.guide.landmarks.some((point) => !Number.isFinite(point?.x) || !Number.isFinite(point?.y))
+    ) {
       return null;
     }
     return parsed;

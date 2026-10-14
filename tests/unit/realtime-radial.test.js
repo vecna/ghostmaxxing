@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createRadialGraph, radialPoints } from '../../lab-js/realtime/realtime-radial.js';
+import {
+  createRadialGraph,
+  radialPoints,
+  rankedDeltaBands,
+} from '../../lab-js/realtime/realtime-radial.js';
 
 describe('realtime radial fingerprint', () => {
   afterEach(() => vi.unstubAllGlobals());
@@ -27,7 +31,16 @@ describe('realtime radial fingerprint', () => {
     expect(radialPoints([])).toEqual([]);
   });
 
-  it('draws live and measured 128-coordinate fingerprints and releases its observer', () => {
+  it('sorts 128 absolute deltas into 16 RMS distribution bands', () => {
+    const values = Array.from({ length: 128 }, (_, index) => index % 2 ? -index : index);
+    const bands = rankedDeltaBands(values);
+    expect(bands).toHaveLength(16);
+    expect(bands[0]).toBeCloseTo(Math.sqrt((0 ** 2 + 1 ** 2 + 2 ** 2 + 3 ** 2 + 4 ** 2 + 5 ** 2 + 6 ** 2 + 7 ** 2) / 8));
+    expect(bands[15]).toBeGreaterThan(bands[14]);
+    expect(rankedDeltaBands([])).toEqual([]);
+  });
+
+  it('draws live and measured ranked distributions and releases its observer', () => {
     const disconnect = vi.fn();
     const observe = vi.fn();
     vi.stubGlobal('ResizeObserver', class ResizeObserver {

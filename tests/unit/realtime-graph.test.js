@@ -62,12 +62,26 @@ describe('realtime timeline phases', () => {
 
     graph.pushSample(1000, 0.1, 'applying');
     graph.addEvent(2000, 'measuring', 'step one');
-    graph.pushSample(3000, 0.2, 'measuring');
+    graph.pushSample(3000, 0.2, 'measuring', 'outside-guide');
+    graph.pushSample(3500, null, 'measuring', 'no-face');
     graph.beginGap(4000, 'pose/light excluded');
     graph.beginGap(4500, 'pose/light excluded');
     graph.endGap(5000);
 
-    expect(graph.stats()).toEqual({ samples: 2, gaps: 1, events: 1, following: true });
+    const beforeFilter = graph.stats();
+    expect(beforeFilter).toMatchObject({
+      samples: 3,
+      visibleSamples: 3,
+      gaps: 1,
+      events: 1,
+      following: true,
+      quality: { valid: 1, 'outside-guide': 1, lighting: 0, 'no-face': 1 },
+    });
+    graph.setQualityVisible('outside-guide', false);
+    const afterFilter = graph.stats();
+    expect(afterFilter.qualityVisible['outside-guide']).toBe(false);
+    expect(afterFilter.visibleSamples).toBe(2);
+    expect(afterFilter.virtualHeight).toBeLessThan(beforeFilter.virtualHeight);
     const labels = ctx.fillText.mock.calls.map(([label]) => label);
     expect(labels).toContain('step one');
     expect(labels.some((label) => String(label).startsWith('step one ·'))).toBe(false);

@@ -42,7 +42,10 @@
 
     <section id="graph-container" aria-label="Descriptor distance over time">
       <header class="panel-header">
-        <p class="panel-title">Distance</p>
+        <div id="distance-quality" class="distance-quality" data-quality="valid">
+          <strong id="distance-quality-main">VALID DISTANCE</strong>
+          <small id="distance-quality-detail" hidden></small>
+        </div>
         <p class="panel-value"><span id="distance-value">0.000</span></p>
       </header>
 
@@ -62,33 +65,66 @@
           <span class="legend-swatch legend-swatch--noise" aria-hidden="true"></span>
           <span>Noise floor <span class="legend-value" id="legend-noise">—</span></span>
         </div>
+        <div class="quality-legend" aria-label="Timeline quality filters">
+          <button class="quality-toggle" type="button" data-quality="outside-guide" aria-pressed="true">
+            <i class="quality-swatch quality-swatch--outside" aria-hidden="true"></i>Outside baseline guide
+          </button>
+          <button class="quality-toggle" type="button" data-quality="lighting" aria-pressed="true">
+            <i class="quality-swatch quality-swatch--lighting" aria-hidden="true"></i>Lighting changed
+          </button>
+          <button class="quality-toggle" type="button" data-quality="no-face" aria-pressed="true">
+            <i class="quality-swatch quality-swatch--no-face" aria-hidden="true"></i>No face
+          </button>
+        </div>
         <div class="legend-row">
           <span class="legend-swatch legend-swatch--threshold" aria-hidden="true"></span>
           <span>Match threshold <span class="legend-value">0.60</span></span>
+          <button
+            id="threshold-help"
+            class="legend-help"
+            type="button"
+            aria-label="Explain the match threshold and noise floor"
+            aria-controls="threshold-tooltip"
+            aria-expanded="false"
+          >?</button>
         </div>
-        <span class="legend-note" id="legend-explainer">
-          The noise floor is measured from your own baseline capture: below it,
-          nothing changed. 0.60 is dlib's default on the LFW benchmark — a
-          benchmark's number, not a property of your face. The space between
-          them is not calibrated.
-        </span>
+        <div
+          class="threshold-tooltip"
+          id="threshold-tooltip"
+          role="tooltip"
+          tabindex="0"
+          title="Click to close"
+          hidden
+        >
+          The noise floor is measured from your own baseline capture: a reading
+          below it is within the variation observed during that capture. 0.60
+          is dlib's default on the LFW benchmark — a benchmark's number, not a
+          property of your face. The space between them is not calibrated.
+          <span class="threshold-tooltip__close">Click to close</span>
+        </div>
       </div>
     </section>
 
     <section id="center-view" aria-label="Camera or local video, baseline capture and controls">
       <video id="webcam" class="source-camera" autoplay muted playsinline></video>
+      <canvas id="baseline-guide" aria-hidden="true"></canvas>
       <div class="video-scrim"></div>
-      <div id="status-pill" aria-live="polite">Loading models…</div>
+      <div id="status-pill" aria-live="polite">
+        <i id="status-swatch" data-quality="neutral" aria-hidden="true"></i>
+        <span id="status-text">Loading models…</span>
+      </div>
 
       <div id="calibration-ui">
-        <div id="capture-ring" class="capture-ring" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" aria-label="Baseline samples collected">
+        <div id="capture-ring" class="capture-ring" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-label="Clean baseline samples collected">
           <svg viewBox="0 0 116 116" aria-hidden="true">
             <circle class="capture-ring__track" cx="58" cy="58" r="54" />
             <circle class="capture-ring__arc" id="capture-ring-arc" cx="58" cy="58" r="54" />
           </svg>
-          <span class="capture-ring__count" id="capture-ring-count">0</span>
+          <span class="capture-ring__target" aria-hidden="true"><i></i></span>
+          <span class="capture-ring__count" id="capture-ring-count">0/5</span>
         </div>
         <p class="capture-hint" id="capture-hint">Capture a reference of your bare face before you start.</p>
+        <p class="capture-meta" id="capture-progress-detail" aria-live="polite" hidden></p>
         <button id="btn-baseline-start" class="stage-btn" type="button">Set baseline</button>
       </div>
 
@@ -113,6 +149,7 @@
         </div>
         <button id="btn-start-change" class="sb-btn" type="button" disabled>Start makeup step</button>
         <button id="btn-measure-change" class="sb-btn sessionbar__measure" type="button" disabled>Measure this step</button>
+        <button id="btn-show-guide" class="sb-btn sessionbar__guide" type="button" aria-keyshortcuts="Space" disabled>Show guide <kbd>Space</kbd></button>
       </div>
 
       <div id="settings-bar" class="settingsbar" aria-label="View and capture controls">
@@ -121,26 +158,27 @@
             <summary class="sb-btn">Source</summary>
             <div class="source-menu__popover">
               <span class="source-menu__state">Using <strong id="source-state">camera</strong></span>
+              <div class="source-menu__control">
+                <label class="source-menu__control-label" for="brightness-input">
+                  Brightness <output id="brightness-value">0.85</output>
+                </label>
+                <input
+                  id="brightness-input"
+                  type="range"
+                  min="0.4"
+                  max="1.4"
+                  step="0.05"
+                  value="0.85"
+                  title="Display brightness only. This does not reach the detector and cannot change a measurement."
+                />
+              </div>
               <button id="btn-open-video" class="sb-btn" type="button">Open local video</button>
               <input id="video-upload" class="source-file" type="file" accept="video/*,.mkv" />
               <button id="btn-use-camera" class="sb-btn" type="button" hidden>Use camera</button>
+              <button id="btn-baseline" class="sb-btn sb-btn--warn" type="button" hidden>Reset baseline</button>
               <span class="source-menu__note">The file stays on this device.</span>
             </div>
           </details>
-        </div>
-
-        <div class="sb-group">
-          <label class="sb-label" for="brightness-input">Display</label>
-          <input
-            id="brightness-input"
-            type="range"
-            min="0.4"
-            max="1.4"
-            step="0.05"
-            value="0.85"
-            title="Display brightness only. This does not reach the detector and cannot change a measurement."
-          />
-          <span class="sb-value" id="brightness-value">0.85</span>
         </div>
 
         <div class="sb-group">
@@ -163,10 +201,6 @@
           <button id="btn-download-all" class="sb-btn" type="button" disabled>Download all</button>
           <button id="btn-delete-all" class="sb-btn sb-btn--warn" type="button" disabled>Delete all</button>
         </div>
-
-        <div class="sb-group">
-          <button id="btn-baseline" class="sb-btn sb-btn--warn" type="button" hidden>Delete baseline</button>
-        </div>
       </div>
     </section>
 
@@ -176,13 +210,14 @@
         <p class="panel-value"><span id="tracking-state">NO BASELINE</span></p>
       </header>
       <div class="panel-body descriptor-body">
-        <section class="radial-panel" aria-label="All 128 descriptor deltas as a radial fingerprint">
+        <section class="radial-panel" aria-label="Ranked distribution of all 128 descriptor deltas">
+          <span id="radial-validity" class="radial-validity">WAITING FOR VALID FRAME</span>
           <canvas id="radial-graph"></canvas>
           <div class="radial-legend">
             <span><i class="radial-live"></i>live</span>
             <span><i class="radial-measured"></i>measured step</span>
           </div>
-          <p>128 latent coordinates; not facial regions.</p>
+          <p>16 ranked RMS bands from 128 latent deltas; distribution, not facial regions.</p>
         </section>
         <div class="equalizer-panel">
           <div id="embedding-bar" aria-label="128 descriptor rows"></div>
