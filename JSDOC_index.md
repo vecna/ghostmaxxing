@@ -1,7 +1,7 @@
 # Ghostmaxxing technical reference
 
-> Version 0.9.11  
-> Last updated: September 2026  
+> Version 0.9.11
+> Last updated: October 2026
 > Functional documentation: [use the tools and understand the results](/docs/)
 
 Ghostmaxxing is a static browser lab for testing how selected face-analysis models respond to visible interventions. This site is the generated developer reference. It documents runtime modules, functions, parameters, events, and the Ghostyle extension contract.
@@ -12,7 +12,7 @@ If you want to operate an interface, begin with the functional guides. If you ar
 
 | Question | Documentation |
 |---|---|
-| How do I use the Lab, Video Loader, Transfer, or Face Brush? | [Functional guides](/docs/) |
+| How do I use the Lab, Video Loader, Latent Space Visualizer, or Face Brush? | [Functional guides](/docs/) |
 | What does a match state, threshold, descriptor, or landmark mean? | [Understand the results](/docs/understand/) and [technical glossary](/docs/glossary/) |
 | How do I create a Ghostyle? | [Ghostyle Authoring Guide](tutorial-ghostyle-authoring.html), then [`ghostyles/00-template.js`](module-ghostyles_00-template.html) |
 | Which module, function, parameter, or event do I need? | Generated API reference in this site's sidebar |
@@ -34,7 +34,17 @@ Use it when exact media time matters more than a live webcam.
 
 Use it to explore appearance transfer. A visually successful transfer is not evidence that the target image evades recognition.
 
-`realtime.html` is not part of the initial released documentation set.
+### Latent Space Visualizer
+
+`realtime.html` loads `lab-js/realtime/realtime.js`. It captures a temporal 2D
+face-api baseline, filters frames whose 2D pose, framing, or ambient light is not
+comparable, and lets the operator mark and aggregate successive makeup steps.
+The input may be a live camera or a local video. The timeline, equalizer, and
+radial fingerprint are different views of the same descriptor-distance session.
+
+Begin with the [functional guide](/docs/guides/realtime.html), then use the
+[combined operating guide and methodology](/docs/jsdoc/tutorials/realtime) before
+interpreting the threshold, noise floor, or per-coordinate plots.
 
 ## Runtime architecture
 
@@ -52,6 +62,13 @@ lab.html
 
 loader.html
   └─ lab-js/loader.js
+
+realtime.html
+  └─ lab-js/realtime/realtime.js
+       ├─ realtime-capture.js (quality, temporal collectors, spike/frame buffer)
+       ├─ realtime-graph.js + realtime-radial.js
+       ├─ realtime-settings.js
+       └─ realtime-gallery.js
 
 ```
 

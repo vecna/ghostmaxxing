@@ -687,6 +687,7 @@ FOOTER = """  <footer class="gm-site-footer">
         <a href="/docs/">Technical documentation</a>
         <a href="https://github.com/vecna/ghostmaxxing">Code</a>
         <a href="/loader.html">Video Loader</a>
+        <a href="/realtime.html">Latent Space Visualizer</a>
       </div>
     </div>
   </footer>"""

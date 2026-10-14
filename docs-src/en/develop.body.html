@@ -22,6 +22,7 @@
                 <tr><td>Call or integrate a runtime module</td><td><a href="/docs/jsdoc/">Generated JSDoc</a></td><td><a href="https://github.com/vecna/ghostmaxxing/tree/main/lab-js"><code>lab-js/</code> source</a></td></tr>
                 <tr><td>Understand imports, pages, and events</td><td><a href="/codemap/codemap.html">Code map</a></td><td>Module headers and event-bus source</td></tr>
                 <tr><td>Use the public browser API</td><td><a href="https://github.com/vecna/ghostmaxxing/blob/main/lab-js/Ghostmaxxing.d.ts"><code>Ghostmaxxing.d.ts</code></a></td><td><code>window.gstmxx</code> in <code>main.js</code></td></tr>
+                <tr><td>Run and inspect the realtime measurement method</td><td><a href="/docs/jsdoc/tutorials/realtime">Realtime guide and methodology</a></td><td><a href="https://github.com/vecna/ghostmaxxing/tree/main/lab-js/realtime"><code>lab-js/realtime/</code> source</a></td></tr>
                 <tr><td>Regenerate or package the project</td><td><a href="/docs/maintain/">Maintainer guide</a></td><td><a href="https://github.com/vecna/ghostmaxxing/tree/main/scripts-dev"><code>scripts-dev/</code></a></td></tr>
               </tbody>
             </table>
@@ -36,14 +37,9 @@
               <tbody>
                 <tr><td><code>lab.html</code></td><td><code>lab-js/main.js</code></td><td>Live camera, local baseline, 2D and mesh views, Ghostyles, composite analysis.</td></tr>
                 <tr><td><code>loader.html</code></td><td><code>lab-js/loader.js</code></td><td>Repeatable comparison of frames from a local MP4.</td></tr>
+                <tr><td><code>realtime.html</code></td><td><code>lab-js/realtime/realtime.js</code></td><td>Temporal baseline and operator-declared makeup-step measurements from a camera or local video.</td></tr>
               </tbody>
             </table>
-            <!--
-            <div class="docs-note">
-              <p>
-                <code>realtime.html</code> is not part of the initial released documentation set. Add it only when its release contract and user guide are ready.
-              </p>
-            </div> -->
           </section>
 
           <section id="lab-runtime">
@@ -58,6 +54,7 @@
                 <tr><td>Mesh and visual embedding</td><td><code>mediapipe-loop.js</code>, <code>engine-3d.js</code></td><td>478-point geometry and the separate experimental ImageEmbedder path.</td></tr>
                 <tr><td>Composite feedback</td><td><code>auto-find-loop.js</code>, <code>bbox-overlay.js</code>, <code>analyze-panel.js</code></td><td>Slower modified-image pass, live scaffold, status, metrics, report text.</td></tr>
                 <tr><td>Extensions</td><td><code>ghostyles-manager.js</code>, <code>plugins3d-loader.js</code>, <code>ghostyle3d-uv-renderer.js</code></td><td>Load 2D, UV, and hybrid Ghostyles and expose their controls.</td></tr>
+                <tr><td>Realtime experiment</td><td><code>realtime.js</code>, <code>realtime-capture.js</code>, <code>realtime-graph.js</code>, <code>realtime-radial.js</code></td><td>2D-only temporal capture, comparable-condition filtering, phase timeline, and 128-value descriptor views.</td></tr>
               </tbody>
             </table>
           </section>

@@ -112,6 +112,7 @@ function siteFooter() {
         <a href="/docs/jsdoc/">API reference</a>
         <a href="https://github.com/vecna/ghostmaxxing">Code</a>
         <a href="/loader.html">Video Loader</a>
+        <a href="/realtime.html">Latent Space Visualizer</a>
       </div>
       <p class="docs-footer-meta">Version ${PROJECT_VERSION} · Last updated: ${LAST_UPDATED}</p>
     </div>

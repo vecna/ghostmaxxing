@@ -4,53 +4,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title data-i18n="loader_page_title">Makeup Video Loader &amp; Face Engine Debugger — Ghostmaxxing</title>
-  <meta name="description" content="The Video Loader runs local MP4 files through the 2D face-matching pipeline and an experimental visual-embedding path, allowing repeatable frame-by-frame comparison without a live camera.  " data-i18n-content="loader_meta_description" />
-  <meta property="og:title" content="Makeup Video Loader &amp; Face Engine Debugger — Ghostmaxxing" />
-  <meta property="og:description" content="The Video Loader runs local MP4 files through the 2D face-matching pipeline and an experimental visual-embedding path, allowing repeatable frame-by-frame comparison without a live camera.  " />
+  <title data-i18n="loader_page_title">Video Loader — Ghostmaxxing</title>
+  <meta name="description" content="Analyse an existing local makeup video, review face-model transitions, and export reproducible evidence without uploading the source." />
+  <meta property="og:title" content="Makeup Video Analyser — Ghostmaxxing" />
+  <meta property="og:description" content="Analyse local makeup videos into timelines, before-and-after evidence, and reusable technical logs." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://ghostmaxxing.vecna.eu/loader.html" />
   <meta property="og:image" content="https://ghostmaxxing.vecna.eu/images/social/ghostmaxxing-generic.jpg" />
-  <meta property="og:image:type" content="image/jpeg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Makeup Video Loader &amp; Face Engine Debugger — Ghostmaxxing" />
-  <meta name="twitter:description" content="Load local MP4 makeup videos into Ghostmaxxing's 2D and 3D face engines for recording, comparison, and debugging." />
-  <meta name="twitter:image" content="https://ghostmaxxing.vecna.eu/images/social/ghostmaxxing-generic.jpg" />
-  <meta name="twitter:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
   <link rel="canonical" href="https://ghostmaxxing.vecna.eu/loader.html" />
   <meta name="theme-color" content="#14100c" />
   <link rel="icon" type="image/svg+xml" href="/images/logo/mark-color.svg" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png" />
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "@id": "https://ghostmaxxing.vecna.eu/loader.html#application",
-    "name": "Ghostmaxxing Video Loader",
-    "url": "https://ghostmaxxing.vecna.eu/loader.html",
-    "description": "Load local MP4 files into the Ghostmaxxing face-matching pipeline for repeatable frame-by-frame comparison without a live camera.",
-    "applicationCategory": "EducationalApplication",
-    "operatingSystem": "Web",
-    "browserRequirements": "A modern browser with WebGL and WebAssembly support",
-    "featureList": [
-      "Load a local video file",
-      "Compare selected frames using the local face-matching pipeline",
-      "Record repeatable before-and-after experiments"
-    ],
-    "author": {
-      "@type": "Person",
-      "@id": "https://me.vecna.eu/#vecna",
-      "name": "Claudio Agosti",
-      "alternateName": "vecna",
-      "url": "https://me.vecna.eu/",
-      "sameAs": ["https://github.com/vecna", "https://retro.pizza/@vecna"]
-    }
-  }
-  </script>
-
   <link rel="stylesheet" href="/styles/styles.css" />
   <link rel="stylesheet" href="/styles/pages.css" />
   <link rel="stylesheet" href="/styles/loader.css" />
@@ -64,89 +28,146 @@
           <img class="wordmark__mark" src="/images/logo/mark-ondark.svg" alt="" aria-hidden="true" />
           <span class="wordmark__title">Ghostmaxxing</span>
         </span>
-        <span class="wordmark__subtitle" data-i18n="loader_subtitle">Internal video loader</span>
+        <span class="wordmark__subtitle">Seekable video analysis</span>
       </a>
       <div class="loader-header__tools">
-        <span class="locale-control" aria-hidden="false">
+        <label class="locale-control">
           <span class="locale-control__flag" aria-hidden="true"></span>
           <select id="localeSelect" class="locale-select" aria-label="Language" data-i18n-aria-label="language_label"></select>
-        </span>
+        </label>
         <div class="loader-status" aria-live="polite">
           <span id="statusDot" class="status-dot"></span>
-          <span id="statusText" data-i18n="loader_loading_models_status">loading models</span>
+          <span id="statusText">loading models</span>
         </div>
       </div>
     </header>
 
-    <h1 id="loader-title" class="loader-title" data-i18n="loader_title">Makeup Video Test Loader</h1>
-
-    <section class="loader-band loader-band--stage" aria-label="Load and play video" data-i18n-aria-label="loader_stage_label">
-      <div id="viewer" class="loader-viewer" data-view="camera">
-        <div id="placeholder" class="loader-placeholder" data-i18n="loader_placeholder">Select a local MP4 video to begin.</div>
-        <video id="video" controls playsinline preload="metadata"></video>
-        <img id="previewImage" alt="diagnostic preview" data-i18n-alt="diagnostic_preview_alt" />
-        <canvas id="overlay"></canvas>
-        <canvas id="mesh3dOverlay"></canvas>
-        <canvas id="bboxOverlay"></canvas>
+    <section class="loader-intro">
+      <div>
+        <p class="loader-kicker">Existing video → evidence</p>
+        <h1 id="loader-title" class="loader-title">Makeup video analyser</h1>
       </div>
-      <div class="loader-controls">
-        <label class="file-control">
-          <span data-i18n="loader_load_mp4">Load MP4</span>
-          <input id="videoFile" type="file" accept="video/mp4,video/*" />
-        </label>
-        <div class="timeline" aria-label="Video progress" data-i18n-aria-label="loader_timeline_label">
+      <p class="loader-intro__copy">
+        Select a local video. It stays on this device while MediaPipe maps frequent visual changes and face-api verifies selected moments.
+      </p>
+    </section>
+
+    <section class="loader-stage" aria-label="Local video source">
+      <div id="viewer" class="loader-viewer">
+        <div id="placeholder" class="loader-placeholder">Select a local MP4, WebM, or compatible video to begin.</div>
+        <video id="video" controls playsinline preload="metadata"></video>
+        <div id="analysisLockNotice" class="loader-viewer-lock" hidden>Analysis controls the video position</div>
+      </div>
+
+      <div class="loader-source-controls">
+        <div class="loader-source-file">
+          <span class="loader-control-label">Source</span>
+          <label class="file-control">
+            <span id="sourceFileAction">Select local video</span>
+            <input id="videoFile" type="file" accept="video/*,.mkv" />
+          </label>
+          <div class="loader-source-file__identity">
+            <strong id="sourceFileName">No video selected</strong>
+            <span id="sourceFileMeta">Local files remain on this device.</span>
+          </div>
+        </div>
+        <div class="loader-seek" aria-label="Precise source position">
+          <span class="loader-seek__name">Viewing</span>
           <span id="currentTimeLabel">00:00.000</span>
           <input id="videoSeek" type="range" min="0" max="0" step="0.001" value="0" disabled />
           <span id="durationLabel">00:00.000</span>
         </div>
+        <button id="analyzeFrameBtn" type="button" disabled>Analyse this frame</button>
+      </div>
+
+      <div class="loader-analysis-controls" aria-label="Analysis controls">
+        <div class="loader-control-group loader-analysis-plan">
+          <span class="loader-control-label">Analysis plan</span>
+          <div id="analysisSettings" class="loader-analysis-settings">
+            <label>
+              <span>Sample every</span>
+              <select id="sampleInterval">
+                <option value="0.25">0.25 seconds</option>
+                <option value="0.5" selected>0.5 seconds</option>
+                <option value="1">1 second</option>
+                <option value="2">2 seconds</option>
+              </select>
+            </label>
+            <div class="loader-base-picker">
+              <button id="selectBaseBtn" type="button" disabled>Select base at 00:00.000</button>
+              <span id="selectedBaseLabel" aria-live="polite">No base selected. Scrub the video, then select the displayed frame.</span>
+            </div>
+          </div>
+        </div>
+        <div class="loader-control-group loader-run-state">
+          <span class="loader-control-label">Run</span>
+          <div class="loader-run-state__action">
+            <button id="startAnalysisBtn" class="loader-primary" type="button" disabled>Analyse video</button>
+            <button id="cancelAnalysisBtn" type="button" disabled hidden>Pause after this sample</button>
+          </div>
+          <div class="loader-progress" aria-label="Analysis sample progress">
+            <span class="loader-progress__name">Analysis samples</span>
+            <progress id="analysisProgress" max="100" value="0"></progress>
+            <span id="analysisProgressLabel" aria-live="polite">0 / —</span>
+          </div>
+        </div>
+        <div id="analysisMessage" class="loader-analysis-message" role="alert" hidden>
+          <strong id="analysisMessageTitle"></strong>
+          <span id="analysisMessageBody"></span>
+        </div>
       </div>
     </section>
 
-    <section class="loader-band loader-band--actions" aria-label="Face actions" data-i18n-aria-label="loader_actions_label">
-      <button id="recordFaceBtn" class="loader-action" type="button" disabled data-i18n="loader_record_face_button">Record face</button>
-      <button id="seekFaceBtn" class="loader-action" type="button" disabled data-i18n="loader_seek_face_button">Seek face</button>
-      <div class="loader-readout">
-        <span data-i18n="loader_faces_in_memory">Faces in memory</span>
-        <strong id="dbCount">0</strong>
-        <span data-i18n="next_id_metric">Next ID</span>
-        <strong id="nextId">0</strong>
-        <span data-i18n="loader_2d_threshold">2D threshold</span>
-        <strong id="thresholdLabel">0.58</strong>
-        <span id="dbCountBadge" hidden>0</span>
+    <section class="loader-report" aria-labelledby="report-title">
+      <header class="loader-report__header">
+        <div>
+          <p class="loader-kicker">Analysis report</p>
+          <h2 id="report-title">Evidence and story order</h2>
+          <p id="reportSummary" class="loader-report__summary">No video analysed yet.</p>
+        </div>
+        <div class="loader-report__actions">
+          <div class="loader-action-group" aria-label="Edit history">
+            <span>History</span>
+            <button id="undoEditBtn" type="button" disabled>Undo</button>
+            <button id="redoEditBtn" type="button" disabled>Redo</button>
+          </div>
+          <div class="loader-action-group" aria-label="Export analysis">
+            <span>Export</span>
+            <button id="downloadReportBtn" type="button" disabled>Download report</button>
+            <button id="downloadLogBtn" type="button" disabled>Download technical log</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="loader-baseline">
+        <strong>Distance reference</strong>
+        <span id="baselineSummary">Distance reference not acquired yet.</span>
       </div>
+
+      <p class="loader-story-note">
+        The baseline stays first because every distance starts there. Source timestamps remain factual; use “Move earlier” and “Move later” to arrange the later evidence independently of source chronology.
+      </p>
+
+      <figure class="loader-timeline-figure">
+        <canvas id="analysisTimeline" aria-label="Analysis timeline with separate MediaPipe coverage, ImageEmbedder, and face-api lanes"></canvas>
+        <figcaption>
+          MediaPipe coverage is diagnostic context, not evidence by itself. ImageEmbedder drift is frequent generic-image change measured as 1 − cosine similarity. face-api L2 distance is sampled only on comparable frames; × means no 2D face was returned. Each dashed line prints the active numeric trigger or decision threshold beside it.
+        </figcaption>
+      </figure>
+
+      <div id="emptyReport" class="loader-empty-report">
+        Confirmed transitions will appear here with a high-resolution source frame and editable story text.
+      </div>
+      <div id="eventList" class="loader-event-list"></div>
     </section>
 
-    <section class="loader-band loader-band--log" aria-label="Button activity log" data-i18n-aria-label="loader_log_label">
-      <div class="loader-log-head">
-        <h2 data-i18n="loader_activity_log_title">Activity log</h2>
-        <p data-i18n="loader_activity_log_description">Each entry is captured at the exact video timestamp where the button was pressed.</p>
-      </div>
-      <div id="loaderLog" class="loader-log" aria-live="polite"></div>
-      <div id="logBox" class="u-hidden" aria-hidden="true"></div>
-    </section>
-
-    <p>
-      Test the synthetic before-and-after faces in <code>tests/fixtures/</code>
-      with the <a href="/docs/jsdoc/tutorials/lab-screenshots/">Playwright script</a>.
-    </p>
+    <aside class="loader-privacy">
+      <strong>Local by design.</strong>
+      The source video is not uploaded. The editorial report and the versioned technical log are separate downloads.
+    </aside>
   </main>
 
-  <select id="fpsSelect" class="u-hidden" aria-hidden="true" tabindex="-1">
-    <option value="120" selected>120 ms</option>
-  </select>
-  <button id="saveBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
-  <button id="scanBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
-  <button id="copyMakeupBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
-  <button id="analyzeBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
-  <button id="toggleSettingsBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
-  <button id="overlayModeBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
-  <button id="clearDbBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
-  <button id="recordBtn" class="u-hidden" aria-hidden="true" tabindex="-1"></button>
-  <div id="ghostylesContainer" class="u-hidden" aria-hidden="true"></div>
-
   <script src="/lab-js/vendor/face-api.js"></script>
-  <script type="module" src="/lab-js/bbox-overlay.js"></script>
-  <script type="module" src="/lab-js/mediapipe-loop.js"></script>
   <script type="module" src="/lab-js/loader.js"></script>
 </body>
 

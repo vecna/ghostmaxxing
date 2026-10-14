@@ -23,8 +23,15 @@ EXTRACTED-text-*.md
 # Generated technical reference
 /docs/jsdoc/
 
-# Fake-webcam fixtures and measurements built by scripts-dev/build-face-fixtures.cjs
-/tests/fixtures/synthetic-faces/y4m/
+# Local research videos. The small synthetic MP4 remains committed for CI.
+/tests/fixtures/*.mp4
+/tests/fixtures/*.webm
+/tests/fixtures/*.mkv
+/tests/fixtures/*.mov
+/tests/fixtures/*.m4v
+!/tests/fixtures/my-moving-face.mp4
+
+# Local measurements produced while calibrating model thresholds.
 /tests/fixtures/synthetic-faces/lab-measurements.json
 
 # scripts-dev/lab-capture.cjs render writes candidate pictures here. They are

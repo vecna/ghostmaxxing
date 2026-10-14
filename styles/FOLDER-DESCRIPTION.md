@@ -7,7 +7,7 @@ The architecture is described in the header comment of `styles/styles.css`: ever
 ## Shared architecture
 
 - `styles.css` — root import list. This is the main shared stylesheet the site loads on most pages. It imports the fonts, tokens, reset, and reusable component styles. It is the canonical layer-order file.
-  - Included directly by: `index.html`, `genealogy.html`, `about.html`, `lab.html`, `loader.html`, `references/index.html`, `report.html`, `workshops.html`, `visual-styleguide.html`
+  - Included directly by: `index.html`, `genealogy.html`, `about.html`, `lab.html`, `loader.html`, `realtime.html`, `references/index.html`, `report.html`, `workshops.html`, `visual-styleguide.html`
 
 - `tokens.css` — design tokens for the palette, type scale, spacing, border, and shared CSS custom properties. This is the source of the site-wide theme values.
   - Loaded by: `styles.css`
@@ -50,9 +50,10 @@ These files are linked directly by HTML pages and provide page layout or unique 
   - Included by: `about.html`, `report.html`, `references/index.html`, `references/templates/references.template.html`, `workshops.html`
 
 - `lab.css` — lab and live-analysis page styling; used for full-screen camera surfaces and tooling chrome.
-  - Included by: `lab.html`
+  - Included by: `lab.html`, `realtime.html`
 
-- `realtime.css` — retained stylesheet for unreleased realtime calibration/tracking work; no current page entry point is present.
+- `realtime.css` — layout, timeline, experiment phases, descriptor equalizer, and radial plot for the Latent Space Visualizer.
+  - Included by: `realtime.html`
 
 - `loader.css` — behavior and layout for the loader/fixture-analysis page.
   - Included by: `loader.html`
@@ -79,6 +80,6 @@ Most pages follow this basic pattern:
 - `styles.css` is the universal layer and is always linked first.
 - One page stylesheet is then added only when the page needs unique layout or a page-specific composition.
 - For the long-form content pages, `pages.css` and `content-pages.css` are often used together.
-- For the lab UX, `lab.css` is the primary page layer. The retained `realtime.css` stylesheet belongs to unreleased calibration/tracking work and has no current page entry point.
+- For the Lab UX, `lab.css` is the primary page layer. `realtime.html` reuses that chrome and adds `realtime.css` for its three-panel measurement workspace.
 
 This makes the stylesheet folder a layered CSS system rather than a flat set of unrelated files: shared tokens and components first, page placement last, with the HTML deciding which page layer to attach.

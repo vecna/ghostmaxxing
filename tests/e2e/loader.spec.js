@@ -1,208 +1,236 @@
 import { test, expect } from '@playwright/test';
+import path from 'node:path';
 
-test.describe('MP4 loader tool', () => {
-  test('boots the internal loader interface with mocked model runtimes', async ({ page }) => {
-    await page.addInitScript(() => {
-      localStorage.removeItem('local-face-lab-db-v1');
-      localStorage.removeItem('local-face-lab-db-3d-v1');
-      localStorage.removeItem('local-face-lab-thumbnails-v1');
-      localStorage.removeItem('ghostati-overlay-mode-v1');
-      localStorage.removeItem('ghostmaxxing-locale');
-    });
-
-    await page.route(/(cdn\.jsdelivr\.net\/npm\/@vladmandic\/face-api\/dist\/face-api\.js|\/lab-js\/vendor\/face-api\.js)$/, (route) => {
-      route.fulfill({
-        contentType: 'application/javascript',
-        body: `
+/**
+ * Installs deterministic model bundles so browser tests exercise the complete
+ * Video Loader orchestration without spending CI time on real inference.
+ *
+ * @param {import('@playwright/test').Page} page Playwright page.
+ * @returns {Promise<void>}
+ */
+async function mockModels(page) {
+  await page.route('/lab-js/vendor/face-api.js', route => {
+    route.fulfill({
+      contentType: 'application/javascript',
+      body: `
+        (() => {
+          let recognitionRuns = 0;
+          const descriptor = () => {
+            recognitionRuns += 1;
+            const vector = new Float32Array(128);
+            if (recognitionRuns > 3) vector[0] = 0.75;
+            return vector;
+          };
           window.faceapi = {
-            TinyFaceDetectorOptions: class TinyFaceDetectorOptions { constructor(opts) { this.opts = opts; } },
+            TinyFaceDetectorOptions: class TinyFaceDetectorOptions { constructor(options) { this.options = options; } },
             nets: {
               tinyFaceDetector: { loadFromUri: async () => {} },
               faceLandmark68Net: { loadFromUri: async () => {} },
               faceRecognitionNet: { loadFromUri: async () => {} },
-              ageGenderNet: { loadFromUri: async () => {} },
             },
-            detectSingleFace: () => null,
-            resizeResults: (result) => result,
+            detectSingleFace: () => ({
+              withFaceLandmarks: () => ({
+                withFaceDescriptor: async () => ({
+                  detection: { score: 0.98, box: { x: 180, y: 80, width: 280, height: 280 } },
+                  landmarks: { positions: Array.from({ length: 68 }, () => ({ x: 300, y: 220 })) },
+                  descriptor: descriptor(),
+                }),
+              }),
+            }),
           };
-        `,
-      });
+        })();
+      `,
     });
-
-    await page.route(/(cdn\.jsdelivr\.net\/npm\/@mediapipe\/tasks-vision@0\.10\.35|\/lab-js\/vendor\/tasks-vision@0\.10\.35\.js)$/, (route) => {
-      route.fulfill({
-        contentType: 'application/javascript',
-        body: `
-          export class FilesetResolver {
-            static async forVisionTasks() { return {}; }
-          }
-          export class ImageEmbedder {
-            static async createFromOptions() {
-              return { embedForVideo: () => ({ embeddings: [{ floatEmbedding: new Float32Array([1, 0, 0]) }] }) };
-            }
-          }
-          export class FaceLandmarker {
-            static async createFromOptions() {
-              return { detectForVideo: () => ({ faceLandmarks: [] }) };
-            }
-          }
-        `,
-      });
-    });
-
-    await page.goto('/loader.html');
-
-    await expect(page.getByRole('heading', { name: 'Makeup Video Test Loader' })).toBeVisible();
-    await expect(page.getByLabel('Load and play video')).toBeVisible();
-    await expect(page.getByLabel('Face actions')).toBeVisible();
-    await expect(page.getByLabel('Button activity log')).toBeVisible();
-    await expect(page.getByText('Select a local MP4 video to begin.')).toBeVisible();
-    await expect(page.locator('#statusText')).toHaveText('ready', { timeout: 5000 });
-    await page.locator('#localeSelect').selectOption('it');
-    await expect(page.getByRole('heading', { name: 'Loader di test video makeup' })).toBeVisible();
-    await expect(page.getByText('Seleziona un video MP4 locale per iniziare.')).toBeVisible();
-    await expect(page.locator('#statusText')).toHaveText('pronto');
-    await expect(page.locator('#recordFaceBtn')).toBeDisabled();
-    await expect(page.locator('#seekFaceBtn')).toBeDisabled();
   });
 
-  test('loads a mock video and enables/executes face actions', async ({ page }) => {
-    await page.addInitScript(() => {
-      localStorage.removeItem('local-face-lab-db-v1');
-      localStorage.removeItem('local-face-lab-db-3d-v1');
-      localStorage.removeItem('local-face-lab-thumbnails-v1');
-      localStorage.removeItem('ghostati-overlay-mode-v1');
-      localStorage.removeItem('ghostmaxxing-locale');
-      const originalToDataURL = HTMLCanvasElement.prototype.toDataURL;
-      HTMLCanvasElement.prototype.toDataURL = function(type, quality) {
-        if (type === 'image/jpeg' && quality === 0.8) return 'data:image/jpeg;base64,loader-preview';
-        return originalToDataURL.call(this, type, quality);
-      };
-      CanvasRenderingContext2D.prototype.drawImage = function() {};
-    });
-
-    await page.route(/(cdn\.jsdelivr\.net\/npm\/@vladmandic\/face-api\/dist\/face-api\.js|\/lab-js\/vendor\/face-api\.js)$/, (route) => {
-      route.fulfill({
-        contentType: 'application/javascript',
-        body: `
-          window.faceapi = {
-            TinyFaceDetectorOptions: class TinyFaceDetectorOptions { constructor(opts) { this.opts = opts; } },
-            nets: {
-              tinyFaceDetector: { loadFromUri: async () => {} },
-              faceLandmark68Net: { loadFromUri: async () => {} },
-              faceRecognitionNet: { loadFromUri: async () => {} },
-              ageGenderNet: { loadFromUri: async () => {} },
-            },
-            detectSingleFace: () => {
-              const landmarks = {
-                positions: Array.from({ length: 68 }, (_, i) => ({ x: 100 + i, y: 120 + i })),
-                getLeftEye: () => [{ x: 230, y: 220 }, { x: 250, y: 220 }],
-                getRightEye: () => [{ x: 320, y: 220 }, { x: 340, y: 220 }],
-                getNose: () => [{ x: 280, y: 240 }, { x: 282, y: 252 }, { x: 284, y: 264 }, { x: 286, y: 276 }],
-                getJawOutline: () => [{ x: 220, y: 300 }, { x: 280, y: 335 }, { x: 350, y: 300 }],
-                getMouth: () => [{ x: 260, y: 310 }, { x: 275, y: 318 }, { x: 290, y: 320 }, { x: 305, y: 318 }, { x: 320, y: 310 }, { x: 290, y: 326 }, { x: 275, y: 318 }],
-              };
-              const result = {
-                detection: { score: 0.93, box: { x: 210, y: 160, width: 180, height: 220 } },
-                landmarks,
-                age: 31,
-                gender: 'female',
-                genderProbability: 0.82,
-                descriptor: Array.from({ length: 128 }, (_, i) => i / 128),
-              };
-              return {
-                withFaceLandmarks: () => ({
-                  withAgeAndGender: () => ({
-                    withFaceDescriptor: async () => result,
-                  }),
-                }),
-              };
-            },
-            resizeResults: (result) => result,
-          };
-        `,
-      });
-    });
-
-    await page.route(/(cdn\.jsdelivr\.net\/npm\/@mediapipe\/tasks-vision@0\.10\.35|\/lab-js\/vendor\/tasks-vision@0\.10\.35\.js)$/, (route) => {
-      route.fulfill({
-        contentType: 'application/javascript',
-        body: `
-          export class FilesetResolver {
-            static async forVisionTasks() { return {}; }
+  await page.route('/lab-js/vendor/tasks-vision@0.10.35.js', route => {
+    route.fulfill({
+      contentType: 'application/javascript',
+      body: `
+        let embedRuns = 0;
+        const landmarks = Array.from({ length: 478 }, (_, index) => {
+          const angle = (index / 478) * Math.PI * 2;
+          return { x: 0.5 + Math.cos(angle) * 0.2, y: 0.5 + Math.sin(angle) * 0.28, z: 0 };
+        });
+        landmarks[33] = { x: 0.41, y: 0.42, z: 0 };
+        landmarks[263] = { x: 0.59, y: 0.42, z: 0 };
+        landmarks[1] = { x: 0.5, y: 0.52, z: 0 };
+        export class FilesetResolver { static async forVisionTasks() { return {}; } }
+        export class FaceLandmarker {
+          static async createFromOptions() {
+            return { detect: () => ({ faceLandmarks: [landmarks] }) };
           }
-          export class ImageEmbedder {
-            static async createFromOptions() {
-              return { embedForVideo: () => ({ embeddings: [{ floatEmbedding: new Float32Array([1, 0, 0]) }] }) };
-            }
+        }
+        export class ImageEmbedder {
+          static async createFromOptions() {
+            return {
+              embed: () => {
+                embedRuns += 1;
+                return { embeddings: [{ floatEmbedding: new Float32Array(embedRuns <= 8 ? [1, 0, 0] : [0, 1, 0]) }] };
+              },
+            };
           }
-          export class FaceLandmarker {
-            static async createFromOptions() {
-              return { detectForVideo: () => ({ faceLandmarks: [] }) };
-            }
-          }
-        `,
-      });
+        }
+      `,
     });
+  });
+}
 
+test.describe('seekable Video Loader', () => {
+  test.beforeEach(async ({ page }) => {
+    await mockModels(page);
+  });
+
+  test('boots as an existing-video analyser without camera controls', async ({ page }) => {
     await page.goto('/loader.html');
+    await expect(page.getByRole('heading', { name: 'Makeup video analyser' })).toBeVisible();
+    await expect(page.getByLabel('Local video source')).toBeVisible();
+    await expect(page.getByLabel('Analysis controls')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Evidence and story order' })).toBeVisible();
+    await expect(page.getByText('Select a local MP4, WebM, or compatible video to begin.')).toBeVisible();
+    await expect(page.locator('#statusText')).toHaveText('select a local video', { timeout: 5000 });
+    await expect(page.locator('#startAnalysisBtn')).toBeDisabled();
+    await expect(page.locator('text=webcam')).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => window.gstmxxVideoLoader?.isModelsReady())).toBe(true);
+  });
 
-    // Wait for the models to be ready
-    await expect(page.locator('#statusText')).toHaveText('ready', { timeout: 5000 });
-
-    // Upload a mock MP4 file
-    await page.setInputFiles('#videoFile', {
-      name: 'mock-video.mp4',
-      mimeType: 'video/mp4',
-      buffer: Buffer.from('fake mp4 data'),
-    });
-
-    // Mock HTMLVideoElement properties and dispatch loaded metadata/data events
-    await page.evaluate(() => {
-      const video = document.getElementById('video');
-      Object.defineProperties(video, {
-        duration: { value: 12.5, configurable: true },
-        currentTime: { value: 3.2, configurable: true },
-        readyState: { value: 4, configurable: true },
-        videoWidth: { value: 1280, configurable: true },
-        videoHeight: { value: 720, configurable: true },
-      });
-      video.dispatchEvent(new Event('loadedmetadata'));
-      video.dispatchEvent(new Event('loadeddata'));
-    });
-
-    // Verify timeline UI is updated and seek bar is active
-    await expect(page.locator('#durationLabel')).toHaveText('00:12.500');
-    await expect(page.locator('#currentTimeLabel')).toHaveText('00:03.200');
-
-    // Buttons should now be enabled
-    await expect(page.locator('#recordFaceBtn')).toBeEnabled();
-    await expect(page.locator('#seekFaceBtn')).toBeEnabled();
-
-    // Click Record face
-    await page.locator('#recordFaceBtn').click();
-    await expect(page.locator('#loaderLog .loader-entry')).toHaveCount(1);
-    await expect(page.locator('#loaderLog')).toContainText('#1 record face');
-    await expect(page.locator('#loaderLog')).toContainText('preview: saved');
-    await expect.poll(async () => page.evaluate(() => {
-      const store = JSON.parse(localStorage.getItem('local-face-lab-thumbnails-v1') || '{"entries":[]}');
-      const first = store.entries[0] || {};
-      return {
-        count: store.entries.length,
-        id: first.id,
-        dataUrl: first.dataUrl,
-        hasSavedAt: typeof first.savedAt === 'string' && first.savedAt.length > 0,
+  test('loads through setInputFiles and produces separate report and technical log artifacts', async ({ page }) => {
+    await page.addInitScript(() => {
+      CanvasRenderingContext2D.prototype.drawImage = function drawImage() {};
+      CanvasRenderingContext2D.prototype.getImageData = function getImageData(x, y, width, height) {
+        const data = new Uint8ClampedArray(width * height * 4);
+        for (let offset = 0; offset < data.length; offset += 4) {
+          data[offset] = 128;
+          data[offset + 1] = 128;
+          data[offset + 2] = 128;
+          data[offset + 3] = 255;
+        }
+        return { data, width, height };
       };
-    })).toEqual({
-      count: 1,
-      id: 0,
-      dataUrl: 'data:image/jpeg;base64,loader-preview',
-      hasSavedAt: true,
+    });
+    await page.goto('/loader.html');
+    await expect.poll(() => page.evaluate(() => window.gstmxxVideoLoader?.isModelsReady())).toBe(true);
+    await page.evaluate(() => window.gstmxxVideoLoader.setSourceMetadata({ fingerprint: 'sampled-sha256:e2e' }));
+    await page.setInputFiles('#videoFile', path.join(process.cwd(), 'tests/fixtures/my-moving-face.mp4'));
+
+    await expect.poll(() => page.evaluate(() => window.gstmxxVideoLoader?.isSourceLoaded())).toBe(true);
+    await expect(page.locator('#startAnalysisBtn')).toBeDisabled();
+    await page.locator('#selectBaseBtn').click();
+    await expect(page.locator('#startAnalysisBtn')).toBeEnabled();
+    await page.evaluate(() => window.gstmxxVideoLoader.analyze({ end: 6, sampleIntervalSeconds: 0.5 }));
+
+    await expect(page.locator('#analysisProgressLabel')).toContainText('complete');
+    await expect(page.locator('#reportSummary')).toContainText('confirmed event');
+    await expect(page.locator('.loader-event--reference h3')).toContainText('Baseline · distance reference');
+    await expect(page.locator('.loader-event--confirmed')).toHaveCount(1);
+    await expect(page.locator('#downloadReportBtn')).toBeEnabled();
+    await expect(page.locator('#downloadLogBtn')).toBeEnabled();
+    const baselineTimeLink = page.locator('.loader-event--reference .loader-time-link');
+    await expect(baselineTimeLink).toBeEnabled();
+    await baselineTimeLink.click();
+    await expect.poll(() => page.locator('#video').evaluate(video => video.currentTime)).toBeCloseTo(0, 2);
+
+    const exported = await page.evaluate(() => {
+      const bundle = window.gstmxxVideoLoader.exportBundle();
+      return {
+        reportEvents: bundle.report.events.length,
+        reportHasImageBytes: JSON.stringify(bundle.report).includes('base64'),
+        logHasImageBytes: bundle.technicalLog.includes('base64'),
+        logTypes: bundle.technicalLog.trim().split('\n').map(line => JSON.parse(line).type),
+        frames: bundle.frames.map(frame => frame.id),
+        fingerprint: bundle.report.source.fingerprint,
+        eventFrameReason: bundle.report.events[0]?.selectedFrame?.reason,
+        storyOrder: bundle.report.storyOrder,
+        baselineTime: bundle.report.baseline?.mediaTime,
+      };
+    });
+    expect(exported).toMatchObject({
+      reportEvents: 1,
+      reportHasImageBytes: false,
+      logHasImageBytes: false,
+      fingerprint: 'sampled-sha256:e2e',
+    });
+    expect(exported.logTypes).toContain('analysis-header');
+    expect(exported.logTypes).toContain('evidence-refinement-check');
+    expect(exported.logTypes).toContain('evidence-frame-selected');
+    expect(exported.logTypes).toContain('analysis-footer');
+    expect(exported.frames).toContain('baseline');
+    expect(exported.frames).toHaveLength(2);
+    expect(exported.eventFrameReason).toMatch(/^refined-/);
+    expect(exported.baselineTime).toBe(0);
+    expect(exported.storyOrder[0]).toBe('baseline');
+
+    await page.locator('#videoSeek').fill('3');
+    await page.locator('#analyzeFrameBtn').click();
+    await expect(page.locator('.loader-event--manual h3')).toContainText('Manual frame check');
+    await expect(page.locator('#analysisMessage')).toContainText('Frame added at 00:03.000');
+    const manualExport = await page.evaluate(() => {
+      const bundle = window.gstmxxVideoLoader.exportBundle();
+      return {
+        manualChecks: bundle.report.summary.manualChecks,
+        manualOrigin: bundle.report.events.find(event => event.origin === 'manual')?.origin,
+        logHasManualCheck: bundle.technicalLog.includes('manual-frame-checked'),
+      };
+    });
+    expect(manualExport).toEqual({
+      manualChecks: 1,
+      manualOrigin: 'manual',
+      logHasManualCheck: true,
+    });
+  });
+
+  test('pauses at a scan checkpoint and resumes without rebuilding the baseline', async ({ page }) => {
+    await page.addInitScript(() => {
+      CanvasRenderingContext2D.prototype.drawImage = function drawImage() {};
+      CanvasRenderingContext2D.prototype.getImageData = function getImageData(x, y, width, height) {
+        const data = new Uint8ClampedArray(width * height * 4);
+        for (let offset = 0; offset < data.length; offset += 4) {
+          data[offset] = 128;
+          data[offset + 1] = 128;
+          data[offset + 2] = 128;
+          data[offset + 3] = 255;
+        }
+        return { data, width, height };
+      };
+    });
+    await page.goto('/loader.html');
+    await expect.poll(() => page.evaluate(() => window.gstmxxVideoLoader?.isModelsReady())).toBe(true);
+    await page.setInputFiles('#videoFile', path.join(process.cwd(), 'tests/fixtures/my-moving-face.mp4'));
+    await expect.poll(() => page.evaluate(() => window.gstmxxVideoLoader?.isSourceLoaded())).toBe(true);
+    await page.locator('#selectBaseBtn').click();
+
+    const result = await page.evaluate(async () => {
+      let pauseRequested = false;
+      const onSample = event => {
+        if (!pauseRequested && event.detail.progress >= 0.25) {
+          pauseRequested = true;
+          window.gstmxxVideoLoader.cancel();
+        }
+      };
+      window.addEventListener('gstmxx-video-loader:sample', onSample);
+      const paused = await window.gstmxxVideoLoader.analyze({ end: 6, sampleIntervalSeconds: 0.5 });
+      window.removeEventListener('gstmxx-video-loader:sample', onSample);
+      const pausedSnapshot = {
+        status: paused.status,
+        baselineTime: paused.baseline.mediaTime,
+        samples: paused.samples.filter(sample => sample.phase === 'scan').length,
+        lastScanMediaTime: paused.config.lastScanMediaTime,
+      };
+      const completed = await window.gstmxxVideoLoader.resume();
+      return {
+        paused: pausedSnapshot,
+        completedStatus: completed.status,
+        completedSamples: completed.samples.filter(sample => sample.phase === 'scan').length,
+        resumedJournal: completed.journal.some(entry => entry.type === 'analysis-resumed'),
+      };
     });
 
-    // Click Seek face
-    await page.locator('#seekFaceBtn').click();
-    await expect(page.locator('#loaderLog .loader-entry')).toHaveCount(2);
-    await expect(page.locator('#loaderLog')).toContainText('#2 seek face');
+    expect(result.paused.status).toBe('cancelled');
+    expect(result.paused.baselineTime).toBe(0);
+    expect(result.paused.lastScanMediaTime).toBeGreaterThan(0);
+    expect(result.completedStatus).toBe('complete');
+    expect(result.completedSamples).toBeGreaterThan(result.paused.samples);
+    expect(result.resumedJournal).toBe(true);
+    await expect(page.locator('#analysisProgressLabel')).toContainText('complete');
   });
 });

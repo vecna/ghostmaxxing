@@ -1,0 +1,88 @@
+      <section class="content-page__header-area gm-prose" aria-labelledby="realtime-guide-title">
+        <span class="content-page__kicker">Functional guide · Latent Space Visualizer</span>
+        <h1 id="realtime-guide-title">Measure a makeup session over time.</h1>
+        <p class="content-page__lead">Capture a clean baseline, mark each application interval, and aggregate the descriptor change after every finished step.</p>
+        <p class="content-page__deck">The visualizer uses only the 2D face-api/dlib path. It excludes sufficiently different pose, framing, and ambient-light frames; it does not mathematically correct them or predict another recognition system.</p>
+        <div class="content-page__actions">
+          <a class="docs-link docs-link--primary" href="/realtime.html">Open the Visualizer &#8599;</a>
+          <a class="docs-link" href="/docs/jsdoc/tutorials/realtime">Read how it works and why</a>
+        </div>
+      </section>
+
+      <div class="docs-reader">
+        <article class="docs-article gm-prose">
+          <section id="source">
+            <span class="docs-eyebrow">Input</span>
+            <h2>Use the camera or a local video.</h2>
+            <p>The camera is the default. Open <strong>Source</strong> to select a local video; the file remains on this device and can be paused, sought, and replayed. Changing source invalidates the current baseline.</p>
+            <div class="docs-note"><p><strong>Source → Brightness</strong> changes only how bright the video looks on screen. The model reads the original video pixels, so this control cannot improve lighting or change a measurement.</p></div>
+          </section>
+
+          <section id="procedure">
+            <span class="docs-eyebrow">Session workflow</span>
+            <h2>Baseline, application, measurement.</h2>
+            <div class="docs-step-list">
+              <div class="docs-step"><span class="docs-step__number">01</span><div><h3>Set the baseline</h3><p>Use a neutral frontal pose and stable light, then press <strong>Set baseline</strong>. Hold still and follow the centre target while five accepted samples are distributed across at least two seconds.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">02</span><div><h3>Start one makeup step</h3><p>Press <strong>Start makeup step</strong> before applying one change. The timeline marks the event and shades the application interval.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">03</span><div><h3>Return to comparable conditions</h3><p>Finish the change, then return to the baseline pose, framing, and room light. Leaving the frame during application produces a marked no-face interval without an invented distance line.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">04</span><div><h3>Measure the step</h3><p>Press <strong>Measure this step</strong> and hold still. Eight comparable frames over at least three seconds become one temporal snapshot.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">05</span><div><h3>Read and repeat</h3><p>Record the distance, baseline noise floor, and step temporal spread together. Use <strong>Start next step</strong> for the next cumulative change.</p></div></div>
+            </div>
+          </section>
+
+          <section id="exclusions">
+            <span class="docs-eyebrow">Nuisance control</span>
+            <h2>Different pose and light are omitted, not normalised.</h2>
+            <p>Baseline capture checks confidence, scale, framing, 2D roll/yaw, and face-crop exposure. After makeup starts, confidence and face-crop exposure may legitimately change, so they no longer reject a frame. Scale, framing, roll, and yaw still apply, followed by a comparison with the baseline's averaged 2D conditions and ambient luminance outside the face box.</p>
+            <div class="docs-warning"><p>The gate reduces obvious confounds; it cannot prove that makeup caused the remaining distance. It does not estimate pitch and cannot separate every intervention from every shadow.</p></div>
+          </section>
+
+          <section id="views">
+            <span class="docs-eyebrow">Feedback</span>
+            <h2>Read the trace and the 128-value fingerprints.</h2>
+            <table>
+              <thead><tr><th>View</th><th>What it shows</th><th>Do not infer</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Distance timeline</strong></td><td>Smoothed live distance, gaps, phase backgrounds, event lines, measured noise floor, and the cited 0.60 dlib reference.</td><td>That the space between the two reference lines has a calibrated meaning.</td></tr>
+                <tr><td><strong>Equalizer</strong></td><td>Absolute change for each of 128 descriptor coordinates.</td><td>That one row corresponds to a facial region.</td></tr>
+                <tr><td><strong>Radial distribution</strong></td><td>All 128 deltas sorted into 16 ranked RMS bands, with the live reading as an outline and the latest measured step as a filled shape.</td><td>That a spoke or direction identifies a makeup line, cheek, or eyebrow.</td></tr>
+                <tr><td><strong>Step capture</strong></td><td>The sharpest accepted frame from the measurement window, watermarked with local result metadata.</td><td>That one model-local result transfers to a deployed system.</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="video">
+            <span class="docs-eyebrow">Recorded sessions</span>
+            <h2>Use video as a repeatable fixture.</h2>
+            <p>Local-video event labels include media time. Pause or seek to inspect the recording, then mark application and measurement moments. Starting either interval resumes a paused video so the temporal collector does not repeatedly inspect one frozen frame.</p>
+          </section>
+
+          <section id="privacy">
+            <span class="docs-eyebrow">Data</span>
+            <h2>Local does not mean insignificant.</h2>
+            <ul>
+              <li>Camera baselines persist in localStorage; local-video baselines exist only for the current page session.</li>
+              <li>Manual, sustained-spike, and declared-step JPEG captures use browser IndexedDB.</li>
+              <li>The selected video is neither uploaded nor persisted by the page.</li>
+              <li><strong>Delete baseline</strong> does not erase the gallery. Delete captures separately when they are no longer needed.</li>
+            </ul>
+          </section>
+
+          <nav class="docs-next" aria-label="Continue reading">
+            <a class="docs-link" href="/docs/">&#8592; Documentation home</a>
+            <a class="docs-link" href="/docs/understand/">Next: understand the results &#8594;</a>
+          </nav>
+        </article>
+
+        <aside class="docs-toc">
+          <h2>On this page</h2>
+          <nav>
+            <a href="#source">Choose a source</a>
+            <a href="#procedure">Session workflow</a>
+            <a href="#exclusions">Excluded frames</a>
+            <a href="#views">Feedback views</a>
+            <a href="#video">Recorded sessions</a>
+            <a href="#privacy">Local data</a>
+          </nav>
+        </aside>
+      </div>

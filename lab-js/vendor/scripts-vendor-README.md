@@ -7,7 +7,6 @@ Use `lab-js/vendor/fetch-sources.sh` to refresh the assets it manages.
 | Local file | Source URL | Upstream version/reference | Notes |
 |---|---|---|---|
 | `face-api.js` | `https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js` | floating (no `@x.y.z` in URL) | Main `faceapi` browser bundle used by the Lab pages. |
-| `tasks-vision@0.10.35.js` | `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35` | `0.10.35` | ESM bundle imported by 3D/embedder paths. |
 
 ## URLs synced by `fetch-sources.sh`
 
@@ -32,8 +31,16 @@ Source reference for this block is currently `justadudewhohacks/face-api.js-mode
 
 | Local file | Source URL |
 |---|---|
+| `tasks-vision@0.10.35.js` | `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/vision_bundle.mjs` |
+| `vision_bundle_mjs.js.map` | `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/vision_bundle.mjs.map` |
 | `wasm/vision_wasm_internal.js` | `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm/vision_wasm_internal.js` |
 | `wasm/vision_wasm_internal.wasm` | `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm/vision_wasm_internal.wasm` |
+
+The source map is stored as `vision_bundle_mjs.js.map` because that is the
+relative filename declared by the upstream bundle. Keep
+`tasks-vision@0.10.35.js` byte-for-byte aligned with `vision_bundle.mjs`:
+pretty-printing the generated JavaScript changes line and column positions and
+invalidates the upstream mappings.
 
 ### MediaPipe model files
 

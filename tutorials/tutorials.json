@@ -29,6 +29,12 @@
   "lab-screenshots": {
      "title": "(internal) Lab screenshots and distance measurements"
   },
+  "video-loader": {
+     "title": "(internal) Seekable Video Loader architecture"
+  },
+  "realtime": {
+     "title": "Realtime Visualizer: How It Works and Why"
+  },
   "aigen-image-labeler": {
      "title": "(internal) AI Gen image labeler"
   },
