@@ -44,6 +44,7 @@ test.describe('Ghostmaxxing homepage story', () => {
   });
 
   test('advances with the dots and the arrows', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/index.html');
     const dots = page.locator('.story__dot');
 
@@ -55,6 +56,30 @@ test.describe('Ghostmaxxing homepage story', () => {
 
     await page.locator('.story__arrow[data-story-step="-1"]').click();
     await expect(dots.nth(4)).toHaveClass(/is-current/);
+  });
+
+  test('keeps its height while lazy-loaded portraits enter the viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/index.html');
+
+    const track = page.locator('#storyTrack');
+    const dots = page.locator('.story__dot');
+    const images = page.locator('.story__image');
+    const initialHeight = await track.evaluate((element) => element.getBoundingClientRect().height);
+
+    for (let index = 0; index < await dots.count(); index += 1) {
+      await dots.nth(index).click();
+      await expect.poll(() => images.nth(index).evaluate(
+        (image) => image.complete && image.naturalWidth > 0,
+      )).toBe(true);
+
+      const height = await track.evaluate((element) => element.getBoundingClientRect().height);
+      expect(
+        Math.abs(height - initialHeight),
+        `carousel height changed after card ${index + 1} loaded`,
+      ).toBeLessThan(1);
+    }
   });
 
   test('reopens on story-card-2 after a reload from another card', async ({ page }) => {

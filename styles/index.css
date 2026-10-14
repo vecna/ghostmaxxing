@@ -436,7 +436,12 @@ body {
     }
 
     .story__image {
-        height: 100%;
+        /* Keep the visual 4:5 frame after lazy-loaded files reveal their
+           natural (and deliberately varied) aspect ratios. Without an
+           explicit ratio the tallest newly loaded portrait grows the grid
+           row, and align-items: stretch then grows every carousel card. */
+        aspect-ratio: 4 / 5;
+        height: auto;
         min-height: var(--story-media);
     }
 
