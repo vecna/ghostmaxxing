@@ -492,6 +492,122 @@ body {
 }
 
 
+/* ---- Primary browser tools ----------------------------------------------
+   These are the two places where a visitor can actively experiment, so they
+   read as a pair rather than as one CTA followed by an easily missed link.
+   They form one poster block: shared frame, loud flat fills, hard edges and
+   no shadows. The descriptions can evolve without carrying layout meaning. */
+.home-tools {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: clamp(2.75rem, 6vw, 4.5rem) 2rem 2.5rem;
+}
+
+.home-tools__kicker {
+    margin: 0 0 .4rem;
+    font-family: var(--mono);
+    font-size: var(--t-meta);
+    font-weight: 600;
+    letter-spacing: var(--ls-meta);
+    text-transform: uppercase;
+}
+
+.home-tools__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin-bottom: 1.75rem;
+    border: 2px solid var(--gm-ink);
+}
+
+.home-tool {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 1rem;
+    min-height: 11rem;
+    padding: 1.4rem;
+    border: 0;
+    background: var(--gm-yellow);
+    color: var(--gm-ink);
+    text-align: left;
+    text-decoration: none;
+}
+
+.home-tool--realtime {
+    border-inline-start: 2px solid var(--gm-ink);
+    background: var(--gm-pink);
+}
+
+.home-tool__index {
+    font-family: var(--mono);
+    font-size: var(--t-meta);
+    font-weight: 600;
+    letter-spacing: var(--ls-meta);
+}
+
+.home-tool__copy {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+}
+
+.home-tool__title {
+    margin: 0 0 .55rem;
+    font-family: var(--serif);
+    font-size: clamp(1.75rem, 3.2vw, 2.6rem);
+    line-height: .98;
+}
+
+.home-tool__description {
+    max-width: 31ch;
+    margin-top: auto;
+    font-size: var(--t-small);
+    line-height: 1.45;
+}
+
+.home-tool__arrow {
+    font-size: 1.45rem;
+    line-height: 1;
+    transition: transform 140ms ease;
+}
+
+.home-tool:hover,
+.home-tool:focus-visible {
+    background: var(--gm-cream);
+}
+
+.home-tool:hover .home-tool__arrow,
+.home-tool:focus-visible .home-tool__arrow {
+    transform: translate(.18rem, -.18rem);
+}
+
+@media (max-width: 680px) {
+    .home-tools {
+        padding-inline: 1.25rem;
+    }
+
+    .home-tools__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-tool--realtime {
+        border-inline-start: 0;
+        border-top: 2px solid var(--gm-ink);
+    }
+
+    .home-tool {
+        min-height: 9.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-tool__arrow {
+        transition: none;
+    }
+}
+
+
 /* ---- "How it works" steps -----------------------------------------------
    Icon, title, a square process illustration, then the explanatory line.
    Icons are UI glyphs borrowed from the lab

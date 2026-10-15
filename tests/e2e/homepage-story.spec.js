@@ -9,6 +9,13 @@ import { test, expect } from '@playwright/test';
 // and a card must not be reachable only by JavaScript.
 
 test.describe('Ghostmaxxing homepage story', () => {
+  test('presents the lab and realtime view as primary tools', async ({ page }) => {
+    await page.goto('/index.html');
+
+    await expect(page.locator('a.home-tool[href="/lab.html"]')).toBeVisible();
+    await expect(page.locator('a.home-tool[href="/realtime.html"]')).toBeVisible();
+  });
+
   test('opens on the second card and keeps every card in the document', async ({ page }) => {
     await page.goto('/index.html');
 
