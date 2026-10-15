@@ -1,12 +1,14 @@
 # Ghostmaxxing
 <!-- coverage-badge:start -->
-[![Unit Test Coverage](https://img.shields.io/badge/coverage-88.94%25-green)](coverage/)
+[![Unit Test Coverage](https://img.shields.io/badge/coverage-83.17%25-green)](coverage/)
 <!-- coverage-badge:end -->
 
 [![CI](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml/badge.svg)](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-JSDoc-blue)](https://ghostmaxxing.vecna.eu/docs/)
 [![Source](https://img.shields.io/badge/source-GitHub-black)](https://github.com/vecna/ghostmaxxing)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue)](#license)
+
+**Release:** 1.0.0 · 15 October 2026
 
 **Ghostmaxxing** is a static, browser-side lab for testing face-recognition
 camouflage. Point a webcam at your face, save a baseline, change how you look —

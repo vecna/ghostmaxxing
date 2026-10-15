@@ -2,10 +2,10 @@
  * ==Ghostyle==
  * @name         Face Brush
  * @slug         brush
- * @version      0.2.0
+ * @version      1.0.0
  * @author       vecna
  * @license      AGPL-3.0-only
- * @release_date 2026-07-04
+ * @release_date 2026-10-15
  * @description  Hold-to-paint brush anchored to face landmarks. Marks track the face and are scored live by the recognition pipeline; bake a promising state into a static Ghostyle.
  * @technique    freehand
  * @supports     2d, params

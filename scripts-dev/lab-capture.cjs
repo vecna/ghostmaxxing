@@ -27,6 +27,7 @@
  *   node scripts-dev/lab-capture.cjs shots   --baseline clean.jpg --dazzled painted.jpg
  *
  * History:
+ *   1.0.0  2026-10-15  Stable release.
  *   0.8    2026-09-07  measure/shots/probe over the figureN Y4M fixtures.
  *   0.9    2026-09-15  render added for the homepage story cards.
  *   0.9.1  2026-09-18  Explicit file inputs (--baseline, --dazzled) replace
@@ -51,7 +52,7 @@ const { spawnSync } = require('node:child_process');
 const httpServer = require('http-server');
 const { chromium } = require('@playwright/test');
 
-const VERSION = '0.9.3';
+const VERSION = '1.0.0';
 
 /**
  * render's browser window. 4:3, like the fake webcam frame, so the feed fills

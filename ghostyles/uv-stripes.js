@@ -1,9 +1,9 @@
 /**
  * ==Ghostyle==
  * @name         UV Stripes
- * @version      0.3.0
+ * @version      1.0.0
  * @author       edne
- * @release_date 2026-05-04
+ * @release_date 2026-10-15
  * @description  Strisce/chevron oblique disegnate sul volto in spazio UV canonico.
  * ==/Ghostyle==
  */

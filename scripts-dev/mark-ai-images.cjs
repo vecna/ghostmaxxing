@@ -4,13 +4,13 @@
  * @example node scripts-dev/mark-ai-images.cjs --size 15% --dry-run
  * @example node scripts-dev/mark-ai-images.cjs --size 160 path/to/images
  * @example node scripts-dev/mark-ai-images.cjs --padding-right 40 path/to/images
- * @version 0.9.4
+ * @version 1.0.0
  */
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const { createCanvas, loadImage, registerFont } = require('canvas');
-const VERSION = '0.9.4';
+const VERSION = '1.0.0';
 const ROOT = path.resolve(__dirname, '..');
 const DEFAULT = path.join(ROOT, 'tests/fixtures/synthetic-faces');
 let palette;

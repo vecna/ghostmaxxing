@@ -1,9 +1,9 @@
 # Ghostmaxxing Brand Voice
 
-Version: 0.9.11  
+Version: 1.0.0<br>
 Status: current internal standard  
 Language standard: clear international English; UK and US spelling may coexist  
-Last updated: September 2026
+Last updated: 15 October 2026
 
 ## Purpose
 

@@ -1,7 +1,7 @@
 # Ghostmaxxing technical reference
 
-> Version 0.9.11
-> Last updated: October 2026
+> Version 1.0.0
+> Last updated: 15 October 2026
 > Functional documentation: [use the tools and understand the results](/docs/)
 
 Ghostmaxxing is a static browser lab for testing how selected face-analysis models respond to visible interventions. This site is the generated developer reference. It documents runtime modules, functions, parameters, events, and the Ghostyle extension contract.

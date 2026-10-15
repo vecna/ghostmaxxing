@@ -1,6 +1,6 @@
 # Development and maintenance scripts
 
-Version 0.9.11 · 1st October 2026
+Version 1.0.0 · 15 October 2026
 
 This guide describes development and maintenance scripts, together with the relevant commands in `package.json`.
 
@@ -165,7 +165,7 @@ The English text becomes the gettext `msgid`. Context, notes, keys and Italian t
 
 The extractor locates the literal `export const messages = ` and the following newline plus `};`, then evaluates the extracted object in a VM context. A formatting or catalog-shape change can produce `messages export not found`, `messages object terminator not found` or an evaluation error.
 
-The command creates `translations/` if necessary and overwrites both outputs. It does not import completed translations, call Crowdin, translate new strings or extract documentation prose. The POT header currently contains a hardcoded project version of `0.1.0`, while the supplied package declares `1.0.0`.
+The command creates `translations/` if necessary and overwrites both outputs. It does not import completed translations, call Crowdin, translate new strings or extract documentation prose. The POT header contains the hardcoded project release version and must stay aligned with `package.json`.
 
 Review the resulting diff, string count and language columns before using the files in the translation workflow. Functional documentation needs a separate prose translation workflow.
 

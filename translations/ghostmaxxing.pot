@@ -4,8 +4,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Ghostmaxxing 0.9.11\n"
-"POT-Creation-Date: 2026-09-05\n"
+"Project-Id-Version: Ghostmaxxing 1.0.0\n"
+"POT-Creation-Date: 2026-10-15\n"
 "Language-Team: NotYetExisting <translators at vecna dot eu>\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 
@@ -670,6 +670,38 @@ msgstr ""
 #. it: Risultati e clip pubblicati dalla community. Caricati dal server.
 #: lab.html:183
 msgid "Results and clips the community has published. Loaded from the server."
+msgstr ""
+
+#. key: gallery_loading_status
+#. it: Caricamento galleria…
+#: lab.html
+#: lab-js/gallery.js
+msgid "Loading gallery…"
+msgstr ""
+
+#. key: gallery_empty_status
+#. it: Non ci sono ancora immagini pubblicate.
+#: lab-js/gallery.js
+msgid "No published pictures yet."
+msgstr ""
+
+#. key: gallery_load_failed_status
+#. it: Impossibile caricare la galleria da questo server.
+#: lab-js/gallery.js
+msgid "Could not load the gallery from this server."
+msgstr ""
+
+#. key: gallery_production_fallback
+#. it: Clicca per caricare da ghostmaxxing.vecna.eu
+#: lab.html
+#: lab-js/gallery.js
+msgid "Click to pull from ghostmaxxing.vecna.eu"
+msgstr ""
+
+#. key: gallery_image_alt
+#. it: Immagine della comunità Ghostmaxxing
+#: lab-js/gallery.js
+msgid "Ghostmaxxing community image"
 msgstr ""
 
 #. key: gallery_demo_broke
@@ -1897,9 +1929,9 @@ msgid "[auto-find-loop] tick error:"
 msgstr ""
 
 #. key: loader_page_title
-#. it: Ghostmaxxing | Loader video
+#. it: Loader video — Ghostmaxxing
 #: loader.html:7
-msgid "Ghostmaxxing | Video Loader"
+msgid "Video Loader — Ghostmaxxing"
 msgstr ""
 
 #. Glossary: MP4, face engines, 2D, 3D.
