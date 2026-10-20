@@ -156,25 +156,6 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
 .sg-vocab ul { margin: 0; padding: 0; list-style: none; font-size: var(--t-small); line-height: 1.9; }
 .sg-vocab .avoid li { text-decoration: line-through; text-decoration-color: var(--gm-pink); }
 
-/* --- four pieces ---------------------------------------------------------- */
-.pieces { --spine-w: clamp(56px, 7vw, 96px); margin-top: 20px; border: 2px solid var(--gm-ink); background: var(--gm-bg); container-type: inline-size; }
-.pieces__row { display: grid; align-items: center; grid-template-columns: 1fr var(--spine-w) 1fr; position: relative; padding: 24px 0; }
-.pieces__row::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 14px; margin-left: -7px; background: var(--gm-green); z-index: 0; }
-.pieces__node { grid-column: 1; justify-self: end; position: relative; z-index: 1; width: 104px; }
-.pieces__branch { grid-column: 2; height: 6px; background: var(--gm-green); align-self: center; }
-.pieces__dossier { grid-column: 3; padding: 0 8px 0 18px; }
-.pieces__row--flip .pieces__node { grid-column: 3; justify-self: start; }
-.pieces__row--flip .pieces__dossier { grid-column: 1; padding: 0 18px 0 8px; text-align: right; }
-.pieces__dossier h4 { font-family: var(--serif); font-size: var(--t-h3); font-weight: 700; color: var(--gm-ink); margin: 0 0 3px; line-height: 1.1; }
-.pieces__dossier p { margin: 0; font-size: var(--t-small); color: var(--gm-text); }
-@container (max-width: 620px) {
-  .pieces__row, .pieces__row--flip { grid-template-columns: 1fr; justify-items: center; padding: 20px 0; }
-  .pieces__node, .pieces__row--flip .pieces__node { grid-column: 1; justify-self: center; }
-  .pieces__dossier, .pieces__row--flip .pieces__dossier { grid-column: 1; text-align: center; padding: 12px 18px 0; max-width: 46ch; background: var(--gm-bg); position: relative; z-index: 1; }
-  .pieces__branch { display: none; }
-}
-.sg-resize { resize: horizontal; overflow: auto; min-width: 300px; max-width: 100%; }
-
 /* --- anatomy -------------------------------------------------------------- */
 .sg-anat { display: grid; grid-template-columns: minmax(230px, 330px) 1fr; gap: 26px; align-items: start; margin-top: 20px; }
 @media (max-width: 760px) { .sg-anat { grid-template-columns: 1fr; } }
@@ -203,13 +184,13 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   <div class="sg-head__bar">
     <div>
       <div style="font-family:var(--serif);font-size:30px;font-weight:700;line-height:1;color:var(--gm-ink)"><a href="/">gst</a>mxx</div>
-      <div class="sg-meta" style="margin-top:4px">Ghostmaxxing design system · v2.0</div>
+      <div class="sg-meta" style="margin-top:4px">Ghostmaxxing design specimens · reviewed 20 October 2026</div>
     </div>
-    <div class="sg-meta">Supersedes logo.html, field-guide.html, colors.css, typography.css</div>
+    <div class="sg-meta">Scope: software site; NINA maintains its own workshop and reporting pages</div>
   </div>
 
-  <h1 class="sg-head__title">Visual StyleGuide: a file written for AI-agent.</h1>
-  <p class="sg-head__lead">Voice, colour, type, logo and camera components for Ghostmaxxing, shown as live examples.</p>
+  <h1 class="sg-head__title">Ghostmaxxing visual styleguide</h1>
+  <p class="sg-head__lead">Colour, type, logo and camera specimens for Ghostmaxxing. This is a partial component reference, not a complete inventory of the live site. See <a href="/tutorials/brand-voice.md">brand voice</a> for editorial rules and <a href="/tutorials/visual-direction.md">visual direction</a> for current design intent.</p>
 
   <nav class="sg-toc">
     <a href="#system"><b>01</b> The system</a>
@@ -238,15 +219,15 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   <hr class="sg-rule">
   <div class="sg-intro">
     <p>Four layers, each depending only on the layers above it. <strong>a component never positions itself on a page.</strong> <code>cameras.css</code> draws a camera and sets the state of its lens; where that camera goes is <code>genealogy.css</code>'s business.</p>
-    <p>One stylesheet link per page. <code>styles.css</code> is the root import list and the import order <em>is</em> the architecture.</p>
+    <p>Load the shared stylesheet plus the page styles required by the actual markup. <code>styles.css</code> is the root import list and the import order <em>is</em> the architecture.</p>
   </div>
 
   <table>
     <tr><th>Layer</th><th>File</th><th>Holds</th></tr>
-    <tr><td>tokens</td><td><code>tokens/colors.css</code><br><code>tokens/typography.css</code></td><td>Colour and type. Nothing but <code>:root</code>. <strong>Icons are assets, not tokens</strong> — they do not go here.</td></tr>
+    <tr><td>tokens</td><td><code>styles/tokens.css</code></td><td>Colour and type. Nothing but <code>:root</code>. <strong>Icons are assets, not tokens</strong> — they do not go here.</td></tr>
     <tr><td>base</td><td><code>base.css</code></td><td>The reset. Knows about no page and no component.</td></tr>
-    <tr><td>components</td><td><code>components/logo.css</code><br><code>components/cameras.css</code></td><td>Used by more than one page. Draw and state, never placement.</td></tr>
-    <tr><td>pages</td><td><code>pages/genealogy.css</code><br><code>pages/homepage.css</code></td><td>One per page. Layout only.</td></tr>
+    <tr><td>components</td><td><code>styles/logo.css</code><br><code>styles/cameras.css</code></td><td>Used by more than one page. Draw and state, never placement.</td></tr>
+    <tr><td>pages</td><td><code>styles/genealogy.css</code><br><code>styles/index.css</code></td><td>Page-specific layout and presentation. Some pages share additional styles.</td></tr>
   </table>
 
   <p class="sg-card__note" style="margin-top:16px;max-width:46em">A <em>design token</em> names a value such as a colour, size or typeface. Keep component rules out of token files.</p>
@@ -332,11 +313,11 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   <p class="sg-num">03</p>
   <h2 class="sg-sec__title">Colour</h2>
   <hr class="sg-rule">
-  <p class="sg-card__note" style="max-width:56em;margin-bottom:4px"><strong>One palette, one file.</strong> <code>styles/tokens.css</code> is the only place a <code>--gm-*</code> value may be defined. It absorbed <code>colors.css</code> and <code>typography.css</code>, and a third copy that was hiding in a <code>:root</code> block in <code>pages.css</code> — which is why about.html and report.html used to render a different orange from the homepage. The swatches below are read live from the stylesheet, so if one is wrong the token is wrong.</p>
+  <p class="sg-card__note" style="max-width:56em;margin-bottom:4px"><strong>One palette, one file.</strong> <code>styles/tokens.css</code> is the only place a <code>--gm-*</code> value may be defined. It absorbed <code>colors.css</code> and <code>typography.css</code>, and a third copy that was hiding in a <code>:root</code> block in <code>pages.css</code>. Earlier pages used inconsistent palettes. The reporting page now belongs to NINA. The swatches below are read live from the stylesheet, so if one is wrong the token is wrong.</p>
   <p class="sg-card__note" style="max-width:56em"><strong>One accepted anomaly.</strong> The smoke and pyre motifs bake four greens as literal hex across roughly 2,000 <code>&lt;circle&gt;</code> elements, and they are the <em>old</em> greens: <code>#0a4d3a</code>, <code>#063f32</code>, <code>#04302a</code>, <code>#031f19</code>. They are painted files behind <code>background-image</code>, so they cannot follow a token. Re-exporting them to shift four dark greens by a few percent was judged not worth the risk to a keeper page. They are declared as <code>--gm-smoke-1</code>…<code>4</code> so the values are centralized and greppable. <b>Do not use them for anything else.</b> If the motifs are ever re-exported, re-export to the <code>--gm-green-*</code> ramp and delete those four tokens.</p>
   <div class="sg-intro">
     <p>One background: surveillance orange. A <strong>poster-wall</strong> colour — a public notice pasted in the street — not neon, not cyberpunk. Everything else is seated on it.</p>
-    <p>Every swatch below is read from the stylesheet at runtime, so this page cannot drift from the token file the way a hardcoded chart does. A swatch outlined in red means that token is not defined.</p>
+    <p>Every swatch below is read from the stylesheet at runtime, so their values follow the token file. The surrounding prose and specimens still need review. A swatch outlined in red means that token is not defined.</p>
   </div>
 
   <div class="sg-pal" id="sg-palette"></div>
@@ -407,7 +388,7 @@ th { font-family: var(--mono); font-size: var(--t-meta); letter-spacing: var(--l
   <h3 class="sg-sub">The scale, rendered live</h3>
   <div id="sg-scale"></div>
 
-  <p class="sg-card__note" style="margin-top:16px;max-width:48em">Only the four display steps are fluid, and all of them interpolate across the same <code>400px → 1440px</code> range — which is why they scale in step instead of crossing over at some awkward width. <strong>Reading sizes are fixed on purpose:</strong> body text that grows with the window gets harder to read, not easier.</p>
+  <p class="sg-card__note" style="margin-top:16px;max-width:48em">The display steps and lead token are fluid and interpolate across the same <code>400px → 1440px</code> range — which is why they scale in step instead of crossing over at some awkward width. <strong>Reading sizes are fixed on purpose:</strong> body text that grows with the window gets harder to read, not easier.</p>
 
   <p class="sg-card__note" style="margin-top:12px;max-width:48em">Atkinson ships two weights. Asking for 500, 600 or 650 makes the browser synthesise one, and the result is visibly uneven against the real 400 beside it.</p>
 </section>
@@ -585,7 +566,7 @@ glint = 0.17 × lens radius,
       <h3 class="sg-sub">The id convention</h3>
       <pre style="margin-top:14px">&lt;circle <span class="k">class</span>=<span class="s">"cam-iris"</span> <span class="k">id</span>=<span class="s">"iris-dome"</span>
         cx=<span class="s">"50"</span> cy=<span class="s">"44"</span> r=<span class="s">"6.6"</span>/&gt;</pre>
-      <p class="sg-card__note" style="margin-top:12px"><code>&lt;symbol&gt;</code> plus <code>&lt;use&gt;</code> puts the copy in a shadow tree, so <code>#iris-dome</code> becomes unreachable and duplicate ids collide. Each camera appears once per page — inline the SVG and write the id by hand. If a model ever has to appear twice, clone a <code>&lt;template&gt;</code> in script and prefix the ids, which is what this page does for its own repeated specimens.</p>
+      <p class="sg-card__note" style="margin-top:12px"><code>&lt;symbol&gt;</code> plus <code>&lt;use&gt;</code> puts the copy in a shadow tree, so <code>#iris-dome</code> becomes unreachable and duplicate ids collide. A camera may appear in both generated chart layouts; keep every inline instance’s IDs unique. If a model ever has to appear twice, clone a <code>&lt;template&gt;</code> in script and prefix the ids, which is what this page does for its own repeated specimens.</p>
     </div>
   </div>
 </section>
@@ -611,7 +592,7 @@ glint = 0.17 × lens radius,
       <p class="sg-card__id">#iris-street</p>
       <div class="sg-stage" data-lens="live"><div data-cam="street" data-suffix="f"></div></div>
       <p class="sg-card__name">Street pole</p>
-      <p class="sg-card__note">Era of vision, 2021 →. The only model whose mount is longer than its housing: it is street furniture first.</p>
+      <p class="sg-card__note">Diagram association, not a hardware deployment date. The only model whose mount is longer than its housing: it is street furniture first.</p>
     </div>
     <div class="sg-card">
       <p class="sg-card__id">#iris-glasses-l / -r</p>
@@ -623,25 +604,25 @@ glint = 0.17 × lens radius,
       <p class="sg-card__id">#iris-pill</p>
       <div class="sg-stage" data-lens="live"><div data-cam="pill" data-suffix="f"></div></div>
       <p class="sg-card__name">Depth sensor array</p>
-      <p class="sg-card__note">Era of depth, 2017–2020. The dot field is the projector and stays dark in every state — it emits, it does not read.</p>
+      <p class="sg-card__note">Diagram association, not a hardware deployment date. The dot field is the projector and stays dark in every state — it emits, it does not read.</p>
     </div>
     <div class="sg-card">
       <p class="sg-card__id">#iris-cube</p>
       <div class="sg-stage" data-lens="live"><div data-cam="cube" data-suffix="f"></div></div>
       <p class="sg-card__name">Edge AI cube</p>
-      <p class="sg-card__note">Era of learning, 2014–2016. The status dot is a <code>.cam-dot</code>, never an iris.</p>
+      <p class="sg-card__note">Diagram association, not a hardware deployment date. The status dot is a <code>.cam-dot</code>, never an iris.</p>
     </div>
     <div class="sg-card">
       <p class="sg-card__id">#iris-dome</p>
       <div class="sg-stage" data-lens="live"><div data-cam="dome" data-suffix="f"></div></div>
       <p class="sg-card__name">Ceiling dome</p>
-      <p class="sg-card__note">Era of measurement, 2010–2013. The model whose whole point is that you cannot tell which way it is looking — giving it a visible iris is a small editorial decision, taken knowingly.</p>
+      <p class="sg-card__note">Diagram association, not a hardware deployment date. The model whose whole point is that you cannot tell which way it is looking — giving it a visible iris is a small editorial decision, taken knowingly.</p>
     </div>
     <div class="sg-card">
       <p class="sg-card__id">#iris-bullet</p>
       <div class="sg-stage" data-lens="live"><div data-cam="bullet" data-suffix="f"></div></div>
       <p class="sg-card__name">Bullet CCTV</p>
-      <p class="sg-card__note">Era of contrast, 2001–2009. The oldest housing in the tree, and the one most people can name on sight.</p>
+      <p class="sg-card__note">Bullet housing, used as a diagram symbol. Its shape does not date the hardware or establish a deployment history.</p>
     </div>
   </div>
 </section>
@@ -653,7 +634,7 @@ glint = 0.17 × lens radius,
   <h2 class="sg-sec__title">Lens states</h2>
   <hr class="sg-rule">
   <div class="sg-intro">
-    <p>Three, and there will not be a fourth. Set <code>data-lens</code> on the <code>&lt;svg&gt;</code> or on <em>any</em> ancestor — on an era row it switches every camera in that row at once.</p>
+    <p>Three states are currently documented in the camera component. Set <code>data-lens</code> on the <code>&lt;svg&gt;</code> or on <em>any</em> ancestor — on an era row it switches every camera in that row at once.</p>
   </div>
 
   <div class="sg-grid sg-grid--3">
@@ -691,10 +672,10 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
 <!-- 10 ==================================================================== -->
 <section class="sg-sec sg-wrap" id="stamps">
   <p class="sg-num">10</p>
-  <h2 class="sg-sec__title">Stamps</h2>
+  <h2 class="sg-sec__title">Stamps: experimental specimen</h2>
   <hr class="sg-rule">
   <div class="sg-intro">
-    <p>One class, <code>.gm-stamp</code>, for every camera caption. <strong>There is no second kind of label.</strong> The curve is a <em>property</em> of a stamp, not a separate species — below 700px the same element renders flat, because curved text under a small icon is decoration pretending to be a label.</p>
+    <p>This specimen uses <code>.gm-stamp</code>. The current genealogy has its own generated labels. The curve is a <em>property</em> of a stamp, not a separate species — below 700px the same element renders flat, because curved text under a small icon is decoration pretending to be a label.</p>
     <p>Every knob is a custom property. Set them on the <code>.gm-stamp</code>, never from script.</p>
   </div>
 
@@ -737,58 +718,11 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
 <!-- 11 ==================================================================== -->
 <section class="sg-sec sg-wrap" id="layout">
   <p class="sg-num">11</p>
-  <h2 class="sg-sec__title">Layout — the four pieces</h2>
+  <h2 class="sg-sec__title">Layout: the current genealogy</h2>
   <hr class="sg-rule">
-  <div class="sg-intro">
-    <p>The genealogy tree is not one drawing. It is four independent pieces, which is the whole reason a single set of assets serves both layouts.</p>
-    <p><strong>Drag the handle at the bottom-right of the frame</strong> to narrow it. Nothing swaps files and nothing is redrawn — only the branch changes length, and below 620px it disappears entirely and the camera sits directly on the trunk.</p>
-  </div>
-
-  <table>
-    <tr><th>Piece</th><th>What it is</th><th>Desktop</th><th>Mobile</th></tr>
-    <tr><td><code>spine</code></td><td>The trunk. A repeating vertical texture with no height of its own, so it follows whatever the row grows to.</td><td>centre track</td><td>centre track</td></tr>
-    <tr><td><code>branch</code></td><td>Trunk to camera. <strong>The only piece that differs between layouts.</strong></td><td>long, left or right</td><td>none</td></tr>
-    <tr><td><code>node</code></td><td>Camera plus its stamp.</td><td>side column</td><td>on the trunk</td></tr>
-    <tr><td><code>dossier</code></td><td>Dates, title, what defeated it, limits.</td><td>opposite column</td><td>below, full width</td></tr>
-  </table>
-
-  <div class="pieces sg-resize">
-    <div class="pieces__row">
-      <div class="pieces__node"><div data-cam="pill" data-suffix="l1"></div></div>
-      <div class="pieces__branch"></div>
-      <div class="pieces__dossier"><h4>Depth &amp; near-infrared</h4><p>2017–2020 · defeated 2021</p></div>
-    </div>
-    <div class="pieces__row pieces__row--flip">
-      <div class="pieces__node"><div data-cam="cube" data-suffix="l2"></div></div>
-      <div class="pieces__branch"></div>
-      <div class="pieces__dossier"><h4>CNN face embeddings</h4><p>2014–2016 · defeated 2016</p></div>
-    </div>
-    <div class="pieces__row">
-      <div class="pieces__node"><div data-cam="dome" data-suffix="l3"></div></div>
-      <div class="pieces__branch"></div>
-      <div class="pieces__dossier"><h4>Landmark geometry</h4><p>2010–2013 · defeated 2014</p></div>
-    </div>
-  </div>
-
-  <div class="sg-grid sg-grid--2">
-    <div>
-      <pre>.era {
-  <span class="k">display</span>: grid;
-  <span class="k">grid-template-columns</span>: 1fr var(--spine-w) 1fr;
-}
-<span class="k">:root</span> { --spine-w: clamp(56px, 7vw, 96px); }
-
-<span class="k">@media</span> (max-width: 620px) {
-  .era { <span class="k">grid-template-columns</span>: 1fr; }
-  .era__branch { <span class="k">display</span>: none; }
-}</pre>
-    </div>
-    <div>
-      <p class="sg-card__note"><strong>Three tracks, not twelve.</strong> There is no 12-column convention in this codebase to stay consistent with, and the spine has a requirement fractional tracks break: the trunk's stroke weight must not scale with the viewport. A trunk that is 14px at 1440 and 9px at 900 reads as a botched export.</p>
-      <p class="sg-card__note" style="margin-top:12px"><strong>The trunk stays centred on mobile.</strong> A left rail would waste less width, but the canopy is symmetric and centred by construction and would then need a second version. Centred in both means the canopy is drawn once.</p>
-      <p class="sg-card__note" style="margin-top:12px">Note what is absent: no fixed artboard, no <code>transform: scale()</code>, no measured heights. The previous page scaled a 1200px board to fit, which on a 390px phone is <code>0.285</code> — 16px body text arriving at 4.6px.</p>
-    </div>
-  </div>
+  <p>The current <a href="/genealogy.html">genealogy</a> is generated from <code>references/REFERENCES.json</code> and <code>projects/PROJECTS.json</code> by <code>scripts-dev/build-genealogy.py</code>. It plots dated works against technology-family rows, with wide and narrow SVG layouts generated from the same data.</p>
+  <p>Edit the datasets or generator and run <code>npm run update:genealogy</code>. Do not hand-edit the generated HTML or CSS. Check both layouts and archive links after regeneration. A marker identifies a documented work, not a defeat of an entire technology family.</p>
+  <p>The old smoke spine, alternating dossiers and branch mockup have been retired from this guide because they no longer describe the page. The camera specimens elsewhere remain useful independently of that layout.</p>
 </section>
 
 
@@ -808,7 +742,7 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
   <table>
     <tr><th>The file is…</th><th>Through <code>&lt;img&gt;</code> or <code>background-image</code></th><th>Inlined in the page</th></tr>
     <tr>
-      <td><b>painted</b> — hex baked into <code>fill</code>/<code>stroke</code> attributes<br><span class="sg-card__note">motifs, logo marks, report figures</span></td>
+      <td><b>painted</b> — hex baked into <code>fill</code>/<code>stroke</code> attributes<br><span class="sg-card__note">motifs and logo marks</span></td>
       <td>correct</td>
       <td>works, but ignores tokens — it will not follow a palette change</td>
     </tr>
@@ -858,13 +792,10 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
     <tr><th>Path</th><th>Kind</th><th>How to place it</th></tr>
     <tr><td><code>images/icons/cam-*.svg</code></td><td>class-driven</td><td><b>Inline only.</b> Six files, the source of truth for the fleet.</td></tr>
     <tr><td><code>images/logo/mark-*.svg</code></td><td>painted</td><td><code>&lt;img&gt;</code>. Pick the <code>-ondark</code> / <code>-onlight</code> / <code>-ink</code> / <code>-cream</code> cut by surface.</td></tr>
-    <tr><td><code>images/motifs/*.svg</code></td><td>painted</td><td><code>background-image</code>, as <code>genealogy.css</code> does.</td></tr>
-    <tr><td><code>images/report/*.svg</code></td><td>painted</td><td><code>&lt;img&gt;</code>.</td></tr>
-    <tr><td>the canopy, in <code>genealogy.html</code></td><td>class-driven</td><td><b>Inline only.</b> Five of its internal classes are painted from <code>genealogy.css</code>: socket, glint, lens, pupil, spark.</td></tr>
-    <tr><td><code>#gm-wind</code>, in <code>genealogy.html</code></td><td>self-painting, in a <code>&lt;defs&gt;</code></td><td><b>Inline once, <code>&lt;use&gt;</code> four times.</b> It cannot be a file — zero fill attributes, zero hex, and through <code>&lt;img&gt;</code> it is solid black blobs. So the painting moved onto the groups as inline <code>style</code> with <code>var()</code>, which <em>does</em> cross a <code>&lt;use&gt;</code> shadow boundary, and the widths onto the paths as attributes. 140 KB to 30 KB, pixel-identical.</td></tr>
+    <tr><td><code>images/motifs/*.svg</code></td><td>painted</td><td>Painted decorative assets; use only where the current page calls for that motif.</td></tr>
   </table>
 
-  <p class="sg-card__note" style="margin-top:18px;max-width:56em"><strong>Naming trap.</strong> <code>images/motifs/canopy.svg</code> is the <em>tree</em> head, from the abandoned direction. The canopy inlined in <code>genealogy.html</code> is the <em>plume</em> head. If that one is ever extracted, call it <code>plume-head.svg</code> — do not overwrite.</p>
+
 </section>
 
 
@@ -874,8 +805,8 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
   <h2 class="sg-sec__title">Site chrome</h2>
   <hr class="sg-rule">
   <div class="sg-intro">
-    <p>This section absorbs the Navbar card from <code>logo.html</code>. One header and one footer, in <code>styles/chrome.css</code>, on every content page.</p>
-    <p>The markup block is <b>byte-identical</b> across pages so a find-and-replace still works. Only two things may differ: <code>aria-current="page"</code> on the link to the current page, and the optional <code>.gm-site-nav__extra</code> slot.</p>
+    <p>This section absorbs the Navbar card from <code>logo.html</code>. The shared content chrome is styled in <code>styles/chrome.css</code>; this specimen page and tool pages have their own presentation.</p>
+    <p>Pages share a chrome pattern, not byte-identical markup. Review generators and templates alongside hand-authored pages; preserve current-page markers, language destinations and page-specific slots.</p>
   </div>
 
   <h3 class="sg-sub">Header</h3>
@@ -884,7 +815,7 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
     <tr><td>Lockup</td><td><code>.gm-site-wordmark</code></td><td><code>mark-color.svg</code> at 40px, title in <code>--serif</code> 700, subtitle in caps at <code>.68rem</code>.</td></tr>
     <tr><td>Dropdown</td><td><code>.gm-site-menu</code></td><td>Two columns, Informative and Technology. Opened by <code>nav.js</code>, which toggles <code>.is-open</code>.</td></tr>
     <tr><td>Chip</td><td><code>.gm-site-chip</code></td><td>Secondary destinations. Square, outlined, dotted. See §14 for why it is not a second pill.</td></tr>
-    <tr><td>CTA</td><td><code>.gm-site-cta</code></td><td>Pink pill, <b>ink</b> text, 2px ink border. The only rounded thing in the system. One per page — see §14.</td></tr>
+    <tr><td>CTA</td><td><code>.gm-site-cta</code></td><td>Pink pill, <b>ink</b> text, 2px ink border. The deliberate rounded CTA in the content chrome. Tool controls and camera housings have separate geometry. One per header — see §14.</td></tr>
   </table>
 
   <h3 class="sg-sub" style="margin-top:26px">Footer</h3>
@@ -904,7 +835,7 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
   <h2 class="sg-sec__title">Actions &amp; the other spaces</h2>
   <hr class="sg-rule">
   <div class="sg-intro">
-    <p>The site has exactly <b>one</b> filled call to action. Everything else that looks like a button is a chip, and the difference is carried by shape, not colour.</p>
+    <p>The shared content header gives one consequential action the filled CTA treatment. Other pages and tool controls have their own action hierarchy.</p>
     <p>This is not a stylistic preference. Colour in this system is already load-bearing — yellow is a live iris, pink is an interruption — so a second coloured button would have to either steal one of those meanings or invent a third. Shape is free.</p>
   </div>
 
@@ -930,27 +861,26 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
     <tr><td><code>.gm-site-cta</code></td><td>Filled pink, round, 2px ink border, ink text</td><td><b>One per page.</b> The consequential action. Pink because pink means interruption, and leaking to the node <em>is</em> the interruption — colour and destination agree.</td></tr>
     <tr><td><code>.gm-site-chip</code></td><td>Transparent, square, 2px ink border, ink text, small dot</td><td>Secondary destinations. Costs no accent. The dot is a destination marker, never a state — override with <code>--gm-chip-dot</code>.</td></tr>
   </table>
-  <p class="sg-card__note" style="max-width:56em;margin-top:12px">The pill is the only rounded thing in the system. That exception is what makes it read as the primary action; it is not a licence to round anything else.</p>
+  <p class="sg-card__note" style="max-width:56em;margin-top:12px">The pill is a deliberate exception for the content CTA, not a ban on curved camera housings or functional tool controls. That exception is what makes it read as the primary action; it is not a licence to round anything else.</p>
 
   <h3 class="sg-sub" style="margin-top:26px">Order in the navbar</h3>
   <pre>&lt;a class="gm-site-chip" href="…" rel="me"&gt;Fediverse ↗&lt;/a&gt;
 &lt;div class="gm-site-nav__group"&gt;… Know more ▾ …&lt;/div&gt;
-&lt;a class="gm-site-cta" href="https://sindacato.nina.watch/en/ghostati/report/"&gt;Leak to us ↗&lt;/a&gt;</pre>
-  <p style="max-width:56em">Commitment rises left to right: follow us, read us, tell us something dangerous. The consequential action is last, which in a left-to-right reading is the terminal and strongest position, and it is furthest from the chip so a mis-tap does not land someone on the reporting page by accident.</p>
+&lt;a class="gm-site-cta" href="https://sindacato.nina.watch/en/ghostati/report/"&gt;Read NINA’s reporting guidance ↗&lt;/a&gt;</pre>
+  <p style="max-width:56em">The actions move from public information to a separate confidential reporting service operated by NINA. Name that recipient in new copy. The consequential action is last, which in a left-to-right reading is the terminal and strongest position, and it is furthest from the chip so a mis-tap does not land someone on the reporting page by accident.</p>
   <p class="sg-card__note" style="max-width:56em">The trade-off, stated so it is a choice and not an oversight: DOM order is tab order, so a keyboard user reaches the chip — the least important control — first. Acceptable at three items. If a fourth is ever added, move the chip after the dropdown and keep the CTA last.</p>
 
   <h3 class="sg-sub" style="margin-top:26px">The other spaces</h3>
-  <p style="max-width:56em">Ghostmaxxing lives in three places. They are told apart by <b>ground</b>, not by a new accent — the surface axis is the only one nothing else was using, and each choice means something.</p>
+  <p style="max-width:56em">These are design intentions for Ghostmaxxing surfaces. NINA’s workshop and reporting destinations have independent ownership and styling; do not prescribe their design from this page.</p>
   <table>
     <tr><th>Space</th><th>Ground</th><th>Accent</th><th>Why</th></tr>
     <tr><td>The site</td><td>orange</td><td>pink</td><td>The public wall. A poster, a notice, visible to everyone.</td></tr>
-    <tr><td>The whistleblowing node</td><td>soil</td><td>pink</td><td>Dark, quiet, protected. Pink continues from the button that sent you, and it is semantically exact: this is where the interruption happens.</td></tr>
-    <tr><td>The fediverse presence</td><td>cream</td><td>green-soft</td><td>A reading surface. Ambient, everyday, low stakes.</td></tr>
+    <tr><td>The fediverse presence</td><td>cream</td><td>green-soft</td><td>A reading surface. Calm reading and public distribution. Uploading personal media remains consequential.</td></tr>
   </table>
   <div class="sg-do" style="margin-top:16px">
     <div><b class="no">Never</b><span>Give the fediverse yellow. Yellow is a live iris — it appears in every camera on this site meaning <em>reading, right now</em>. On a social presence it would say the fediverse is watching you.</span></div>
     <div><b class="no">Never</b><span>Use pink as a page ground anywhere. It is reserved, and at 1.06:1 against orange nothing on it would be readable.</span></div>
-    <div><b class="yes">Do</b><span>Put <code>rel="me"</code> on the Fediverse link for Mastodon domain verification.</span></div>
+    <div><b class="yes">Do</b><span>Use <code>rel="me"</code> on an identity-verification link to the actual profile, where supported. A link to the local Fediverse explanation page is not a profile verification link.</span></div>
   </div>
 </section>
 
@@ -958,53 +888,29 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
 <!-- 15 ==================================================================== -->
 <section class="sg-sec sg-wrap" id="decisions">
   <p class="sg-num">15</p>
-  <h2 class="sg-sec__title">Decision log</h2>
+  <h2 class="sg-sec__title">Maintenance decisions</h2>
   <hr class="sg-rule">
-  <div class="sg-intro">
-    <p>What changed, and why — so a future pass does not helpfully restore something that was removed on purpose.</p>
-  </div>
-
-  <table>
-    <tr><th>Decision</th><th>Why</th></tr>
-    <tr><td><strong><code>colors.css</code> is canonical</strong></td><td>Two token files defined different values for the same names. The v2.0 palette in <code>tokens/colors.css</code> wins; the old <code>tokens.css</code> is superseded and should be deleted rather than left to be found.</td></tr>
-    <tr><td><strong><code>styles.css</code> now exists</strong></td><td>The readme described it as the one file to link, but it had never been written. It is the import list, and the order is the layer architecture.</td></tr>
-    <tr><td><strong>Every camera has an iris</strong></td><td>The old set encoded "defeated" as the <em>absence</em> of a bright lens. Absence is a poor representation of anything — the dazzled cameras read as holes. State is now carried by colour.</td></tr>
-    <tr><td><strong>The glasses have no iris</strong></td><td>Their lens body is already cream, so a filled iris makes welding goggles and eats the silhouette. Glare bars instead, plus void irises for geometry.</td></tr>
-    <tr><td><strong>No <code>-alive</code> files</strong></td><td>Nine files describing six objects, kept in sync by hand. State is an attribute now.</td></tr>
-    <tr><td><strong>No mark inside a lens</strong></td><td>Six pink wedges on a spent iris read as an eye sigil rather than as damage, which put a fictional emblem in the middle of an evidence graphic. The shard survives <em>only</em> in the logo, where it has a lens of its own and means something else.</td></tr>
-    <tr><td><strong>No stutter on cameras</strong></td><td>It was never reachable: the old script could only wrap HTML nodes, and the cameras lived inside an <code>&lt;img&gt;</code>. Cut rather than repaired — the system's own rule is that motion is not required and the page should work as a poster. About 450 lines and two coordination surfaces removed with no visible information lost.</td></tr>
-    <tr><td><strong><code>--gm-green-deep</code> named</strong></td><td>The barrel colour of every lens in all nine icons, scattered as a literal with no name.</td></tr>
-    <tr><td><strong><code>plate</code> abolished</strong></td><td>Two label classes doing the same job with different rendering. One class, one meaning, with the curve as a property.</td></tr>
-    <tr><td><strong>The tree SVG is inlined</strong></td><td>An <code>&lt;img&gt;</code> is an isolated document: no external CSS, no hover, no reachable ids. Everything its interior needs to do requires it to be inline.</td></tr>
-  </table>
-
-  <h3 class="sg-sub">Do not reintroduce</h3>
-  <div class="sg-do">
-    <div><b class="no">No</b><span>A mark, shape or sigil inside a camera lens. If a spent lens needs to be louder, make the ring heavier.</span></div>
-    <div><b class="no">No</b><span><code>-alive</code> variant icon files.</span></div>
-    <div><b class="no">No</b><span>A second label class alongside <code>.gm-stamp</code>.</span></div>
-    <div><b class="no">No</b><span>Hardcoded hex in a page, or in a specimen that documents the palette.</span></div>
-    <div><b class="no">No</b><span>A fixed artboard with a fitting transform.</span></div>
-    <div><b class="no">No</b><span>Drop shadows, border radius on panels, or a second gradient.</span></div>
-  </div>
+  <p>Keep exact values in CSS, editorial rules in the brand voice guide, and design intent in the visual direction guide. Do not maintain three independent feature inventories.</p>
+  <ul>
+    <li>Live swatches and type samples read shared tokens. Camera templates below are local copies and require review when the source SVGs change.</li>
+    <li>The curved stamp is an experimental specimen with a page-local runtime. There is no production <code>lab-js/stamp.js</code>; the current genealogy does not need it.</li>
+    <li>Keep this page out of indexing while it remains an internal reference. Its examples must still avoid unsupported research claims.</li>
+    <li>Workshop photos and report illustrations belong to Sindacato after migration. Do not restore removed assets to satisfy obsolete examples.</li>
+  </ul>
 </section>
 
 
-<footer class="sg-foot">
-  <div class="sg-wrap">
-    <h3>Open, and blocking</h3>
-    <table>
-      <tr><th>Item</th><th>State</th></tr>
-      <tr><td><code>--gm-focus-ring</code> is referenced by <code>base.css</code> but not defined in <code>colors.css</code>. An undefined custom property invalidates the whole declaration, so <strong>there is currently no visible focus indicator anywhere on the site.</strong> <code>--gm-border-strong</code>, <code>--gm-panel-strong</code> and <code>--gm-shadow-block</code> are missing the same way.</td><td><strong>Blocking.</strong> Patched in <code>styles.css</code> as a stopgap; move the four into <code>colors.css</code> and delete the block.</td></tr>
-      <tr><td><code>base.css</code> paints <code>body</code> with a radial plus a linear gradient, while the documented shape language says flat colour fields and no gradients.</td><td>Contradiction. One of the two is wrong.</td></tr>
-      <tr><td><code>typography.css</code> loaded three families from <code>fonts.googleapis.com</code> with no metric fallbacks, so text reflowed on swap. JetBrains Mono had no self-hosted copy at all.</td><td><b>Done.</b> All three self-hosted in <code>styles/vendor/</code>, each with an adjusted fallback face named in the token stack. <code>typography.css</code> is deleted.</td></tr>
-      <tr><td><code>assets/icons/cam-*.svg</code> carried baked hex alongside a class-driven copy in <code>images/icons/</code>.</td><td><b>Done.</b> <code>images/</code> is the source of truth, <code>assets/</code> deleted. See §12 for the consequence.</td></tr>
-      <tr><td><code>logo.css</code>'s header comment still refers to <code>ghostutter.css</code>, which no longer exists.</td><td>Stale comment, one-line fix.</td></tr>
-      <tr><td><code>--cam-glare-opacity</code> at <code>0.38</code> reads like scratches; <code>0.5</code> reads like glass but competes with the silhouette.</td><td>Decide on screen.</td></tr>
-      <tr><td>The canopy's teeth are asymmetric — four to the left of the trunk, three offset.</td><td>Deliberate or not, decide.</td></tr>
-    </table>
-  </div>
-</footer>
+<footer class="sg-foot"><div class="sg-wrap">
+  <h3>Verified facts and remaining checks</h3>
+  <p>Reviewed against the migration working tree on 20 October 2026, not an assertion about the unupdated production site.</p>
+  <table>
+    <tr><th>Source fact</th><th>Review consequence</th></tr>
+    <tr><td><code>styles/tokens.css</code> defines the focus ring, strong border, strong panel and shadow token. The shadow value is <code>none</code>.</td><td>The former missing-token blocker is resolved. Still check actual keyboard focus contrast on light and dark surfaces.</td></tr>
+    <tr><td><code>styles/base.css</code> uses a flat body background; fonts are self-hosted under <code>styles/vendor/</code>.</td><td>Remove the old gradient and remote-font warnings. Test font loading and zoom when changing these files.</td></tr>
+    <tr><td>The stamp and camera controls here are specimen runtime, not genealogy dependencies.</td><td>Do not extract new shared code until a production consumer needs it.</td></tr>
+    <tr><td>Static source review cannot certify accessibility or visual rendering.</td><td>Before release, inspect keyboard order, focus, narrow layouts, reduced motion and labels in a browser.</td></tr>
+  </table>
+</div></footer>
 
 
 <!-- The class-driven re-export the readme flags as the correct fix. Cloned with
@@ -1072,7 +978,7 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
      1. fail loudly if the stylesheet did not resolve
      2. mount the demo cameras
      3. read the real token values, so nothing here can drift from the source
-     4. the stamp arc layout — this ONE function belongs in lab-js/stamp.js
+     4. the local stamp arc experiment; no production dependency is implied
 ---------------------------------------------------------------------------- */
 (function () {
   'use strict';
@@ -1271,8 +1177,7 @@ row.dataset.lens = <span class="s">'spent'</span>;                        <span 
   });
 
   /* --- 7. Stamp arc layout -------------------------------------------------
-     THIS is the function that belongs in lab-js/stamp.js — the only script
-     the genealogy page still needs. Everything above is demo wiring. */
+     Local specimen only. The current generated genealogy does not use this function. Everything above is demo wiring. */
 
   function layoutStamps() {
     document.querySelectorAll('.gm-stamp > p').forEach(function (p) {
