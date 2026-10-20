@@ -7,7 +7,7 @@ Last updated: 15 October 2026
 
 ## Purpose
 
-Ghostmaxxing is a public research lab for testing, explaining and questioning face recognition. It combines browser-based AR camouflage, adversarial makeup experiments, local comparison tests, a curated reference archive, a Fediverse presence and a reporting node.
+Ghostmaxxing is a public research lab for testing, explaining and questioning face recognition. It combines browser-based AR camouflage, adversarial makeup experiments, local comparison tests, a curated reference archive, a Fediverse integration and links to NINA’s separate reporting channels.
 
 The project comes from hacking understood politically: an attitude of subversion, inquiry and freedom, not a product category. It contests the normalisation of face recognition in public life. Use *hacking* when it helps explain the project's position. Do not present Ghostmaxxing as a hacker tool, because that narrows the audience and makes the work sound like a technical subculture rather than a public investigation.
 
@@ -334,7 +334,7 @@ Prefer "a local test of face-matching evasion in a browser pipeline" to "face re
 
 ### Project name
 
-**Ghostmaxxing is the project identity.** Use it for the lab, site, archive, reporting node, workshops and the wider project. Keep the same name in public copy, code, URLs and filenames.
+**Ghostmaxxing names the software, lab, software site and archive. Ghòstati! names NINA’s initiative in both Italian and English.** NINA’s Universal Union organises workshops and handles confidential reporting. Keep this distinction in copy and navigation.
 
 ### Ghostyle
 
@@ -446,16 +446,13 @@ Each reference entry should answer:
 
 ## Calls to action
 
-CTA language should reflect increasing commitment and risk.
+The global primary CTA is **Open the lab**. The software site's Tools disclosure lists **Camouflage lab**, **Video analyser** and **Makeup Explorer**. Explain the last as “See how makeup changes face descriptors in real time”. **Fediverse integration** describes the project's publishing infrastructure; it is broader than an invitation to follow one account.
 
-| Level | Reader action | Typical wording | Treatment |
-|---|---|---|---|
-| 1 | Follow public updates | Follow in the Fediverse | Secondary chip |
-| 2 | Try or inspect the work | Open the lab | Contextual primary action |
-| 3 | Read the evidence | Explore the references | Navigation or body link |
-| 4 | Share consequential information | Leak to us | Single site-wide primary CTA |
+Use **Ghòstati! / NINA** for the external navigation group. Identify **NINA's Universal Union** as the organiser of workshops and operator of confidential reporting. Use **Confidential reporting at NINA**, not “Leak to us”. Label the external editorial destinations **Union blog · Italiano** and **Union blog · English** because those blogs cover other initiatives too.
 
-The reporting action is last because it asks the most of the reader, not because it matters least. Never place it where a casual or accidental action could be mistaken for informed contact.
+Use ↗ to mark external destinations consistently. It does not mean the link opens a new tab. Keep the agreed Sindacato-to-lab new-tab behaviour; do not impose it on every external link.
+
+Navigation HTML is deliberately copied into pages and generators. See [navigation-maintenance.md](navigation-maintenance.md) for the maintenance inventory.
 
 ## Style and mechanics
 
@@ -475,7 +472,7 @@ The reporting action is last because it asks the most of the reader, not because
 
 Before publishing, ask:
 
-- Is Ghostmaxxing the only current identity named?
+- Are Ghostmaxxing software and the Ghòstati! initiative attributed to their respective owners?
 - Is Ghostyle defined on first use for a general audience?
 - Does every consequential claim have the right grade?
 - Are the test conditions and limits close to the result?

@@ -23,13 +23,18 @@
 <body class="loader-page">
   <main class="loader-shell" aria-labelledby="loader-title">
     <header class="loader-header">
-      <a class="wordmark" href="/" aria-label="Ghostmaxxing homepage" data-i18n-aria-label="loader_wordmark_label">
-        <span class="wordmark__main">
-          <img class="wordmark__mark" src="/images/logo/mark-ondark.svg" alt="" aria-hidden="true" />
-          <span class="wordmark__title">Ghostmaxxing</span>
-        </span>
-        <span class="wordmark__subtitle">Seekable video analysis</span>
-      </a>
+      <nav class="gm-tool-nav" aria-label="Tool navigation">
+  <a class="gm-tool-nav__home" href="/" aria-label="Ghostmaxxing homepage"><img src="/images/logo/mark-ondark.svg" width="22" height="22" alt="" aria-hidden="true"><span>Ghostmaxxing</span></a>
+<details class="gm-site-nav__group gm-site-nav__group--tools">
+  <summary class="gm-site-nav__trigger" aria-controls="gmToolSwitcher">Tools <span aria-hidden="true">▾</span></summary>
+  <div class="gm-site-menu" id="gmToolSwitcher"><ul>
+  <li><a href="/lab.html">Camouflage lab</a></li>
+  <li><a href="/loader.html" aria-current="page">Video analyser</a></li>
+  <li><a href="/realtime.html">Makeup Explorer</a></li>
+</ul><p class="gm-site-menu__intro">Switching tools leaves this page and its current session.</p></div>
+</details>
+<a href="/docs/guides/video-loader.html">Help</a>
+</nav>
       <div class="loader-header__tools">
         <label class="locale-control">
           <span class="locale-control__flag" aria-hidden="true"></span>
@@ -169,6 +174,7 @@
 
   <script src="/lab-js/vendor/face-api.js"></script>
   <script type="module" src="/lab-js/loader.js"></script>
+  <script src="/lab-js/tool-nav.js" defer></script>
 </body>
 
 </html>

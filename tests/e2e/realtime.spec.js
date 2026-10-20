@@ -189,12 +189,12 @@ test.describe('Realtime page', () => {
     await page.goto('/realtime.html');
 
     const [homeBox, qualityBox] = await Promise.all([
-      page.locator('.realtime-home').boundingBox(),
+      page.locator('.gm-tool-nav').boundingBox(),
       page.locator('#distance-quality').boundingBox(),
     ]);
     expect(homeBox).not.toBeNull();
     expect(qualityBox).not.toBeNull();
-    expect(homeBox.x + homeBox.width).toBeLessThanOrEqual(qualityBox.x);
+    expect(homeBox.y + homeBox.height).toBeLessThanOrEqual(qualityBox.y);
 
     const statusLayout = await page.locator('#status-pill').evaluate((element) => ({
       whiteSpace: getComputedStyle(element).whiteSpace,

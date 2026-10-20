@@ -4,17 +4,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Ghostmaxxing | Latent Space Visualizer for Face Descriptor Drift</title>
+  <title>Makeup Explorer — Ghostmaxxing</title>
   <meta
     name="description"
     content="Real-time visual debugger for face descriptor drift, equalizer deltas, and biometric distance thresholds."
   />
-  <meta property="og:title" content="Ghostmaxxing | Latent Space Visualizer for Face Descriptor Drift" />
+  <meta property="og:title" content="Makeup Explorer — Ghostmaxxing" />
   <meta property="og:description" content="Watch live face descriptor drift, equalizer deltas, and distance thresholds in a real-time visual debugging view." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="/images/social-card.svg" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Ghostmaxxing | Latent Space Visualizer for Face Descriptor Drift" />
+  <meta name="twitter:title" content="Makeup Explorer — Ghostmaxxing" />
   <meta name="twitter:description" content="Watch live face descriptor drift, equalizer deltas, and distance thresholds in a real-time visual debugging view." />
   <meta name="twitter:image" content="/images/social-card.svg" />
   <link rel="icon" type="image/svg+xml" href="/images/logo/mark-onlight.svg">
@@ -24,21 +24,24 @@
   <link rel="stylesheet" href="/styles/realtime.css" />
 </head>
 
-<body>
+<body class="gm-tool-page--realtime">
   <main id="ui-layer" aria-label="Latent space visualizer">
 
     <!-- .selector is a real component in lab.css and supplies the pill this
          link never had. The prototype used .seg--home, which is defined
          nowhere, leaving a transparent glyph on dark video. -->
-    <div class="selector realtime-home">
-      <a class="seg" href="/" aria-label="Home">
-        <svg aria-hidden="true" viewBox="0 0 24 24">
-          <path d="M3 10.5 12 3l9 7.5" />
-          <path d="M5 9.5V21h14V9.5" />
-          <path d="M9.5 21v-6h5v6" />
-        </svg>
-      </a>
-    </div>
+    <nav class="gm-tool-nav" aria-label="Tool navigation">
+  <a class="gm-tool-nav__home" href="/" aria-label="Ghostmaxxing homepage"><img src="/images/logo/mark-ondark.svg" width="22" height="22" alt="" aria-hidden="true"><span>Ghostmaxxing</span></a>
+<details class="gm-site-nav__group gm-site-nav__group--tools">
+  <summary class="gm-site-nav__trigger" aria-controls="gmToolSwitcher">Tools <span aria-hidden="true">▾</span></summary>
+  <div class="gm-site-menu" id="gmToolSwitcher"><ul>
+  <li><a href="/lab.html">Camouflage lab</a></li>
+  <li><a href="/loader.html">Video analyser</a></li>
+  <li><a href="/realtime.html" aria-current="page">Makeup Explorer</a></li>
+</ul><p class="gm-site-menu__intro">Switching tools leaves this page and its current session.</p></div>
+</details>
+<a href="/docs/guides/realtime.html">Help</a>
+</nav>
 
     <section id="graph-container" aria-label="Descriptor distance over time">
       <header class="panel-header">
@@ -229,6 +232,7 @@
 
   <script src="/lab-js/vendor/face-api.js"></script>
   <script type="module" src="/lab-js/realtime/realtime.js"></script>
+  <script src="/lab-js/tool-nav.js" defer></script>
 </body>
 
 </html>

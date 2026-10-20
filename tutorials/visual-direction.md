@@ -371,43 +371,17 @@ Under `prefers-reduced-motion`, show the final informative state immediately. Pr
 
 ## Site chrome
 
-All content pages use the shared Ghostmaxxing header and footer.
+The software site's content header contains the Ghostmaxxing lockup, Tools, Explore, Ghòstati! / NINA, and a pink “Open the lab” CTA. The tool names are Camouflage lab, Video analyser and Makeup Explorer. Explore includes the research archive, documentation, gallery, Fediverse integration and source code.
 
-### Header
+The NINA disclosure identifies NINA's Universal Union and links to its general Union blog in Italian and English, the Ghòstati! initiative/workshops and confidential reporting. It is an external handoff; do not label that action “Leak to us”. The reporting destination is not the software site's primary CTA.
 
-The shared header contains:
+The content footer repeats the complete map in Tools, Research, Project and Ghòstati! at NINA columns, followed by a responsibility statement. A cropped pyre band and the existing mark retain visual continuity.
 
-- the Ghostmaxxing lockup;
-- a square Fediverse chip;
-- the Know more navigation group;
-- one pink reporting CTA.
+The filled CTA uses ink text and a 2px ink border on pink. Secondary destinations are text links. Native details/summary disclosures work without JavaScript; pages-js/nav.js adds mobile navigation, sibling closing, Escape and outside-click handling.
 
-Commitment rises from left to right:
+Lab, Video analyser and Makeup Explorer use compact home / Tools / Help navigation instead of the full header/footer. Do not cover the camera stage with the editorial footer. Tool switching is explicit and leaves the current page/session; it is never automatic. The compact script is in lab-js/tool-nav.js so native imports of the lab include it.
 
-1. follow the public presence;
-2. read more about the project;
-3. share consequential information.
-
-Keep the reporting CTA last. If the navigation grows, preserve it as the terminal and strongest action while reviewing keyboard order and mis-tap risk.
-
-### Actions
-
-| Component | Shape and colour | Use |
-|---|---|---|
-| `.gm-site-chip` | Transparent, square, 2px ink border, ink text, small dot | Secondary destinations such as the Fediverse |
-| `.gm-site-cta` | Filled pink pill, 2px ink border, ink text | One consequential action per page |
-
-The ink border is structural, not decorative. It gives the pink CTA a perceivable edge against orange. CTA text is ink, not cream.
-
-### Footer
-
-The content-page footer uses a pyre band, a soil edge and a link row with subdued inline camera icons. Keep informational camera graphics inline when their classes or states depend on site CSS.
-
-### Tool-page exception
-
-`lab.html`, `loader.html` and `realtime.html` are full-screen camera surfaces. They use a small fixed back link and scoped dark tool chrome so the poster header does not compete with the camera stage.
-
-The tool chrome is a deliberate functional exception. Do not use it as an alternative theme for content pages.
+HTML is intentionally duplicated in pages and generator sources. No navigation generation or runtime fetch is required by npm run serve. Follow [navigation-maintenance.md](navigation-maintenance.md) when changing any copy.
 
 ## Spaces and grounds
 

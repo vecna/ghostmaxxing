@@ -5,10 +5,10 @@ test.describe('Lab shell', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/lab.html', { waitUntil: 'domcontentloaded' });
 
-    const home = page.locator('.gm-tool-back');
+    const home = page.locator('.gm-tool-nav');
     const selector = page.locator('.viewbar .selector');
 
-    await expect(home.locator('span')).toBeHidden();
+    await expect(home.locator('.gm-tool-nav__home span')).toBeHidden();
     await expect(page.locator('.seg--home')).toBeHidden();
 
     const [homeBox, selectorBox] = await Promise.all([
@@ -17,7 +17,7 @@ test.describe('Lab shell', () => {
     ]);
     expect(homeBox).not.toBeNull();
     expect(selectorBox).not.toBeNull();
-    expect(homeBox.x + homeBox.width).toBeLessThanOrEqual(selectorBox.x);
+    expect(homeBox.y + homeBox.height).toBeLessThanOrEqual(selectorBox.y);
   });
 
   test('uses only Lab-owned styles and module entry points', async ({ page }) => {

@@ -499,48 +499,48 @@
   </head>
 
   <body>
-    <header class="gm-site-header">
-      <a class="gm-site-wordmark" href="/" aria-label="Ghostmaxxing homepage">
-        <img class="gm-site-wordmark__mark" src="/images/logo/mark-color.svg"
-          width="40" height="40" alt aria-hidden="true" />
-        <span class="gm-site-wordmark__text">
-          <span class="gm-site-wordmark__title">Ghostmaxxing</span>
-          <span class="gm-site-wordmark__sub">A public lab for testing
-            camouflage</span>
-        </span>
-      </a>
-      <nav class="gm-site-nav" aria-label="Primary">
-        <a class="gm-site-chip" href="/fediverse.html">in the Fediverse</a>
-        <div class="gm-site-nav__group">
-          <button class="gm-site-nav__trigger" aria-expanded="false"
-            aria-controls="gmSiteMenu">Know more <span
-              aria-hidden="true">&#9662;</span></button>
-          <div class="gm-site-menu" id="gmSiteMenu">
-            <div>
-              <p class="gm-site-menu__kicker">Informative</p>
-              <ul>
-                <li><a href="/about.html">Vision &amp; about</a></li>
-                <li><a href="/genealogy.html">The genealogy of the read</a></li>
-                <li><a href="https://sindacato.nina.watch/en/ghostati/report/">Report a deployment</a></li>
-                <li><a href="https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/">Workshops</a></li>
-              </ul>
-            </div>
-            <div>
-              <p class="gm-site-menu__kicker">Technology</p>
-              <ul>
-                <li><a href="/lab.html">Open the lab &#8599;</a></li>
-                <li><a href="/projects/" aria-current="page">Related
-                    projects</a></li>
-                <li><a href="/docs/">Docs</a></li>
-                <li><a
-                    href="https://github.com/vecna/ghostmaxxing">Code</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <a class="gm-site-cta" href="https://sindacato.nina.watch/en/ghostati/report/">Leak to us &#8599;</a>
-      </nav>
-    </header>
+    <!-- NAVIGATION: intentionally duplicated in pages and generators. See tutorials/navigation-maintenance.md. -->
+<header class="gm-site-header">
+  <a class="gm-site-wordmark" href="/" aria-label="Ghostmaxxing homepage">
+    <img class="gm-site-wordmark__mark" src="/images/logo/mark-color.svg" width="40" height="40" alt="" aria-hidden="true">
+    <span class="gm-site-wordmark__text"><span class="gm-site-wordmark__title">Ghostmaxxing</span><span class="gm-site-wordmark__sub">A public lab for testing camouflage</span></span>
+  </a>
+  <button class="gm-site-nav-toggle" type="button" aria-expanded="false" aria-controls="gmPrimaryNav" hidden>Menu</button>
+  <nav class="gm-site-nav" id="gmPrimaryNav" aria-label="Primary">
+<details class="gm-site-nav__group gm-site-nav__group--tools">
+  <summary class="gm-site-nav__trigger" aria-controls="gmToolsMenu">Tools <span aria-hidden="true">▾</span></summary>
+  <div class="gm-site-menu" id="gmToolsMenu"><ul>
+  <li><a href="/lab.html">Camouflage lab</a><small>Apply Ghostyles and compare local results.</small></li>
+  <li><a href="/loader.html">Video analyser</a><small>Analyse a recorded makeup video.</small></li>
+  <li><a href="/realtime.html">Makeup Explorer</a><small>See how makeup changes face descriptors in real time.</small></li>
+</ul></div>
+</details>
+<details class="gm-site-nav__group ">
+  <summary class="gm-site-nav__trigger" aria-controls="gmExploreMenu">Explore <span aria-hidden="true">▾</span></summary>
+  <div class="gm-site-menu" id="gmExploreMenu"><div><p class="gm-site-menu__kicker">Understand</p><ul>
+  <li><a href="/about.html">About Ghostmaxxing</a></li>
+  <li><a href="/genealogy.html">Genealogy</a></li>
+  <li><a href="/references/">Research references</a></li>
+  <li><a href="/projects/" aria-current="page">Related projects</a></li>
+</ul></div><div><p class="gm-site-menu__kicker">Use and contribute</p><ul>
+  <li><a href="/docs/">Documentation</a></li>
+  <li><a href="/gallery.html">Gallery</a></li>
+  <li><a href="/fediverse.html">Fediverse integration</a></li>
+  <li><a href="https://github.com/vecna/ghostmaxxing">Source code ↗</a></li>
+</ul></div></div>
+</details>
+<details class="gm-site-nav__group gm-site-nav__group--nina">
+  <summary class="gm-site-nav__trigger" aria-controls="gmNinaMenu">Ghòstati! / NINA <span aria-hidden="true">▾</span></summary>
+  <div class="gm-site-menu" id="gmNinaMenu"><div><p class="gm-site-menu__intro">Workshops, collective action and confidential reporting, organised by NINA’s Universal Union.</p><ul>
+  <li><a href="https://sindacato.nina.watch/it/blog/">Union blog · Italiano ↗</a></li>
+  <li><a href="https://sindacato.nina.watch/en/blog/">Union blog · English ↗</a></li>
+  <li><a href="https://sindacato.nina.watch/en/initiatives/ghostati/">Ghòstati! initiative &amp; workshops ↗</a></li>
+  <li><a href="https://sindacato.nina.watch/en/ghostati/report/">Confidential reporting at NINA ↗</a></li>
+</ul></div></div>
+</details>
+  </nav>
+  <a class="gm-site-cta" href="/lab.html">Open the lab</a>
+</header>
 
     <nav class="related-nav" aria-label="Related research">
       <div class="related-nav__inner">
@@ -1277,22 +1277,41 @@
       </div>
     </main>
 
-    <footer class="gm-site-footer">
-      <div class="gm-site-footer__pyre" data-mode="cropped"><img
-          src="/images/motifs/pyre.svg" alt aria-hidden="true" /></div>
-      <img class="gm-site-footer__edge" src="/images/motifs/soil-edge.svg" alt
-        aria-hidden="true" />
-      <div class="gm-site-footer__row">
-        <a class="projects-footer-mark" href="/"><img
-            src="/images/logo/mark-ondark.svg" alt
-            aria-hidden="true" /><span>Ghostmaxxing</span></a>
-        <div class="gm-site-footer__links">
-          <a href="/projects/">Related projects</a>
-          <a href="/references/">Cultural references</a>
-          <a href="/docs/">Documentation</a>
-          <a href="https://github.com/vecna/ghostmaxxing">Code</a>
-        </div>
-      </div>
-    </footer>
+    <!-- FOOTER: intentionally duplicated; update the generator copies too. -->
+<footer class="gm-site-footer">
+  <div class="gm-site-footer__pyre" data-mode="cropped"><img src="/images/motifs/pyre.svg" alt="" aria-hidden="true"></div>
+  <img class="gm-site-footer__edge" src="/images/motifs/soil-edge.svg" alt="" aria-hidden="true">
+  <div class="gm-site-footer__inner">
+    <a class="gm-site-footer__brand" href="/"><img src="/images/logo/mark-ondark.svg" width="32" height="32" alt="" aria-hidden="true">Ghostmaxxing</a>
+    <nav class="gm-site-footer__columns" aria-label="Footer">
+<section><h2>Tools</h2><ul>
+  <li><a href="/lab.html">Camouflage lab</a></li>
+  <li><a href="/loader.html">Video analyser</a></li>
+  <li><a href="/realtime.html">Makeup Explorer</a></li>
+</ul></section>
+<section><h2>Research</h2><ul>
+  <li><a href="/genealogy.html">Genealogy</a></li>
+  <li><a href="/references/">Research references</a></li>
+  <li><a href="/projects/" aria-current="page">Related projects</a></li>
+</ul></section>
+<section><h2>Project</h2><ul>
+  <li><a href="/about.html">About Ghostmaxxing</a></li>
+  <li><a href="/gallery.html">Gallery</a></li>
+<li><a href="/docs/">Documentation</a></li>
+  <li><a href="/docs/jsdoc/">API reference</a></li>
+  <li><a href="/fediverse.html">Fediverse integration</a></li>
+  <li><a href="https://github.com/vecna/ghostmaxxing">Source code ↗</a></li>
+  <li><a href="https://github.com/vecna/gstmxx-backend">Backend source ↗</a></li>
+</ul></section>
+<section><h2>Ghòstati! at NINA</h2><ul>
+  <li><a href="https://sindacato.nina.watch/it/blog/">Union blog · Italiano ↗</a></li>
+  <li><a href="https://sindacato.nina.watch/en/blog/">Union blog · English ↗</a></li>
+  <li><a href="https://sindacato.nina.watch/en/initiatives/ghostati/">Ghòstati! initiative &amp; workshops ↗</a></li>
+  <li><a href="https://sindacato.nina.watch/en/ghostati/report/">Confidential reporting at NINA ↗</a></li>
+</ul></section>
+    </nav>
+    <p class="gm-site-footer__responsibility">Ghostmaxxing develops the software. Ghòstati!, part of <a href="https://sindacato.nina.watch/en/">NINA’s Universal Union ↗</a>, organises workshops and handles confidential reporting.</p>
+  </div>
+</footer>
   </body>
 </html>
