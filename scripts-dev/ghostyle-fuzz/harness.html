@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>ghostyle-fuzz harness</title>
+  <!--
+    Driven by scripts-dev/ghostyle-fuzz.cjs through Playwright. No lab UI, no
+    render loop: the CLI calls window.fuzz.* one step at a time. With
+    --headed the canvas below shows each composite as it is measured.
+  -->
+  <style>
+    html, body { margin: 0; background: #14161a; color: #e8ecf4; font: 14px/1.4 system-ui, sans-serif; }
+    main { display: grid; gap: 8px; padding: 12px; }
+    #view { max-width: 100%; max-height: calc(100vh - 80px); background: #000; justify-self: start; }
+    #status { font-family: ui-monospace, monospace; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <main>
+    <div id="status">loading…</div>
+    <canvas id="view" width="4" height="4"></canvas>
+  </main>
+  <script src="/lab-js/vendor/face-api.js"></script>
+  <script type="module" src="./harness.js"></script>
+</body>
+</html>
