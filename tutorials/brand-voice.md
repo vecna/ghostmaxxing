@@ -1,266 +1,286 @@
-# Ghostmaxxing Brand Voice
+# Ghostmaxxing brand voice and outreach
 
-Version: 1.0.0<br>
-Status: current internal standard  
-Language standard: clear international English; UK and US spelling may coexist  
-Last updated: 15 October 2026
+Version: **2.1.0**  
+Updated: 20 October 2026  
+Audience: contributors, editors, translators, LLMs and coding agents.
 
-## Purpose
+Read this before writing or rewriting public text. The [visual styleguide](/visual-styleguide.html) defines colours, typography, components, technical-tool exceptions and preview layouts. It replaces the separate visual-direction tutorial. These two documents govern new copy and design; older examples are not permission to repeat outdated claims.
 
-Ghostmaxxing is a public research lab for testing, explaining and questioning face recognition. It combines browser-based AR camouflage, adversarial makeup experiments, local comparison tests, a curated reference archive, a Fediverse integration and links to NINA’s separate reporting channels.
+## 1. Identity and responsibilities
 
-The project comes from hacking understood politically: an attitude of subversion, inquiry and freedom, not a product category. It contests the normalisation of face recognition in public life. Use *hacking* when it helps explain the project's position. Do not present Ghostmaxxing as a hacker tool, because that narrows the audience and makes the work sound like a technical subculture rather than a public investigation.
+**Ghostmaxxing** is independent free software for experimenting with face-recognition camouflage. It includes browser tools, modular visual interventions called Ghostyles, a technical and cultural archive, and optional public gallery/Fediverse infrastructure.
 
-Ghostmaxxing is designed by technologists working in the public interest. Its public voice should show an understanding of code, research, public space, culture and political risk at the same time.
+The project comes from politically engaged hacking: inquiry, subversion and freedom. It challenges the normalisation of biometric surveillance. Explain that position through experiments, documented deployments and inspectable methods. Do not reduce the audience to technical insiders or describe the software as an invisibility product.
 
-Ghostmaxxing is not an invisibility product. It is a public-facing research lab, a visual test bench and a route into an investigative archive.
+**Ghòstati!** is the initiative of **NINA's Universal Union**, called **Sindacato Universale di NINA** in Italian. Keep the name Ghòstati! in both languages. The Union organises its workshops and manages its confidential whistleblowing channels. Ghostmaxxing supplies software that NINA and other organisations can use.
 
-## Theory of change
+NINA is an external integrator of Ghostmaxxing. Hosting the lab does not make NINA the operator of Ghostmaxxing's public upload service. A public gallery submission is not a confidential report. Attribute each action to the organisation receiving it.
 
-[Ghostmaxxing](https://ghostmaxxing.vecna.eu) wants to play there, with a feedback loop, it’s [free software](https://github.com/vecna/ghostmaxxing) and oped data, designed this way:
+Ready-to-use attribution:
 
-1. **Experiment locally.** Use the [browser lab](https://ghostmaxxing.vecna.eu/lab.html) to test makeup and other visual interventions against face recognition. Experiments remain in the browser unless you choose to upload them. Has been tried to find recurring “patterns”, but they mostly work when you talk to a Visual Model and you ask to mod a picture for you. [A catalogue of Ghostmaxxing visual interventions](https://ghostmaxxing.vecna.eu/images/various/ghostmaxxing-style-catalog-4x4.png)
-2. **Document what works!** (With the participant’s consent), a success can be saved/shared/and re-produced a **Ghostyles.** (which is a javascript capable of casting an overlay in realtime over a face - [check the example plugin](https://github.com/vecna/ghostmaxxing/blob/main/ghostyles/00-template.js)).
-3. Successful camouflage (via images, before-after, or videos) can be submitted to the [community gallery](https://ghostmaxxing.vecna.eu/gallery.html). Every submission is reviewed by a human moderator before publication. `This part of the project is still in beta.` [The Ghostmaxxing community gallery](https://cdn.hackernoon.com/images/4JE28BStmmgAtRRuN3Uh5uGnN1q2-zoa2yhd.jpeg)
-4. **Distribute the results.** Approved experiments, Ghostyles, images, videos, and project updates are published through separate [Fediverse accounts](https://ghostmaxxing.vecna.eu/fediverse.html). Readers can follow only the streams relevant to them. This ActivityPub integration, built with Fedify.
-5. **Bring results back into workshops.** The network is both an output and an input. Promising techniques can be reproduced and evaluated in [workshops](https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/), where participants test them under shared conditions. Facilitators can coordinate through the [Signal group](https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/#lets-connect). [Participants testing face paint during a Ghostmaxxing workshop](https://ghostmaxxing.vecna.eu/images/workshops/ws1-painting-1.jpg)
-6. **Collect evidence from the field.** The [reporting channel](https://sindacato.nina.watch/en/ghostati/report/) accepts information from affected people, operators, developers, technical insiders, and people involved in procurement. These reports help map deployments, contracts, failures, and risks. The anonymous submission service is operated separately by [NINA](https://nina.watch).
-7. **Start the next round.** New techniques and findings are published through the [website](https://ghostmaxxing.vecna.eu/) and the Fediverse. Responses, reports, and reproduced results inform the next experiments. The loop then begins again.
+> Ghostmaxxing develops the software. Ghòstati!, part of NINA's Universal Union, organises workshops and handles confidential reporting.
 
-## #Status of the project
+Use maintained destinations rather than copying questionnaires, Onion Service addresses, Signal invitations or security instructions:
 
-**It's a working beta version**. The face [recognition technology uses the 2D Face API library and 3D MediaPipe face detection](https://ghostmaxxing.vecna.eu/docs). Contributions to the repository are welcome. Although the Fediverse integration and whistleblowing channels are established, they are not very well tested. Currently, the tool has been used to support workshops on the public stage. When the tool display a green color, it’s a go! your face fingerprint isn’t recognized anymore.
+| Purpose | English | Italian |
+|---|---|---|
+| Initiative | https://sindacato.nina.watch/en/initiatives/ghostati/ | https://sindacato.nina.watch/it/iniziative/ghostati/ |
+| Confidential reporting guidance | https://sindacato.nina.watch/en/ghostati/report/ | https://sindacato.nina.watch/it/ghostati/segnalazioni/ |
+| Union blog | https://sindacato.nina.watch/en/blog/ | https://sindacato.nina.watch/it/blog/ |
 
-In compact form:
+Check these destinations when publishing. The Union blog covers other initiatives too: do not relabel it the official Ghostmaxxing software blog. Sindacato's editorial pages use Ghòstati! as the initiative name; software attribution belongs where it helps explain a technical integration, not in every workshop heading.
 
-> Local tests -> Ghostyles and records -> Fediverse backend -> lab updates and public distribution -> anonymous reporting -> verified evidence -> better tests -> better public knowledge (ideally, after, and not pursued by Ghostmaxxing -> awareness about face recognition failures and unbalanced policy).
+## 2. Instructions for writers and agents
 
-The loop does not promise that public visibility alone changes institutional power. It creates shared, testable knowledge and a path by which evidence can alter the research.
+Apply these rules to headings, navigation, body copy, metadata, social cards and outreach drafts.
 
-Confidential reports are never published directly to the Fediverse. Only verified, minimised and appropriately redacted findings may return to the public data layer after editorial and security review.
+1. **Lead with an action or finding.** Say what the reader can test, inspect, reproduce or contribute.
+2. **Use a subject and a verb.** Prefer “The browser compares two descriptors” to “The facilitation of biometric comparability”.
+3. **Keep one main point per sentence.** Most sentences should fit in 12 to 25 words. Split sentences that combine a feature, its politics, a limitation and a future ambition.
+4. **Do not use em dashes in new prose.** Use full stops, commas, colons or parentheses. Preserve exact quotations, source titles and identifiers.
+5. **Remove abstract hyperbole.** Do not call the work revolutionary, groundbreaking, transformative, unprecedented, game-changing or the future of privacy. A quoted claim needs attribution and a reason to include it.
+6. **Remove statements that sound profound but specify nothing.** Replace “the order is the contract” with the actual colour roles. Replace “where identity meets resistance” with what people do.
+7. **Avoid stock LLM wording.** Do not use “delve”, “unlock”, “seamlessly”, “empower”, “foster” or “leverage” instead of an explanation. Use technical terms only when their object and meaning are clear.
+8. **Avoid rhetorical padding.** No “This isn't just X, it's Y”, “More than a tool”, invented question-and-answer hooks, or final slogans repeating the introduction. Genuine research questions should name a testable unknown.
+9. **Name actions and recipients.** “Open the lab”, “Save a baseline”, “Read NINA's reporting guidance”. Avoid “Discover the possibilities” and “Leak to us” on a software page that sends users elsewhere.
+10. **Place limitations beside claims.** Name the model, task and conditions that matter. Do not repair an unsupported headline with a generic disclaimer at the bottom.
+11. **Do not invent evidence.** No invented efficacy, partners, adoption figures, quotes, measurements or deployed features. Put missing evidence in an editorial note outside publishable copy.
+12. **Preserve the argument.** Do not neutralise criticism of biometric surveillance, add marketing excitement, or rewrite precise technical names for variety. Use clear international English; UK and US spelling may coexist.
+13. **Use formatting for comprehension.** Sentence-case headings; lists for steps; tables for comparisons; no emoji in core copy and no bold emphasis on every line.
+14. **Translate responsibilities as well as words.** The organisation, destination, consent boundary and limitation must mean the same thing in both languages. Never translate Ghòstati! into Ghostmaxxing.
 
-Until the bidirectional ActivityPub integration is operational, describe it as the project architecture or intended data flow. Do not imply that the lab already consumes federated updates automatically if it does not.
+### Concrete rewrites
 
-### Requirement for the About page
+| Avoid | Write instead |
+|---|---|
+| Unlock the transformative power of adversarial beauty. | Apply a Ghostyle and compare the result with your saved baseline. |
+| The greens are ordered, and the order is the contract. | Use `--gm-green` for camera outlines and `--gm-green-deep` inside the lens. |
+| Your face is now invisible. | The detector found no face in this frame. |
+| Green means you are safe to go. | The comparison crossed this model's threshold in this test. |
+| A seamless ecosystem of resistance. | Save the test conditions so another person can repeat the experiment. |
+| Follow us on Mastodon. | Read how Ghostmaxxing publishes research through ActivityPub. |
+| Our anonymous reporting backend. | NINA's Universal Union manages confidential reporting for Ghòstati!. |
 
-The About page must explain this theory of change explicitly. It should not describe the lab, Fediverse backend, archive and reporting node as separate features. It should show the bidirectional relationship between the lab and the Fediverse, then show how public research can generate private reports and how verified evidence changes later tests.
+Humour is welcome when it names a specific situation and remains understandable internationally. Keep consent, errors and reporting instructions literal. Do not make people decipher a joke before deciding where their data goes.
 
-The About page should also name the people the reporting node is intended to reach:
+## 3. Claims and technical vocabulary
 
-- people who build or maintain the technology;
-- people who know where a specific deployment fails;
-- people who have seen contracts, tenders or internal evaluations;
-- people who operate a system day to day;
-- people who approved or funded a deployment;
-- people who noticed face recognition in public space;
-- people who were stopped, flagged or misidentified by it.
+Separate **detection** (finding a face), **landmarks** (estimating geometry), **matching** (comparing representations) and **identification** (assigning identity against a collection). They are not interchangeable.
 
-Do not ask any of these people to disclose sensitive material casually. The reporting page must provide its own security guidance before asking for information.
+- face-api descriptors concern face matching. State which comparison and threshold the interface uses.
+- MediaPipe Face Landmarker estimates geometry; do not describe landmarks alone as identity recognition.
+- MediaPipe ImageEmbedder with MobileNetV3 produces generic image embeddings. Do not call them biometric face descriptors.
+- A Ghostyle is a modular visual intervention that can be applied and retested. A digital overlay does not establish that physical makeup will reproduce the result.
+- “No face”, “model loading”, “camera denied” and “model failed” are different states. A missing result is not a successful intervention.
+- A green display, changed distance or interrupted detection is not evidence of safety against deployed surveillance.
 
-## Communication goals
+| Claim | Publication rule |
+|---|---|
+| Observable software behaviour | Verify against the current implementation and name the action. |
+| Experimental result | Include model/task, comparison, threshold where relevant, sample and material conditions such as pose, light and camera. Link the record. |
+| Transfer to another system | Say it is untested unless there is evidence for that system. |
+| Planned feature | Label it planned; do not show it as an available action. |
+| General safety promise | Remove it. Qualifiers do not turn “protects you from surveillance” into a supported claim. |
 
-Public copy should help people:
+Keep the research loop concrete: run a local experiment; document conditions; share suitable material with consent; let others reproduce or challenge it; revise tests and archive entries. NINA's workshops can reuse the tools. Confidential evidence follows NINA's separate process. Do not imply reports enter the public gallery or automatically become Fediverse posts.
 
-1. understand what Ghostmaxxing tests and what it does not claim;
-2. try a local experiment without mistaking it for protection;
-3. understand a Ghostyle as a testable and shareable intervention;
-4. understand the Fediverse as the project's data backend, public distribution network and source of validated lab updates;
-5. inspect the technical and cultural lineage in the reference archive;
-6. report deployments, evidence or first-hand knowledge through the appropriate channel;
-7. recognise that face recognition is contingent, political and open to investigation.
+Use **Fediverse integration** as the short navigation label. “Fediverse native integration” can be used in an explanation that identifies ActivityPub functionality. Explain implemented publication, actors and moderation; do not promise automatic inbound lab updates unless implemented and verified. Federation transports public objects; it does not make them trustworthy.
 
-## Core voice
+Current short tool labels: **Camouflage lab**, **Video analyser**, **Makeup Explorer**. Use “Makeup Explorer” for `realtime.html`; explain its measurements in the page introduction. Use **Open lab** for the main action. Do not rename exported functions, routes or technical model names to match a display label.
 
-Use a tone that is:
+## 4. Outreach and external descriptions
 
-- activist first, culturally staged second and editorial third;
-- technically precise;
-- curious and experimental;
-- direct without becoming sloganistic;
-- public-facing without simplifying the work into false claims;
-- visually imaginative;
-- grounded in evidence;
-- open to contributors and retesting;
-- critical of biometric inevitability;
-- respectful of people whose faces, bodies and data are affected;
-- candid about uncertainty, failure and limits.
+### Ready-to-use descriptions
 
-The public voice can be summarised as:
+Short:
 
-> Activist cultural lab + investigative archive + technically grounded workshop
+> Ghostmaxxing is free software for testing face-recognition camouflage in the browser and documenting results under stated conditions.
 
-Think of:
+Technical:
 
-- a public poster that rewards close reading;
-- an exhibition label that respects technical detail;
-- a workshop table where methods are visible;
-- a browser-based adversarial lab that explains its limits;
-- a software project that knows it exists in political reality.
+> Ghostmaxxing combines browser-based visual interventions, local comparisons and a research archive. Its tools let people inspect model outputs and document experiments. Results depend on the model and test conditions; a browser test does not establish protection against deployed systems.
 
-Avoid sounding like:
+Workshop:
 
-- a startup promising disruption;
-- a cybersecurity product promising safety;
-- an academic paper written only for specialists;
-- an activist slogan with no technical detail;
-- a beauty tutorial with no threat model;
-- a hacker toy with no ethics;
-- a policy campaign asking only for agreement.
+> Ghòstati!, part of NINA's Universal Union, runs workshops using Ghostmaxxing's browser tools. Participants compare visual interventions and discuss what the measurements can and cannot show.
 
-## Editorial principles
+### Writing for other sites and communities
 
-### 1. Test, do not simply "trust"
+- Lead with the relevant method, reproducible observation or open question. For a technical audience, link code and test conditions. For a workshop audience, explain activities, prerequisites, organiser and consent choices.
+- Link the software name to `https://ghostmaxxing.vecna.eu/` and source code to `https://github.com/vecna/ghostmaxxing`. Link a specific tool or record when that is the subject.
+- Attribute research to its authors. Distinguish a paper's reported result from an independent reproduction and from a proposed experiment.
+- Do not turn a software integration, article or independent review into a partnership or endorsement. Name the host and software separately.
+- Keep concrete uncertainty in excerpts and social posts too. Do not let the short version make a broader claim than the article.
+- Use participant images only with appropriate permission for that specific publication. Retain credits and context. Do not expose private receipts, faces from confidential reports or identifying metadata in previews.
+- A pitch is not a press release: explain why the work fits that audience, what can be inspected now and what remains unresolved. Avoid identical promotional paragraphs sent everywhere.
 
-Way too many projects exist selling (false) invisibility. Ghostmaxxing is made to allow delocalized testing and individual empowering.
+These are attribution and editorial rules, not additional software licence terms. Consult the repository licence for redistribution obligations.
 
-face match is a system output, so this make the pipeline inspectable and the claim testable.
+## 5. Search, previews and structured data
 
-Prefer:
+Metadata is public copy. Review it with the visible page whenever identity, responsibility, routes or claims change.
 
-- Make biometric assumptions inspectable.
-- Test the read under stated conditions.
-- A face match is a system output, not a truth.
+- Give each public page a specific title, for example `Makeup Explorer | Ghostmaxxing`, and a description of the actual task. Aim for roughly 45 to 65 title characters and 120 to 160 description characters where useful; these are editing targets, not protocol limits or display guarantees.
+- Align `<title>`, description, Open Graph, Twitter card text and JSON-LD with the visible content. Avoid unsupported efficacy and stale workshop ownership in all of them.
+- Use absolute HTTPS public URLs for canonical URLs, `og:url`, preview images and structured-data identities. Do not publish localhost, preview-server or filesystem paths.
+- Set the document language. Add `hreflang` only between actual equivalent translations; a generic language homepage is not the translation of a specific article.
+- Use the structured-data type that describes the page, such as SoftwareApplication for software or Article for an article. Name the actual author, publisher and host; do not add invented ratings, dates or NINA ownership of the software. Keep stable entity IDs where the entity is the same.
+- `og:image:alt` and image dimensions describe the actual file. A visual label should remain understandable when cropped; alt text describes rather than repeating a slogan.
 
-Avoid:
+### Preview pictures
 
-- Facial recognition is always broken.
-- This defeats surveillance.
-- This makes you anonymous.
+Edit `scripts-dev/social-cards.html`; use the existing generator, for example:
 
-### 2. State the conditions
+```bash
+node scripts-dev/build-social-cards.cjs --only generic
+```
 
-Any claim about performance must state what materially shaped the result. Depending on the test, this may include the model, task, camera, light, pose, distance, image quality, threshold, environment and sample.
+The generator supports landscape **1200 × 630**, square **1200 × 1200** and wide **1500 × 500** variants. Verify the relevant options before changing a workflow. Review outputs in `images/social/` and `cards-manifest.json`, then update page metadata separately. Generation does not automatically fix every page's tags.
 
-Prefer:
+Use one short title, one factual sentence, the mark and a relevant image or camera composition. Keep important text and faces away from crop edges. Follow the visual styleguide for token use. Do not show fabricated numerical results or imply that a decorative spent lens proves a test succeeded. Review both full-size export and thumbnail; check crops in the receiving platform when possible.
 
-> In this local test, the pattern lowered detection confidence on one open model at close range under even light.
+### Sitemap and indexing
 
-Avoid generalising from a browser test, one model, one face or one environment to deployed systems.
+`web-files/sitemap.xml` is a maintained source file copied into the served output by the client installer. `npm run htmls` does **not** automatically discover pages and regenerate it.
 
-### 3. Publish uncertainty
+Include absolute canonical URLs for public pages intended for indexing. Remove deleted routes and exclude internal guides, previews, private receipt fragments and duplicate variants. Use meaningful modification dates; a routine rebuild is not a content update. Keep the sitemap declaration in `robots.txt` aligned with the deployed site.
 
-An open question is a valid research result. Say when transfer to another model or a real deployment is unknown. Do not hide uncertainty below the fold or turn it into vague legal language.
+At the reviewed commit, the sitemap needs a separate audit for `realtime.html` and its functional guide. This documentation update does not modify that sitemap. Keep `visual-styleguide.html` marked `noindex`; do not add it to the sitemap. A sitemap is a discovery hint, not a guarantee of indexing.
 
-### 4. Treat the archive as evidence
+## 6. External hosting and backend boundaries
 
-References are part of the public argument. Each entry should help a reader distinguish what was demonstrated, under which conditions, what remains testable and what the limits are.
+A host may serve the tool's HTML, CSS, JavaScript, vendor files and models under its own path. Keep relative asset paths valid, preserve attribution where appropriate and avoid changing the backend just because the frontend origin changes.
 
-### 5. Connect technical tests to civic evidence
+`lab-js/backend-url.js` is the routing source of truth:
 
-The lab tests techniques. The Fediverse stores and carries public research objects in both directions. The reporting node gathers private evidence about deployments and institutions. Copy should make these relationships visible wherever they are relevant.
+| Frontend hostname | Public backend origin |
+|---|---|
+| `localhost`, `127.0.0.1`, `::1`, `[::1]` | `http://localhost:4040` |
+| `ghostmaxxing.vecna.eu` | Current origin |
+| Any other hostname, including Sindacato | `https://ghostmaxxing.vecna.eu` |
 
-### 6. Do not promise safety
+Use the helper for public backend operations rather than maintaining another hostname switch. Local development requires the backend to be running for those operations. Do not rewrite public upload/gallery endpoints to the external host's `/api` by accident.
 
-Never imply that a Ghostyle makes someone safe from surveillance. Do not use uncertainty as a theatrical device. State limits plainly and near the relevant claim.
+Explain these boundaries to users at the relevant action:
 
-## Claims ladder
+- The frontend host serves the interface and its assets. Running an inference locally is distinct from loading those resources over the network.
+- Comparisons run in the browser. Optional uploads and public gallery/media operations use Ghostmaxxing's backend.
+- Receipt links and local receipt storage belong to the frontend origin/path used by the participant. Do not promise they transfer between the upstream site and a mirror. Do not publish receipt links or deletion tokens in metadata, logs or screenshots.
+- NINA's confidential reporting is separate. Link its maintained guidance; never submit reports through the gallery API.
 
-Grade consequential claims before publication.
+Example disclosure for a host, adapting the first sentence to the actual organisation:
 
-| Grade | Meaning | Example | Publication rule |
-|---|---|---|---|
-| Safe | True independently of test conditions | A face match is a system output, not a truth. | Publish as written. |
-| Conditional | Supported under named conditions | In our local test, this Ghostyle reduced detection confidence on one open model. | Publish only with the conditions and limits. |
-| Research | An explicit open question | Whether this transfers to deployed systems is untested. | Publish as a question or research gap. |
-| Unsafe | A promise or generalisation the evidence cannot support | Ghostmaxxing protects you from facial recognition. | Cut. Do not soften or relocate it. |
+> This site hosts the Ghostmaxxing interface. Comparisons run in your browser. If you choose to upload a recording, it is sent to Ghostmaxxing's service at ghostmaxxing.vecna.eu. Ghòstati! workshops and confidential reporting are managed separately by NINA's Universal Union.
 
-The word *defeated* may appear only when it describes a documented, past-tense result involving a specific system under stated conditions. Never use it as a present-tense promise to the reader.
+Before publishing a hosted copy, verify HTTPS and camera access, asset/model loading under the final path, backend CORS for the actual origin and required methods/headers, and any CSP restrictions. For framed inclusion, verify camera permissions and frame policies. Prefer a direct link or native hosting when a frame adds permission problems.
 
-## Standard descriptions
+Test upload consent, gallery fetch and deletion from the deployed origin using disposable test media. Confirm the deletion request's `X-Delete-Token` header is permitted where required. Do not infer that a backend accepts a mirror merely because local inference works.
 
-### One-line description
+<<<<<<< Updated upstream
+**One line:** Ghostmaxxing is free software for browser-based experiments with face-recognition camouflage and the technical and cultural history of anti-biometric interventions.
 
-Ghostmaxxing is a public lab for testing face-recognition camouflage and documenting the technical, cultural and political history of anti-biometric appearance design.
+**Short:** Ghostmaxxing combines local camera experiments, modular AR interventions called Ghostyles, comparison tools and a reference archive. Results describe a particular model and test setup. Optional gallery submissions are separate from NINA's confidential reporting channels.
 
-### Short description
+**Extended:** Ghostmaxxing lets developers, researchers, artists, digital rights groups and curious people inspect how visual interventions change a browser pipeline's outputs. Ghostyles make interventions reproducible; the archive helps readers trace earlier demonstrations and their limits. People can choose to submit media for moderation and possible public distribution through the gallery and Fediverse. Ghòstati!, part of NINA's Universal Union, organises workshops and receives confidential evidence about real-world deployments through separate channels.
 
-Ghostmaxxing lets people experiment with face-recognition camouflage in the browser. It combines webcam-based face detection, modular AR interventions called Ghostyles, local comparison tests and a curated archive of adversarial makeup, CV Dazzle, face obfuscation and physical-world attacks against computer vision.
+## Technical accuracy
 
-### Longer description
+Distinguish the task before describing a result:
 
-Ghostmaxxing is a public Web AR lab for developing and testing anti-biometric camouflage. Developers, researchers, digital rights groups, artists and curious people can apply modular visual interventions to a face, compare recognition behaviour before and after an intervention and trace the technical and cultural lineage of the field through a curated reference archive.
+| Task | Current implementation reference | Editorial consequence |
+|---|---|---|
+| Face detection and biometric matching | `lab-js/engine-2d.js` | Detection is not identification. A face-api descriptor and distance concern this local comparison. |
+| Face geometry and tracking | MediaPipe integration in `lab-js/` | A 3D mesh is not proof of biometric identity recognition. |
+| General image similarity | `lab-js/engine-3d.js` | ImageEmbedder/MobileNetV3 produces embeddings too. It is not trained for biometric face recognition; scene, colour and lighting can affect the comparison. |
+| Public media submission | `lab-js/upload.js`, `gallery.html`, `fediverse.html` | Submission is optional; review precedes publication. It is not a confidential report. |
 
-Many physical countermeasures have already been proposed, including printed glasses, stickers, prosthetics, hats, textiles and makeup. Few claims have been retested as models, sensors and deployment conditions changed. Ghostmaxxing treats each result as local, conditional and temporary until further testing shows otherwise.
+Feature extraction produces an embedding/descriptor; avoid teaching these as two independent recognition stages. Scores from different engines are not interchangeable. A missing detection, a failed match, an unready model and an error are different states. Explain the actual label, model, threshold and conditions rather than translating all of them into “success”.
 
-The project connects testing, federated data and anonymous reporting. Ghostyles make experiments shareable. The Fediverse is designed to become both the backend for public research objects and a source of updates that the lab can validate and use. The GlobaLeaks reporting node invites private evidence from people who build, buy, operate, observe or experience face recognition systems. Verified evidence can change the archive, the threat model and the next round of tests.
+## Evidence and claims
 
-## Key messages
+For a result, record the task, model/version, intervention, comparison baseline, threshold and material conditions such as light, camera, pose and distance. Report unsuccessful attempts too. Unknown transfer to another model or deployed system stays unknown.
 
-### The face is a technical interface
+| Claim | Treatment |
+|---|---|
+| Observable behaviour with a source | State plainly, with scope. |
+| Result under specified conditions | Publish the conditions and limitations beside it. |
+| Hypothesis or planned feature | Label explicitly as a question or proposal. |
+| Guaranteed protection, anonymity or universal evasion | Remove the claim. |
 
-Face recognition systems parse faces through landmarks, descriptors, regions, contrast, light, occlusion and learned representations.
+Prefer “the local matcher did not match the saved descriptor under these conditions” to “your fingerprint is no longer recognised”. Do not equate digital overlays with demonstrated physical makeup performance. Use “defeated” only for a specific documented past result, never a promise.
 
-Suggested phrasing:
+An archive entry should identify the work, primary source, demonstration, conditions, limitations and what can be retested. Separate an author's claim from our observation.
 
-- The face is read as data, geometry, texture and probability.
-- A Ghostyle is a visual intervention on the machine-readable face.
-- Makeup becomes a test surface.
-- AR becomes a diagnostic layer.
+## Research and data flows
 
-Avoid:
+1. Run a local experiment and inspect the result.
+2. Document the conditions and, where useful, package the intervention as a Ghostyle.
+3. Optionally submit selected media for moderation and possible gallery/Fediverse publication.
+4. Use public results and archive material to inform further experiments or workshops.
+5. Refer people with confidential evidence to NINA's separate guidance.
 
-- Your face becomes invisible.
-- This hides your identity.
-- Makeup hacks the system, full stop.
+These are related activities, not one automatic pipeline. Do not imply that confidential reports flow into the gallery, or that verified reports automatically become software updates. Any later public use of findings needs a separate editorial decision by the responsible organisation.
 
-### Ghostyles are shared research objects
+Describe implemented publishing and feeds using `fediverse.html` and the backend contract. Bidirectional ingestion of federated research objects or automatic installation of Ghostyles must be labelled as a proposal unless the particular feature has been verified. Do not infer deployment health from source code or a roadmap.
 
-A Ghostyle is not a promise and not merely a cosmetic filter. It packages an intervention so that people can apply it, inspect it, test it and describe the conditions under which it produced a result.
+“Local processing” describes the experiment's processing path. It does not mean that opening the website makes no network requests, that optional uploads stay local, or that all media metadata is removed. Use the current upload and privacy explanations, not an absolute “nothing ever leaves your device”.
 
-Suggested phrasing:
+## Names and invitations
 
-- Build a Ghostyle. State the conditions. Share what happened.
-- A Ghostyle turns a look into a testable intervention.
-- Retest the pattern against another model or environment.
+A **Ghostyle** is a modular visual intervention applied through the lab. Define it at first mention for a general audience. A plugin can reproduce an intervention; it does not certify protection. Use “filter” only when the cosmetic/rendering sense is intended.
 
-### The genealogy matters
+| Destination | Suggested invitation | Owner |
+|---|---|---|
+| Lab | Open the lab | Ghostmaxxing software |
+| Archive | Explore the references | Ghostmaxxing |
+| Public submissions | Read the gallery submission guidance | Ghostmaxxing public workflow |
+| Workshops | Join a Ghòstati! workshop | NINA's Universal Union |
+| Confidential reports | Read NINA's reporting guidance | NINA's Universal Union |
 
-Ghostmaxxing belongs to a longer technical and cultural lineage that includes CV Dazzle, HyperFace, adversarial glasses, adversarial makeup, physical-world optical attacks, near-infrared attacks and public-space performances.
+Existing chrome may still say “Leak to us”. Treat that as legacy wording to review in templates and translations, not a phrase to prescribe in new copy. A link label should make the recipient clear without implying that clicking it submits a report.
 
-Suggested phrasing:
+On Sindacato, the initiative keeps the name Ghòstati! in both languages. Links opening its native lab use a new tab as agreed for that integration; software navigation may continue to Ghostmaxxing. This is an integration choice, not a requirement to open every external link in a new tab.
 
-- This field is older, deeper and better documented than most people think.
-- The archive traces what was demonstrated, what interrupted it and what changed next.
-- Each reference asks what can be retested now.
+## Tone by surface
 
-Avoid:
+- **Homepage and About:** invite exploration; explain software scope and the NINA relationship.
+- **Lab:** next action, processing location, model state and limits. No manifesto during a task.
+- **Technical docs:** prerequisites, interfaces and reproducible examples. No persuasive claims in API contracts.
+- **Archive and genealogy:** evidence, provenance and chronology. A dated project marker is not a victory over a whole class of systems.
+- **Fediverse:** concise updates with test conditions and publication context. Distinguish public objects from confidential material.
+- **Workshop/report links:** welcoming or calm as appropriate; identify NINA and let its maintained pages provide practical details.
 
-- These projects prove facial recognition is useless.
-- Old techniques still work everywhere.
-- A paper result equals real-world protection.
+## Mechanics and maintenance
 
-### The Fediverse is research infrastructure
+Use clear international English, sentence-case headings and short declarative instructions. Preserve names, identifiers and quoted titles. UK and US spelling may coexist. Define technical terms, put limits next to claims, and avoid emoji and em dashes in new core copy.
 
-The Fediverse is not a promotional channel added after the research. In the target architecture, it is the federated backend for public Ghostyles, test records, limitations, references and updates. The lab also reads relevant updates from the network, validates them and uses them as inputs for later research.
+Before publishing, check the responsibility, observable feature, evidence and destination. When an engine, upload flow, owner or navigation destination changes, review the affected public text, metadata, translations and this guide in the same change.
 
-Suggested phrasing:
+Do not copy exact feature inventories or deployment status into all three design documents. This guide owns voice and claim discipline; `visual-direction.md` owns design intent; `visual-styleguide.html` shows specimens. Code owns token values and component behaviour. Review on relevant changes rather than assuming a version number makes a document current.
+=======
+Canonical policy is a deliberate host decision: an unchanged mirror can identify the upstream tool as canonical; a host-specific page intended for indexing can use its own canonical. Keep that choice consistent across canonical, `og:url`, JSON-LD and sitemap. Sindacato's native Ghòstati! pages use Sindacato URLs for their own identity; backend URLs do not determine page identity.
 
-- Follow the research in the Fediverse.
-- Share a result with its conditions attached.
-- Help a test reach someone who can reproduce or challenge it.
-- Publish once, let different ActivityPub applications read and respond.
-- Let the lab receive new public research inputs from the same network.
+When Sindacato opens its lab in a separate tab, retain `target="_blank" rel="noopener"`. Make external recipients clear in link text. Do not force every software link to open a new tab.
 
-Do not imply that every federated object is trusted automatically. Federation transports and distributes data. Validation, moderation and evidentiary judgement remain Ghostmaxxing responsibilities.
+## 7. Maintaining the guides
 
-### Reporting closes the loop
+Keep responsibilities and writing rules here; keep design rules and live specimens in `/visual-styleguide.html`. Exact values belong in CSS, routing in `lab-js/backend-url.js`, and feature behaviour in implementation and functional documentation. A public page is a reference for wording, not proof of deployment.
 
-The public work is also a signal to people with evidence about real systems. The reporting node uses GlobaLeaks to protect source anonymity and connect technical experiments to civic and institutional knowledge.
+When changing a feature, review visible copy, metadata, structured data, preview image, sitemap and both guides where relevant. Record the source commit or release in the review. Do not copy transient item counts or test results into permanent rules.
 
-Suggested phrasing:
+Useful implementation references:
 
-- Seen face recognition in public space? Document what you can safely verify.
-- The lab tests techniques. The reporting node gathers evidence.
-- Technical experiments and civic reporting belong in the same investigation.
-- Know how a deployment works or where it fails? Use our anonymous GlobaLeaks reporting channel.
-- For stronger connection anonymity, use Tor Browser and the designated Onion Service.
+- `styles/tokens.css`, `styles/cameras.css`, `styles/chrome.css`
+- `styles/lab.css`, `styles/realtime.css`, `styles/loader.css`
+- `lab-js/backend-url.js`, `lab-js/upload-consent.js`, `lab-js/gallery.js`
+- `scripts-dev/social-cards.html`, `scripts-dev/build-social-cards.cjs`
+- `scripts-dev/enrich-jsdoc-seo.cjs`, `web-files/sitemap.xml`
 
-Never write:
+Older generators and tutorials may contain em-dash title suffixes or stale identity rules. This standard governs new output; review those generators explicitly rather than assuming a documentation edit changes them.
 
-- Report anything suspicious.
-- Send us private personal data.
-- Upload faces or sensitive material casually.
+## 8. Extra references
 
+<<<<<<< HEAD
 ### Reporting anonymity and access
 
 Ghostmaxxing may state that its designated GlobaLeaks channel protects source anonymity. The reporting page must explain both access routes:
@@ -482,3 +502,8 @@ Before publishing, ask:
 - Does the tone match the page type?
 - Is the English consistent and free of em dashes?
 - Can a non-specialist understand the action without losing technical accuracy?
+=======
+* Reference specifications: [Open Graph](https://ogp.me/), [Google sitemap guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap), [MDN CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS).
+* [visual styleguide](visual-styleguide.html).
+>>>>>>> Stashed changes
+>>>>>>> brand-voice-update
