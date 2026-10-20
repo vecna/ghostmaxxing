@@ -23,8 +23,6 @@ const path = require("node:path");
 const PAGES = [
   "index.html",
   "about.html",
-  "report.html",
-  "workshops.html",
   "genealogy.html",
   "lab.html",
   "loader.html",

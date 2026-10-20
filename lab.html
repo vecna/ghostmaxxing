@@ -59,7 +59,7 @@
 <body>
   <!-- Back to the site. Tool pages get this instead of the poster header —
        see chrome.css §5. -->
-  <a class="gm-tool-back" href="/" aria-label="Ghostmaxxing homepage">
+  <a class="gm-tool-back" href="https://ghostmaxxing.vecna.eu/" aria-label="Ghostmaxxing homepage">
     <img src="/images/logo/mark-color.svg" alt="" aria-hidden="true" />
     <span>Ghostmaxxing</span>
   </a>
@@ -84,7 +84,7 @@
   <!-- Readout is fed by the engine's `matchStateChanged` event (see lab-ui.js). -->
   <div class="viewbar">
     <div class="selector" role="tablist" aria-label="What you see on the face" data-i18n-aria-label="face_view_tablist_label">
-      <a class="seg seg--home" href="/" role="tab" aria-selected="false" data-view="home" aria-label="Home" data-i18n-aria-label="nav_home_label">
+      <a class="seg seg--home" href="https://ghostmaxxing.vecna.eu/" role="tab" aria-selected="false" data-view="home" aria-label="Home" data-i18n-aria-label="nav_home_label">
         <svg aria-hidden="true" viewBox="0 0 24 24">
           <path d="M3 10.5 12 3l9 7.5" />
           <path d="M5 9.5V21h14V9.5" />
@@ -244,7 +244,7 @@
         <p data-i18n="receipt_log_description">Private receipts from this browser. Keep them to reach the future public URL and revoke the upload with the delete token.</p>
         <div id="gm-receipt-log" class="receipt-log"></div>
       </div>
-      <div class="card"><h3 data-i18n="report_deployment_title">Report a deployment</h3><p data-i18n="report_deployment_description">Where face recognition appears in public space, who runs it, what it looks like.</p></div>
+      <div class="card"><h3><a href="https://sindacato.nina.watch/en/ghostati/report/" data-nina-report data-i18n="report_deployment_title">Report a deployment</a></h3><p data-i18n="report_deployment_description">Where face recognition appears in public space, who runs it, what it looks like.</p></div>
     </div>
   </section>
 
@@ -333,6 +333,7 @@
 
   <!-- ============================ SCRIPTS ============================ -->
   <!-- Entry points only; their imported dependencies are not loaded twice. -->
+  <script type="module" src="/lab-js/nina-links.js"></script>
   <script src="/lab-js/mobile-ui.js"></script>
   <script type="module" src="/lab-js/mediapipe-loop.js"></script>
   <script src="/lab-js/vendor/face-api.js"></script>

@@ -725,9 +725,9 @@ export const messages = {
    },
    initiative_note: {
       context: 'lab.html:199',
-      it: 'Presentazione internazionale dell\'iniziativa italiana Ghòstati!, nata nel contesto NINA.',
-      en: 'International presentation of the Italian initiative Ghòstati!, born in the NINA context.',
-      pt: 'Apresentação internacional da iniciativa italiana Ghòstati!, nascida no contexto NINA.',
+      it: 'Software indipendente usato da Ghòstati!, l\'iniziativa del Sindacato Universale di NINA che organizza workshop e gestisce le segnalazioni.',
+      en: 'Independent software used by Ghòstati!, the initiative of NINA’s Universal Union that organises workshops and handles whistleblowing reports.',
+      pt: 'Software independente usado por Ghòstati!, a iniciativa da União Universal da NINA que organiza workshops e recebe denúncias.',
    },
    main_nav_label: {
       context: 'lab.html:203',
@@ -2150,9 +2150,9 @@ export const messages = {
    },
    homepage_small_html: {
       context: 'index.html:50',
-      it: 'Pensato per <a href="workshops.html">workshop</a> pratici e auto-esperimenti: verifica di persona quando un look ferma un match, nelle tue condizioni — non è una promessa che funzionerà ovunque.',
-      en: 'Built for hands-on <a href="workshops.html">workshops</a> and self-experiments: see for yourself when a look stops a match, under your own conditions — not a promise that it will hold anywhere else.',
-      pt: 'Feito para <a href="workshops.html">workshops</a> práticos e autoexperimentos: veja por conta própria quando um visual interrompe uma correspondência, nas suas condições — não é uma promessa de que funcionará em qualquer outro lugar.',
+      it: 'Pensato per <a href="https://sindacato.nina.watch/it/blog/ghostati-workshop-ottobre-2026/">workshop</a> pratici e auto-esperimenti: verifica di persona quando un look ferma un match, nelle tue condizioni — non è una promessa che funzionerà ovunque.',
+      en: 'Built for hands-on <a href="https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/">workshops</a> and self-experiments: see for yourself when a look stops a match, under your own conditions — not a promise that it will hold anywhere else.',
+      pt: 'Feito para <a href="https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/">workshops</a> práticos e autoexperimentos: veja por conta própria quando um visual interrompe uma correspondência, nas suas condições — não é uma promessa de que funcionará em qualquer outro lugar.',
       notes: 'Glossary: workshops, match.',
    },
    open_lab_link_html: {

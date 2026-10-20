@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Ghostmaxxing 1.0.0\n"
-"POT-Creation-Date: 2026-10-15\n"
+"POT-Creation-Date: 2026-10-19\n"
 "Language-Team: NotYetExisting <translators at vecna dot eu>\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 
@@ -737,9 +737,9 @@ msgid "Not about becoming invisible — about making the system visible enough t
 msgstr ""
 
 #. key: initiative_note
-#. it: Presentazione internazionale dell'iniziativa italiana Ghòstati!, nata nel contesto NINA.
+#. it: Software indipendente usato da Ghòstati!, l'iniziativa del Sindacato Universale di NINA che organizza workshop e gestisce le segnalazioni.
 #: lab.html:199
-msgid "International presentation of the Italian initiative Ghòstati!, born in the NINA context."
+msgid "Independent software used by Ghòstati!, the initiative of NINA’s Universal Union that organises workshops and handles whistleblowing reports."
 msgstr ""
 
 #. key: main_nav_label
@@ -2194,9 +2194,9 @@ msgstr ""
 
 #. Glossary: workshops, match.
 #. key: homepage_small_html
-#. it: Pensato per <a href="workshops.html">workshop</a> pratici e auto-esperimenti: verifica di persona quando un look ferma un match, nelle tue condizioni — non è una promessa che funzionerà ovunque.
+#. it: Pensato per <a href="https://sindacato.nina.watch/it/blog/ghostati-workshop-ottobre-2026/">workshop</a> pratici e auto-esperimenti: verifica di persona quando un look ferma un match, nelle tue condizioni — non è una promessa che funzionerà ovunque.
 #: index.html:50
-msgid "Built for hands-on <a href=\"workshops.html\">workshops</a> and self-experiments: see for yourself when a look stops a match, under your own conditions — not a promise that it will hold anywhere else."
+msgid "Built for hands-on <a href=\"https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/\">workshops</a> and self-experiments: see for yourself when a look stops a match, under your own conditions — not a promise that it will hold anywhere else."
 msgstr ""
 
 #. key: open_lab_link_html

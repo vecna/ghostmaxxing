@@ -1,4 +1,4 @@
-const PRODUCTION_ORIGIN = 'https://ghostmaxxing.vecna.eu';
+import { backendOrigin, PRODUCTION_ORIGIN } from '../lab-js/backend-url.js';
 const PAGE_SIZE = 24;
 
 const list = document.getElementById('gallery-list');
@@ -9,7 +9,7 @@ const follow = document.getElementById('gallery-follow');
 const handleButton = document.getElementById('gallery-copy-handle');
 const followers = document.getElementById('gallery-followers');
 
-let sourceOrigin = location.hostname === 'ghostmaxxing.vecna.eu' ? PRODUCTION_ORIGIN : location.origin;
+let sourceOrigin = backendOrigin();
 let nextCursor = null;
 let loading = false;
 

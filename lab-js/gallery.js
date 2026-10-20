@@ -1,13 +1,12 @@
 /** Public, read-only shared gallery loader. */
 import { t } from './i18n.js';
 
-export const PRODUCTION_ORIGIN = 'https://ghostmaxxing.vecna.eu';
+import { backendOrigin, PRODUCTION_ORIGIN } from './backend-url.js';
+export { PRODUCTION_ORIGIN } from './backend-url.js';
 export const GALLERY_PATH = '/api/gallery?limit=24';
 
 export function initialGalleryOrigin(locationLike = window.location) {
-  return locationLike.hostname === 'ghostmaxxing.vecna.eu'
-    ? PRODUCTION_ORIGIN
-    : locationLike.origin;
+  return backendOrigin(locationLike);
 }
 
 export function galleryUrl(origin) {

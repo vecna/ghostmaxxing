@@ -62,8 +62,8 @@ function siteHeader() {
             <ul>
               <li><a href="/about.html">Vision &amp; about</a></li>
               <li><a href="/genealogy.html">The genealogy of the read</a></li>
-              <li><a href="/report.html">Report a deployment</a></li>
-              <li><a href="/workshops.html">Workshops</a></li>
+              <li><a href="https://sindacato.nina.watch/en/ghostati/report/">Report a deployment</a></li>
+              <li><a href="https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/">Workshops</a></li>
             </ul>
           </div>
           <div>
@@ -77,7 +77,7 @@ function siteHeader() {
           </div>
         </div>
       </div>
-      <a class="gm-site-cta" href="/report.html">Leak to us &#8599;</a>
+      <a class="gm-site-cta" href="https://sindacato.nina.watch/en/ghostati/report/">Leak to us &#8599;</a>
     </nav>
   </header>`;
 }

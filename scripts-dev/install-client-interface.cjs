@@ -33,8 +33,6 @@ const COPY_FILES = [
   'lab.html',
   'realtime.html',
   'loader.html',
-  'report.html',
-  'workshops.html',
   'fediverse.html',
 ];
 

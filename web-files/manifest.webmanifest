@@ -32,11 +32,6 @@
       "name": "Open the lab",
       "url": "/lab.html",
       "description": "Webcam AR lab"
-    },
-    {
-      "name": "Report a deployment",
-      "url": "/report.html",
-      "description": "How to leak to us"
     }
   ]
 }

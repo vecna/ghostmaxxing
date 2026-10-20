@@ -551,7 +551,7 @@ node scripts-dev/lab-capture.cjs shots \
 ```
 
 Writes three full-page screenshots into `images/workshops/`, which
-`workshops.html` displays:
+the [Ghòstati! workshop article on NINA](https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/) displays (copy updated screenshots to sito-sindacato as needed):
 
 | File | What it shows | How it is produced |
 |---|---|---|

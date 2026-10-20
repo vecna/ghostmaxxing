@@ -15,9 +15,9 @@ Ghostmaxxing is a static site with no backend. Everything runs client-side and n
 **In scope**
 
 - Any path by which biometric data (camera frames, descriptors, embeddings, saved faces, thumbnails) leaves the browser or persists where a user does not expect it.
-- XSS or injection in any page, particularly `report.html` — a person reading that page may be at risk, and a compromise there is a safety problem, not only a security one.
+- XSS or injection in any page, particularly the [NINA reporting page](https://sindacato.nina.watch/en/ghostati/report/) — a person reading that page may be at risk, and a compromise there is a safety problem, not only a security one.
 - Escape from the Ghostyle plugin sandbox into a scope that could exfiltrate data or persist across sessions.
-- Weaknesses in the reporting channel described on `report.html`, including anything that could deanonymise a submitter or leak submission metadata.
+- Weaknesses in the reporting channel described on the [NINA reporting page](https://sindacato.nina.watch/en/ghostati/report/), including anything that could deanonymise a submitter or leak submission metadata.
 - Supply-chain issues in vendored assets under `lab-js/vendor/` or `styles/vendor/`.
 
 **Out of scope**

@@ -1,3 +1,5 @@
+import { backendUrl } from './backend-url.js';
+
 /**
  * @module config
  * @description
@@ -118,7 +120,7 @@ export const RECORDING_CONFIG = {
    //   - Payload field: 'video' (the recording blob)
    //   - Required field: 'consent_version'
    //   - Response:      { ok, uploadId, deleteToken }
-   uploadEndpoint: '/api/uploads',
+   get uploadEndpoint() { return backendUrl('/api/uploads'); },
 
    // Duration of the recording in milliseconds (default: 2 seconds).
    durationMs: 2000

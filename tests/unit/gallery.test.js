@@ -9,9 +9,9 @@ describe('gallery integration', () => {
     vi.restoreAllMocks();
   });
 
-  it('selects production only for the production hostname', () => {
+  it('selects the dedicated local backend on localhost', () => {
     expect(initialGalleryOrigin({ hostname: 'ghostmaxxing.vecna.eu', origin: 'https://ghostmaxxing.vecna.eu' })).toBe(PRODUCTION_ORIGIN);
-    expect(initialGalleryOrigin({ hostname: 'localhost', origin: 'http://localhost:8123' })).toBe('http://localhost:8123');
+    expect(initialGalleryOrigin({ hostname: 'localhost', origin: 'http://localhost:8123' })).toBe('http://localhost:4040');
     expect(galleryUrl('http://localhost:8123')).toBe('http://localhost:8123/api/gallery?limit=24');
   });
 

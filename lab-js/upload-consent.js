@@ -7,6 +7,7 @@
  * localStorage so the user can revoke later from the upload panel.
  */
 import { APP_VERSION, RECORDING_CONFIG, UPLOAD_CONSENT_VERSION } from './config.js';
+import { backendUrl } from './backend-url.js';
 import { t } from './i18n.js';
 import { state } from './state.js';
 import { setLog } from './utils.js';
@@ -64,7 +65,7 @@ export function publicUrlForReceipt(uploadId, kind = 'video') {
    const path = kind === 'clipboard'
       ? `/clipboard/${uploadId}.png`
       : `/videos/${uploadId}.mp4`;
-   return new URL(path, window.location.origin).href;
+   return backendUrl(path);
 }
 
 export function privateReceiptUrl(uploadId, deleteToken) {

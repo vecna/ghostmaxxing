@@ -21,7 +21,7 @@ its screen, or they signed the paper that paid for it. Four positions cover
 every informed source we can name. The fifth questionnaire exists because a
 channel that only accepts what we expected never receives what we did not.
 
-| # | Position | Card title on report.html | Absorbs from v1 |
+| # | Position | Card title on the NINA reporting page | Absorbs from v1 |
 |---|---|---|---|
 | 1 | Chi ha subito | You were stopped, flagged or misidentified. | 8 Affected individuals |
 | 2 | Chi implementa | You build, integrate or test the technology. | 1 System overview, 2 Test our countermeasures, 3 Weak spots |
@@ -82,7 +82,7 @@ trigger, or trigger a whole step; both work.
 - Recipients: see `receiving-submissions.md`, "Who receives what".
 - Report expiration: GlobaLeaks defaults to 90 days. Set **180 days**, and
   enable "allow recipients to postpone expiration" so an active case can be
-  kept. Say the number on report.html and keep the two in sync.
+  kept. Say the number on the NINA reporting page and keep the two in sync.
 - Order the five contexts as numbered here; the submission page lists them in
   that order.
 

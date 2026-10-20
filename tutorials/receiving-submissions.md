@@ -1,9 +1,9 @@
 # (Internal) Receiving submissions: why the questionnaires look like this, and what to do with what arrives
 
 For the journalists, researchers and activists who are recipients on the
-Ghostmaxxing GlobaLeaks node. Version 1, September 2026. Companion to
+NINA GlobaLeaks node. Version 1, September 2026. Companion to
 `globaleaks-submission-channels.md` (the field-level specification) and to the
-public page `report.html`, whose promises this document exists to keep.
+public page [NINA reporting guidance](https://sindacato.nina.watch/en/ghostati/report/), whose promises this document exists to keep.
 
 Two parts. The first explains the design, so that you can defend it to a
 source, to a colleague, or to yourself when a report arrives that does not fit.

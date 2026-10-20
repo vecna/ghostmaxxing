@@ -26,7 +26,7 @@ Use one stable Person node for the author:
 }
 ```
 
-NINA is not the publisher or owner of the full project. NINA is the organization for which vecna developed the initial concept. NINA is currently responsible for the workshops and for the separate whistleblowing/leaking platform. Reflect that limited responsibility on `workshops.html` and `report.html`; do not assign NINA as publisher of the lab, archives, documentation or other project pages.
+NINA is not the publisher or owner of the full project. NINA is the organization for which vecna developed the initial concept. NINA is currently responsible for the workshops and for the separate whistleblowing/leaking platform. The workshop and reporting pages now live on sindacato.nina.watch. Reflect that limited responsibility there and in about.html; do not assign NINA as publisher of the lab, archives, documentation or other project pages.
 
 ## Titles and descriptions
 

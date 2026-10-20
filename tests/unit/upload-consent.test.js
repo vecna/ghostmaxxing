@@ -96,8 +96,8 @@ describe('upload-consent flow and helpers', () => {
   });
 
   it('builds public and private receipt URLs from upload id and token', () => {
-    expect(publicUrlForReceipt('upload-1')).toBe('http://localhost:3000/videos/upload-1.mp4');
-    expect(publicUrlForReceipt('clip-1', 'clipboard')).toBe('http://localhost:3000/clipboard/clip-1.png');
+    expect(publicUrlForReceipt('upload-1')).toBe('http://localhost:4040/videos/upload-1.mp4');
+    expect(publicUrlForReceipt('clip-1', 'clipboard')).toBe('http://localhost:4040/clipboard/clip-1.png');
     expect(privateReceiptUrl('upload-1', 'secret-token')).toBe('http://localhost:3000/lab.html#receipt=upload-1.secret-token');
   });
 

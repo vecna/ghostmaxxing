@@ -621,8 +621,8 @@ HEADER = """    <header class="gm-site-header">
               <ul>
                 <li><a href="/about.html">Vision &amp; about</a></li>
                 <li><a href="/genealogy.html" aria-current="page">Genealogy</a></li>
-                <li><a href="/report.html">Report a deployment</a></li>
-                <li><a href="/workshops.html">Workshops</a></li>
+                <li><a href="https://sindacato.nina.watch/en/ghostati/report/">Report a deployment</a></li>
+                <li><a href="https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/">Workshops</a></li>
               </ul>
             </div>
             <div>
@@ -636,7 +636,7 @@ HEADER = """    <header class="gm-site-header">
             </div>
           </div>
         </div>
-        <a class="gm-site-cta" href="/report.html">Leak to us &#8599;</a>
+        <a class="gm-site-cta" href="https://sindacato.nina.watch/en/ghostati/report/">Leak to us &#8599;</a>
       </nav>
     </header>"""
 
@@ -926,11 +926,14 @@ def build_html(refs, projects, marks, by_row, Y1):
 {chr(10).join(cards)}
     </div>
 
+    <!--
     <p class="gen-note gm-prose">Dates mark first web appearances. Reference entries describe test conditions;
       reproducibility is not assured. Projects include products, prototypes, artworks and practices.
       The archive contains {n_ref} references ({strong} with code or artefacts)
       and {n_proj} projects ({commercial} commercial).
-      <a href="/about.html">Suggest a project</a>.</p>
+      <a href="/about.html">Suggest a project</a>.
+    </p>
+    -->
   </div>
 </div>
 

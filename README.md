@@ -1,6 +1,6 @@
 # Ghostmaxxing
 <!-- coverage-badge:start -->
-[![Unit Test Coverage](https://img.shields.io/badge/coverage-83.17%25-green)](coverage/)
+[![Unit Test Coverage](https://img.shields.io/badge/coverage-83.19%25-green)](coverage/)
 <!-- coverage-badge:end -->
 
 [![CI](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml/badge.svg)](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml)
@@ -65,7 +65,8 @@ Entry points once served:
 - `/lab.html` — the main webcam / AR lab (the app).
 - `/` (`index.html`) — public landing page.
 - `/about.html` — project vision and context.
-- `/report.html` — how to report a face-recognition deployment.
+- [NINA reporting guidance](https://sindacato.nina.watch/en/ghostati/report/) — confidential whistleblowing, managed by NINA’s Universal Union.
+- [Ghòstati! workshops](https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/) — NINA’s facilitator guide and Signal group.
 - `/loader.html` — internal MP4 loader for repeatable 2D/3D video tests.
 - `/projects/` — products, prototypes, and practices pursuing complementary anti-surveillance approaches.
 - `/references/` — cultural and technical source archive reached through the related-projects section.
@@ -132,7 +133,7 @@ pages are English-baseline until they add `data-i18n*` bindings. See
 
 If you know of a place where facial recognition is being deployed, tested,
 procured, or hidden in public infrastructure, the project runs a third-party
-[GlobaLeaks](https://www.globaleaks.org) node. See **[report.html](report.html)**
+[GlobaLeaks](https://www.globaleaks.org) node. See **[NINA reporting guidance](https://sindacato.nina.watch/en/ghostati/report/)**
 for how to report safely and what happens next. Reports about suppliers,
 technology, data access, deployment context, limits, and abuses are project
 inputs, not side notes.
@@ -169,3 +170,13 @@ legacy and is not maintained as part of this repository.
 
 AGPL-3.0-or-later. Ghostyles are individually copyable modules — keep the license
 header travelling with the file.
+
+## Hosting the lab on another domain
+
+The browser lab may be served from a subdirectory. NINA imports it under `/ghostati/`.
+Public API and media URLs use `lab-js/backend-url.js`: localhost (including loopback IPs)
+uses `http://localhost:4040`, the backend default; the production hostname keeps its origin;
+all other hosts use `https://ghostmaxxing.vecna.eu`. Recognition models remain local.
+Private receipt links stay on the frontend that created them; their deletion requests use the backend.
+The backend must allow cross-origin POST/DELETE and the `X-Delete-Token` preflight header.
+See `migration/README-it.md` and the included backend patch.

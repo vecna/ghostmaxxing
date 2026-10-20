@@ -83,7 +83,7 @@ the deployed homepage and documentation navigation on 9 September 2026. All retu
 HTTP 200 and did not declare a robots `noindex` meta tag during this check.
 It includes the current nested documentation routes and references page.
 
-`workshops.html` is excluded because the live page declares `noindex`.
+Workshop and reporting pages are hosted by NINA and excluded from this site’s sitemap and preview inventory.
 Generated `/docs/jsdoc/`, `/coverage/`, and `/codemap/` output is excluded from this
 curated public-page sitemap, as is the new maintainer-only social-card HTML page.
 No speculative `lastmod` dates are included. If Workshops becomes indexable,

@@ -40,7 +40,7 @@ The site pages around the app are:
 ```text
 index.html
 about.html
-report.html
+# Reporting guidance is hosted by NINA’s Universal Union.
 ```
 
 Ghostyles are currently loaded from:
