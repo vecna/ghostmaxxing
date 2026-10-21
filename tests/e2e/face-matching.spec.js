@@ -1,19 +1,57 @@
 import { test, expect } from '@playwright/test';
+import { prepareRealFaceApiLab } from './helpers/real-faceapi.js';
 
 test.describe('Ghostmaxxing Face Matching E2E', () => {
   test('recognizes a saved face and reports a non-match when distance is above threshold', async ({ page }) => {
-    test.setTimeout(90000);
+    test.setTimeout(120000);
 
     await page.addInitScript(() => {
       localStorage.removeItem('local-face-lab-db-v1');
       localStorage.removeItem('local-face-lab-db-3d-v1');
       localStorage.removeItem('ghostati-overlay-mode-v1');
+      // Real pixels from a committed image, delivered as a real MediaStream.
+      // Identity matching must not depend on where a moving fake-camera clip
+      // happens to be when the model finishes loading.
+      navigator.mediaDevices.getUserMedia = async () => {
+        const image = new Image();
+        image.src = '/tests/fixtures/mock-face.jpg';
+        await image.decode();
+        const canvas = document.createElement('canvas');
+        const scale = 640 / Math.max(image.naturalWidth, image.naturalHeight);
+        canvas.width = Math.round(image.naturalWidth * scale);
+        canvas.height = Math.round(image.naturalHeight * scale);
+        const context = canvas.getContext('2d');
+        const draw = () => context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        draw();
+        const stream = canvas.captureStream(5);
+        const timer = window.setInterval(draw, 200);
+        stream.getVideoTracks()[0].addEventListener('ended', () => window.clearInterval(timer));
+        return stream;
+      };
     });
 
+    await prepareRealFaceApiLab(page, '/lab-js/main.js');
+    // Recognition is tested without optional Ghostyle/UV initialisation.
+    // Those effects have their own tests; a new plugin must not change this
+    // test's baseline or consume its inference budget.
+    await page.route('/ghostyles.json', (route) => route.fulfill({ json: [] }));
     await page.goto('/lab.html');
 
-    await expect(page.locator('#logBox')).toContainText('MediaPipe FaceLandmarker ready', { timeout: 45000 });
-    await expect(page.locator('#logBox')).toContainText('Webcam active', { timeout: 45000 });
+    // The visible log is a rotating window and may already have dropped a
+    // readiness line. This 2D matching test needs a decoded camera frame and
+    // an enabled save control, not the separate FaceLandmarker loop's log.
+    await expect.poll(() => page.locator('#video').evaluate(
+      (video) => video.readyState >= 2 && video.videoWidth > 0,
+    ), { timeout: 60000 }).toBe(true);
+    await expect(page.locator('#saveBtn')).toBeEnabled({ timeout: 60000 });
+
+    // Compare the same real frame while saving and matching.
+    await page.locator('#video').evaluate((video) => video.pause());
+    await expect.poll(() => page.evaluate(async () => {
+      const { detectFaceInCam } = await import('/lab-js/engine.js');
+      const result = await detectFaceInCam(false);
+      return result?.descriptor?.length;
+    }), { timeout: 45000 }).toBe(128);
 
     await expect(page.locator('#dbCount')).toHaveText('0');
     await expect(page.locator('#gm-num')).toHaveText('—');
@@ -23,9 +61,11 @@ test.describe('Ghostmaxxing Face Matching E2E', () => {
 
     await expect(page.locator('#dbCount')).toHaveText('1', { timeout: 45000 });
     await expect(page.locator('#nextId')).toHaveText('1');
-    await expect(page.locator('#logBox')).toContainText('Biometric faceprint saved with ID 0', { timeout: 45000 });
-    // The fake camera is a moving Y4M clip: later frames need not have the
-    // saved frame's exact descriptor. Check identity and threshold together.
+    await expect.poll(() => page.evaluate(() => {
+      const saved = window.gstmxx.getDb().faces.find((face) => face.id === 0);
+      return saved?.descriptor?.length;
+    }), { timeout: 45000 }).toBe(128);
+    // Check real recognition of the saved frame as well as the UI state.
     await expect.poll(() => page.evaluate(() => {
       const distance = Number(document.getElementById('gm-num').textContent);
       const threshold = Number(document.getElementById('gm-thr-input').value);

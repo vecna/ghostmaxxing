@@ -599,6 +599,12 @@ export function createBaselineCollector(options) {
 
       if (observation.id != null && observation.id === lastObservationId) {
         duplicates += 1;
+        if (elapsed > timeoutMs) {
+          active = false;
+          return progress('failed', {
+            reason: 'The video stopped advancing before enough clean frames were collected. Play or seek the video and try again.',
+          });
+        }
         return progress('waiting', { reason: 'Waiting for the video to advance to a new frame.' });
       }
       if (observation.id != null) lastObservationId = observation.id;

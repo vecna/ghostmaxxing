@@ -245,31 +245,45 @@ test.describe('Ghostmaxxing homepage story', () => {
   });
 
   test('moves with left and right arrow keys before and after interaction', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/index.html');
     const track = page.locator('#storyTrack');
     const dots = page.locator('.story__dot');
+    const expectCurrentCard = async (index) => {
+      const card = page.locator('.story__card').nth(index);
+      await expect.poll(() => card.evaluate((element) => {
+        const scroller = element.parentElement;
+        const trackBox = scroller.getBoundingClientRect();
+        const cardBox = element.getBoundingClientRect();
+        return Math.abs(cardBox.left + cardBox.width / 2 -
+          (trackBox.left + scroller.clientLeft + scroller.clientWidth / 2));
+      })).toBeLessThan(1);
+      await expect(card).toHaveAttribute('aria-current', 'true');
+      await expect(dots.nth(index)).toHaveClass(/is-current/);
+    };
 
     await expect(track).toHaveAttribute('tabindex', '0');
+    await expectCurrentCard(1);
     await expect(page.locator('body')).toBeFocused();
     await page.keyboard.press('ArrowRight');
-    await expect(dots.nth(2)).toHaveClass(/is-current/);
+    await expectCurrentCard(2);
 
     await page.keyboard.press('ArrowLeft');
-    await expect(dots.nth(1)).toHaveClass(/is-current/);
+    await expectCurrentCard(1);
 
     await track.focus();
     await page.keyboard.press('ArrowRight');
-    await expect(dots.nth(2)).toHaveClass(/is-current/);
+    await expectCurrentCard(2);
 
     // Keyboard navigation must keep working when a control owns the focus.
     const next = page.locator('.story__arrow[data-story-step="1"]');
     await next.focus();
     await page.keyboard.press('ArrowRight');
-    await expect(dots.nth(3)).toHaveClass(/is-current/);
+    await expectCurrentCard(3);
 
     await dots.nth(5).focus();
     await page.keyboard.press('ArrowLeft');
-    await expect(dots.nth(2)).toHaveClass(/is-current/);
+    await expectCurrentCard(2);
   });
 
   test('never scrolls the page sideways, at any width', async ({ page }) => {

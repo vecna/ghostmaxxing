@@ -1,16 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
 import { existsSync } from 'node:fs';
 
-const isLinux = process.platform === 'linux';
-const linuxChromeCandidates = [
-  '/usr/bin/google-chrome',
-  '/usr/bin/google-chrome-stable',
-  '/usr/bin/chromium',
-  '/usr/bin/chromium-browser',
-];
-const systemChromePath = isLinux
-  ? linuxChromeCandidates.find((candidate) => existsSync(candidate))
-  : undefined;
+// Use Playwright's matching browser by default, including on Linux. A system
+// browser is an explicit opt-in rather than an automatic distro dependency.
+const systemChromePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined;
+if (systemChromePath && !existsSync(systemChromePath)) {
+  throw new Error(`Chromium executable does not exist: ${systemChromePath}`);
+}
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -18,11 +14,13 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Real inference uses SwiftShader. Running one browser per CPU core can
+  // starve even UI-only tests; --workers remains available as an override.
+  workers: 1,
   reporter: 'html',
   use: {
     baseURL: 'http://localhost:8080',
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
   },
   projects: [
     {

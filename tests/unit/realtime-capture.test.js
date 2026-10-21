@@ -202,6 +202,23 @@ describe('realtime temporal measurement helpers', () => {
     }
   });
 
+  it('times out when a paused or ended video repeats the same frame', () => {
+    vi.useFakeTimers();
+    const collector = createBaselineCollector({
+      targetSamples: 8, minDurationMs: 3000, timeoutMs: 5000, maxSpread: 0.2,
+    });
+    const frame = { sourceTimeMs: 30000, id: '30.000' };
+    collector.start();
+    expect(collector.offer({ ok: true }, [0, 0], frame).status).toBe('collecting');
+    vi.advanceTimersByTime(5001);
+    expect(collector.offer({ ok: true }, [0, 0], frame)).toMatchObject({
+      status: 'failed', accepted: 1, duplicates: 1,
+      reason: expect.stringContaining('video stopped advancing'),
+    });
+    expect(collector.isActive()).toBe(false);
+    expect(collector.offer({ ok: true }, [0, 0], frame).status).toBe('idle');
+  });
+
   it('uses media time and ignores a repeated local-video frame', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-10-12T10:00:00Z'));
