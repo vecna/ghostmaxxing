@@ -38,7 +38,8 @@ body {
    styles/prose.css via class="gm-prose"; component links style themselves. */
 
 /* ---- The story carousel -------------------------------------------------
-   Nine cards on the browser's own horizontal scroller. Replaces the camera
+   Nine illustrated cards and a final outreach card on a native scroller.
+   Replaces the camera
    stage, which moved to /about.html.
 
    Two rules shape everything below.
@@ -207,6 +208,64 @@ body {
     text-decoration: underline;
     text-decoration-thickness: 2px;
     text-underline-offset: .15em;
+}
+
+/* Final outreach card. Edit its list in index.html to add destinations;
+   unlike the illustrated cards it needs no image or matching asset. */
+.story__outro {
+    width: 100%;
+    min-width: 0;
+    padding: clamp(1rem, 3vw, 2rem);
+    border: 2px solid var(--gm-ink);
+    background: var(--gm-cream);
+    color: var(--gm-text);
+}
+
+.story__outro h3 {
+    margin: .5rem 0 .75rem;
+    font: 700 var(--t-h2)/var(--lh-heading) var(--serif);
+    color: var(--gm-ink);
+}
+
+.story__outro-intro {
+    max-width: 60ch;
+    margin: 0 0 1rem;
+    font-size: var(--t-body);
+    line-height: 1.5;
+}
+
+.story__outro-links {
+    display: grid;
+    gap: 0 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.story__outro-links li {
+    min-width: 0;
+    padding: .8rem 0;
+    border-top: 1px solid var(--gm-border-strong);
+    overflow-wrap: anywhere;
+}
+
+.story__outro-links a {
+    color: var(--gm-ink);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: .15em;
+}
+
+.story__outro-links p {
+    margin: .3rem 0 0;
+    font-size: var(--t-small);
+    line-height: 1.5;
+}
+
+@media (min-width: 62rem) {
+    .story__outro-links {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 /* ---- The meter ------------------------------------------------------------

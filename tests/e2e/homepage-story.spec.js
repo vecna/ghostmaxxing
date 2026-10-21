@@ -20,13 +20,13 @@ test.describe('Ghostmaxxing homepage story', () => {
     await page.goto('/index.html');
 
     const cards = page.locator('.story__card');
-    await expect(cards).toHaveCount(9);
+    await expect(cards).toHaveCount(10);
 
     // Card 2 is the one that carries the proposition for a reader who never
     // swipes, so landing on it is a behaviour, not a detail.
     const current = page.locator('.story__dot.is-current');
     await expect(current).toHaveCount(1);
-    await expect(page.locator('.story__dot')).toHaveCount(9);
+    await expect(page.locator('.story__dot')).toHaveCount(10);
     const index = await page.locator('.story__dot').evaluateAll(
       (dots) => dots.findIndex((dot) => dot.classList.contains('is-current')),
     );
@@ -72,12 +72,12 @@ test.describe('Ghostmaxxing homepage story', () => {
       await page.goto('/index.html');
 
       const dots = page.locator('.story__dot');
-      const penultimate = page.locator('#story-card-8');
-      await dots.nth(7).click();
+      const penultimate = page.locator('.story__card').nth(-2);
+      await dots.nth(-2).click();
 
       // The controls update before the browser finishes snapping. Inspect
       // the actual card position as well, then allow the scroll listener
-      // to settle: it must not silently switch to card 9.
+      // to settle: it must not silently switch to the final outreach card.
       await expect.poll(() => penultimate.evaluate((card) => {
         const track = card.parentElement;
         const trackBox = track.getBoundingClientRect();
@@ -87,10 +87,10 @@ test.describe('Ghostmaxxing homepage story', () => {
       })).toBeLessThan(1);
       await page.waitForTimeout(250);
       await expect(penultimate).toHaveAttribute('aria-current', 'true');
-      await expect(dots.nth(7)).toHaveClass(/is-current/);
+      await expect(dots.nth(-2)).toHaveClass(/is-current/);
 
       await page.locator('[data-story-step="1"]').click();
-      await expect(page.locator('#story-card-9')).toHaveAttribute('aria-current', 'true');
+      await expect(page.locator('.story__card').last()).toHaveAttribute('aria-current', 'true');
       await page.waitForTimeout(250);
       await page.locator('[data-story-step="-1"]').click();
       await expect(penultimate).toHaveAttribute('aria-current', 'true');
@@ -108,9 +108,9 @@ test.describe('Ghostmaxxing homepage story', () => {
     await page.setViewportSize({ width: 1920, height: 1080 });
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto('/index.html');
-    await page.locator('.story__dot').nth(7).click();
+    await page.locator('.story__dot').nth(-2).click();
 
-    await expect.poll(() => page.locator('#story-card-8').evaluate((card) => {
+    await expect.poll(() => page.locator('.story__card').nth(-2).evaluate((card) => {
       const track = card.parentElement;
       const box = track.getBoundingClientRect();
       const cardBox = card.getBoundingClientRect();
@@ -118,7 +118,7 @@ test.describe('Ghostmaxxing homepage story', () => {
         (box.left + track.clientLeft + track.clientWidth / 2));
     })).toBeLessThan(1);
     await page.waitForTimeout(300);
-    await expect(page.locator('#story-card-8')).toHaveAttribute('aria-current', 'true');
+    await expect(page.locator('.story__card').nth(-2)).toHaveAttribute('aria-current', 'true');
   });
 
   test('keeps its height while lazy-loaded portraits enter the viewport', async ({ page }) => {
@@ -128,14 +128,17 @@ test.describe('Ghostmaxxing homepage story', () => {
 
     const track = page.locator('#storyTrack');
     const dots = page.locator('.story__dot');
-    const images = page.locator('.story__image');
+    const cards = page.locator('.story__card');
     const initialHeight = await track.evaluate((element) => element.getBoundingClientRect().height);
 
     for (let index = 0; index < await dots.count(); index += 1) {
       await dots.nth(index).click();
-      await expect.poll(() => images.nth(index).evaluate(
-        (image) => image.complete && image.naturalWidth > 0,
-      )).toBe(true);
+      const image = cards.nth(index).locator('.story__image');
+      if (await image.count()) {
+        await expect.poll(() => image.evaluate(
+          (element) => element.complete && element.naturalWidth > 0,
+        )).toBe(true);
+      }
 
       const height = await track.evaluate((element) => element.getBoundingClientRect().height);
       expect(
@@ -155,6 +158,63 @@ test.describe('Ghostmaxxing homepage story', () => {
     await page.reload();
     await expect(page.locator('#story-card-2')).toHaveAttribute('aria-current', 'true');
     await expect(page.locator('.story__card[aria-current="true"]')).toHaveCount(1);
+  });
+
+  test('offers working English outreach links on the final card', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const destinations = [
+      'https://sindacato.nina.watch/en/blog/ghostati-new-software/',
+      'https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/',
+      'https://sindacato.nina.watch/en/blog/ghostati-workshop-may-2026/',
+      'https://sindacato.nina.watch/en/ghostati/report/',
+    ];
+    // Test actual navigation without depending on an external service.
+    await page.route('https://sindacato.nina.watch/**', (route) => route.fulfill({
+      contentType: 'text/html', body: '<h1>External destination</h1>',
+    }));
+
+    for (const destination of destinations) {
+      await page.goto('/index.html');
+      await page.locator('.story__dot').last().click();
+      const finalCard = page.locator('.story__card').last();
+      await expect(finalCard).toHaveAttribute('aria-current', 'true');
+      await expect(finalCard.locator('.story__image')).toHaveCount(0);
+      await expect(finalCard.locator('a')).toHaveCount(destinations.length);
+      await expect(finalCard).toContainText("NINA's Universal Union");
+      await finalCard.locator(`a[href="${destination}"]`).click();
+      await expect(page).toHaveURL(destination);
+    }
+  });
+
+  test('does not intercept an outreach link in a side preview', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/index.html');
+    const destination = 'https://sindacato.nina.watch/en/ghostati/report/';
+    await page.route(destination, (route) => route.fulfill({
+      contentType: 'text/html', body: '<h1>Reporting guidance</h1>',
+    }));
+    await page.locator('.story__dot').nth(-2).click();
+    // A partial preview can expose a link before the card is current.
+    // Dispatch directly so this checks event delegation without auto-scrolling
+    // the locator into view and changing which card is selected first.
+    await page.locator(`.story__outro a[href="${destination}"]`).dispatchEvent('click');
+    await expect(page).toHaveURL(destination);
+  });
+
+  test('keeps the final card readable and within the viewport on a small screen', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 800 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/index.html');
+    await page.locator('.story__dot').last().click();
+    const finalCard = page.locator('.story__card').last();
+    await expect(finalCard).toHaveAttribute('aria-current', 'true');
+    expect(await finalCard.locator('.story__outro').evaluate(
+      (element) => element.scrollWidth <= element.clientWidth,
+    )).toBe(true);
+    for (const link of await finalCard.locator('a').all()) {
+      await expect(link).toBeVisible();
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });
 
   test('advances by clicking the visible side previews', async ({ page }) => {
@@ -221,11 +281,12 @@ test.describe('Ghostmaxxing homepage story', () => {
     }
   });
 
-  test('works without JavaScript: all nine cards stay readable', async ({ browser }) => {
+  test('works without JavaScript: all ten cards stay readable', async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
     await page.goto('/index.html');
-    await expect(page.locator('.story__card')).toHaveCount(9);
+    await expect(page.locator('.story__card')).toHaveCount(10);
+    await expect(page.locator('.story__outro a')).toHaveCount(4);
     // The controls are built by story.js and stay hidden without it, rather
     // than sitting there doing nothing.
     await expect(page.locator('#storyControls')).toBeHidden();

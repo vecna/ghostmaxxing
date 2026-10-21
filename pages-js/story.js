@@ -106,6 +106,8 @@
     });
 
     track.addEventListener('click', function (event) {
+        // Outreach links must navigate even when their card is a side preview.
+        if (event.target.closest('a, button, input, select, textarea, [contenteditable="true"]')) return;
         var card = event.target.closest('.story__card');
         if (!card || !track.contains(card)) return;
 
