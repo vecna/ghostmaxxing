@@ -62,7 +62,13 @@
     function goTo(index, smooth) {
         var targetIndex = Math.max(0, Math.min(cards.length - 1, index));
         var card = cards[targetIndex];
-        var left = card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
+        var trackBox = track.getBoundingClientRect();
+        var cardBox = card.getBoundingClientRect();
+        // offsetLeft belongs to the card's offset parent, not necessarily
+        // this scroller. On wide screens that includes the centred track's
+        // page margin and can snap to the following card instead.
+        var left = track.scrollLeft + cardBox.left - trackBox.left -
+            track.clientLeft - (track.clientWidth - cardBox.width) / 2;
         var reduceMotion = window.matchMedia &&
             window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

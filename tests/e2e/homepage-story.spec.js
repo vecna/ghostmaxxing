@@ -65,6 +65,62 @@ test.describe('Ghostmaxxing homepage story', () => {
     await expect(dots.nth(4)).toHaveClass(/is-current/);
   });
 
+  for (const width of [390, 1440, 1920, 2560]) {
+    test(`keeps the penultimate card selected at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.goto('/index.html');
+
+      const dots = page.locator('.story__dot');
+      const penultimate = page.locator('#story-card-8');
+      await dots.nth(7).click();
+
+      // The controls update before the browser finishes snapping. Inspect
+      // the actual card position as well, then allow the scroll listener
+      // to settle: it must not silently switch to card 9.
+      await expect.poll(() => penultimate.evaluate((card) => {
+        const track = card.parentElement;
+        const trackBox = track.getBoundingClientRect();
+        const cardBox = card.getBoundingClientRect();
+        return Math.abs(cardBox.left + cardBox.width / 2 -
+          (trackBox.left + track.clientLeft + track.clientWidth / 2));
+      })).toBeLessThan(1);
+      await page.waitForTimeout(250);
+      await expect(penultimate).toHaveAttribute('aria-current', 'true');
+      await expect(dots.nth(7)).toHaveClass(/is-current/);
+
+      await page.locator('[data-story-step="1"]').click();
+      await expect(page.locator('#story-card-9')).toHaveAttribute('aria-current', 'true');
+      await page.waitForTimeout(250);
+      await page.locator('[data-story-step="-1"]').click();
+      await expect(penultimate).toHaveAttribute('aria-current', 'true');
+      await expect.poll(() => penultimate.evaluate((card) => {
+        const track = card.parentElement;
+        const box = track.getBoundingClientRect();
+        const cardBox = card.getBoundingClientRect();
+        return Math.abs(cardBox.left + cardBox.width / 2 -
+          (box.left + track.clientLeft + track.clientWidth / 2));
+      })).toBeLessThan(1);
+    });
+  }
+
+  test('settles on the penultimate card after smooth scrolling on a wide screen', async ({ page }) => {
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/index.html');
+    await page.locator('.story__dot').nth(7).click();
+
+    await expect.poll(() => page.locator('#story-card-8').evaluate((card) => {
+      const track = card.parentElement;
+      const box = track.getBoundingClientRect();
+      const cardBox = card.getBoundingClientRect();
+      return Math.abs(cardBox.left + cardBox.width / 2 -
+        (box.left + track.clientLeft + track.clientWidth / 2));
+    })).toBeLessThan(1);
+    await page.waitForTimeout(300);
+    await expect(page.locator('#story-card-8')).toHaveAttribute('aria-current', 'true');
+  });
+
   test('keeps its height while lazy-loaded portraits enter the viewport', async ({ page }) => {
     await page.setViewportSize({ width: 1200, height: 800 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
