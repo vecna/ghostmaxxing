@@ -1,14 +1,22 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import {
+   ZONES,
    anchorPointToUv,
    buildGhostyleSource,
    clipToConvex,
    convexHull,
+   convexPolygonsOverlap,
    deltaE2000,
    drawPalette,
+   drawTrial,
+   fixedPalette,
+   meshToPx,
    mulberry32,
    normaliseRecipe,
    paretoFront,
+   parseCssColour,
    polygonArea,
    poseFromMatrix,
    recipeHash,
@@ -18,6 +26,7 @@ import {
    stratifiedSubset,
    trialSeed,
    xterm256Pool,
+   zonesOfMesh,
 } from '../../scripts-dev/ghostyle-fuzz/fuzz-core.mjs';
 
 describe('ghostyle-fuzz core: randomness', () => {
@@ -178,5 +187,105 @@ describe('ghostyle-fuzz core: recipe and Ghostyle source', () => {
       expect(source).toMatch(/==Ghostyle==[\s\S]*@name\s+Fuzz x #5[\s\S]*@description\s+\S[\s\S]*==\/Ghostyle==/);
       expect(source).toMatch(/export\s+function\s+paintUV\s*\(/);
       expect(source).toContain('export const textureSize = 1024;');
+   });
+});
+
+describe('ghostyle-fuzz core 1.1.0: forced colour, overlap, zones, paired seeds', () => {
+   it('parses CSS colours and rejects the rest', () => {
+      expect(parseCssColour('#0f0')).toEqual([0, 255, 0]);
+      expect(parseCssColour('#FFFFFF')).toEqual([255, 255, 255]);
+      expect(parseCssColour('RebeccaPurple')).toEqual([102, 51, 153]);
+      expect(parseCssColour('rgb(1, 2, 3)')).toEqual([1, 2, 3]);
+      expect(() => parseCssColour('blurple')).toThrow(/not a CSS/);
+      expect(() => parseCssColour('rgb(300, 0, 0)')).toThrow(/0-255/);
+      expect(() => parseCssColour('#ffffff80')).toThrow(/not a CSS/);
+   });
+
+   it('builds a one-colour palette with the contrast fields of a drawn one', () => {
+      const p = fixedPalette('white', [60, 20, 15]);
+      expect(p.colours).toHaveLength(1);
+      expect(p.colours[0]).toMatchObject({ hex: '#ffffff', xterm: null, deltaL: 40 });
+      expect(p.colours[0].deltaE).toBeGreaterThan(20);
+   });
+
+   it('detects overlapping convex polygons and accepts touching ones', () => {
+      const sq = (x, y, s) => [{ x, y }, { x: x + s, y }, { x: x + s, y: y + s }, { x, y: y + s }];
+      expect(convexPolygonsOverlap(sq(0, 0, 2), sq(1, 1, 2))).toBe(true);
+      expect(convexPolygonsOverlap(sq(0, 0, 2), sq(3, 3, 2))).toBe(false);
+      expect(convexPolygonsOverlap(sq(0, 0, 2), sq(2, 0, 2))).toBe(false); // shared edge
+      expect(convexPolygonsOverlap(sq(0, 0, 4), sq(1, 1, 1))).toBe(true); // containment
+      expect(convexPolygonsOverlap(sq(0, 0, 2), [{ x: 1, y: 3 }, { x: 3, y: 1 }, { x: 3, y: 3 }])).toBe(false); // diagonal near miss
+   });
+
+   it('keeps the 1.0.0 recipe hash when the new keys are absent or at their defaults', () => {
+      const base = { name: 'three-bands', shape: 'line', count: 3, lengthCm: 5, widthCm: 2, opacity: 0.8, palette: { pool: 'xterm256', size: 4, contrast: 'luminance', quantile: 0.75, minPairDeltaE: 20 } };
+      expect(recipeHash(normaliseRecipe(base))).toBe('1d7a652d');
+      expect(recipeHash(normaliseRecipe({ ...base, overlap: true, pairedSeeds: false, zones: ZONES, color: null }))).toBe('1d7a652d');
+      const hashes = new Set([recipeHash(normaliseRecipe({ ...base, color: 'white' })), recipeHash(normaliseRecipe({ ...base, overlap: false })), recipeHash(normaliseRecipe({ ...base, zones: ['eyes'] })), recipeHash(normaliseRecipe({ ...base, pairedSeeds: true }))]);
+      expect(hashes.size).toBe(4);
+      expect(hashes.has('1d7a652d')).toBe(false);
+      // colour spelling does not change the recipe
+      expect(recipeHash(normaliseRecipe({ ...base, color: 'white' }))).toBe(recipeHash(normaliseRecipe({ ...base, color: '#FFF' })));
+      expect(normaliseRecipe({ ...base, zones: ['nose-cheeks', 'eyes'] }).zones).toEqual(['eyes', 'nose-cheeks']);
+   });
+
+   it('rejects bad values of the new keys and the colour + pairedSeeds combination', () => {
+      expect(() => normaliseRecipe({ color: 'nope' })).toThrow(/not a CSS/);
+      expect(() => normaliseRecipe({ overlap: 'no' })).toThrow(/true or false/);
+      expect(() => normaliseRecipe({ zones: ['chin'] })).toThrow(/unknown zone/);
+      expect(() => normaliseRecipe({ zones: [] })).toThrow(/non-empty/);
+      expect(() => normaliseRecipe({ color: 'white', pairedSeeds: true })).toThrow(/exclude each other/);
+   });
+
+   it('splits escapeRate into lostRate and descriptorEscape', () => {
+      const s = scoreProfile([{ detection: 'lost', dAtlas: null }, { detection: 'ok', dAtlas: 0.7 }, { detection: 'weak', dAtlas: 0.3 }, { detection: 'ok', dAtlas: 0.5 }]);
+      expect(s).toMatchObject({ escapeRate: 0.5, lostRate: 0.25, descriptorEscape: 0.25, descriptorEscapeDetected: 0.3333, lost: 1 });
+      expect(scoreProfile([{ detection: 'lost', dAtlas: null }]).descriptorEscapeDetected).toBeNull();
+   });
+
+   // A synthetic frontal face: the canonical UV layout as a 400×400 image (v grows upwards, image y downwards).
+   function syntheticAnchor() {
+      const data = JSON.parse(readFileSync(resolve(process.cwd(), 'data/face_canonical_uv.json'), 'utf8'));
+      const mesh = data.uv.map(([u, v]) => [u, 1 - v, 0]);
+      return { meshPx: meshToPx(mesh, 400, 400), pxPerCm: 400 / 14, triangles: data.triangles, uv: data.uv };
+   }
+   const skin = [60, 20, 15];
+
+   it('cuts the face into four zones, top to bottom', () => {
+      const z = zonesOfMesh(syntheticAnchor().meshPx);
+      expect(z).toHaveLength(468);
+      expect(z[10]).toBe('forehead'); // top of the forehead
+      expect(z[468 - 1]).toBeDefined();
+      expect(z[1]).toBe('nose-cheeks'); // nose tip
+      expect(z[152]).toBe('mouth-chin'); // chin
+      expect(z[33]).toBe('eyes'); // eye corner
+      for (const zone of ZONES) expect(z.filter((v) => v === zone).length).toBeGreaterThan(10);
+   });
+
+   it('draws the same strokes for a seed with --color and --paired, unlike the default', () => {
+      const base = normaliseRecipe({ name: 'x', count: 3 });
+      const anchor = syntheticAnchor();
+      const centres = (recipe, s = 7) => drawTrial(s, recipe, anchor, s === 7 ? skin : skin).strokes.map((st) => st.centreIndex);
+      const white = centres(normaliseRecipe({ name: 'x', count: 3, color: 'white' }));
+      const paired = centres(normaliseRecipe({ name: 'x', count: 3, pairedSeeds: true }));
+      expect(white).toEqual(paired);
+      // the default stream depends on how many palette draws the skin caused: another skin, other strokes
+      const defaultA = drawTrial(7, base, anchor, [60, 20, 15]).strokes.map((st) => st.centreIndex);
+      const pairedB = drawTrial(7, normaliseRecipe({ name: 'x', count: 3, pairedSeeds: true }), anchor, [35, 15, 20]).strokes.map((st) => st.centreIndex);
+      expect(pairedB).toEqual(paired);
+      expect(defaultA).not.toEqual(paired);
+   });
+
+   it('restricts stroke centres to the zones and refuses overlaps', () => {
+      const anchor = syntheticAnchor();
+      const zones = zonesOfMesh(anchor.meshPx);
+      for (let seed = 1; seed <= 5; seed += 1) {
+         const t = drawTrial(seed, normaliseRecipe({ name: 'x', count: 4, zones: ['nose-cheeks'] }), anchor, skin);
+         expect(t.strokes.map((s) => zones[s.centreIndex])).toEqual(['nose-cheeks', 'nose-cheeks', 'nose-cheeks', 'nose-cheeks']);
+         const n = drawTrial(seed, normaliseRecipe({ name: 'x', count: 6, lengthCm: 4, widthCm: 1, overlap: false }), anchor, skin);
+         const polys = n.strokes.map((s) => s.anchorPolygonPx.map(([x, y]) => ({ x, y })));
+         for (let i = 0; i < polys.length; i += 1) for (let j = i + 1; j < polys.length; j += 1) expect(convexPolygonsOverlap(polys[i], polys[j])).toBe(false);
+      }
+      expect(() => drawTrial(1, normaliseRecipe({ name: 'x', count: 50, lengthCm: 10, widthCm: 5, overlap: false }), anchor, skin)).toThrow(/without overlap/);
    });
 });

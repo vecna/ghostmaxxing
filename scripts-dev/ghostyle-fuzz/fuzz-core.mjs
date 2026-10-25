@@ -14,7 +14,7 @@
  * Documentation: tutorials/ghostyle-fuzz.md.
  */
 
-export const CORE_VERSION = '1.0.0';
+export const CORE_VERSION = '1.1.0';
 
 /** face-api identity threshold: dlib's LFW default, as in realtime.js and the video loader. */
 export const MATCH_THRESHOLD = 0.6;
@@ -264,6 +264,67 @@ export function drawPalette(rng, skinLab, spec, pool = xterm256Pool()) {
    }
 }
 
+/** The 148 CSS named colours (CSS Color Module Level 4), lower case, as 24-bit integers. */
+const CSS_NAMED_COLOURS = Object.fromEntries(`aliceblue:f0f8ff antiquewhite:faebd7 aqua:00ffff aquamarine:7fffd4 azure:f0ffff beige:f5f5dc
+bisque:ffe4c4 black:000000 blanchedalmond:ffebcd blue:0000ff blueviolet:8a2be2 brown:a52a2a burlywood:deb887 cadetblue:5f9ea0
+chartreuse:7fff00 chocolate:d2691e coral:ff7f50 cornflowerblue:6495ed cornsilk:fff8dc crimson:dc143c cyan:00ffff darkblue:00008b
+darkcyan:008b8b darkgoldenrod:b8860b darkgray:a9a9a9 darkgreen:006400 darkgrey:a9a9a9 darkkhaki:bdb76b darkmagenta:8b008b
+darkolivegreen:556b2f darkorange:ff8c00 darkorchid:9932cc darkred:8b0000 darksalmon:e9967a darkseagreen:8fbc8f darkslateblue:483d8b
+darkslategray:2f4f4f darkslategrey:2f4f4f darkturquoise:00ced1 darkviolet:9400d3 deeppink:ff1493 deepskyblue:00bfff dimgray:696969
+dimgrey:696969 dodgerblue:1e90ff firebrick:b22222 floralwhite:fffaf0 forestgreen:228b22 fuchsia:ff00ff gainsboro:dcdcdc
+ghostwhite:f8f8ff gold:ffd700 goldenrod:daa520 gray:808080 green:008000 greenyellow:adff2f grey:808080 honeydew:f0fff0 hotpink:ff69b4
+indianred:cd5c5c indigo:4b0082 ivory:fffff0 khaki:f0e68c lavender:e6e6fa lavenderblush:fff0f5 lawngreen:7cfc00 lemonchiffon:fffacd
+lightblue:add8e6 lightcoral:f08080 lightcyan:e0ffff lightgoldenrodyellow:fafad2 lightgray:d3d3d3 lightgreen:90ee90 lightgrey:d3d3d3
+lightpink:ffb6c1 lightsalmon:ffa07a lightseagreen:20b2aa lightskyblue:87cefa lightslategray:778899 lightslategrey:778899
+lightsteelblue:b0c4de lightyellow:ffffe0 lime:00ff00 limegreen:32cd32 linen:faf0e6 magenta:ff00ff maroon:800000
+mediumaquamarine:66cdaa mediumblue:0000cd mediumorchid:ba55d3 mediumpurple:9370db mediumseagreen:3cb371 mediumslateblue:7b68ee
+mediumspringgreen:00fa9a mediumturquoise:48d1cc mediumvioletred:c71585 midnightblue:191970 mintcream:f5fffa mistyrose:ffe4e1
+moccasin:ffe4b5 navajowhite:ffdead navy:000080 oldlace:fdf5e6 olive:808000 olivedrab:6b8e23 orange:ffa500 orangered:ff4500
+orchid:da70d6 palegoldenrod:eee8aa palegreen:98fb98 paleturquoise:afeeee palevioletred:db7093 papayawhip:ffefd5 peachpuff:ffdab9
+peru:cd853f pink:ffc0cb plum:dda0dd powderblue:b0e0e6 purple:800080 rebeccapurple:663399 red:ff0000 rosybrown:bc8f8f royalblue:4169e1
+saddlebrown:8b4513 salmon:fa8072 sandybrown:f4a460 seagreen:2e8b57 seashell:fff5ee sienna:a0522d silver:c0c0c0 skyblue:87ceeb
+slateblue:6a5acd slategray:708090 slategrey:708090 snow:fffafa springgreen:00ff7f steelblue:4682b4 tan:d2b48c teal:008080
+thistle:d8bfd8 tomato:ff6347 turquoise:40e0d0 violet:ee82ee wheat:f5deb3 white:ffffff whitesmoke:f5f5f5 yellow:ffff00 yellowgreen:9acd32`
+   .split(/\s+/).map((pair) => { const [name, hex] = pair.split(':'); return [name, parseInt(hex, 16)]; }));
+
+/**
+ * Parse a CSS colour: a named colour, #rgb, #rrggbb, or rgb(r, g, b) with
+ * 0-255 components. Alpha is not accepted: opacity belongs to the recipe.
+ *
+ * @param {string} text
+ * @returns {number[]} [r, g, b]
+ */
+export function parseCssColour(text) {
+   const s = String(text ?? '').trim().toLowerCase();
+   let m;
+   if ((m = /^#([0-9a-f]{3})$/.exec(s))) return [...m[1]].map((c) => parseInt(c + c, 16));
+   if ((m = /^#([0-9a-f]{6})$/.exec(s))) return [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16));
+   if ((m = /^rgb\(\s*(\d{1,3})\s*[, ]\s*(\d{1,3})\s*[, ]\s*(\d{1,3})\s*\)$/.exec(s))) {
+      const rgb = [m[1], m[2], m[3]].map(Number);
+      if (rgb.some((v) => v > 255)) throw new Error(`colour "${text}": rgb() components must be 0-255`);
+      return rgb;
+   }
+   if (s in CSS_NAMED_COLOURS) { const n = CSS_NAMED_COLOURS[s]; return [n >> 16, (n >> 8) & 255, n & 255]; }
+   throw new Error(`colour "${text}" is not a CSS named colour, #rgb, #rrggbb or rgb(r, g, b)`);
+}
+
+/**
+ * The one-colour "palette" of a forced colour (recipe.color / --color), in
+ * the same shape as drawPalette's result so every consumer is unchanged.
+ * Consumes no randomness.
+ */
+export function fixedPalette(colourText, skinLab) {
+   const rgb = parseCssColour(colourText);
+   const lab = rgbToLab(rgb);
+   return {
+      colours: [{
+         xterm: null, hex: rgbToHex(rgb), rgb, lab: lab.map((v) => round(v, 2)),
+         deltaL: round(Math.abs(lab[0] - skinLab[0]), 2), deltaE: round(deltaE2000(lab, skinLab), 2),
+      }],
+      contrastThreshold: null, candidates: 1, usedMinPairDeltaE: null, forced: String(colourText),
+   };
+}
+
 // ---------------------------------------------------------------------------
 // Geometry
 // ---------------------------------------------------------------------------
@@ -386,6 +447,64 @@ export function rotatedRect(c, length, width, angleDeg) {
       x: c.x + sx * hl * ux.x + sy * hw * uy.x,
       y: c.y + sx * hl * ux.y + sy * hw * uy.y,
    }));
+}
+
+/**
+ * Do two convex polygons overlap (share interior area)? Separating axis
+ * theorem: they are disjoint iff some edge normal of either separates them.
+ * Touching along an edge or at a corner does not count as overlap.
+ *
+ * @param {{x,y}[]} a Convex.
+ * @param {{x,y}[]} b Convex.
+ */
+export function convexPolygonsOverlap(a, b) {
+   if (a.length < 3 || b.length < 3) return false;
+   const axes = [];
+   for (const poly of [a, b]) {
+      for (let i = 0; i < poly.length; i += 1) {
+         const p = poly[i];
+         const q = poly[(i + 1) % poly.length];
+         const len = Math.hypot(q.y - p.y, q.x - p.x);
+         if (len > 1e-12) axes.push({ x: -(q.y - p.y) / len, y: (q.x - p.x) / len });
+      }
+   }
+   for (const axis of axes) {
+      const project = (poly) => {
+         let lo = Infinity; let hi = -Infinity;
+         for (const p of poly) { const v = p.x * axis.x + p.y * axis.y; if (v < lo) lo = v; if (v > hi) hi = v; }
+         return [lo, hi];
+      };
+      const [a0, a1] = project(a);
+      const [b0, b1] = project(b);
+      if (a1 <= b0 + 1e-9 || b1 <= a0 + 1e-9) return false;
+   }
+   return true;
+}
+
+/** Face zones a stroke centre can be restricted to (recipe.zones / --zones), top to bottom. */
+export const ZONES = ['forehead', 'eyes', 'nose-cheeks', 'mouth-chin'];
+
+/**
+ * Zone of every stroke-centre candidate on a face, from the anchor mesh:
+ * four horizontal bands cut at the brow line (mean of landmarks 70 and 300),
+ * halfway between the eye line (33, 263) and the subnasale (2), and the mouth
+ * centre (13, 14). Image y grows downwards; a rolled anchor shifts the bands
+ * a little, which is accepted: the anchor is the most frontal frame.
+ *
+ * @param {{x,y}[]} meshPx
+ * @returns {string[]} Zone name per mesh index (0 .. STROKE_CENTRE_COUNT-1).
+ */
+export function zonesOfMesh(meshPx) {
+   const y = (i) => meshPx[i].y;
+   const brow = (y(70) + y(300)) / 2;
+   const eyeNose = ((y(33) + y(263)) / 2 + y(2)) / 2;
+   const mouth = (y(13) + y(14)) / 2;
+   const out = [];
+   for (let i = 0; i < STROKE_CENTRE_COUNT; i += 1) {
+      const v = y(i);
+      out.push(v < brow ? 'forehead' : v < eyeNose ? 'eyes' : v < mouth ? 'nose-cheeks' : 'mouth-chin');
+   }
+   return out;
 }
 
 // ---------------------------------------------------------------------------
@@ -579,11 +698,19 @@ function gridSamples(poly, step) {
    return out;
 }
 
+/** Attempts before a constrained placement (zones, no overlap) gives up. */
+export const PLACEMENT_ATTEMPTS = 1000;
+
 /**
  * Draw the strokes of one trial on the anchor frame and bake them into UV.
  *
  * RNG order (part of the reproducibility contract): palette first (see
- * drawTrial), then for each stroke: centre index, angle, colour index.
+ * drawTrial), then for each stroke: centre index, angle, colour index. With
+ * recipe.zones, centre indices outside the zones are redrawn (one rng call
+ * each). With recipe.overlap false, a stroke that overlaps an earlier one is
+ * redrawn as a whole (centre and angle again) before its colour is drawn.
+ * Both constraints change the recipe hash, so they never alter an existing
+ * recipe's trials.
  *
  * @param {function(): number} rng
  * @param {{meshPx: object[], pxPerCm: number, triangles: number[][], uv: number[][]}} anchor
@@ -595,14 +722,32 @@ export function drawStrokes(rng, anchor, recipe, colours) {
    const oval = hulls.faceOval;
    const step = 0.2 * anchor.pxPerCm; // 2 mm boundary sampling
    const grid = 0.1 * anchor.pxPerCm; // 1 mm area sampling
+   const zoneOf = recipe.zones ? zonesOfMesh(anchor.meshPx) : null;
+   const allowed = recipe.zones ? new Set(recipe.zones) : null;
+   const noOverlap = recipe.overlap === false;
    const strokes = [];
    for (let s = 0; s < recipe.count; s += 1) {
-      const centreIndex = Math.floor(rng() * STROKE_CENTRE_COUNT);
-      const angleDeg = rng() * 180;
+      let centreIndex; let angleDeg; let rect; let clipped;
+      let attempts = 0;
+      for (;;) {
+         centreIndex = Math.floor(rng() * STROKE_CENTRE_COUNT);
+         if (allowed) {
+            while (!allowed.has(zoneOf[centreIndex])) {
+               attempts += 1;
+               if (attempts > PLACEMENT_ATTEMPTS) throw new Error(`recipe zones ${recipe.zones.join(',')}: no mesh point found in them after ${PLACEMENT_ATTEMPTS} draws`);
+               centreIndex = Math.floor(rng() * STROKE_CENTRE_COUNT);
+            }
+         }
+         angleDeg = rng() * 180;
+         rect = rotatedRect(anchor.meshPx[centreIndex], recipe.lengthCm * anchor.pxPerCm, recipe.widthCm * anchor.pxPerCm, angleDeg);
+         clipped = clipToConvex(rect, oval);
+         if (!noOverlap) break;
+         const previous = strokes.filter((p) => p.anchorPolygonPx.length >= 3).map((p) => p.anchorPolygonPx.map(([x, y]) => ({ x, y })));
+         if (clipped.length >= 3 && !previous.some((poly) => convexPolygonsOverlap(clipped, poly))) break;
+         attempts += 1;
+         if (attempts > PLACEMENT_ATTEMPTS) throw new Error(`overlap false: could not place stroke ${s + 1} of ${recipe.count} without overlap after ${PLACEMENT_ATTEMPTS} attempts; use fewer or smaller strokes`);
+      }
       const colourIndex = Math.floor(rng() * colours.length);
-      const centre = anchor.meshPx[centreIndex];
-      const rect = rotatedRect(centre, recipe.lengthCm * anchor.pxPerCm, recipe.widthCm * anchor.pxPerCm, angleDeg);
-      const clipped = clipToConvex(rect, oval);
       const rectArea = polygonArea(rect);
       const clippedArea = clipped.length >= 3 ? polygonArea(clipped) : 0;
       const outline = clipped.length >= 3 ? densify(clipped, step) : [];
@@ -630,13 +775,26 @@ export function drawStrokes(rng, anchor, recipe, colours) {
    return { strokes, coverage: ovalSamples.length ? round(covered / ovalSamples.length, 3) : 0 };
 }
 
+/** Seed of the separate palette stream of paired recipes (any fixed odd constant works). */
+export const PALETTE_STREAM_XOR = 0x9E3779B9;
+
 /**
  * Everything random about one trial, from its seed. Pure: the same seed,
  * recipe and atlas always give the same palette and strokes.
+ *
+ * Default recipes draw palette and strokes from one stream, so the number of
+ * palette rejections (which depends on the skin swatch) shifts the stroke
+ * draws: the same seed gives different strokes on different faces. With
+ * recipe.color (no palette draw) or recipe.pairedSeeds (palette from its own
+ * stream, seed ^ PALETTE_STREAM_XOR) the strokes depend on the seed alone,
+ * so a seed names the same design on every face.
  */
 export function drawTrial(seed, recipe, anchor, skinLab) {
    const rng = mulberry32(seed);
-   const palette = drawPalette(rng, skinLab, recipe.palette);
+   let palette;
+   if (recipe.color) palette = fixedPalette(recipe.color, skinLab);
+   else if (recipe.pairedSeeds) palette = drawPalette(mulberry32((seed ^ PALETTE_STREAM_XOR) >>> 0), skinLab, recipe.palette);
+   else palette = drawPalette(rng, skinLab, recipe.palette);
    const { strokes, coverage } = drawStrokes(rng, anchor, recipe, palette.colours);
    return { seed, palette, strokes, coverage };
 }
@@ -708,19 +866,34 @@ export function escapes(row, threshold = MATCH_THRESHOLD) {
  * Trial scores. worstCase is the smallest dAtlas over the imprints; when every
  * imprint lost the face it is null and allLost is true (better than any
  * number).
+ *
+ * escapeRate splits into two mechanisms, added in 1.1.0:
+ *   lostRate         share of imprints where the detector found no face at all
+ *                    (not even at the weak threshold): the overlay broke detection.
+ *   descriptorEscape share of imprints where a face WAS found but its descriptor
+ *                    is ≥ threshold from every clean imprint: the identity moved.
+ *   escapeRate = lostRate + descriptorEscape.
+ *   descriptorEscapeDetected is the same count over the detected imprints only
+ *   (null when none was detected): how often the overlay changes who face-api
+ *   sees, given that it sees someone.
  */
 export function scoreProfile(rows, threshold = MATCH_THRESHOLD) {
    const n = rows.length;
    const escaped = rows.filter((row) => escapes(row, threshold)).length;
+   const lost = rows.filter((row) => row.detection === 'lost').length;
    const measured = rows.filter((row) => row.dAtlas !== null).map((row) => row.dAtlas);
    const margins = rows.map((row) => (row.detection === 'lost' ? Infinity : row.dAtlas - threshold));
    const med = median(margins);
+   const detected = n - lost;
    return {
       escapeRate: n ? round(escaped / n, 4) : 0,
+      lostRate: n ? round(lost / n, 4) : 0,
+      descriptorEscape: n ? round((escaped - lost) / n, 4) : 0,
+      descriptorEscapeDetected: detected ? round((escaped - lost) / detected, 4) : null,
       worstCase: measured.length ? round(Math.min(...measured), 4) : null,
       allLost: n > 0 && measured.length === 0,
       medianMargin: Number.isFinite(med) ? round(med, 4) : null,
-      lost: rows.filter((row) => row.detection === 'lost').length,
+      lost,
       weak: rows.filter((row) => row.detection === 'weak').length,
       imprints: n,
    };
@@ -779,12 +952,24 @@ export function stratifiedSubset(imprints, size) {
 // Recipe
 // ---------------------------------------------------------------------------
 
-const RECIPE_KEYS = ['name', 'shape', 'count', 'lengthCm', 'widthCm', 'opacity', 'palette'];
+const RECIPE_KEYS = ['name', 'shape', 'count', 'lengthCm', 'widthCm', 'opacity', 'palette', 'color', 'overlap', 'zones', 'pairedSeeds'];
 const PALETTE_KEYS = ['pool', 'size', 'contrast', 'quantile', 'minPairDeltaE'];
 
 /**
  * Validate and complete a recipe. Unknown keys are errors: a typo must not
  * silently fall back to a default.
+ *
+ * Optional keys added in 1.1.0 (also settable from the CLI: --color,
+ * --no-overlap, --zones, --paired). They are written into the normalised
+ * recipe only when they differ from the default, so a recipe without them
+ * keeps the hash, recipeId and trials it had in 1.0.0:
+ *   color        CSS colour forced on every stroke; the palette is not drawn.
+ *   overlap      false: strokes must not overlap one another.
+ *   zones        subset of ZONES the stroke centres are drawn from.
+ *   pairedSeeds  true: palette from its own random stream, so the strokes of a
+ *                seed are the same on every face (see drawTrial).
+ * color and pairedSeeds exclude each other: with a forced colour there is no
+ * palette to pair.
  */
 export function normaliseRecipe(raw) {
    if (!raw || typeof raw !== 'object') throw new Error('recipe: not a JSON object');
@@ -808,7 +993,7 @@ export function normaliseRecipe(raw) {
    const contrast = palette.contrast ?? 'luminance';
    if (!['luminance', 'perceptual'].includes(contrast)) throw new Error('recipe.palette.contrast must be "luminance" or "perceptual"');
    const name = String(raw.name ?? 'recipe').replace(/[^a-zA-Z0-9._-]+/g, '-').slice(0, 40) || 'recipe';
-   return {
+   const out = {
       name,
       shape,
       count: Math.round(num(raw.count ?? 3, 'count', 1, 50)),
@@ -823,6 +1008,27 @@ export function normaliseRecipe(raw) {
          minPairDeltaE: num(palette.minPairDeltaE ?? 20, 'palette.minPairDeltaE', 0, 100),
       },
    };
+   if (raw.color !== undefined && raw.color !== null) {
+      if (typeof raw.color !== 'string') throw new Error('recipe.color must be a CSS colour string');
+      out.color = rgbToHex(parseCssColour(raw.color)); // canonical #rrggbb: "white", "#fff" and "#ffffff" are one recipe
+   }
+   if (raw.overlap !== undefined && raw.overlap !== null) {
+      if (typeof raw.overlap !== 'boolean') throw new Error('recipe.overlap must be true or false');
+      if (!raw.overlap) out.overlap = false;
+   }
+   if (raw.zones !== undefined && raw.zones !== null) {
+      if (!Array.isArray(raw.zones) || !raw.zones.length) throw new Error(`recipe.zones must be a non-empty array of ${ZONES.join(', ')}`);
+      const zones = [...new Set(raw.zones.map((z) => String(z).trim().toLowerCase()))];
+      const bad = zones.filter((z) => !ZONES.includes(z));
+      if (bad.length) throw new Error(`recipe.zones: unknown zone(s) ${bad.join(', ')}. Allowed: ${ZONES.join(', ')}`);
+      if (zones.length < ZONES.length) out.zones = ZONES.filter((z) => zones.includes(z)); // canonical order, all zones = no constraint
+   }
+   if (raw.pairedSeeds !== undefined && raw.pairedSeeds !== null) {
+      if (typeof raw.pairedSeeds !== 'boolean') throw new Error('recipe.pairedSeeds must be true or false');
+      if (raw.pairedSeeds) out.pairedSeeds = true;
+   }
+   if (out.color && out.pairedSeeds) throw new Error('recipe: color and pairedSeeds exclude each other (a forced colour draws no palette, so there is nothing to pair)');
+   return out;
 }
 
 /** Short stable hash of a normalised recipe (FNV-1a over its canonical JSON). */
@@ -860,7 +1066,7 @@ export function buildGhostyleSource({ recipe, recipeId, seed, strokes, palette, 
    const comment = [
       `atlas source : ${atlasSource || '-'}`,
       `recipe       : ${JSON.stringify(recipe)}`,
-      `palette      : ${palette.colours.map((c) => `${c.hex} (xterm ${c.xterm}, dL ${c.deltaL})`).join(', ')}`,
+      `palette      : ${palette.colours.map((c) => `${c.hex} (${c.xterm === null ? `forced "${palette.forced}"` : `xterm ${c.xterm}`}, dL ${c.deltaL})`).join(', ')}`,
       `reproduce    : node scripts-dev/ghostyle-fuzz.cjs trial --atlas <pose-atlas.json> --recipe <recipe.json> --seed ${seed} --trials 1`,
       ...extraComment.split('\n').filter(Boolean),
    ].map((line) => ` * ${line}`).join('\n');

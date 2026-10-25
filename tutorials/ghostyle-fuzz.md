@@ -204,6 +204,25 @@ error, so a typo cannot fall back silently to a default. Only `shape: "line"`
 and `pool: "xterm256"` exist for now. The recipe id in logs and folder names
 is `<name>-<hash of the normalised recipe>`.
 
+Four optional keys (1.1.0), each also a `trial` option. They enter the
+normalised recipe only when they differ from the default, so a recipe without
+them keeps the id and the trials it had before:
+
+| Key | `trial` option | Effect |
+|---|---|---|
+| `color` | `--color <css>` | One colour on every stroke (CSS name, `#rgb`, `#rrggbb`, `rgb(r,g,b)`, stored as `#rrggbb`). No palette is drawn. |
+| `overlap: false` | `--no-overlap` | Strokes must not overlap. A stroke that overlaps an earlier one (or falls entirely outside the oval) is redrawn; after 1000 failures the trial stops with an error. |
+| `zones` | `--zones a,b` | Stroke centres only in these bands of the anchor face: `forehead` (above the brow line), `eyes` (down to halfway between eye line and nose base), `nose-cheeks` (down to the mouth), `mouth-chin`. |
+| `pairedSeeds: true` | `--paired` | The palette is drawn from its own random stream, so a seed gives the same strokes on every face (§4.2). |
+
+`color` and `pairedSeeds` exclude each other (no palette, nothing to pair);
+an option that contradicts the recipe file is an error, not an override.
+`recipes/` holds a set of variants built around these keys: shape at equal
+area (`one-long-band`, `six-thin-lines`, `ten-hairlines`, `two-patches`),
+controls on the three-bands geometry (`-opaque`, `-any-colour`, `-perceptual`,
+`-white`, `-black`, `-no-overlap`) and placement (`nose-bands`, `eye-bands`,
+`no-eyes-bands`, `forehead-cheeks-lines`).
+
 ### 4.2 Seeds
 
 - No `--seed`: a random 32-bit master seed is drawn and printed.
@@ -212,6 +231,14 @@ is `<name>-<hash of the normalised recipe>`.
   recipe). The report prints that command for every trial.
 - The RNG is mulberry32. Order of draws (part of the reproducibility
   contract): the palette first, then, per stroke, centre, angle, colour.
+- **The same seed is not the same design on another face** with a default
+  recipe: the palette draw rejects colour sets until they are far enough apart
+  (§5.3), the number of rejections depends on the skin swatch, and every
+  rejection consumes random numbers, so the stroke draws that follow start
+  from a different point. On three videos of one person only 13–35 % of the
+  seeds drew the same strokes. With `--paired` (palette from a second stream
+  seeded `seed ^ 0x9E3779B9`) or `--color` (no palette draw) the strokes depend
+  on the seed alone; `compare` then lines the faces up seed by seed.
 
 ### 4.3 Drawing a trial
 
@@ -310,11 +337,37 @@ loader). An imprint **escapes** when it is `lost` or its `dAtlas` ≥ 0.6.
 | Score | Definition | Question it answers |
 |---|---|---|
 | `escapeRate` | share of imprints that escape | How much of the head turn is covered? |
+| `lostRate` | share of imprints where no face was found at all | How much of that is the detector giving up? |
+| `descriptorEscape` | share of imprints where a face was found but `dAtlas` ≥ 0.6 | How much is the identity actually moving? (`escapeRate = lostRate + descriptorEscape`) |
+| `descriptorEscapeDetected` | the same count over the detected imprints only | Given that face-api sees a face, how often is it not this one? |
 | `worstCase` | smallest `dAtlas` (`allLost` when every imprint lost the face) | Is there any recognisable frame? A camera needs only one. |
 | `medianMargin` | median of `dAtlas − 0.6` (null when most imprints are lost) | How comfortably? |
 
 Neither score ranks alone. `--top` keeps the **Pareto front** (trials no other
 trial beats on both) first, then the best by `escapeRate`.
+
+The split matters because the two mechanisms behave differently: a lost face
+depends on image quality (blur, scale, pose) at least as much as on the
+overlay, and the trivial way to get it is a stroke across the eyes; a moved
+descriptor is the rarer, more interesting result. `report` prints both per
+recipe, together with the mean face coverage, and the leaderboard has a
+column for each.
+
+### 6.3 Several atlases: `compare`
+
+```
+node scripts-dev/ghostyle-fuzz.cjs compare --atlas scratch/fuzz/a/pose-atlas.json --atlas scratch/fuzz/b/pose-atlas.json [--output compare.txt]
+```
+
+Three tables: the image-quality variables of each atlas (frame size,
+imprints, pose range, px/cm on the anchor, Laplacian sharpness, clean
+detection score, noise floor, skin L\*, unrecognised bins, presence, gaps);
+the outcome split per recipe and atlas; and, per recipe, the seeds that drew
+the same strokes on every atlas, with the escape of each design face by face,
+ranked by the worst face. `escapeRate` itself is not comparable across atlases
+of different size: more imprints means more clean poses a perturbed
+descriptor can land near (`dAtlas` is a minimum over all of them), and a
+wider pose range means more fragile side views.
 
 ---
 

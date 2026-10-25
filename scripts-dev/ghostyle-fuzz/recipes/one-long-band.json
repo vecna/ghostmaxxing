@@ -1,0 +1,15 @@
+{
+  "name": "one-long-band",
+  "shape": "line",
+  "count": 1,
+  "lengthCm": 15,
+  "widthCm": 2,
+  "opacity": 0.8,
+  "palette": {
+    "pool": "xterm256",
+    "size": 4,
+    "contrast": "luminance",
+    "quantile": 0.75,
+    "minPairDeltaE": 20
+  }
+}

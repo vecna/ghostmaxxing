@@ -83,6 +83,7 @@ a { color: var(--accent); }
     <label><input type="checkbox" id="showPruned"> include pruned trials</label>
     <span id="counts"></span>
   </div>
+  <div class="facts" id="summary" style="margin-bottom:12px"></div>
   <div class="grid2">
     <div class="panel">
       <h2>1 · Two criteria</h2>
@@ -91,7 +92,7 @@ a { color: var(--accent); }
     </div>
     <div class="panel">
       <h2>2 · Leaderboard</h2>
-      <p class="sub">Click a column to sort, a row to open the trial, a box to compare.</p>
+      <p class="sub">Click a column to sort, a row to open the trial, a box to compare. escape = lost + descr: <i>lost</i> is the share of imprints where the detector found no face, <i>descr</i> the share where a face was found but its descriptor is ≥ threshold from every clean imprint; <i>coverage</i> is the share of the face oval under the strokes.</p>
       <div class="tablewrap"><table id="board"></table></div>
     </div>
   </div>
@@ -144,7 +145,7 @@ a { color: var(--accent); }
     <div class="panel">
       <h2>5 · What matters</h2>
       <p class="sub">One property of the trial against one score. Pearson r says how much they move together across trials; it is a hint, not a cause.</p>
-      <div class="controls">X <select id="featX"></select> Y <select id="featY"><option value="escapeRate">escapeRate</option><option value="worstCase">worstCase</option><option value="medianMargin">medianMargin</option></select> <span id="pearson" class="mono"></span></div>
+      <div class="controls">X <select id="featX"></select> Y <select id="featY"><option value="escapeRate">escapeRate</option><option value="lostRate">lostRate (detector lost the face)</option><option value="descriptorEscape">descriptorEscape (identity moved)</option><option value="worstCase">worstCase</option><option value="medianMargin">medianMargin</option></select> <span id="pearson" class="mono"></span></div>
       <div id="features"></div>
     </div>
     <div class="panel">
@@ -205,9 +206,34 @@ const sorters = {
   worstCase: (a, b) => (worstValue(b.scores) - worstValue(a.scores)) || (b.scores.escapeRate - a.scores.escapeRate),
   medianMargin: (a, b) => ((b.scores.medianMargin ?? -9) - (a.scores.medianMargin ?? -9)),
   lost: (a, b) => b.scores.lost - a.scores.lost,
+  lostRate: (a, b) => b.scores.lostRate - a.scores.lostRate,
+  descriptorEscape: (a, b) => (b.scores.descriptorEscape - a.scores.descriptorEscape) || (b.scores.escapeRate - a.scores.escapeRate),
   coverage: (a, b) => b.coverage - a.coverage,
   seed: (a, b) => a.seed - b.seed,
 };
+const avg = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
+const sum = (a) => a.reduce((x, y) => x + y, 0);
+
+// ---- per-recipe summary ------------------------------------------------------
+function renderSummary() {
+  const box = document.getElementById('summary');
+  const all = visibleTrials();
+  const complete = all.filter((t) => !t.pruned);
+  const pool = complete.length ? complete : all;
+  if (!pool.length) { box.innerHTML = ''; return; }
+  const rows = pool.flatMap((t) => t.rows);
+  const detected = rows.filter((r) => r.detection !== 'lost');
+  const items = [
+    ['recipe', state.recipe],
+    ['complete sweeps', complete.length + ' of ' + all.length],
+    ['escape (mean)', pct(avg(pool.map((t) => t.scores.escapeRate)))],
+    ['= detector lost the face', pct(avg(pool.map((t) => t.scores.lostRate)))],
+    ['+ identity moved ≥ ' + TH, pct(avg(pool.map((t) => t.scores.descriptorEscape)))],
+    ['identity moved, given a face was found', detected.length ? pct(detected.filter((r) => r.dAtlas >= TH).length / detected.length) : '—'],
+    ['face covered (mean)', pct(avg(pool.map((t) => t.coverage)))],
+  ];
+  box.innerHTML = items.map(([k, v]) => '<span>' + k + ': <b>' + v + '</b></span>').join('');
+}
 
 // ---- header --------------------------------------------------------------
 function renderFacts() {
@@ -263,14 +289,14 @@ function renderBoard() {
   const trials = visibleTrials().slice().sort(sorters[state.sort]);
   const front = pareto(trials);
   const cols = [
-    ['#', null], ['seed', 'seed'], ['escape', 'escapeRate'], ['worst', 'worstCase'], ['margin', 'medianMargin'], ['lost', 'lost'], ['coverage', 'coverage'], ['palette', null], ['', null], ['cmp', null],
+    ['#', null], ['seed', 'seed'], ['escape', 'escapeRate'], ['lost', 'lostRate'], ['descr', 'descriptorEscape'], ['worst', 'worstCase'], ['margin', 'medianMargin'], ['coverage', 'coverage'], ['palette', null], ['', null], ['cmp', null],
   ];
   table.innerHTML = '<thead><tr>' + cols.map(([label, key]) => '<th class="' + (key === state.sort ? 'sorted ' : '') + (label === 'palette' || label === '' || label === 'seed' ? 'l' : '') + '" data-key="' + (key || '') + '">' + label + '</th>').join('') + '</tr></thead>';
   const tbody = document.createElement('tbody');
   trials.slice(0, 300).forEach((t, i) => {
     const tr = document.createElement('tr');
     if (state.selected === t) tr.className = 'sel';
-    tr.innerHTML = '<td>' + (i + 1) + '</td><td class="mono l">' + t.seed + '</td><td>' + pct(t.scores.escapeRate) + '</td><td>' + worstLabel(t.scores) + '</td><td>' + marginLabel(t.scores) + '</td><td>' + t.scores.lost + '/' + t.scores.imprints + '</td><td>' + pct(t.coverage) + '</td><td class="l">' + t.palette.colours.map((c) => '<span class="chip" title="' + c.hex + ' xterm ' + c.xterm + ' ΔL ' + c.deltaL + '" style="background:' + c.hex + '"></span>').join(' ') + '</td><td class="l">' + (front.has(t) ? '<span class="badge">Pareto</span> ' : '') + (t.pruned ? '<span class="muted">pruned</span> ' : '') + (t.files ? '<span class="muted">files</span>' : '') + '</td><td><input type="checkbox" ' + (state.compare.has(t) ? 'checked' : '') + '></td>';
+    tr.innerHTML = '<td>' + (i + 1) + '</td><td class="mono l">' + t.seed + '</td><td>' + pct(t.scores.escapeRate) + '</td><td title="' + t.scores.lost + ' of ' + t.scores.imprints + ' imprints: no face found">' + pct(t.scores.lostRate) + '</td><td title="face found, descriptor ≥ threshold from every clean imprint">' + pct(t.scores.descriptorEscape) + '</td><td>' + worstLabel(t.scores) + '</td><td>' + marginLabel(t.scores) + '</td><td>' + pct(t.coverage) + '</td><td class="l">' + t.palette.colours.map((c) => '<span class="chip" title="' + c.hex + (c.xterm === null ? ' forced' : ' xterm ' + c.xterm) + ' ΔL ' + c.deltaL + '" style="background:' + c.hex + '"></span>').join(' ') + '</td><td class="l">' + (front.has(t) ? '<span class="badge">Pareto</span> ' : '') + (t.pruned ? '<span class="muted">pruned</span> ' : '') + (t.files ? '<span class="muted">files</span>' : '') + '</td><td><input type="checkbox" ' + (state.compare.has(t) ? 'checked' : '') + '></td>';
     tr.addEventListener('click', (e) => { if (e.target.tagName !== 'INPUT') select(t); });
     tr.querySelector('input').addEventListener('change', (e) => {
       if (e.target.checked) { if (state.compare.size >= 4) { e.target.checked = false; return; } state.compare.add(t); } else state.compare.delete(t);
@@ -287,7 +313,7 @@ function renderDetail() {
   const t = state.selected;
   const ids = ['thumb', 'palette', 'cli', 'files', 'profile', 'posemap'];
   if (!t) { ids.forEach((id) => { document.getElementById(id).innerHTML = ''; }); document.getElementById('trialTitle').textContent = '(click a trial)'; return; }
-  document.getElementById('trialTitle').textContent = '#' + t.seed + ' · ' + t.recipeId + ' · escape ' + pct(t.scores.escapeRate) + ' · worst ' + worstLabel(t.scores) + (t.pruned ? ' · pruned' : '');
+  document.getElementById('trialTitle').textContent = '#' + t.seed + ' · ' + t.recipeId + ' · escape ' + pct(t.scores.escapeRate) + ' (lost ' + pct(t.scores.lostRate) + ' + descriptor ' + pct(t.scores.descriptorEscape) + ') · worst ' + worstLabel(t.scores) + ' · face covered ' + pct(t.coverage) + (t.pruned ? ' · pruned' : '');
   const anchor = A.imprints.find((i) => i.id === A.anchorId);
   const thumb = document.getElementById('thumb');
   if (t.files) {
@@ -301,7 +327,7 @@ function renderDetail() {
     note.textContent = 'Strokes drawn flat on the anchor frame. Materialise the trial for the real render.';
     thumb.appendChild(note);
   }
-  document.getElementById('palette').innerHTML = t.palette.colours.map((c) => '<div class="mono"><span class="chip" style="background:' + c.hex + '"></span> ' + c.hex + ' xterm ' + c.xterm + ' · ΔL* ' + c.deltaL + ' · ΔE00 ' + c.deltaE + '</div>').join('') +
+  document.getElementById('palette').innerHTML = t.palette.colours.map((c) => '<div class="mono"><span class="chip" style="background:' + c.hex + '"></span> ' + c.hex + (c.xterm === null ? ' forced colour' : ' xterm ' + c.xterm) + ' · ΔL* ' + c.deltaL + ' · ΔE00 ' + c.deltaE + '</div>').join('') +
     '<div class="mono muted">coverage ' + pct(t.coverage) + ' · strokes cross: ' + ['eyes', 'brows', 'lips', 'nose'].filter((r) => t.strokes.some((s) => s.regions[r] > 0)).join(', ') + '</div>';
   document.getElementById('cli').textContent = 'node scripts-dev/ghostyle-fuzz.cjs trial --atlas ' + DATA.atlasArg + ' --recipe <' + t.recipe.name + '.json> --seed ' + t.seed + ' --trials 1';
   document.getElementById('files').innerHTML = t.files ? '<a href="' + t.files.ghostyle + '">Ghostyle .js</a> · <a href="' + t.files.csv + '">evasion-profile.csv</a> · <a href="' + t.files.sheet + '">every pose with the overlay</a>' : '';
@@ -455,8 +481,6 @@ const FEATURES = {
   lips: ['stroke area on the lips', (t) => sum(t.strokes.map((s) => s.regions.lips))],
   clipped: ['stroke share outside the face', (t) => avg(t.strokes.map((s) => s.clippedShare))],
 };
-const avg = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
-const sum = (a) => a.reduce((x, y) => x + y, 0);
 function pearson(xs, ys) {
   const n = xs.length; if (n < 3) return null;
   const mx = avg(xs), my = avg(ys);
@@ -505,7 +529,7 @@ function renderAll() {
   document.getElementById('counts').textContent = trials.length + ' trials shown · ' + DATA.trials.filter((t) => t.recipeId === state.recipe).length + ' for this recipe · ' + DATA.trials.length + ' in total';
   if (!state.selected || !trials.includes(state.selected)) state.selected = trials.slice().sort(sorters.escapeRate)[0] || null;
   for (const t of [...state.compare]) if (!trials.includes(t)) state.compare.delete(t);
-  renderScatter(); renderBoard(); renderDetail(); renderMatrix(); renderFeatures(); renderCompare();
+  renderSummary(); renderScatter(); renderBoard(); renderDetail(); renderMatrix(); renderFeatures(); renderCompare();
 }
 const recipes = [...new Set(DATA.trials.map((t) => t.recipeId))];
 const recipeSel = document.getElementById('recipe');

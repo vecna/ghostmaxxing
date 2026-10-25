@@ -16,7 +16,16 @@ Ghostyles over the head poses of one video. Documentation:
   MediaPipe and `ghostyle3d-uv-renderer.js`.
 - `report.cjs` — builds the self-contained `report.html` from the atlas and
   `trials.ndjson`.
-- `recipes/` — example recipes. `three-bands.json`: three 5 × 2 cm bands at
-  80 % opacity, four colours of maximum luminance contrast with the skin.
+- `recipes/` — recipes. `three-bands.json`: three 5 × 2 cm bands at 80 %
+  opacity, four colours of maximum luminance contrast with the skin;
+  `four-lines.json`: four 6 × 1 cm lines at 90 %. The others vary one thing at
+  a time around three-bands: shape at equal painted area (`one-long-band`,
+  `six-thin-lines`, `ten-hairlines`, `two-patches`), opacity and colour
+  (`three-bands-opaque`, `-any-colour`, `-perceptual`, `-white`, `-black`),
+  placement (`three-bands-no-overlap`, `nose-bands`, `eye-bands`,
+  `no-eyes-bands`, `forehead-cheeks-lines`). See tutorials/ghostyle-fuzz.md §4.1.
+- `run-samples.sh` — builds the atlases of several videos under one root and
+  runs a small matrix of recipes and options on each with paired seeds, then
+  `report` and `compare`; packs the logs for sharing.
 
 Outputs go to `scratch/fuzz/<video-stem>/` by default, which git ignores.

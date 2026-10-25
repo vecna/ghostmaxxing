@@ -26,6 +26,12 @@
  *
  * History:
  *   1.0.0  2026-10-20  First version: atlas, trial, report.
+ *   1.1.0  2026-10-24  trial: --color, --no-overlap, --zones, --paired (recipe
+ *                      keys color, overlap, zones, pairedSeeds); atlas:
+ *                      --out-root; scores split into lostRate and
+ *                      descriptorEscape; report prints a per-recipe summary;
+ *                      new `compare` sub-command across atlases. Recipes
+ *                      without the new keys keep their 1.0.0 hash and trials.
  */
 
 const crypto = require('node:crypto');
@@ -38,12 +44,12 @@ const { pathToFileURL } = require('node:url');
 const { chromium } = require('@playwright/test');
 const { buildReportHtml } = require('./ghostyle-fuzz/report.cjs');
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 const TOOL = `ghostyle-fuzz ${VERSION}`;
 const ROOT = path.resolve(__dirname, '..');
 const HARNESS_PATH = '/scripts-dev/ghostyle-fuzz/harness.html';
 const DEFAULT_OUTPUT_ROOT = path.join(ROOT, 'scratch', 'fuzz');
-const COMMANDS = ['atlas', 'trial', 'report'];
+const COMMANDS = ['atlas', 'trial', 'report', 'compare'];
 
 /** Pure helpers shared with the harness page (ES module). */
 let core = null;
@@ -74,13 +80,16 @@ ${TOOL}
 Search for Ghostyles by random trial over the head poses of one video.
 
 Usage:
-  node scripts-dev/ghostyle-fuzz.cjs atlas  --video <file> [options]
-  node scripts-dev/ghostyle-fuzz.cjs trial  --atlas <pose-atlas.json> --recipe <recipe.json> [options]
-  node scripts-dev/ghostyle-fuzz.cjs report --atlas <pose-atlas.json> [--output <file.html>]
+  node scripts-dev/ghostyle-fuzz.cjs atlas   --video <file> [options]
+  node scripts-dev/ghostyle-fuzz.cjs trial   --atlas <pose-atlas.json> --recipe <recipe.json> [options]
+  node scripts-dev/ghostyle-fuzz.cjs report  --atlas <pose-atlas.json> [--output <file.html>]
+  node scripts-dev/ghostyle-fuzz.cjs compare --atlas <a.json> --atlas <b.json> [...] [--output <file.txt>]
 
 atlas (once per video):
   --video <file>          Source video (any format ffmpeg reads). Never modified.
-  --output <dir>          Atlas directory (default: scratch/fuzz/<video-stem>/)
+  --output <dir>          Atlas directory (default: <out-root>/<video-stem>/)
+  --out-root <dir>        Parent of the default atlas directory (default: scratch/fuzz).
+                          Not with --output.
   --sample-fps <n>        Frames per second scanned with MediaPipe (default: 15)
   --bin <deg>             Pose bin size for yaw and pitch (default: 10)
   --max-imprints <n>      Cap on imprints; the bins farthest from frontal go first (default: 60)
@@ -101,11 +110,31 @@ trial (the fuzzer; appends to <atlas dir>/trials.ndjson):
   --no-prune              Sweep every imprint of every trial
   --prune-subset <n>      Imprints swept before a trial may be abandoned (default: 12)
   --prune-margin <x>      escapeRate slack before abandoning (default: 0.15)
+  --color <css>           One colour for every stroke instead of the skin-contrast
+                          palette: a CSS name, #rgb, #rrggbb or rgb(r,g,b). Not with
+                          --paired. Changes the recipe id (trials stay apart).
+  --no-overlap            Strokes must not overlap one another (redrawn until they
+                          do not; the trial fails if the recipe cannot be packed).
+  --zones <list>          Where stroke centres may fall, comma-separated among
+                          forehead, eyes, nose-cheeks, mouth-chin (default: anywhere).
+  --paired                Draw the palette from its own random stream so that a seed
+                          gives the same strokes on every face. Not with --color.
+  The four options above are the recipe keys color, overlap, zones, pairedSeeds;
+  a recipe that already sets one of them to another value is an error.
   Ctrl-C stops after the current trial and still materialises the top.
 
 report:
   --atlas <file>          A pose-atlas.json
   --output <file>         Report file (default: <atlas dir>/report.html)
+  Prints a per-recipe summary (escape split into lostRate and descriptorEscape,
+  face coverage) and writes the HTML.
+
+compare (several atlases of the same recipes, e.g. three videos of one face):
+  --atlas <file>          Repeat once per pose-atlas.json (2 or more)
+  --output <file>         Also write the text to this file
+  Prints the image-quality variables of each atlas, the outcome split per recipe
+  and atlas, and, for seeds that drew the same strokes on every atlas (--paired or
+  --color trials), the escape of each design face by face.
 
 Common:
   --headed                Show the browser; trial shows every composite as it is measured
@@ -152,8 +181,16 @@ function parseArgs(argv) {
       pruneMargin: 0.15,
       headed: false,
       gpu: false,
+      // 1.1.0
+      atlases: [],
+      outRoot: null,
+      color: null,
+      noOverlap: false,
+      zones: null,
+      paired: false,
    };
    const file = (raw) => path.resolve(process.cwd(), raw);
+   const seen = new Set();
    for (let index = 0; index < argv.length; index += 1) {
       const arg = argv[index];
       if (arg === '--help' || arg === '-h') { process.stdout.write(usage()); process.exit(0); }
@@ -163,17 +200,29 @@ function parseArgs(argv) {
          options.command = arg;
          continue;
       }
+      if (arg.startsWith('--')) seen.add(arg);
       if (arg === '--headed') { options.headed = true; continue; }
       if (arg === '--gpu') { options.gpu = true; continue; }
       if (arg === '--force') { options.force = true; continue; }
       if (arg === '--no-prune') { options.prune = false; continue; }
+      if (arg === '--no-overlap') { options.noOverlap = true; continue; }
+      if (arg === '--paired') { options.paired = true; continue; }
       const value = requireValue(argv, index, arg);
       index += 1;
       switch (arg) {
          case '--video': options.video = file(value); break;
-         case '--atlas': options.atlas = file(value); break;
+         case '--atlas': options.atlas = file(value); options.atlases.push(file(value)); break;
          case '--recipe': options.recipe = file(value); break;
          case '--output': options.output = file(value); break;
+         case '--out-root': options.outRoot = file(value); break;
+         case '--color': core.parseCssColour(value); options.color = value; break;
+         case '--zones': {
+            const zones = value.split(',').map((z) => z.trim().toLowerCase()).filter(Boolean);
+            const bad = zones.filter((z) => !core.ZONES.includes(z));
+            if (!zones.length || bad.length) throw new Error(`--zones: unknown zone(s) ${bad.join(', ') || '(none given)'}. Allowed: ${core.ZONES.join(', ')}`);
+            options.zones = zones;
+            break;
+         }
          case '--sample-fps': options.sampleFps = parseNumber(arg, value, { min: 0.1 }); break;
          case '--bin': options.bin = parseNumber(arg, value, { min: 1 }); break;
          case '--max-imprints': options.maxImprints = parseNumber(arg, value, { min: 2, integer: true }); break;
@@ -199,11 +248,22 @@ function parseArgs(argv) {
       }
    }
    if (!options.command) throw new Error(`A subcommand is required: ${COMMANDS.join(', ')}.\n${usage()}`);
+   // Options that belong to one sub-command only, and pairs that exclude each other.
+   const onlyWith = { '--color': 'trial', '--no-overlap': 'trial', '--zones': 'trial', '--paired': 'trial', '--out-root': 'atlas' };
+   for (const [opt, command] of Object.entries(onlyWith)) {
+      if (seen.has(opt) && options.command !== command) throw new Error(`${opt} is only valid with the ${command} sub-command.`);
+   }
+   if (seen.has('--color') && seen.has('--paired')) throw new Error('--color and --paired exclude each other: a forced colour draws no palette, so there is nothing to pair.');
+   if (seen.has('--out-root') && seen.has('--output')) throw new Error('--out-root and --output exclude each other: --output names the atlas directory itself.');
    if (options.command === 'atlas') {
       if (!options.video) throw new Error('atlas needs --video <file>.');
       if (!fs.existsSync(options.video)) throw new Error(`No such file: ${options.video}`);
+   } else if (options.command === 'compare') {
+      if (options.atlases.length < 2) throw new Error('compare needs --atlas <pose-atlas.json> at least twice.');
+      for (const a of options.atlases) if (!fs.existsSync(a)) throw new Error(`No such file: ${a}`);
    } else {
       if (!options.atlas) throw new Error(`${options.command} needs --atlas <pose-atlas.json>.`);
+      if (options.atlases.length > 1) throw new Error(`${options.command} takes one --atlas; compare takes several.`);
       if (!fs.existsSync(options.atlas)) throw new Error(`No such file: ${options.atlas}`);
    }
    if (options.command === 'trial') {
@@ -211,6 +271,34 @@ function parseArgs(argv) {
       if (!fs.existsSync(options.recipe)) throw new Error(`No such file: ${options.recipe}`);
    }
    return options;
+}
+
+/**
+ * The recipe of a trial run: the file, plus the CLI options that are recipe
+ * keys. A key the file already sets to another value is an error rather than
+ * a silent override: the recipe id is derived from the result and must mean
+ * one thing.
+ */
+function recipeWithOverrides(options) {
+   const raw = JSON.parse(fs.readFileSync(options.recipe, 'utf8'));
+   const overrides = {};
+   if (options.color !== null) overrides.color = options.color.trim().toLowerCase();
+   if (options.noOverlap) overrides.overlap = false;
+   if (options.zones) overrides.zones = options.zones;
+   if (options.paired) overrides.pairedSeeds = true;
+   const same = (key, a, b) => {
+      if (key === 'color') { try { return JSON.stringify(core.parseCssColour(a)) === JSON.stringify(core.parseCssColour(b)); } catch { return false; } }
+      if (key === 'zones') return JSON.stringify([...a].map(String).sort()) === JSON.stringify([...b].map(String).sort());
+      return JSON.stringify(a) === JSON.stringify(b);
+   };
+   for (const [key, value] of Object.entries(overrides)) {
+      if (raw[key] !== undefined && raw[key] !== null && !same(key, raw[key], value)) {
+         throw new Error(`${displayPath(options.recipe)} sets ${key} = ${JSON.stringify(raw[key])}; the command line asks for ${JSON.stringify(value)}. Edit the recipe or drop the option.`);
+      }
+   }
+   // The recipe's own spelling wins when both agree, so the recipe id does not depend on how the colour was typed.
+   for (const key of Object.keys(overrides)) if (raw[key] !== undefined && raw[key] !== null) delete overrides[key];
+   return core.normaliseRecipe({ ...raw, ...overrides });
 }
 
 // ---------------------------------------------------------------------------
@@ -386,7 +474,7 @@ async function atlas(options) {
    requireFfmpeg();
    const source = probeVideo(options.video);
    const stem = path.basename(options.video, path.extname(options.video)).replace(/[^a-zA-Z0-9._-]+/g, '-') || 'video';
-   const dir = options.output || path.join(DEFAULT_OUTPUT_ROOT, stem);
+   const dir = options.output || path.join(options.outRoot || DEFAULT_OUTPUT_ROOT, stem);
    const atlasFile = path.join(dir, 'pose-atlas.json');
    if (fs.existsSync(atlasFile) && !options.force) {
       throw new Error(`${displayPath(atlasFile)} exists. Its trials are tied to it; pass --force to replace it, or --output for another directory.`);
@@ -611,12 +699,14 @@ function profileCsv(rows) {
 async function trial(options) {
    const atlasData = readAtlas(options.atlas);
    const dir = path.dirname(options.atlas);
-   const recipe = core.normaliseRecipe(JSON.parse(fs.readFileSync(options.recipe, 'utf8')));
+   const recipe = recipeWithOverrides(options);
    const recipeId = `${recipe.name}-${core.recipeHash(recipe)}`;
    const masterSeed = options.seed ?? crypto.randomBytes(4).readUInt32BE(0);
    const runId = `${new Date().toISOString().replace(/[-:]/g, '').replace(/\..*/, '')}-${masterSeed}`;
    const ndjson = path.join(dir, 'trials.ndjson');
-   progress(`recipe ${recipeId}: ${recipe.count} × ${recipe.shape} ${recipe.lengthCm}×${recipe.widthCm} cm, opacity ${recipe.opacity}, palette ${recipe.palette.size} (${recipe.palette.contrast})`);
+   const colours = recipe.color ? `colour ${recipe.color} (forced)` : `palette ${recipe.palette.size} (${recipe.palette.contrast}${recipe.pairedSeeds ? ', paired seeds' : ''})`;
+   const constraints = [recipe.overlap === false ? 'no overlap' : null, recipe.zones ? `zones ${recipe.zones.join('+')}` : null].filter(Boolean).join(', ');
+   progress(`recipe ${recipeId}: ${recipe.count} × ${recipe.shape} ${recipe.lengthCm}×${recipe.widthCm} cm, opacity ${recipe.opacity}, ${colours}${constraints ? `, ${constraints}` : ''}`);
    progress(`master seed ${masterSeed}${options.seed === null ? ' (random; pass --seed to repeat)' : ''}, ${options.trials} trial(s)`);
 
    const server = await startServer({ '/__atlas/': dir });
@@ -658,7 +748,7 @@ async function trial(options) {
          fs.appendFileSync(ndjson, `${JSON.stringify(line)}\n`);
          all.push(line);
          if (!result.pruned) completed.push(line);
-         progress(`trial ${k + 1}/${options.trials} seed ${seed}: ${result.pruned ? `pruned after ${result.rows.length} imprints` : `escape ${(100 * scores.escapeRate).toFixed(1)}%  worst ${scores.allLost ? 'all lost' : scores.worstCase}  lost ${scores.lost}/${scores.imprints}`}  (${(result.ms / 1000).toFixed(1)} s)`);
+         progress(`trial ${k + 1}/${options.trials} seed ${seed}: ${result.pruned ? `pruned after ${result.rows.length} imprints` : `escape ${(100 * scores.escapeRate).toFixed(1)}% (lost ${(100 * scores.lostRate).toFixed(1)}% + descriptor ${(100 * scores.descriptorEscape).toFixed(1)}%)  worst ${scores.allLost ? 'all lost' : scores.worstCase}  coverage ${(100 * result.coverage).toFixed(1)}%`}  (${(result.ms / 1000).toFixed(1)} s)`);
       }
 
       const top = core.selectTop(completed, options.top);
@@ -668,7 +758,7 @@ async function trial(options) {
          const folder = path.join(dir, 'runs', `${recipeId}-${line.seed}`);
          fs.mkdirSync(folder, { recursive: true });
          const extraComment = [
-            `scores       : escapeRate ${line.scores.escapeRate}, worstCase ${line.scores.allLost ? 'all lost' : line.scores.worstCase}, medianMargin ${line.scores.medianMargin}, lost ${line.scores.lost}/${line.scores.imprints}${front.has(line) ? ', Pareto front' : ''}`,
+            `scores       : escapeRate ${line.scores.escapeRate} (lostRate ${line.scores.lostRate} + descriptorEscape ${line.scores.descriptorEscape}), worstCase ${line.scores.allLost ? 'all lost' : line.scores.worstCase}, medianMargin ${line.scores.medianMargin}, lost ${line.scores.lost}/${line.scores.imprints}, coverage ${line.coverage}${front.has(line) ? ', Pareto front' : ''}`,
             `measured     : ${TOOL}, run ${runId}, face-api ${harness.info.backend}, threshold ${core.MATCH_THRESHOLD}; this lab only, not a claim of protection`,
          ].join('\n');
          const made = await harness.call('materialise', { seed: line.seed, extraComment, rows: line.rows });
@@ -700,22 +790,75 @@ async function trial(options) {
 // report
 // ---------------------------------------------------------------------------
 
-function report(options) {
-   const atlasData = readAtlas(options.atlas);
-   const dir = path.dirname(options.atlas);
-   const outputFile = options.output || path.join(dir, 'report.html');
-   const rel = (file) => path.relative(path.dirname(outputFile), file).split(path.sep).join('/');
+/**
+ * The trial lines of an atlas directory, one per (recipe, seed): the latest
+ * line, a complete sweep beating a pruned one. Scores written by 1.0.0 get the
+ * 1.1.0 split (lostRate, descriptorEscape) recomputed from their rows.
+ */
+function loadTrials(dir) {
    const lines = readNdjson(path.join(dir, 'trials.ndjson'));
    const runs = lines.filter((l) => l.type === 'run');
-   const recipeOf = new Map(runs.map((r) => [r.runId, r.recipe]));
-   // Latest line per (recipe, seed); a complete sweep beats a pruned one.
    const byKey = new Map();
    for (const line of lines.filter((l) => l.type === 'trial')) {
       const key = `${line.recipeId}#${line.seed}`;
       const previous = byKey.get(key);
       if (!previous || previous.pruned || !line.pruned) byKey.set(key, line);
    }
-   const trials = [...byKey.values()].map((line) => {
+   const trials = [...byKey.values()].map((line) => ({ ...line, scores: { ...core.scoreProfile(line.rows), ...line.scores } }));
+   return { runs, trials, recipeOf: new Map(runs.map((r) => [r.runId, r.recipe])) };
+}
+
+const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
+const pctText = (v, digits = 1) => (v === null || v === undefined || Number.isNaN(v) ? '—' : `${(100 * v).toFixed(digits)}%`);
+function table(rows, header) {
+   const widths = header.map((h, i) => Math.max(String(h).length, ...rows.map((r) => String(r[i]).length)));
+   const line = (cells) => cells.map((c, i) => (i === 0 ? String(c).padEnd(widths[i]) : String(c).padStart(widths[i]))).join('  ');
+   return [line(header), line(widths.map((w) => '-'.repeat(w))), ...rows.map(line)].join('\n');
+}
+
+/** Per-recipe summary of one atlas's trials, as printed by report and compare. */
+function recipeSummaryRows(trials) {
+   const byRecipe = new Map();
+   for (const t of trials) { if (!byRecipe.has(t.recipeId)) byRecipe.set(t.recipeId, []); byRecipe.get(t.recipeId).push(t); }
+   const rows = [];
+   for (const [recipeId, list] of byRecipe) {
+      const complete = list.filter((t) => !t.pruned);
+      const pool = complete.length ? complete : list;
+      const allRows = pool.flatMap((t) => t.rows);
+      const detected = allRows.filter((r) => r.detection !== 'lost');
+      const best = pool.slice().sort((a, b) => (b.scores.escapeRate - a.scores.escapeRate) || (core.worstCaseValue(b.scores) - core.worstCaseValue(a.scores)))[0];
+      rows.push({
+         recipeId,
+         trials: list.length,
+         complete: complete.length,
+         escape: mean(pool.map((t) => t.scores.escapeRate)),
+         lostRate: mean(pool.map((t) => t.scores.lostRate)),
+         descriptorEscape: mean(pool.map((t) => t.scores.descriptorEscape)),
+         descriptorEscapeDetected: detected.length ? detected.filter((r) => r.dAtlas >= core.MATCH_THRESHOLD).length / detected.length : null,
+         coverage: mean(pool.map((t) => t.coverage)),
+         secondsPerTrial: mean(list.map((t) => t.ms)) / 1000,
+         best,
+      });
+   }
+   return rows;
+}
+
+function printRecipeSummary(rows) {
+   out(table(rows.map((r) => [
+      r.recipeId, r.trials, r.complete, pctText(r.escape), pctText(r.lostRate), pctText(r.descriptorEscape), pctText(r.descriptorEscapeDetected), pctText(r.coverage),
+      r.best ? `${r.best.seed} (${pctText(r.best.scores.escapeRate, 0)})` : '—',
+   ]), ['recipe', 'trials', 'complete', 'escape', '= lost', '+ descriptor', 'descr|detected', 'face covered', 'best seed']));
+   out('escape = share of imprints that escaped; lost = detector found no face; descriptor = face found but ≥ threshold from every clean imprint;');
+   out('descr|detected = the same over detected imprints only; face covered = share of the face oval under the strokes (means over complete sweeps).');
+}
+
+function report(options) {
+   const atlasData = readAtlas(options.atlas);
+   const dir = path.dirname(options.atlas);
+   const outputFile = options.output || path.join(dir, 'report.html');
+   const rel = (file) => path.relative(path.dirname(outputFile), file).split(path.sep).join('/');
+   const { runs, trials: loaded, recipeOf } = loadTrials(dir);
+   const trials = loaded.map((line) => {
       const folder = path.join(dir, 'runs', `${line.recipeId}-${line.seed}`);
       const files = fs.existsSync(path.join(folder, 'anchor-overlay.jpg')) ? {
          image: rel(path.join(folder, 'anchor-overlay.jpg')),
@@ -758,18 +901,128 @@ function report(options) {
    };
    fs.mkdirSync(path.dirname(outputFile), { recursive: true });
    fs.writeFileSync(outputFile, buildReportHtml(data));
+   out();
+   printRecipeSummary(recipeSummaryRows(loaded));
+   out();
    out(`report   : ${displayPath(outputFile)}  (${trials.length} trial(s), ${runs.length} run(s))`);
+}
+
+// ---------------------------------------------------------------------------
+// compare
+// ---------------------------------------------------------------------------
+
+/** Spearman rank correlation (average ranks on ties). */
+function spearman(xs, ys) {
+   const ranks = (values) => {
+      const order = values.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]);
+      const r = new Array(values.length);
+      for (let i = 0; i < order.length;) {
+         let j = i;
+         while (j + 1 < order.length && order[j + 1][0] === order[i][0]) j += 1;
+         const avg = (i + j) / 2 + 1;
+         for (let k = i; k <= j; k += 1) r[order[k][1]] = avg;
+         i = j + 1;
+      }
+      return r;
+   };
+   return pearson(ranks(xs), ranks(ys));
+}
+
+function compare(options) {
+   const text = [];
+   const say = (line = '') => { text.push(line); out(line); };
+   const faces = options.atlases.map((file) => {
+      const atlas = readAtlas(file);
+      const dir = path.dirname(file);
+      const name = path.basename(dir);
+      return { file, dir, name, atlas, ...loadTrials(dir) };
+   });
+   const names = faces.map((f) => f.name);
+   if (new Set(names).size !== names.length) throw new Error('compare: the atlas directories must have distinct names.');
+
+   say(`${TOOL} compare: ${names.join(', ')}`);
+   say();
+   say('1. Image quality: what each atlas offers face-api, and the variables that decide how hard it is');
+   say(table(faces.map((f) => {
+      const imps = f.atlas.imprints;
+      const anchor = imps.find((i) => i.id === f.atlas.anchorId);
+      const yaws = imps.map((i) => i.yaw); const pitches = imps.map((i) => i.pitch);
+      const med = (xs) => core.median(xs);
+      return [
+         f.name, `${f.atlas.source.width}×${f.atlas.source.height}`, f.atlas.source.duration.toFixed(1), imps.length,
+         `${Math.min(...yaws).toFixed(0)}..${Math.max(...yaws).toFixed(0)}`, `${Math.min(...pitches).toFixed(0)}..${Math.max(...pitches).toFixed(0)}`,
+         anchor.pxPerCm.toFixed(1), med(imps.map((i) => i.sharpness)).toFixed(0), mean(imps.map((i) => i.score)).toFixed(2),
+         `${f.atlas.noiseFloor.median} / ${f.atlas.noiseFloor.p90}`, f.atlas.skinSwatch.lab[0].toFixed(1), f.atlas.unrecognisedBins.length, pctText(f.atlas.presence.presentShare, 0), f.atlas.presence.gaps.length,
+      ];
+   }), ['atlas', 'frame', 'seconds', 'imprints', 'yaw °', 'pitch °', 'px/cm', 'sharpness', 'clean score', 'noise med / p90', 'skin L*', 'unrecognised bins', 'presence', 'gaps']));
+   say('px/cm: face scale on the anchor (iris = 1.17 cm); sharpness: variance of the Laplacian on the face crop, higher = crisper (motion blur and soft focus lower it);');
+   say('clean score: face-api detection confidence on the clean imprints (0.5 is the detection threshold; the weak pass goes down to 0.1);');
+   say('noise: descriptor distance between neighbouring clean poses (median / 90th percentile; the identity threshold is 0.6);');
+   say('unrecognised bins: poses MediaPipe saw but face-api never recognised clean, so they cannot be measured.');
+
+   say();
+   say('2. Outcome per recipe and atlas');
+   const recipeIds = [...new Set(faces.flatMap((f) => f.trials.map((t) => t.recipeId)))].sort();
+   const summaryRows = [];
+   for (const recipeId of recipeIds) {
+      for (const f of faces) {
+         const row = recipeSummaryRows(f.trials.filter((t) => t.recipeId === recipeId))[0];
+         if (row) summaryRows.push([recipeId, f.name, row.trials, row.complete, pctText(row.escape), pctText(row.lostRate), pctText(row.descriptorEscape), pctText(row.descriptorEscapeDetected), pctText(row.coverage), row.secondsPerTrial.toFixed(1)]);
+      }
+   }
+   say(table(summaryRows, ['recipe', 'atlas', 'trials', 'complete', 'escape', '= lost', '+ descriptor', 'descr|detected', 'face covered', 's/trial']));
+   say('means over complete sweeps; escapeRate is not comparable across atlases of different size and pose range, the split tells which mechanism moved.');
+
+   say();
+   say('3. Same seed, same design, different face');
+   say('A seed names the same strokes on every face only when the palette did not consume randomness (--color) or had its own stream (--paired);');
+   say('with a 1.0.0 recipe the palette rejections depend on the skin, so most seeds draw different strokes on different faces and are not comparable.');
+   for (const recipeId of recipeIds) {
+      const having = faces.filter((f) => f.trials.some((t) => t.recipeId === recipeId));
+      if (having.length < 2) continue;
+      const bySeed = having.map((f) => new Map(f.trials.filter((t) => t.recipeId === recipeId).map((t) => [t.seed, t])));
+      const shared = [...bySeed[0].keys()].filter((seed) => bySeed.every((m) => m.has(seed)));
+      const signature = (t) => JSON.stringify(t.strokes.map((s) => [s.centreIndex, s.angleDeg]));
+      const matched = shared.filter((seed) => { const sig = signature(bySeed[0].get(seed)); return bySeed.every((m) => signature(m.get(seed)) === sig); });
+      say();
+      say(`${recipeId}: ${shared.length} seed(s) run on all of ${having.map((f) => f.name).join(', ')}; ${matched.length} draw the same strokes everywhere`);
+      if (matched.length < 3) continue;
+      for (let i = 0; i < having.length; i += 1) {
+         for (let j = i + 1; j < having.length; j += 1) {
+            const both = matched.filter((seed) => !bySeed[i].get(seed).pruned && !bySeed[j].get(seed).pruned);
+            if (both.length < 5) continue;
+            const rho = spearman(both.map((s) => bySeed[i].get(s).scores.escapeRate), both.map((s) => bySeed[j].get(s).scores.escapeRate));
+            say(`   ${having[i].name} vs ${having[j].name}: ${both.length} complete pairs, mean escape ${pctText(mean(both.map((s) => bySeed[i].get(s).scores.escapeRate)))} vs ${pctText(mean(both.map((s) => bySeed[j].get(s).scores.escapeRate)))}, Spearman rank correlation ${rho === null ? '—' : rho.toFixed(2)}`);
+         }
+      }
+      const ranked = matched.map((seed) => {
+         const ts = bySeed.map((m) => m.get(seed));
+         const esc = ts.map((t) => t.scores.escapeRate);
+         return { seed, ts, esc, min: Math.min(...esc), mean: mean(esc) };
+      }).sort((a, b) => (b.min - a.min) || (b.mean - a.mean));
+      const top = ranked.slice(0, 15);
+      say(table(top.map((r) => [r.seed, ...r.ts.map((t) => `${pctText(t.scores.escapeRate, 0)} (${pctText(t.scores.lostRate, 0)}+${pctText(t.scores.descriptorEscape, 0)})${t.pruned ? '*' : ''}`), pctText(r.min, 0), pctText(r.mean, 0)]),
+         ['seed', ...having.map((f) => `${f.name} escape (lost+descr)`), 'min', 'mean']));
+      say('   designs ranked by their worst face (min), the robust ones first; * = pruned sweep, measured on the subset only');
+   }
+   if (options.output) {
+      fs.mkdirSync(path.dirname(options.output), { recursive: true });
+      fs.writeFileSync(options.output, `${text.join('\n')}\n`);
+      out();
+      out(`compare  : ${displayPath(options.output)}`);
+   }
 }
 
 // ---------------------------------------------------------------------------
 
 async function main() {
+   await loadCore(); // parseArgs validates --color and --zones with the core
    const options = parseArgs(process.argv.slice(2));
-   await loadCore();
    progress(`${TOOL}: ${options.command}`);
    if (options.command === 'atlas') await atlas(options);
    if (options.command === 'trial') await trial(options);
    if (options.command === 'report') report(options);
+   if (options.command === 'compare') compare(options);
    progress('done');
 }
 
