@@ -49,6 +49,8 @@ import datetime
 import html
 import json
 import os
+import re
+import xml.etree.ElementTree as ET
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -269,61 +271,37 @@ def load_marks():
 
 
 # ---------------------------------------------------------------------------
-# 2. Cameras. Pulled from the markup that already shipped on this page, so the
-#    fleet stays byte-comparable with the footer and the homepage. Authored in
-#    a 0 0 100 100 box (the glasses in 0 0 100 74) per the cameras.css
-#    contract, and placed with a translate+scale so one definition serves any
-#    size.
+# 2. Cameras. Geometry is read from images/icons, never maintained here.
+#    Copies in generated genealogy.html are build output. The glasses retain
+#    the existing 74-unit layout height; their source viewBox remains 100x100.
 # ---------------------------------------------------------------------------
+def load_camera(name, layout_height=100):
+    path = os.path.join(ROOT, "images", "icons", f"cam-{name}.svg")
+    with open(path, encoding="utf-8") as source:
+        svg = source.read()
+    root = ET.fromstring(svg)
+    vx, vy, vw, vh = map(float, root.attrib["viewBox"].split())
+    if (vx, vy, vw, vh) != (0, 0, 100, 100):
+        raise ValueError(f"Unexpected camera viewBox in {path}")
+    body = re.sub(r"^.*?<svg\b[^>]*>", "", svg, count=1, flags=re.S)
+    body = re.sub(r"</svg>\s*$", "", body).strip()
+    ids = re.findall(r'\bid="([^"]+)"', body)
+    for original in ids:
+        suffix = "" if len(ids) == 1 else "-" + original.rsplit("-", 1)[-1]
+        target = "{iid}" + suffix
+        body = body.replace(f'id="{original}"', f'id="{target}"')
+        body = body.replace(f'url(#{original})', f'url(#{target})')
+        body = body.replace(f'href="#{original}"', f'href="#{target}"')
+    return vw, layout_height, body
+
+
 CAMS = {
-    "bullet": (100, 100, """
-<path class="cam-mount" d="M45,30 V12 M32,12 H58" stroke-width="5"/>
-<rect class="cam-shell" x="16" y="36" width="66" height="34" rx="5"/>
-<path class="cam-mount" d="M12,30 H74 L84,40" stroke-width="5"/>
-<circle class="cam-lens" cx="60" cy="51" r="14"/>
-<circle class="cam-iris" id="{iid}" cx="60" cy="51" r="6.2"/>
-<circle class="cam-glint" cx="55.8" cy="46.8" r="2.4"/>"""),
-    "dome": (100, 100, """
-<path class="cam-mount" d="M6,29 H94" stroke-width="7"/>
-<path class="cam-shell" d="M20,29 A30,30 0 0 0 80,29 Z"/>
-<circle class="cam-lens" cx="50" cy="44" r="15"/>
-<circle class="cam-iris" id="{iid}" cx="50" cy="44" r="6.6"/>
-<circle class="cam-glint" cx="45.5" cy="39.5" r="2.55"/>"""),
-    "cube": (100, 100, """
-<path class="cam-mount" d="M50,16 V6 M38,6 H62" stroke-width="5"/>
-<rect class="cam-shell" x="16" y="16" width="68" height="68" rx="19"/>
-<circle class="cam-dot cam-dot--ring" cx="73" cy="26" r="3.4"/>
-<circle class="cam-lens" cx="50" cy="50" r="17"/>
-<circle class="cam-iris" id="{iid}" cx="50" cy="50" r="7.5"/>
-<circle class="cam-glint" cx="44.9" cy="44.9" r="2.9"/>"""),
-    "pill": (100, 100, """
-<path class="cam-mount" d="M40,36 V22 M28,22 H52" stroke-width="5"/>
-<rect class="cam-shell" x="6" y="36" width="88" height="28" rx="14"/>
-<g class="cam-dot cam-dot--dark"><circle cx="62" cy="44" r="2"/><circle cx="70" cy="50" r="2"/><circle cx="62" cy="56" r="2"/><circle cx="78" cy="45" r="2"/><circle cx="80" cy="55" r="2"/><circle cx="86" cy="50" r="2"/></g>
-<circle class="cam-lens" cx="30" cy="50" r="12"/>
-<circle class="cam-iris" id="{iid}" cx="30" cy="50" r="5.3"/>
-<circle class="cam-glint" cx="26.4" cy="46.4" r="2"/>"""),
-    "pole": (100, 100, """
-<path class="cam-mount" d="M80,26 V92" stroke-width="6"/>
-<path class="cam-mount" d="M80,30 H44" stroke-width="6"/>
-<path class="cam-mount" d="M52,30 V40" stroke-width="5"/>
-<rect class="cam-shell" x="10" y="40" width="72" height="30" rx="7"/>
-<rect class="cam-panel" x="54" y="47" width="22" height="16" rx="3"/>
-<g class="cam-dot"><circle cx="60" cy="51" r="2"/><circle cx="70" cy="51" r="2"/><circle cx="60" cy="59" r="2"/><circle cx="70" cy="59" r="2"/></g>
-<circle class="cam-lens" cx="32" cy="55" r="12"/>
-<circle class="cam-iris" id="{iid}" cx="32" cy="55" r="5.3"/>
-<circle class="cam-glint" cx="28.4" cy="51.2" r="2"/>"""),
-    # The glasses take the void iris. cameras.css is explicit about why: the
-    # lens body is already cream, so a filled iris turns the pair into welding
-    # goggles and eats the figure-of-eight silhouette. The glare bars carry
-    # the state instead.
-    "glasses": (100, 74, """
-<path class="cam-mount" d="M8,44 L2,32 M92,44 L98,32" stroke-width="5"/>
-<path class="cam-shell" d="M50,45 C65,25 90,25 90,45 C90,65 65,65 50,45 C35,25 10,25 10,45 C10,65 35,65 50,45 Z" stroke-linecap="round"/>
-<path class="cam-glare" d="M22,52 L34,38 M29,53 L37,44"/>
-<path class="cam-glare" d="M66,52 L78,38 M73,53 L81,44"/>
-<circle class="cam-iris cam-iris--void" id="{iid}-l" cx="28" cy="45" r="9"/>
-<circle class="cam-iris cam-iris--void" id="{iid}-r" cx="72" cy="45" r="9"/>"""),
+    "bullet": load_camera("bullet"),
+    "dome": load_camera("dome"),
+    "cube": load_camera("cube"),
+    "pill": load_camera("pill"),
+    "pole": load_camera("street"),
+    "glasses": load_camera("glasses", layout_height=74),
 }
 
 
