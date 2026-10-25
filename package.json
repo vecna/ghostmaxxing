@@ -28,6 +28,7 @@
     "start": "http-server . -p 8080 -c-1 -o /lab.html",
     "serve": "http-server . -p 8080 -c-1",
     "serve:integrated": "npm run build:client-interface && npm --prefix ../gstmxx-backend start",
+    "localfuzzer": "node scripts-dev/localfuzzer/server.cjs",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",

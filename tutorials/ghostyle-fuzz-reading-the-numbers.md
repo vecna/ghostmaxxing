@@ -194,3 +194,59 @@ within reach. So an escape rate of 17 % on a 27-imprint atlas and 41 % on a
 14-imprint atlas are not on the same scale even for the same face. Compare
 atlases on the `compare` tables, on matched seeds, and on the per-imprint
 view; not on the headline rate.
+
+```
+ghostyle-fuzz 1.1.0 compare: my-moving-face, my-moving-face2, my-moving-face3
+
+1. Image quality: what each atlas offers face-api, and the variables that decide how hard it is
+atlas              frame  seconds  imprints    yaw °  pitch °  px/cm  sharpness  clean score  noise med / p90  skin L*  unrecognised bins  presence  gaps
+---------------  -------  -------  --------  -------  -------  -----  ---------  -----------  ---------------  -------  -----------------  --------  ----
+my-moving-face   480×864     31.8        14  -20..16   -25..9   26.4        468         0.83  0.2514 / 0.3222     65.2                  1       89%     1
+my-moving-face2  480×864     14.4        27  -48..49  -21..29   21.0         74         0.74  0.4082 / 0.4782     54.2                 24       96%     2
+my-moving-face3  480×864     18.3        40  -37..48  -27..38   16.2         38         0.77   0.366 / 0.5556     55.0                 20       90%    10
+px/cm: face scale on the anchor (iris = 1.17 cm); sharpness: variance of the Laplacian on the face crop, higher = crisper (motion blur and soft focus lower it);
+clean score: face-api detection confidence on the clean imprints (0.5 is the detection threshold; the weak pass goes down to 0.1);
+noise: descriptor distance between neighbouring clean poses (median / 90th percentile; the identity threshold is 0.6);
+unrecognised bins: poses MediaPipe saw but face-api never recognised clean, so they cannot be measured.
+
+2. Outcome per recipe and atlas
+recipe                          atlas  trials  complete  escape  = lost  + descriptor  descr|detected  face covered  s/trial
+--------------------  ---------------  ------  --------  ------  ------  ------------  --------------  ------------  -------
+four-lines-0c0d29da    my-moving-face     900       216   66.8%   44.7%         22.1%           39.9%         12.5%     16.5
+four-lines-0c0d29da   my-moving-face2     600       241   23.8%   20.9%          2.9%            3.6%         10.8%     23.8
+four-lines-0c0d29da   my-moving-face3       2         2   11.3%   11.3%          0.0%            0.0%         11.1%     89.9
+three-bands-1d7a652d   my-moving-face     420       175   41.1%   28.2%         12.9%           17.9%         15.5%     15.6
+three-bands-1d7a652d  my-moving-face2    1200       557   16.9%   14.8%          2.2%            2.6%         13.4%     23.7
+three-bands-1d7a652d  my-moving-face3     591       565   13.6%   12.9%          0.8%            0.9%         14.1%     46.7
+means over complete sweeps; escapeRate is not comparable across atlases of different size and pose range, the split tells which mechanism moved.
+
+3. Same seed, same design, different face
+A seed names the same strokes on every face only when the palette did not consume randomness (--color) or had its own stream (--paired);
+with a 1.0.0 recipe the palette rejections depend on the skin, so most seeds draw different strokes on different faces and are not comparable.
+
+four-lines-0c0d29da: 2 seed(s) run on all of my-moving-face, my-moving-face2, my-moving-face3; 0 draw the same strokes everywhere
+
+three-bands-1d7a652d: 400 seed(s) run on all of my-moving-face, my-moving-face2, my-moving-face3; 31 draw the same strokes everywhere
+   my-moving-face vs my-moving-face2: 11 complete pairs, mean escape 42.2% vs 21.2%, Spearman rank correlation 0.81
+   my-moving-face vs my-moving-face3: 12 complete pairs, mean escape 42.9% vs 20.0%, Spearman rank correlation 0.61
+   my-moving-face2 vs my-moving-face3: 20 complete pairs, mean escape 17.0% vs 17.4%, Spearman rank correlation 0.61
+seed  my-moving-face escape (lost+descr)  my-moving-face2 escape (lost+descr)  my-moving-face3 escape (lost+descr)  min  mean
+----  ----------------------------------  -----------------------------------  -----------------------------------  ---  ----
+176                        93% (57%+36%)                         56% (52%+4%)                         48% (48%+0%)  48%   65%
+146                        33% (25%+8%)*                         33% (30%+4%)                         30% (30%+0%)  30%   32%
+22                          57% (50%+7%)                         37% (30%+7%)                         25% (25%+0%)  25%   40%
+291                        25% (17%+8%)*                         33% (26%+7%)                         30% (30%+0%)  25%   29%
+195                        57% (29%+29%)                         19% (19%+0%)                         18% (18%+0%)  18%   31%
+81                         86% (43%+43%)                         15% (11%+4%)                         33% (33%+0%)  15%   44%
+361                        79% (43%+36%)                        52% (37%+15%)                         13% (13%+0%)  13%   48%
+328                        17% (0%+17%)*                        17% (0%+17%)*                         13% (13%+0%)  13%   15%
+143                        36% (21%+14%)                          11% (7%+4%)                         23% (20%+3%)  11%   23%
+57                          29% (29%+0%)                         11% (11%+0%)                         23% (23%+0%)  11%   21%
+294                        17% (17%+0%)*                          8% (8%+0%)*                         18% (18%+0%)   8%   14%
+216                        33% (8%+25%)*                          11% (7%+4%)                           8% (8%+0%)   8%   17%
+343                        25% (8%+17%)*                        17% (17%+0%)*                           8% (8%+0%)   8%   16%
+234                          8% (0%+8%)*                          8% (8%+0%)*                           8% (8%+0%)   8%    8%
+148                        33% (8%+25%)*                           7% (4%+4%)                           8% (5%+3%)   7%   16%
+   designs ranked by their worst face (min), the robust ones first; * = pruned sweep, measured on the subset only
+
+```

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Ghostmaxxing local fuzzer</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>Ghostmaxxing <span>local fuzzer</span></h1>
+    <p class="sub">Upload a video of one face turning its head. The fuzzer paints random Ghostyles on every pose and measures how far face-api moves from the clean face. Everything runs and stays on this machine.</p>
+    <p class="facts" id="facts"></p>
+    <div id="warnings"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="panel" id="new">
+    <h2>1 · New assessment</h2>
+
+    <div id="drop" class="drop" tabindex="0" role="button" aria-label="Choose a video">
+      <input type="file" id="file" accept="video/*,.mp4,.mov,.mkv,.webm" hidden>
+      <div id="dropIdle"><b>Drop an MP4 here</b> or click to choose. One person, face visible, turning the head slowly left, right, up and down; 15-60 seconds is plenty.</div>
+      <div id="dropBusy" hidden><div class="bar"><i id="uploadBar"></i></div><span id="uploadText"></span></div>
+      <div id="dropDone" hidden></div>
+    </div>
+    <p class="muted small" id="fromJobNote" hidden></p>
+
+    <label class="field">Name of the job <input type="text" id="label" maxlength="80" placeholder="taken from the file name"></label>
+
+    <h3>Preset</h3>
+    <div class="presets" id="presets"></div>
+
+    <details id="settings">
+      <summary>Settings: every option of <code>atlas</code>, <code>trial</code> and <code>report</code></summary>
+      <div class="settings-body">
+        <h4>atlas <span class="muted">(once per video: the clean poses everything is measured against)</span></h4>
+        <div class="grid" id="atlasFields"></div>
+
+        <h4>trial cells <span class="muted">(one fuzzer run each: a recipe and its options; they run in order)</span></h4>
+        <div id="cells"></div>
+        <button type="button" id="addCell">+ Add a cell</button>
+
+        <h4>report</h4>
+        <p class="muted small">Runs after every cell (so results show up while the job goes on) and at the end; it has nothing to set here. <code>--output</code> and <code>--summary-json</code> are managed by the service.</p>
+
+        <h4>machine</h4>
+        <label class="check"><input type="checkbox" id="gpu"> <code>--gpu</code>: use a GPU instead of swiftshader. Only if the container has a GPU passed through; otherwise Chromium falls back or fails.</label>
+
+        <div class="row">
+          <button type="button" id="saveDefault">Save as my default</button>
+          <button type="button" id="clearDefault" class="ghost">Forget my default</button>
+          <span class="muted small" id="settingsNote"></span>
+        </div>
+        <details class="commands"><summary>Commands this plan will run</summary><pre id="commands"></pre></details>
+      </div>
+    </details>
+
+    <div id="planErrors" class="errors" hidden></div>
+    <div class="row start">
+      <button type="button" id="start" class="primary" disabled>Start</button>
+      <span id="estimate" class="muted"></span>
+    </div>
+  </section>
+
+  <section class="panel" id="jobsPanel">
+    <div class="row between">
+      <h2>2 · Jobs</h2>
+      <div class="row">
+        <button type="button" id="compareBtn" disabled>Compare selected</button>
+      </div>
+    </div>
+    <p class="muted small">One job runs at a time; the others wait in the queue. Jobs survive a restart of the container and resume where they stopped.</p>
+    <div id="jobs"></div>
+    <div id="compareOut" hidden>
+      <div class="row between"><h3>Compare</h3><button type="button" class="ghost" id="compareClose">Close</button></div>
+      <p class="muted small">Image quality of each video, the outcome per recipe and video, and the designs (same seed, same strokes) face by face, the robust ones first. See tutorials/ghostyle-fuzz-reading-the-numbers.md.</p>
+      <pre id="compareText"></pre>
+    </div>
+  </section>
+
+  <section class="panel" id="detail" hidden>
+    <div class="row between">
+      <h2>3 · <span id="detailTitle"></span></h2>
+      <button type="button" class="ghost" id="detailClose">Close</button>
+    </div>
+    <div id="detailBody"></div>
+    <h3>Log</h3>
+    <label class="check small"><input type="checkbox" id="follow" checked> follow</label>
+    <pre id="log" class="log"></pre>
+  </section>
+</main>
+
+<footer class="wrap muted small">
+  Every number is face-api's, measured here with the lab's own models. "Escaped" means escaped <i>this</i> detector on <i>this</i> face; it is not a claim of protection against other systems.
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

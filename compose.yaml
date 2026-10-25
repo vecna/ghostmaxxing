@@ -1,0 +1,18 @@
+# Ghostmaxxing local fuzzer with Docker Compose:
+#
+#   docker compose up -d        then open http://localhost:11111
+#   docker compose down         (jobs resume where they stopped on the next `up`)
+#
+# Results, logs and Ghostyles are written to ./ghostmaxxing-data next to this
+# file. See tutorials/localfuzzer-docker.md.
+services:
+  localfuzzer:
+    image: ghcr.io/vecna/ghostmaxxing:latest
+    # build: .                  # uncomment to build from this checkout instead of pulling
+    ports:
+      - "127.0.0.1:11111:11111" # this machine only; never 0.0.0.0 (there is no login)
+    volumes:
+      - ./ghostmaxxing-data:/data
+    shm_size: 1gb               # Chromium needs more than Docker's default 64 MB
+    stop_grace_period: 2m       # a running trial finishes before the container stops
+    restart: unless-stopped

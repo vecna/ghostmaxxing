@@ -101,5 +101,7 @@ fi
 
 # The files that reproduce every number (no images): small enough to share.
 PACK="$(basename "$ROOT")-logs.tgz"
-tar czf "$PACK" "$ROOT"/*/pose-atlas.json "$ROOT"/*/trials.ndjson $( [ -f "$ROOT/compare.txt" ] && echo "$ROOT/compare.txt" ) "$REC"
+FILES=("$ROOT"/*/pose-atlas.json "$ROOT"/*/trials.ndjson "$REC")
+[ -f "$ROOT/compare.txt" ] && FILES+=("$ROOT/compare.txt")
+tar czf "$PACK" "${FILES[@]}"
 log "done: $PACK ($(du -h "$PACK" | cut -f1))"

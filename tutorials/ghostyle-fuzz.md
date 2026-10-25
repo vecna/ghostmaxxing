@@ -359,7 +359,11 @@ column for each.
 node scripts-dev/ghostyle-fuzz.cjs compare --atlas scratch/fuzz/a/pose-atlas.json --atlas scratch/fuzz/b/pose-atlas.json [--output compare.txt]
 ```
 
-Three tables: the image-quality variables of each atlas (frame size,
+`report --summary-json <file>` also writes the per-recipe summary and the
+list of materialised trials as JSON, for wrappers; the local web service
+(`tutorials/localfuzzer-docker.md`) uses it.
+
+`compare` prints three tables: the image-quality variables of each atlas (frame size,
 imprints, pose range, px/cm on the anchor, Laplacian sharpness, clean
 detection score, noise floor, skin L\*, unrecognised bins, presence, gaps);
 the outcome split per recipe and atlas; and, per recipe, the seeds that drew

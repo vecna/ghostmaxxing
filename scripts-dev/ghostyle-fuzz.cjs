@@ -30,7 +30,11 @@
  *                      keys color, overlap, zones, pairedSeeds); atlas:
  *                      --out-root; scores split into lostRate and
  *                      descriptorEscape; report prints a per-recipe summary;
- *                      new `compare` sub-command across atlases. Recipes
+ *                      new `compare` sub-command across atlases;
+ *                      report --summary-json (for scripts-dev/localfuzzer).
+ *                      Fix: Ctrl-C now really stops after the current trial
+ *                      and materialises the top (Playwright's own SIGINT
+ *                      handler used to close the browser first). Recipes
  *                      without the new keys keep their 1.0.0 hash and trials.
  */
 
@@ -126,6 +130,8 @@ trial (the fuzzer; appends to <atlas dir>/trials.ndjson):
 report:
   --atlas <file>          A pose-atlas.json
   --output <file>         Report file (default: <atlas dir>/report.html)
+  --summary-json <file>   Also write the summary below, and the materialised
+                          trials, as JSON (for wrappers such as the local web service)
   Prints a per-recipe summary (escape split into lostRate and descriptorEscape,
   face coverage) and writes the HTML.
 
@@ -184,6 +190,7 @@ function parseArgs(argv) {
       // 1.1.0
       atlases: [],
       outRoot: null,
+      summaryJson: null,
       color: null,
       noOverlap: false,
       zones: null,
@@ -215,6 +222,7 @@ function parseArgs(argv) {
          case '--recipe': options.recipe = file(value); break;
          case '--output': options.output = file(value); break;
          case '--out-root': options.outRoot = file(value); break;
+         case '--summary-json': options.summaryJson = file(value); break;
          case '--color': core.parseCssColour(value); options.color = value; break;
          case '--zones': {
             const zones = value.split(',').map((z) => z.trim().toLowerCase()).filter(Boolean);
@@ -249,7 +257,7 @@ function parseArgs(argv) {
    }
    if (!options.command) throw new Error(`A subcommand is required: ${COMMANDS.join(', ')}.\n${usage()}`);
    // Options that belong to one sub-command only, and pairs that exclude each other.
-   const onlyWith = { '--color': 'trial', '--no-overlap': 'trial', '--zones': 'trial', '--paired': 'trial', '--out-root': 'atlas' };
+   const onlyWith = { '--color': 'trial', '--no-overlap': 'trial', '--zones': 'trial', '--paired': 'trial', '--out-root': 'atlas', '--summary-json': 'report' };
    for (const [opt, command] of Object.entries(onlyWith)) {
       if (seen.has(opt) && options.command !== command) throw new Error(`${opt} is only valid with the ${command} sub-command.`);
    }
@@ -414,7 +422,10 @@ async function openHarness(options, baseUrl) {
    else args.push('--use-angle=swiftshader', '--use-gl=angle', '--enable-unsafe-swiftshader');
    let browser;
    try {
-      browser = await chromium.launch({ headless: !options.headed, executablePath: findSystemChrome(), args });
+      // handleSIGINT false: Playwright would otherwise close the browser on the first Ctrl-C, before
+      // trial() can finish the current trial and materialise the top (its own SIGINT handler does that).
+      // Playwright starts Chromium in its own process group, so a terminal Ctrl-C reaches only this process.
+      browser = await chromium.launch({ headless: !options.headed, executablePath: findSystemChrome(), args, handleSIGINT: false });
    } catch (error) {
       throw new Error(`Chromium could not be started. Install Playwright's browser once with:\n  npm run prepare:e2e\n\n${String(error.message).split('\n')[0]}`);
    }
@@ -901,10 +912,45 @@ function report(options) {
    };
    fs.mkdirSync(path.dirname(outputFile), { recursive: true });
    fs.writeFileSync(outputFile, buildReportHtml(data));
+   const summaryRows = recipeSummaryRows(loaded);
    out();
-   printRecipeSummary(recipeSummaryRows(loaded));
+   printRecipeSummary(summaryRows);
    out();
    out(`report   : ${displayPath(outputFile)}  (${trials.length} trial(s), ${runs.length} run(s))`);
+   if (options.summaryJson) {
+      // Machine-readable twin of the printed summary, for wrappers (scripts-dev/localfuzzer).
+      // Paths are relative to the atlas directory.
+      const atlasRel = (file) => path.relative(dir, file).split(path.sep).join('/');
+      const imps = atlasData.imprints;
+      const anchor = imps.find((i) => i.id === atlasData.anchorId);
+      const summary = {
+         tool: TOOL,
+         generatedAt: data.generatedAt,
+         threshold: core.MATCH_THRESHOLD,
+         atlas: {
+            source: atlasData.source.file, imprints: imps.length, anchorId: atlasData.anchorId,
+            yaw: [Math.min(...imps.map((i) => i.yaw)), Math.max(...imps.map((i) => i.yaw))],
+            pitch: [Math.min(...imps.map((i) => i.pitch)), Math.max(...imps.map((i) => i.pitch))],
+            pxPerCm: anchor.pxPerCm, sharpnessMedian: core.median(imps.map((i) => i.sharpness)),
+            cleanScoreMean: mean(imps.map((i) => i.score)), noiseFloor: atlasData.noiseFloor,
+            skinLab: atlasData.skinSwatch.lab, unrecognisedBins: atlasData.unrecognisedBins.length,
+         },
+         report: atlasRel(outputFile),
+         recipes: summaryRows.map(({ best, ...row }) => ({ ...row, best: best ? { seed: best.seed, scores: best.scores, coverage: best.coverage } : null })),
+         materialised: trials.filter((t) => t.files).map((t) => {
+            const folder = path.join(dir, 'runs', `${t.recipeId}-${t.seed}`);
+            return {
+               recipeId: t.recipeId, seed: t.seed, pruned: t.pruned, scores: t.scores, coverage: t.coverage,
+               palette: t.palette.colours.map((c) => c.hex),
+               folder: atlasRel(folder),
+               files: { image: atlasRel(path.join(folder, 'anchor-overlay.jpg')), ghostyle: atlasRel(path.join(folder, `ghostyle-fuzz-${t.seed}.js`)), csv: atlasRel(path.join(folder, 'evasion-profile.csv')), sheet: atlasRel(path.join(folder, 'poses-overlay.jpg')) },
+            };
+         }).sort((a, b) => (b.scores.escapeRate - a.scores.escapeRate) || (core.worstCaseValue(b.scores) - core.worstCaseValue(a.scores))),
+      };
+      fs.mkdirSync(path.dirname(options.summaryJson), { recursive: true });
+      fs.writeFileSync(options.summaryJson, `${JSON.stringify(summary, null, 1)}\n`);
+      out(`summary  : ${displayPath(options.summaryJson)}`);
+   }
 }
 
 // ---------------------------------------------------------------------------
