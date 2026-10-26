@@ -1,0 +1,38 @@
+{
+  "pico.js": {
+    "source": "https://raw.githubusercontent.com/nenadmarkus/picojs/afffa50ec4134a47005f2cbf8112eaa69f65f37e/pico.js",
+    "sha256": "785b981cc79e5fa3f7557dc3fa7773629d7529994d7627de41b77d8687649309",
+    "bytes": 5589,
+    "license": "MIT"
+  },
+  "facefinder": {
+    "source": "https://raw.githubusercontent.com/nenadmarkus/pico/master/rnt/cascades/facefinder",
+    "sha256": "d8014993e7298c7b1865d1f8b855d6dbf4ec5c808bf879e2091ab6837abf90cd",
+    "bytes": 239632,
+    "license": "See pico upstream license"
+  },
+  "scrfd.onnx": {
+    "source": "https://huggingface.co/immich-app/buffalo_s/resolve/0ff1751885575e62e084dff70549ce24a11fa5dc/detection/model.onnx",
+    "sha256": "5e4447f50245bbd7966bd6c0fa52938c61474a04ec7def48753668a9d8b4ea3a",
+    "bytes": 2524817,
+    "license": "InsightFace pretrained models: non-commercial research; commercial license separately"
+  },
+  "arcface.onnx": {
+    "source": "https://huggingface.co/immich-app/buffalo_s/resolve/0ff1751885575e62e084dff70549ce24a11fa5dc/recognition/model.onnx",
+    "sha256": "9cc6e4a75f0e2bf0b1aed94578f144d15175f357bdc05e815e5c4a02b319eb4f",
+    "bytes": 13616099,
+    "license": "InsightFace pretrained models: non-commercial research; commercial license separately"
+  },
+  "yunet.onnx": {
+    "source": "https://media.githubusercontent.com/media/opencv/opencv_zoo/48b10fa505aeb51fbd127fc60a5c660040e823b7/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
+    "sha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4",
+    "bytes": 232589,
+    "license": "See OpenCV Zoo face_detection_yunet LICENSE"
+  },
+  "sface.onnx": {
+    "source": "https://media.githubusercontent.com/media/opencv/opencv_zoo/48b10fa505aeb51fbd127fc60a5c660040e823b7/models/face_recognition_sface/face_recognition_sface_2021dec.onnx",
+    "sha256": "0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79",
+    "bytes": 38696353,
+    "license": "See OpenCV Zoo face_recognition_sface LICENSE"
+  }
+}

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width"
+  /><title>Face engine bench</title>
+  <style>
+    body {
+      font: 16px system-ui;
+      background: #101b20;
+      color: #eff5f3;
+      max-width: 1100px;
+      margin: auto;
+      padding: 30px;
+    }
+    h1 {
+      font-size: 30px;
+    }
+    label {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px;
+    }
+    input,
+    select,
+    button {
+      font: inherit;
+      padding: 10px;
+      background: #243b43;
+      color: inherit;
+      border: 1px solid #75918f;
+      border-radius: 4px;
+    }
+    button {
+      cursor: pointer;
+    }
+    canvas {
+      max-width: 100%;
+      max-height: 60vh;
+      background: #000;
+    }
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .muted {
+      color: #b7c8c5;
+    }
+    fieldset {
+      border: 1px solid #55736e;
+      margin: 20px 0;
+    }
+    a {
+      color: #7ef2c2;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    td,
+    th {
+      text-align: left;
+      padding: 8px;
+      border-bottom: 1px solid #55736e;
+    }
+  </style>
+  <h1>Face engine bench</h1>
+  <p class="muted">
+    Independent experiment. Reference A → probe B. Raw model scores, no
+    universal match threshold. MediaPipe here measures full-frame image
+    similarity; it is not a face-identity model.
+  </p>
+  <fieldset>
+    <legend>Inputs</legend>
+    <label
+      >Engine<select id="engine">
+        <option>face-api</option>
+        <option>mediapipe</option>
+        <option>pico</option>
+        <option>scrfd-arcface</option>
+        <option>yunet-sface</option>
+        <option disabled>visage — licensed adapter required</option>
+      </select></label
+    ><label
+      >Reference A<input id="reference" type="file" accept="video/*" /></label
+    ><label>Probe B<input id="probe" type="file" accept="video/*" /></label
+    ><label
+      >Frames / second<input
+        id="fps"
+        type="number"
+        min="0.1"
+        max="30"
+        step="0.1"
+        value="2" /></label
+    ><label
+      >Maximum frames / video<input
+        id="maxFrames"
+        type="number"
+        min="1"
+        max="2000"
+        value="300" /></label
+    ><label
+      >Gallery limit<input
+        id="galleryLimit"
+        type="number"
+        min="1"
+        value="40" /></label
+    ><label
+      >Probe overlay JSON (optional)<input
+        id="overlay"
+        type="file"
+        accept=".json"
+    /></label>
+  </fieldset>
+  <p>
+    <button id="run">Run experiment</button>
+    <button id="cancel" disabled>Cancel</button>
+    <button id="download" disabled>Download JSON</button>
+  </p>
+  <p id="status" role="status">Ready. New engines require npm run setup.</p>
+  <canvas id="preview"></canvas>
+  <pre id="result"></pre>
+  <table>
+    <thead>
+      <tr>
+        <th>Video</th>
+        <th>Time (s)</th>
+        <th>Status</th>
+        <th>Best</th>
+        <th>Top-k median</th>
+      </tr>
+    </thead>
+    <tbody id="frames"></tbody>
+  </table>
+  <script src="/lab-js/vendor/face-api.js"></script>
+  <script type="module" src="./ui.mjs"></script>
+</html>
