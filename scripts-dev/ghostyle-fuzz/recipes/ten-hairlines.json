@@ -1,0 +1,15 @@
+{
+  "name": "ten-hairlines",
+  "shape": "line",
+  "count": 10,
+  "lengthCm": 3,
+  "widthCm": 1,
+  "opacity": 0.8,
+  "palette": {
+    "pool": "xterm256",
+    "size": 4,
+    "contrast": "luminance",
+    "quantile": 0.75,
+    "minPairDeltaE": 20
+  }
+}

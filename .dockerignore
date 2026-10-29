@@ -1,0 +1,15 @@
+# Allowlist: only what the fuzzer and its web service need goes into the image
+# (Dockerfile, tutorials/localfuzzer-docker.md). Everything else, including
+# scratch/, tests/, .git and any local secret, stays out.
+*
+!package.json
+!package-lock.json
+!README.md
+!data/
+!lab-js/
+!scripts-dev/
+!tutorials/
+!translations/
+!docker/
+**/node_modules
+**/.DS_Store

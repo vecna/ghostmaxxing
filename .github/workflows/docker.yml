@@ -1,0 +1,151 @@
+# Builds, tests and publishes the local-fuzzer image (Dockerfile) to the GitHub
+# Container Registry: ghcr.io/vecna/ghostmaxxing.
+#
+#   pull request touching the image  → build + smoke test on amd64 and arm64, nothing published
+#   push to main or fuzzer           → same, then publish :main / :fuzzer (rolling)
+#   tag v1.2.3                       → same, then publish :1.2.3, :1.2 and :latest
+#   Actions tab → "Docker image" → Run workflow   → same as a push of the chosen branch
+#
+# Publishing uses only the workflow's own GITHUB_TOKEN (no secret to create or
+# rotate) and attaches a signed build-provenance attestation to the image.
+# Procedure and first-time setup: tutorials/localfuzzer-docker.md §5.
+name: Docker image
+
+on:
+  push:
+    branches: [main, fuzzer]
+    tags: ['v*']
+    paths-ignore: ['**.md', 'docs/**', 'docs-src/**', 'images/**', 'illustrations/**']
+  pull_request:
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - docker/**
+      - scripts-dev/localfuzzer/**
+      - scripts-dev/ghostyle-fuzz.cjs
+      - scripts-dev/ghostyle-fuzz/**
+      - lab-js/**
+      - data/**
+      - package.json
+      - package-lock.json
+      - .github/workflows/docker.yml
+  workflow_dispatch:
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  smoke:
+    name: Build and smoke-test (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build the image for ${{ matrix.arch }} (native, no emulation)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: localfuzzer:test
+          cache-from: type=gha,scope=localfuzzer-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=localfuzzer-${{ matrix.arch }}
+
+      - name: Image size
+        run: docker image ls localfuzzer:test
+
+      - name: Smoke test (upload, two-cell job, results, downloads, graceful stop)
+        run: bash docker/smoke-test.sh localfuzzer:test tests/fixtures/my-moving-face.mp4
+
+  publish:
+    name: Publish to ghcr.io
+    needs: smoke
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU (the arm64 half reuses the native arm64 build cache)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to ghcr.io with the workflow token
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tags and labels
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=ref,event=branch
+          flavor: |
+            latest=auto
+
+      - name: Build and push linux/amd64 + linux/arm64
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: |
+            type=gha,scope=localfuzzer-amd64
+            type=gha,scope=localfuzzer-arm64
+          provenance: mode=max
+          sbom: true
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+
+      - name: Summary
+        run: |
+          {
+            echo "### Published ${IMAGE}"
+            echo
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+            echo "digest: \`${{ steps.push.outputs.digest }}\`"
+            echo
+            echo "Run it: \`docker run -d --name ghostmaxxing -p 127.0.0.1:11111:11111 --shm-size=1g --stop-timeout 120 -v ghostmaxxing-data:/data ${IMAGE}:<tag>\`"
+          } >> "$GITHUB_STEP_SUMMARY"

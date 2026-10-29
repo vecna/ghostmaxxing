@@ -1,0 +1,19 @@
+{
+  "name": "nose-bands",
+  "shape": "line",
+  "count": 3,
+  "lengthCm": 5,
+  "widthCm": 2,
+  "opacity": 0.8,
+  "palette": {
+    "pool": "xterm256",
+    "size": 4,
+    "contrast": "luminance",
+    "quantile": 0.75,
+    "minPairDeltaE": 20
+  },
+  "zones": [
+    "nose-cheeks"
+  ],
+  "overlap": false
+}
