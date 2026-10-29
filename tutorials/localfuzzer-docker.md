@@ -7,7 +7,7 @@ Everything runs and stays on that machine.
 
 - Image: `ghcr.io/vecna/ghostmaxxing` (linux/amd64 and linux/arm64, so Apple
   Silicon runs it natively).
-- Inside: `npm run localfuzzer` (`scripts-dev/localfuzzer/server.cjs`), Node 22,
+- Inside: `npm run localfuzzer` (`scripts-dev/localfuzzer/server.cjs`), Node 24,
   ffmpeg, Playwright's headless Chromium, the fuzzer and its vendored models.
 - Data: one folder (`/data` in the container) holds every job: video, atlas,
   logs, report, Ghostyles.
@@ -149,7 +149,7 @@ npx playwright install chromium     # once
 npm run localfuzzer                 # http://127.0.0.1:11111, data in scratch/localfuzzer/
 ```
 
-Needs Node ≥ 18, ffmpeg/ffprobe on the PATH, and `zip` for .zip downloads
+Needs Node ≥ 24, ffmpeg/ffprobe on the PATH, and `zip` for .zip downloads
 (.tar.gz otherwise). Environment variables: `LOCALFUZZER_PORT`,
 `LOCALFUZZER_HOST`, `LOCALFUZZER_DATA`, `LOCALFUZZER_MAX_UPLOAD_MB` (4096),
 `LOCALFUZZER_ALLOWED_HOSTS`. Ctrl-C stops after the current trial; the job
@@ -322,7 +322,7 @@ docker buildx build --platform linux/amd64,linux/arm64 -t <name> .   # both plat
 
 Before this was first published, the parts were tested as follows:
 
-- The fuzzer, the service and the page, natively (Node 22, Linux): uploads,
+- The fuzzer, the service and the page, natively (Node 24, Linux): uploads,
   validation, every preset's plan, jobs with forced colour, zones, no overlap,
   custom recipes, atlas reuse, cancel (the trial in progress finishes and its
   Ghostyles are written), resume from the next seed, restart while a job runs,

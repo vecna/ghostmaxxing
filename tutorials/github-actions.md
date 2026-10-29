@@ -25,7 +25,7 @@ This job runs on:
 It does the following:
 
 1. checks out the repository
-2. installs Node.js 20
+2. installs Node.js 24
 3. runs `npm ci`
 4. installs Playwright Chromium and its Linux dependencies
 5. runs `npm run test:coverage`

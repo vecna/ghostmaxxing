@@ -12,7 +12,7 @@
 # exist natively for both, so Apple Silicon runs it without emulation.
 # Documentation: tutorials/localfuzzer-docker.md.
 
-ARG NODE_VERSION=22
+ARG NODE_VERSION=24
 FROM node:${NODE_VERSION}-bookworm-slim
 
 # NPM_CONFIG_SCRIPT_SHELL=/bin/bash: bash replaces itself with the script's
