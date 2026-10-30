@@ -3,8 +3,8 @@
   { "id": "beauty-2d", "url": "ghostyles/beauty-2d.js" },
   { "id": "brush", "url": "ghostyles/brush.js" },
   { "id": "cv-dazzle-1", "url": "ghostyles/cv-dazzle-1.js" },
-  { "id": "maximalism", "url": "ghostyles/maximalism.js" },
-  { "id": "smokey-eyes", "url": "ghostyles/smokey-eyes.js" },
   { "id": "soft-contour", "url": "ghostyles/soft-contour.js" },
-  { "id": "uv-stripes", "url": "ghostyles/uv-stripes.js" }
+  { "id": "uv-stripes", "url": "ghostyles/uv-stripes.js" },
+  { "id": "seed-1044-d", "url": "ghostyles/d-100-fuzz-1044.js" },
+  { "id": "seed-1068-d", "url": "ghostyles/ghostyle-fuzz-1068.js" }
 ]
