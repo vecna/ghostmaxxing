@@ -23,7 +23,7 @@ Run the commands below from the `ghostmaxxing` repository root. Most scripts res
 | Measure the distance between two pictures | `node scripts-dev/lab-capture.cjs measure --baseline <file> --dazzled <file>` | Readings and verdict on stdout; `--output-visual-log <file>` for a composite picture |
 | Capture the workshop screenshots | `node scripts-dev/lab-capture.cjs shots --baseline <file> --dazzled <file>` | Three JPEGs in `images/workshops/` |
 | Analyse a seekable makeup video | `npm run analyze:video -- <video> --output <directory>` | Report JSON/HTML, selected JPEGs, and a separate NDJSON technical log |
-| Generate a code map and viewer | `npm run codemap` | `codemap/codemap.json`, `codemap/codemap.html` |
+| Generate the script map and viewer | `npm run codemap` | `codemap/codemap.json`, `codemap/mmd/*.mmd`, `codemap/codemap.html` |
 | Export UI translations | `npm run i18n:extract` | POT and pipe-delimited CSV under `translations/` |
 | Extract public copy | `node scripts-dev/extract-text-only.js` | `EXTRACTED-text-YYYY-MM-DD.md` |
 | Export a focused prompt bundle | `npm run c2p -- c2p:lab` | `C2P-lab-YYYY-MM-DD.txt` |
@@ -40,7 +40,7 @@ Install the repository's development dependencies using its normal locked depend
 
 - `package.json` declares Node `>=18`. This is the declared floor, not a verified compatibility statement for every listed dependency version.
 - The upload tester uses the Node globals `fetch`, `FormData` and `Blob`.
-- The code map requires `acorn` and `acorn-walk`, both declared as development dependencies.
+- The script map requires `acorn` and `acorn-walk`, both declared as development dependencies. Its viewer loads Mermaid from a CDN in the browser.
 - The prompt exporter requires a separate `code2prompt` executable on `PATH`; it is not supplied by the listed npm dependencies.
 - Logo generation uses Python 3. PNG generation additionally requires CairoSVG and its working native dependencies.
 
@@ -115,7 +115,7 @@ Two renders of the same photograph are **the same frame**: same crop, same light
 After a documentation change, inspect the home, one affected module and any changed tutorial links. The source review does not establish that every module currently appears in JSDoc.
 
 
-## Generate the code map
+## Generate the script map
 
 Sources: `scripts-dev/build-codemap.js`, `scripts-dev/build-codemap-html.js`.
 
@@ -125,28 +125,38 @@ npm run codemap
 
 This runs the extractor and, only if it succeeds, the HTML wrapper.
 
-The extractor scans top-level `lab-js/*.js` and root-level HTML pages. It records relative imports, dynamic import expressions, exports, event dispatch/listen calls, DOM listeners and selected `window` assignments. It does not recursively index `lab-js/`, and does not scan `pages-js/`, Ghostyle implementations or maintainer scripts as modules. Dynamic imports are recorded but not traversed for reachability.
+The map answers one question per maintainer script: what does a run do to the repository? For every script a person can run directly — each `node …` and `python3 …` command in `package.json` `scripts`, plus every executable in `scripts-dev/` — the extractor parses the source without executing it and records:
+
+- the first paragraph of the header comment, taken as the script's purpose (the extractor does not infer purpose; a script without a header shows as undocumented);
+- the command-line options with their defaults and aliases, and the subcommands, read from literal comparisons such as `arg === '--output'`, `case '--output':` and the `options` defaults object;
+- the top-level functions `main()` calls, in order, each with the first sentence of its JSDoc, or the matching line of the header's `Subcommands:` block;
+- every filesystem, child-process, server, browser and network call, classified as read, check, write, delete, run, serve, open or fetch, with the target written as a path expression, the function it lives in, and the `if (options.x)` condition that gates it.
+
+Paths are expressions, not observations: `ROOT` is the repository, `$CWD` the directory the command runs from, `$TMPDIR` the system temporary directory, `← --flag` a path supplied by that option, `<name>` a variable the extractor could not resolve, `<computed>` a value built from data at run time. Constants such as `path.join(ROOT, 'images', 'workshops')` resolve; a path passed to a helper resolves one call deep, so `writeImage(buffer, file)` is shown with the file its caller passed. Deeper indirection stays a `<name>`, which is a reason to name a constant in the script rather than to trust a runtime trace.
+
+Aggregation scripts (`npm run htmls`, `npm run check`, …) are `&&` chains of these entries and are not mapped. `npm run validate:ghostyles` is an inline `node -e` loop and is listed as an invocation of `validate-plugin.js`.
+
+Each script becomes one Mermaid flowchart, left to right: the invocation, the subcommand decision when there is one, the functions `main()` calls, and the files, folders and programs each of them touches. Edge labels carry the gating option. The viewer renders the chart with Mermaid loaded from `cdn.jsdelivr.net` — the only external script on the site — and falls back to a text rendering of the same flow when that cannot load. Below the chart it lists the options, the side effects with line numbers, the header comment and the `require()`d modules.
 
 Defaults:
 
 | Item | Path |
 |---|---|
 | JSON output | `codemap/codemap.json` |
+| Mermaid sources, one per script | `codemap/mmd/<script>.mmd` |
 | Viewer template | `codemap/codemap-template.html` |
 | HTML output | `codemap/codemap.html` |
 
 Custom paths:
 
 ```sh
-node scripts-dev/build-codemap.js --out /tmp/ghostmaxxing-codemap.json
-node scripts-dev/build-codemap-html.js /tmp/ghostmaxxing-codemap.json /tmp/ghostmaxxing-codemap.html
+node scripts-dev/build-codemap.js --out /tmp/codemap.json --mmd-dir /tmp/mmd --only lab-capture
+node scripts-dev/build-codemap-html.js /tmp/codemap.json /tmp/codemap.html
 ```
 
-The output parent directory must already exist. The wrapper replaces the literal marker `/*__CODEMAP__*/ null` in the template with the JSON text. It does not check whether that marker was found.
+`--only <substring>` limits the extraction to matching script paths, which is the quick way to check how a script you are editing will be drawn. The wrapper exits 1 when the template marker `/*__CODEMAP__*/ null` is missing.
 
-**Known source mismatch:** module IDs are relative to `lab-js/`, such as `main.js`, but HTML entry IDs retain `lab-js/main.js`. The reachability lookup uses those strings directly. Page reachability and module-to-page associations can therefore be empty even when imports are present. Correct this mismatch before using those fields as a documentation inventory.
-
-A module parse failure is recorded as `parseError`; it does not make the whole extraction fail. Inspect these records and the resulting viewer, rather than treating a successful process exit as proof of complete coverage. Event-bus detection is heuristic and is not a runtime trace.
+Limits, by design: one level of functions below `main()`; conditions only when they test an option directly; the Python extractor is regex-based and covers `os.path.join`, `pathlib` joins, `open()`, `write_text()` and `cairosvg.svg2png(write_to=…)`. A JavaScript parse failure is recorded as `parseError` on that script and does not stop the run. The map is a guide to where to look in the source, and the source and its header comment remain the reference.
 
 ## Export translation files
 

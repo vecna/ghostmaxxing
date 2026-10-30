@@ -5,10 +5,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="canonical" href="https://ghostmaxxing.vecna.eu/codemap/codemap.html" />
-  <title>Code Map — Ghostmaxxing</title>
-  <meta name="description" content="An interactive map of Ghostmaxxing source modules and their relationships." />
-  <meta property="og:title" content="Code Map — Ghostmaxxing" />
-  <meta property="og:description" content="An interactive map of Ghostmaxxing source modules and their relationships." />
+  <title>Script Map — Ghostmaxxing</title>
+  <meta name="description" content="What each Ghostmaxxing maintainer script does: its options, the files and folders it reads and writes, the programs it runs, drawn as one flowchart per script." />
+  <meta property="og:title" content="Script Map — Ghostmaxxing" />
+  <meta property="og:description" content="What each Ghostmaxxing maintainer script does: options, files, folders and programs, one flowchart per script." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://ghostmaxxing.vecna.eu/codemap/codemap.html" />
   <meta property="og:image" content="https://ghostmaxxing.vecna.eu/images/social/ghostmaxxing-generic.jpg" />
@@ -17,8 +17,8 @@
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Code Map — Ghostmaxxing" />
-  <meta name="twitter:description" content="An interactive map of Ghostmaxxing source modules and their relationships." />
+  <meta name="twitter:title" content="Script Map — Ghostmaxxing" />
+  <meta name="twitter:description" content="What each Ghostmaxxing maintainer script does: options, files, folders and programs, one flowchart per script." />
   <meta name="twitter:image" content="https://ghostmaxxing.vecna.eu/images/social/ghostmaxxing-generic.jpg" />
   <meta name="twitter:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
   <script type="application/ld+json">
@@ -27,8 +27,8 @@
     "@type": "WebPage",
     "@id": "https://ghostmaxxing.vecna.eu/codemap/codemap.html#webpage",
     "url": "https://ghostmaxxing.vecna.eu/codemap/codemap.html",
-    "name": "Code Map — Ghostmaxxing",
-    "description": "An interactive map of Ghostmaxxing source modules and their relationships.",
+    "name": "Script Map — Ghostmaxxing",
+    "description": "What each Ghostmaxxing maintainer script does: its options, the files and folders it reads and writes, the programs it runs, drawn as one flowchart per script.",
     "author": {
       "@type": "Person",
       "@id": "https://me.vecna.eu/#vecna",
@@ -72,521 +72,390 @@
 
     body {
       display: grid;
-      grid-template-columns: 236px 1fr;
+      grid-template-columns: 276px 1fr;
       grid-template-rows: auto 1fr;
       height: 100vh;
       overflow: hidden;
     }
 
-    /* ---------- masthead ---------- */
     header {
       grid-column: 1 / -1;
       display: flex;
       align-items: baseline;
       gap: 18px;
-      padding: 14px 20px 12px;
+      padding: 12px 18px;
       border-bottom: 1px solid var(--line);
       background: var(--ink);
     }
-
-    header h1 {
-      font-family: var(--serif);
-      font-size: 21px;
-      font-weight: 400;
-      letter-spacing: 0.01em;
-      margin: 0;
-    }
-
-    header h1 em {
-      color: var(--orange);
-      font-style: normal;
-    }
-
-    .meta {
-      color: var(--faint);
-      font-size: 11px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .meta b { color: var(--muted); font-weight: 400; }
-
-    #search {
+    header h1 { margin: 0; font: 400 20px/1 var(--serif); color: var(--cream); letter-spacing: 0.01em; }
+    header h1 em { font-style: italic; color: var(--orange); }
+    header .meta { color: var(--faint); font-size: 11px; }
+    header .meta b { color: var(--muted); font-weight: 500; }
+    header input {
       margin-left: auto;
-      background: var(--ink-deep);
-      border: 1px solid var(--line);
-      color: var(--fg);
-      font-family: var(--mono);
-      font-size: 12px;
+      width: 220px;
       padding: 6px 10px;
-      width: 190px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--fg);
+      font: inherit;
     }
+    header input:focus { outline: 2px solid var(--orange); outline-offset: -1px; }
 
-    #search:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
-
-    /* ---------- rail ---------- */
     aside {
+      overflow: auto;
       border-right: 1px solid var(--line);
       background: var(--ink);
-      overflow-y: auto;
-      padding: 16px 0 40px;
+      padding-top: 10px;
     }
-
-    .group { padding: 0 16px 20px; }
-
+    .group { padding: 0 12px 18px; }
     .group > h2 {
-      font-size: 10px;
-      letter-spacing: 0.13em;
+      margin: 0 0 6px 6px;
+      font: 500 10px/1 var(--mono);
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--faint);
-      font-weight: 400;
-      margin: 0 0 9px;
-      border-bottom: 1px solid var(--line-soft);
-      padding-bottom: 5px;
     }
-
     .chip {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      gap: 2px;
       width: 100%;
-      background: none;
+      padding: 7px 8px;
       border: 1px solid transparent;
+      border-radius: 6px;
+      background: none;
       color: var(--muted);
-      font-family: var(--mono);
-      font-size: 12px;
+      font: inherit;
       text-align: left;
-      padding: 4px 6px;
       cursor: pointer;
     }
-
     .chip:hover { color: var(--fg); background: var(--panel); }
     .chip:focus-visible { outline: 2px solid var(--orange); outline-offset: -1px; }
     .chip[aria-pressed="true"] { color: var(--cream); border-color: var(--line); background: var(--panel); }
+    .chip .name { font-size: 12px; }
+    .chip .npm { font-size: 10px; color: var(--faint); }
+    .chip[aria-pressed="true"] .npm { color: var(--dev); }
+    .chip .n { font-size: 10px; color: var(--faint); }
 
-    .chip .dot {
-      width: 7px; height: 7px; flex: none;
-      border: 1px solid currentColor;
+    main { overflow: auto; background: var(--ink-deep); padding: 22px 28px 60px; }
+    main > section { max-width: 1240px; }
+    main h2 { margin: 0 0 4px; font: 400 26px/1.15 var(--serif); color: var(--cream); }
+    main h2 code { font: 500 16px/1 var(--mono); color: var(--yellow); }
+    main h3 {
+      margin: 30px 0 10px;
+      font: 500 10px/1 var(--mono);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--faint);
     }
+    .summary { margin: 8px 0 0; max-width: 72ch; font: 15px/1.5 var(--serif); color: var(--fg); }
+    .invoke { margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .invoke code { color: var(--dev); }
+    .invoke .alias { color: var(--faint); }
 
-    .chip[aria-pressed="true"] .dot { background: currentColor; }
-    .chip .n { margin-left: auto; color: var(--faint); font-size: 10px; }
-
-    .evrow {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 6px;
-      width: 100%;
-      background: none;
-      border: 0;
-      border-left: 2px solid transparent;
+    .stage {
+      position: relative;
+      margin-top: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--ink);
+      padding: 14px;
+      overflow: auto;
+    }
+    .stage svg { max-width: none; }
+    .stage .tools { position: sticky; top: 0; float: right; display: flex; gap: 6px; }
+    .stage .tools button, .stage .tools a {
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--panel);
       color: var(--muted);
-      font-family: var(--mono);
-      font-size: 11.5px;
-      text-align: left;
-      padding: 3px 6px;
+      font: inherit;
+      font-size: 11px;
+      text-decoration: none;
       cursor: pointer;
     }
-
-    .evrow:hover, .evrow.on { color: var(--orange); border-left-color: var(--orange); background: var(--panel); }
-    .evrow:focus-visible { outline: 2px solid var(--orange); outline-offset: -1px; }
-    .evrow .fan { color: var(--faint); font-size: 10px; }
-    .evrow.dead { color: var(--faint); }
-    .evrow.dead::after { content: "!"; color: var(--alert); }
-
-    /* ---------- stage ---------- */
-    main { position: relative; overflow: hidden; background: var(--ink-deep); }
-
-    svg { display: block; width: 100%; height: 100%; cursor: grab; }
-    svg.dragging { cursor: grabbing; }
-
-    .grid-line { stroke: var(--line-soft); stroke-width: 1; }
-
-    .edge { fill: none; stroke: var(--yellow); stroke-opacity: 0.2; stroke-width: 1; }
-    .edge.ev { stroke: var(--orange); stroke-opacity: 0.34; stroke-width: 1.4; }
-    .edge.hot { stroke-opacity: 1; stroke-width: 2; }
-    .edge.dim { stroke-opacity: 0.05; }
-
-    .node { cursor: pointer; }
-    .node rect.hit { fill: transparent; }
-    .bracket { stroke: var(--muted); stroke-width: 1.4; fill: none; }
-    .node.entry .bracket { stroke: var(--dev); }
-    .node.sel .bracket, .node:hover .bracket { stroke: var(--orange); stroke-width: 2; }
-    .node.dim { opacity: 0.16; }
-    .node text.label {
-      font-family: var(--mono); font-size: 11px; fill: var(--cream);
-      text-anchor: middle; dominant-baseline: middle; pointer-events: none;
-    }
-    .node text.tele {
-      font-family: var(--mono); font-size: 8.5px; fill: var(--faint);
-      text-anchor: middle; letter-spacing: 0.08em; pointer-events: none;
-    }
-    .node.sel text.tele, .node:hover text.tele { fill: var(--orange); }
-    .crosshair { stroke: var(--orange); stroke-width: 0.7; stroke-dasharray: 3 4; opacity: 0; }
-    .node.sel .crosshair { opacity: 0.65; }
-
-    /* ---------- inspector ---------- */
-    #inspector {
-      position: absolute; top: 0; right: 0; bottom: 0; width: 330px;
-      background: var(--ink); border-left: 1px solid var(--line);
-      padding: 16px 18px 40px; overflow-y: auto;
-      transform: translateX(100%); transition: transform 180ms ease;
+    .stage .tools button:hover, .stage .tools a:hover { color: var(--fg); }
+    .stage .offline {
+      white-space: pre;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
     }
 
-    #inspector.open { transform: none; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px 22px; margin-top: 10px; font-size: 11px; color: var(--muted); }
+    .legend span { display: inline-flex; align-items: center; gap: 7px; }
+    .legend i { display: inline-block; width: 22px; height: 12px; border: 1.5px solid currentColor; background: var(--ink); }
+    .legend .w { color: var(--yellow); }
+    .legend .r { color: var(--dev); }
+    .legend .r i { transform: skewX(14deg); }
+    .legend .w i { transform: skewX(-14deg); }
+    .legend .d { color: var(--alert); }
+    .legend .x { color: var(--orange); }
+    .legend .x i { clip-path: polygon(20% 0, 80% 0, 100% 50%, 80% 100%, 20% 100%, 0 50%); background: currentColor; opacity: 0.8; }
+    .legend .f { color: var(--cream); }
+    .legend .f i { border-radius: 2px; }
+    .legend .o { color: var(--muted); }
+    .legend .o i { border-radius: 50%/40%; }
+    .legend .c { color: var(--faint); }
 
-    #inspector h3 {
-      font-family: var(--mono); font-size: 14px; color: var(--cream);
-      margin: 0 0 2px; word-break: break-all;
+    table { border-collapse: collapse; width: 100%; font-size: 12px; }
+    th, td { padding: 6px 10px 6px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; text-align: left; }
+    th { font-weight: 500; color: var(--faint); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+    td code { color: var(--cream); }
+    td .flag { color: var(--yellow); }
+    td .dflt { color: var(--faint); }
+    td .kind { display: inline-block; min-width: 44px; }
+    td .kind.read { color: var(--dev); }
+    td .kind.probe { color: var(--faint); }
+    td .kind.write { color: var(--yellow); }
+    td .kind.delete { color: var(--alert); }
+    td .kind.exec, td .kind.serve, td .kind.browser, td .kind.network { color: var(--orange); }
+    td .when { color: var(--muted); }
+    td .lines { color: var(--faint); }
+    td.target { word-break: break-all; }
+
+    details { margin-top: 10px; }
+    details summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+    details pre {
+      margin: 10px 0 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--ink);
+      color: var(--muted);
+      white-space: pre-wrap;
+      font-size: 12px;
+      line-height: 1.55;
     }
 
-    #inspector .sub { color: var(--faint); font-size: 11px; margin-bottom: 16px; }
+    .about { max-width: 78ch; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .about dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 10px 0 0; }
+    .about dt { color: var(--cream); }
+    .about dd { margin: 0; }
+    footer { margin-top: 40px; color: var(--faint); font-size: 11px; }
+    footer a { color: var(--muted); }
 
-    #inspector section { margin-bottom: 16px; }
-
-    #inspector section h4 {
-      font-size: 10px; letter-spacing: 0.13em; text-transform: uppercase;
-      color: var(--faint); font-weight: 400; margin: 0 0 6px;
-      border-bottom: 1px solid var(--line-soft); padding-bottom: 4px;
-    }
-
-    #inspector li { list-style: none; font-size: 11.5px; color: var(--muted); padding: 1.5px 0; }
-    #inspector ul { margin: 0; padding: 0; }
-    #inspector .ln { color: var(--faint); font-size: 10px; }
-    #inspector .em { color: var(--orange); }
-    #inspector .rx { color: var(--yellow); }
-    #close {
-      position: absolute; top: 12px; right: 14px; background: none; border: 0;
-      color: var(--faint); font-family: var(--mono); font-size: 16px; cursor: pointer;
-    }
-    #close:hover { color: var(--orange); }
-
-    .legend {
-      position: absolute; left: 16px; bottom: 14px;
-      display: flex; gap: 16px; font-size: 10.5px; color: var(--faint);
-      letter-spacing: 0.05em; pointer-events: none;
-    }
-
-    .legend i { display: inline-block; width: 16px; height: 0; vertical-align: middle;
-      border-top: 1.5px solid currentColor; margin-right: 5px; }
-
-    @media (prefers-reduced-motion: reduce) {
-      #inspector { transition: none; }
+    @media (max-width: 760px) {
+      body { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; height: auto; overflow: auto; }
+      aside { max-height: 220px; border-right: 0; border-bottom: 1px solid var(--line); }
+      header input { width: 140px; }
+      main { padding: 16px; }
     }
   </style>
 </head>
 
 <body>
   <header>
-    <h1>Ghost<em>maxxing</em> code map</h1>
-    <span class="meta"><b id="mCount">0</b> modules &middot; <b id="eCount">0</b> events &middot; <b id="pCount">0</b> pages</span>
-    <input id="search" type="search" placeholder="filter modules…" aria-label="Filter modules" />
+    <h1>Ghost<em>maxxing</em> script map</h1>
+    <span class="meta"><b id="sCount">0</b> scripts &middot; <b id="kCount">0</b> side effects &middot; generated <b id="gen"></b></span>
+    <input id="search" type="search" placeholder="filter scripts…" aria-label="Filter scripts" />
   </header>
 
   <aside>
     <div class="group">
-      <h2>Edges</h2>
-      <button class="chip" id="tImports" aria-pressed="true"><span class="dot" style="color:var(--yellow)"></span>imports<span class="n" id="nImports"></span></button>
-      <button class="chip" id="tEvents" aria-pressed="true"><span class="dot" style="color:var(--orange)"></span>event bus<span class="n" id="nEvents"></span></button>
+      <h2>npm run …</h2>
+      <div id="listNpm"></div>
     </div>
-
     <div class="group">
-      <h2>Entry page</h2>
-      <div id="pages"></div>
+      <h2>node … directly</h2>
+      <div id="listDirect"></div>
     </div>
-
     <div class="group">
-      <h2>Events</h2>
-      <div id="events"></div>
+      <h2>Reading the map</h2>
+      <button class="chip" id="aboutBtn"><span class="name">how this is made</span><span class="npm">static analysis, no execution</span></button>
     </div>
   </aside>
 
   <main>
-    <svg id="stage" role="img" aria-label="Module and event graph"></svg>
-    <div class="legend">
-      <span><i style="color:var(--yellow)"></i>import</span>
-      <span><i style="color:var(--orange)"></i>event</span>
-      <span><i style="color:var(--dev)"></i>entry point</span>
-    </div>
-    <div id="inspector" aria-live="polite">
-      <button id="close" aria-label="Close inspector">&times;</button>
-      <h3 id="iName"></h3>
-      <div class="sub" id="iSub"></div>
-      <div id="iBody"></div>
-    </div>
+    <section id="view" aria-live="polite"></section>
   </main>
 
   <script>
     const CODEMAP = /*__CODEMAP__*/ null;
-
-    const svg = document.getElementById('stage');
-    const NS = 'http://www.w3.org/2000/svg';
-    const el = (t, a = {}) => { const n = document.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); return n; };
-
-    const modules = CODEMAP.modules;
-    const byId = new Map(modules.map((m) => [m.id, m]));
-    const pages = CODEMAP.entries.filter((e) => e.scripts.length);
-    const entryIds = new Set(pages.flatMap((p) => p.scripts.map((s) => s.id)));
-
-    // ---- edges -------------------------------------------------------------
-    const importEdges = [];
-    for (const m of modules) {
-      for (const im of m.imports) {
-        if (byId.has(im.target)) importEdges.push({ s: m.id, t: im.target, kind: 'im', symbols: im.symbols });
-      }
-    }
-    const eventEdges = [];
-    for (const ev of CODEMAP.events) {
-      for (const e of ev.emitters) {
-        for (const l of ev.listeners) {
-          if (e.module !== l.module) eventEdges.push({ s: e.module, t: l.module, kind: 'ev', event: ev.name });
-        }
-      }
-    }
-    document.getElementById('nImports').textContent = importEdges.length;
-    document.getElementById('nEvents').textContent = eventEdges.length;
-    document.getElementById('mCount').textContent = modules.length;
-    document.getElementById('eCount').textContent = CODEMAP.events.length;
-    document.getElementById('pCount').textContent = pages.length;
-
-    // ---- layout ------------------------------------------------------------
-    const W = () => svg.clientWidth, H = () => svg.clientHeight;
-    const nodes = modules.map((m, i) => {
-      const a = (i / modules.length) * Math.PI * 2;
-      return { id: m.id, m, x: 0.5 + Math.cos(a) * 0.3, y: 0.5 + Math.sin(a) * 0.3, vx: 0, vy: 0, fixed: false };
-    });
-    const nodeById = new Map(nodes.map((n) => [n.id, n]));
-    const w = (n) => Math.max(84, n.id.length * 7 + 22), h = () => 30;
-
-    function tick() {
-      const cw = W(), ch = H();
-      for (const n of nodes) {
-        n.vx += (0.5 - n.x) * 0.0035;
-        n.vy += (0.5 - n.y) * 0.0035;
-      }
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const a = nodes[i], b = nodes[j];
-          let dx = (b.x - a.x) * cw, dy = (b.y - a.y) * ch;
-          let d2 = dx * dx + dy * dy || 1;
-          const f = 5200 / d2;
-          const d = Math.sqrt(d2);
-          const ux = dx / d, uy = dy / d;
-          a.vx -= (ux * f) / cw; a.vy -= (uy * f) / ch;
-          b.vx += (ux * f) / cw; b.vy += (uy * f) / ch;
-        }
-      }
-      for (const e of allEdges) {
-        const a = nodeById.get(e.s), b = nodeById.get(e.t);
-        if (!a || !b) continue;
-        const k = e.kind === 'ev' ? 0.0022 : 0.0045;
-        const dx = b.x - a.x, dy = b.y - a.y;
-        a.vx += dx * k; a.vy += dy * k;
-        b.vx -= dx * k; b.vy -= dy * k;
-      }
-      for (const n of nodes) {
-        if (n.fixed) { n.vx = n.vy = 0; continue; }
-        n.vx *= 0.86; n.vy *= 0.86;
-        n.x = Math.min(0.97, Math.max(0.03, n.x + n.vx));
-        n.y = Math.min(0.94, Math.max(0.06, n.y + n.vy));
-      }
-    }
-
-    const allEdges = importEdges.concat(eventEdges);
-
-    // ---- render ------------------------------------------------------------
-    const gGrid = el('g'), gEdges = el('g'), gNodes = el('g');
-    svg.append(gGrid, gEdges, gNodes);
-
-    const edgeEls = allEdges.map((e) => {
-      const p = el('path', { class: 'edge ' + (e.kind === 'ev' ? 'ev' : '') });
-      gEdges.append(p);
-      return p;
-    });
-
-    const nodeEls = nodes.map((n) => {
-      const g = el('g', { class: 'node' + (entryIds.has(n.id) ? ' entry' : ''), tabindex: '0', role: 'button' });
-      const ww = w(n), hh = h(), c = 9;
-      g.append(
-        el('rect', { class: 'hit', x: -ww / 2, y: -hh / 2, width: ww, height: hh }),
-        el('path', { class: 'bracket', d: `M${-ww / 2 + c} ${-hh / 2} H${-ww / 2} V${-hh / 2 + c}` }),
-        el('path', { class: 'bracket', d: `M${ww / 2 - c} ${-hh / 2} H${ww / 2} V${-hh / 2 + c}` }),
-        el('path', { class: 'bracket', d: `M${-ww / 2 + c} ${hh / 2} H${-ww / 2} V${hh / 2 - c}` }),
-        el('path', { class: 'bracket', d: `M${ww / 2 - c} ${hh / 2} H${ww / 2} V${hh / 2 - c}` }),
-        el('line', { class: 'crosshair', x1: -ww, y1: 0, x2: ww, y2: 0 }),
-        el('line', { class: 'crosshair', x1: 0, y1: -hh * 1.9, x2: 0, y2: hh * 1.9 })
-      );
-      const tele = el('text', { class: 'tele', y: -hh / 2 - 6 });
-      tele.textContent = `${n.m.loc}L ${n.m.exports.length}x`;
-      const lab = el('text', { class: 'label' });
-      lab.textContent = n.id.replace(/\.js$/, '');
-      g.append(tele, lab);
-      g.addEventListener('click', () => select(n.id));
-      g.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); select(n.id); } });
-      g.addEventListener('pointerdown', (ev) => startDrag(ev, n));
-      gNodes.append(g);
-      return g;
-    });
-
-    function draw() {
-      const cw = W(), ch = H();
-      allEdges.forEach((e, i) => {
-        const a = nodeById.get(e.s), b = nodeById.get(e.t);
-        if (!a || !b) return;
-        const x1 = a.x * cw, y1 = a.y * ch, x2 = b.x * cw, y2 = b.y * ch;
-        if (e.kind === 'ev') {
-          const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
-          const nx = -(y2 - y1) * 0.16, ny = (x2 - x1) * 0.16;
-          edgeEls[i].setAttribute('d', `M${x1} ${y1} Q${mx + nx} ${my + ny} ${x2} ${y2}`);
-        } else {
-          edgeEls[i].setAttribute('d', `M${x1} ${y1} L${x2} ${y2}`);
-        }
+  </script>
+  <script type="module">
+    // Mermaid is the one external script on this site. Without it (offline,
+    // blocked), the page still shows the flow as text and the tables below it.
+    let mermaid = null;
+    try {
+      mermaid = (await import('https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs')).default;
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'loose',
+        theme: 'base',
+        flowchart: { curve: 'basis', htmlLabels: true, useMaxWidth: false, nodeSpacing: 26, rankSpacing: 46, padding: 10, wrappingWidth: 260 },
+        themeVariables: {
+          fontFamily: 'ui-monospace, SF Mono, JetBrains Mono, Menlo, Consolas, monospace',
+          fontSize: '12px',
+          primaryColor: '#211a12', primaryTextColor: '#f6ece0', primaryBorderColor: '#ffe7a8',
+          lineColor: '#8a7b6a', edgeLabelBackground: '#14100c', tertiaryColor: '#14100c',
+          background: '#14100c', mainBkg: '#211a12', nodeBorder: '#ffe7a8', clusterBkg: '#14100c',
+        },
       });
-      nodes.forEach((n, i) => nodeEls[i].setAttribute('transform', `translate(${n.x * cw} ${n.y * ch})`));
+    } catch (err) {
+      console.warn('mermaid not available, showing the flow as text', err);
     }
 
-    let frames = 0;
-    (function loop() {
-      if (frames < 900) { tick(); frames++; }
-      draw();
-      requestAnimationFrame(loop);
-    })();
+    const scripts = CODEMAP.scripts;
+    const $ = (id) => document.getElementById(id);
+    const h = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-    // ---- drag --------------------------------------------------------------
-    function startDrag(ev, n) {
-      ev.preventDefault();
-      svg.classList.add('dragging');
-      n.fixed = true;
-      const move = (e) => {
-        const r = svg.getBoundingClientRect();
-        n.x = (e.clientX - r.left) / r.width;
-        n.y = (e.clientY - r.top) / r.height;
-        frames = Math.min(frames, 700);
-      };
-      const up = () => {
-        svg.classList.remove('dragging');
-        window.removeEventListener('pointermove', move);
-        window.removeEventListener('pointerup', up);
-      };
-      window.addEventListener('pointermove', move);
-      window.addEventListener('pointerup', up);
-    }
+    $('sCount').textContent = scripts.length;
+    $('kCount').textContent = scripts.reduce((n, s) => n + (s.sinks || []).length, 0);
+    $('gen').textContent = CODEMAP.generatedAt.slice(0, 10);
 
-    // ---- filters -----------------------------------------------------------
-    const state = { imports: true, events: true, page: null, event: null, q: '', sel: null };
-
-    function visibleModules() {
-      let ids = new Set(modules.map((m) => m.id));
-      if (state.page) {
-        const p = pages.find((x) => x.page === state.page);
-        ids = new Set(p.reachable);
-      }
-      if (state.q) {
-        const q = state.q.toLowerCase();
-        ids = new Set([...ids].filter((i) => i.toLowerCase().includes(q)));
-      }
-      return ids;
-    }
-
-    function apply() {
-      const vis = visibleModules();
-      const evFocus = state.event;
-      const hotNodes = new Set();
-      if (evFocus) {
-        const ev = CODEMAP.events.find((e) => e.name === evFocus);
-        ev.emitters.forEach((e) => hotNodes.add(e.module));
-        ev.listeners.forEach((e) => hotNodes.add(e.module));
-      }
-
-      nodes.forEach((n, i) => {
-        const on = vis.has(n.id) && (!evFocus || hotNodes.has(n.id));
-        nodeEls[i].classList.toggle('dim', !on);
-        nodeEls[i].classList.toggle('sel', state.sel === n.id);
-      });
-
-      allEdges.forEach((e, i) => {
-        const kindOn = e.kind === 'ev' ? state.events : state.imports;
-        const inView = vis.has(e.s) && vis.has(e.t);
-        const evOn = !evFocus || e.event === evFocus;
-        const show = kindOn && inView && evOn;
-        edgeEls[i].style.display = show ? '' : 'none';
-        const touchesSel = state.sel && (e.s === state.sel || e.t === state.sel);
-        edgeEls[i].classList.toggle('hot', !!touchesSel || (!!evFocus && e.event === evFocus));
-        edgeEls[i].classList.toggle('dim', !!state.sel && !touchesSel);
-      });
-
-      document.querySelectorAll('.evrow').forEach((r) => r.classList.toggle('on', r.dataset.ev === evFocus));
-      document.querySelectorAll('#pages .chip').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.page === state.page)));
-      document.getElementById('tImports').setAttribute('aria-pressed', String(state.imports));
-      document.getElementById('tEvents').setAttribute('aria-pressed', String(state.events));
-    }
-
-    // rail: pages
-    const pagesBox = document.getElementById('pages');
-    for (const p of pages) {
+    // ---- sidebar
+    const chips = new Map();
+    function chip(s) {
       const b = document.createElement('button');
       b.className = 'chip';
-      b.dataset.page = p.page;
       b.setAttribute('aria-pressed', 'false');
-      b.innerHTML = `<span class="dot" style="color:var(--dev)"></span>${p.page}<span class="n">${p.reachable.length}</span>`;
-      b.onclick = () => { state.page = state.page === p.page ? null : p.page; apply(); };
-      pagesBox.append(b);
+      const npm = (s.npm || []).map((n) => n.name);
+      b.innerHTML = `<span class="name">${h(s.id.replace(/^scripts-dev\//, ''))}</span>` +
+        (npm.length ? `<span class="npm">npm run ${h([...new Set(npm)].join(', '))}</span>` : '') +
+        `<span class="n">${s.options.length ? s.options.length + ' options · ' : ''}${(s.sinks || []).length} side effects</span>`;
+      b.addEventListener('click', () => show(s.id));
+      chips.set(s.id, b);
+      return b;
     }
+    for (const s of scripts) ((s.npm || []).length ? $('listNpm') : $('listDirect')).append(chip(s));
 
-    // rail: events
-    const eventsBox = document.getElementById('events');
-    for (const ev of CODEMAP.events) {
-      const dead = !ev.emitters.length || !ev.listeners.length;
-      const b = document.createElement('button');
-      b.className = 'evrow' + (dead ? ' dead' : '');
-      b.dataset.ev = ev.name;
-      b.innerHTML = `<span>${ev.name}</span><span class="fan">${ev.emitters.length}&rarr;${ev.listeners.length}</span>`;
-      b.title = dead ? 'No counterpart found in scripts/ — external or unused' : '';
-      b.onclick = () => { state.event = state.event === ev.name ? null : ev.name; apply(); };
-      eventsBox.append(b);
-    }
-
-    document.getElementById('tImports').onclick = () => { state.imports = !state.imports; apply(); };
-    document.getElementById('tEvents').onclick = () => { state.events = !state.events; apply(); };
-    document.getElementById('search').oninput = (e) => { state.q = e.target.value.trim(); apply(); };
-
-    // ---- inspector ---------------------------------------------------------
-    const insp = document.getElementById('inspector');
-    document.getElementById('close').onclick = () => { insp.classList.remove('open'); state.sel = null; apply(); };
-
-    function list(items, cls = '') {
-      if (!items.length) return '<li style="color:var(--faint)">—</li>';
-      return items.map((i) => `<li class="${cls}">${i}</li>`).join('');
-    }
-
-    function select(id) {
-      const m = byId.get(id);
-      state.sel = state.sel === id ? null : id;
-      if (!state.sel) { insp.classList.remove('open'); apply(); return; }
-      document.getElementById('iName').textContent = 'scripts/' + m.id;
-      const pagesOf = m.pages.length ? m.pages.join(', ') : 'not reachable from any page';
-      document.getElementById('iSub').textContent = `${m.loc} lines · ${pagesOf}`;
-
-      const importedBy = modules.filter((x) => x.imports.some((i) => i.target === id)).map((x) => x.id);
-      document.getElementById('iBody').innerHTML = `
-        <section><h4>Emits</h4><ul>${list(m.dispatches.map((d) => `<span class="em">${d.event}</span> <span class="ln">:${d.line}</span>`))}</ul></section>
-        <section><h4>Listens for</h4><ul>${list(m.listens.map((l) => `<span class="rx">${l.event}</span> <span class="ln">${l.receiver}:${l.line}</span>`))}</ul></section>
-        <section><h4>Imports</h4><ul>${list(m.imports.map((i) => `${i.target} <span class="ln">${i.symbols.join(', ')}</span>`))}</ul></section>
-        <section><h4>Imported by</h4><ul>${list(importedBy)}</ul></section>
-        <section><h4>Exports (${m.exports.length})</h4><ul>${list(m.exports.map((e) => `${e.name} <span class="ln">${e.kind} :${e.line}</span>`))}</ul></section>
-        <section><h4>DOM listeners (${m.domListeners.length})</h4><ul>${list(m.domListeners.map((d) => `${d.receiver} <span class="ln">${d.event} :${d.line}</span>`))}</ul></section>
-        <section><h4>Window globals</h4><ul>${list(m.globals.map((g) => `window.${g.name} <span class="ln">:${g.line}</span>`))}</ul></section>`;
-      insp.classList.add('open');
-      apply();
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') { insp.classList.remove('open'); state.sel = null; state.event = null; apply(); }
+    $('search').addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      for (const [id, b] of chips) {
+        const s = scripts.find((x) => x.id === id);
+        const hay = `${id} ${(s.npm || []).map((n) => n.name).join(' ')} ${s.summary} ${(s.sinks || []).map((k) => k.target).join(' ')}`.toLowerCase();
+        b.hidden = q && !hay.includes(q);
+      }
     });
+    $('aboutBtn').addEventListener('click', about);
 
-    window.addEventListener('resize', draw);
-    apply();
+    // ---- one script
+    const KIND_WORD = { read: 'reads', probe: 'checks', write: 'writes', delete: 'deletes', exec: 'runs', serve: 'serves', browser: 'opens', network: 'fetches' };
+
+    function fmtDefault(v) {
+      if (v === undefined) return '';
+      if (v === null) return 'none';
+      if (Array.isArray(v)) return v.join(',');
+      return String(v);
+    }
+
+    async function show(id) {
+      const s = scripts.find((x) => x.id === id);
+      if (!s) return;
+      for (const [k, b] of chips) b.setAttribute('aria-pressed', String(k === id));
+      history.replaceState(null, '', `#${encodeURIComponent(id)}`);
+
+      const invoke = s.lang === 'py' ? `python3 ${s.id}` : `node ${s.id}`;
+      const aliases = (s.npm || []).map((n) => `<code>npm run ${h(n.name)}</code>${n.args ? ` <span class="alias">${h(n.args)}</span>` : ''}`);
+      const sub = s.subcommands.length ? `<div>subcommands: ${s.subcommands.map((c) => `<code>${h(c)}</code>`).join(' ')}</div>` : '';
+
+      const optionRows = s.options.map((o) => `<tr>
+          <td><span class="flag">${h(o.flag)}</span>${o.aliases && o.aliases.length ? ` <span class="dflt">${h(o.aliases.join(' '))}</span>` : ''}</td>
+          <td>${o.type === 'boolean' ? 'switch' : 'value'}</td>
+          <td><span class="dflt">${h(fmtDefault(o.default))}</span></td>
+        </tr>`).join('');
+
+      const sinkRows = (s.sinks || [])
+        .slice()
+        .sort((a, b) => a.fn.localeCompare(b.fn) || a.line - b.line)
+        .map((k) => `<tr>
+          <td><span class="kind ${h(k.kind)}">${KIND_WORD[k.kind] || k.kind}</span></td>
+          <td class="target"><code>${h(k.target)}</code>${k.source ? ` <span class="dflt">from ${h(k.source)}</span>` : ''}${k.args && k.args.length ? ` <span class="dflt">${h(k.args.join(' '))}</span>` : ''}</td>
+          <td>${h(k.fn)}()</td>
+          <td><span class="when">${h(k.when || '')}</span></td>
+          <td><span class="lines">${h(k.line)}</span></td>
+        </tr>`).join('');
+
+      $('view').innerHTML = `
+        <h2>${h(s.id.split('/').pop())} <code>${h(s.id.replace(/[^/]+$/, ''))}</code>${s.version ? ` <code>v${h(s.version)}</code>` : ''}</h2>
+        <p class="summary">${h(s.summary || 'No header comment: the script does not say what it is for.')}</p>
+        <div class="invoke"><div><code>${h(invoke)}</code>${aliases.length ? ' &middot; ' + aliases.join(' &middot; ') : ''}</div>${sub}</div>
+
+        <h3>Flow</h3>
+        <div class="stage" id="stage">
+          <div class="tools">
+            <button id="copyMmd" type="button">copy mermaid</button>
+            <a href="mmd/${h(s.id.split('/').pop().replace(/\.\w+$/, ''))}.mmd" download>.mmd</a>
+          </div>
+          <div id="diagram"></div>
+        </div>
+        <div class="legend">
+          <span class="f"><i></i>function main() calls</span>
+          <span class="r"><i></i>file read</span>
+          <span class="w"><i></i>file written</span>
+          <span class="o"><i></i>folder</span>
+          <span class="d"><i></i>deleted</span>
+          <span class="x"><i></i>program run</span>
+          <span class="c">edge label: the option that gates the step</span>
+        </div>
+
+        ${s.options.length ? `<h3>Options</h3>
+        <table><thead><tr><th>flag</th><th>kind</th><th>default</th></tr></thead><tbody>${optionRows}</tbody></table>` : ''}
+
+        <h3>Files, folders and programs</h3>
+        ${sinkRows ? `<table><thead><tr><th>action</th><th>target</th><th>in</th><th>when</th><th>line</th></tr></thead><tbody>${sinkRows}</tbody></table>`
+          : '<p class="about">No filesystem, process or network side effect was found in this script.</p>'}
+        <p class="about">Paths are expressions, not a trace: <code>ROOT</code> is the repository, <code>$CWD</code> the directory the command runs from, <code>$TMPDIR</code> the system temporary directory, <code>← --flag</code> a path given on the command line, <code>&lt;name&gt;</code> a variable the extractor could not resolve, <code>&lt;computed&gt;</code> a value built from data at run time.</p>
+
+        ${s.header ? `<details><summary>Header comment from the source</summary><pre>${h(s.header)}</pre></details>` : ''}
+        ${s.requires && s.requires.length ? `<p class="about">Requires: ${s.requires.map((r) => `<code>${h(r)}</code>`).join(' ')}</p>` : ''}
+      `;
+
+      $('copyMmd').addEventListener('click', () => navigator.clipboard && navigator.clipboard.writeText(s.mermaid));
+
+      const target = $('diagram');
+      if (mermaid) {
+        try {
+          const { svg } = await mermaid.render(`svg-${Date.now()}`, s.mermaid);
+          target.innerHTML = svg;
+        } catch (err) {
+          target.innerHTML = `<pre class="offline">${h(s.mermaid)}</pre>`;
+          console.warn(err);
+        }
+      } else {
+        target.innerHTML = `<pre class="offline">${h(textFlow(s))}</pre>`;
+      }
+    }
+
+    /** Plain-text rendering of the flow, for when the diagram library is unavailable. */
+    function textFlow(s) {
+      const out = [];
+      for (const st of s.flow.steps) {
+        out.push(`${st.when ? `[${st.when}] ` : ''}${st.fn}()${st.doc ? `  — ${st.doc}` : ''}`);
+        for (const k of st.sinks) out.push(`    ${(KIND_WORD[k.kind] || k.kind).padEnd(8)} ${k.target}${k.when ? `   (${k.when})` : ''}`);
+      }
+      for (const k of s.flow.direct) out.push(`${(KIND_WORD[k.kind] || k.kind).padEnd(8)} ${k.target}${k.when ? `   (${k.when})` : ''}`);
+      return out.join('\n') || '(nothing to draw)';
+    }
+
+    function about() {
+      for (const b of chips.values()) b.setAttribute('aria-pressed', 'false');
+      history.replaceState(null, '', '#about');
+      const legend = Object.entries(CODEMAP.legend || {}).map(([k, v]) => `<dt><code>${h(k)}</code></dt><dd>${h(v)}</dd>`).join('');
+      $('view').innerHTML = `
+        <h2>How this map is made</h2>
+        <div class="about">
+          <p><code>scripts-dev/build-codemap.js</code> reads every script a person can run directly — the <code>node …</code> and <code>python3 …</code> commands in <code>package.json</code>, plus the executables in <code>scripts-dev/</code> — and parses the source without executing it. Aggregations such as <code>npm run htmls</code> are only <code>&amp;&amp;</code> chains of these and are not drawn.</p>
+          <p>For each script it keeps: the first paragraph of the header comment (the purpose, written by a person, not inferred); the command-line options with their defaults and the subcommands; the functions <code>main()</code> calls, in order, each with the first sentence of its JSDoc; and every filesystem, process, server and network call, with the path written as an expression, the function it lives in, and the <code>if (options.x)</code> condition that gates it. Paths reached through a helper are resolved one call deep, so <code>writeImage(buffer, file)</code> shows the file the caller passed.</p>
+          <p>Depth is deliberately shallow — one level of functions below <code>main()</code>, and option conditions only — so the chart stays a map of what a run does to the repository, not a call graph. The source and its header comment remain the reference; this page says where to look.</p>
+          <dl>${legend}</dl>
+          <p>Regenerate with <code>npm run codemap</code>. The Mermaid sources are also written to <code>codemap/mmd/</code>, one per script, for use in documentation.</p>
+        </div>`;
+    }
+
+    function route() {
+      const wanted = decodeURIComponent(location.hash.slice(1));
+      if (wanted === 'about') about();
+      else show(scripts.some((s) => s.id === wanted) ? wanted : scripts.find((s) => (s.npm || []).length)?.id || scripts[0].id);
+    }
+    window.addEventListener('hashchange', route);
+    route();
   </script>
+  <footer hidden><a href="../">Ghostmaxxing</a></footer>
 </body>
 
 </html>

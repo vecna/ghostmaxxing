@@ -25,7 +25,7 @@
                 <tr><td>Run fast checks</td><td><code>npm run check</code></td><td>Validates Ghostyles, then runs unit tests.</td></tr>
                 <tr><td>Run all tests</td><td><code>npm test</code></td><td>Runs unit tests, then Playwright end-to-end tests.</td></tr>
                 <tr><td>Test the realtime workflow</td><td><code>npm run test:e2e:realtime</code></td><td>Runs the focused Chromium suite, including local-video upload and declared-step measurement.</td></tr>
-                <tr><td>Build architecture map</td><td><code>npm run codemap</code></td><td>Writes the JSON graph and standalone HTML viewer.</td></tr>
+                <tr><td>Build the script map</td><td><code>npm run codemap</code></td><td>Writes the JSON map, one Mermaid flowchart per script, and the HTML viewer.</td></tr>
                 <tr><td>Extract translations</td><td><code>npm run i18n:extract</code></td><td>Overwrites POT and pipe-delimited summary files.</td></tr>
               </tbody>
             </table>
@@ -51,8 +51,8 @@
             <div class="docs-maintenance-list">
               <article class="docs-maintenance-item"><h3>build-functional-docs.cjs</h3><p>Wraps English body fragments in shared site chrome and documentation navigation. Writes ten static pages under <code>docs/</code> and the <code>docs.html</code> compatibility redirect. It does not translate content or generate JSDoc.</p></article>
               <article class="docs-maintenance-item"><h3>capture-doc-screenshots.cjs</h3><p>Drives Lab and Video Loader with Playwright fixtures. Writes stable screenshots and records pixel dimensions, aspect ratio, crop, viewport, and provenance in the manifest. Brush is an optional path.</p></article>
-              <article class="docs-maintenance-item"><h3>build-codemap.js</h3><p>Parses top-level <code>lab-js/*.js</code>, imports, exports, events, and root HTML entries into <code>codemap/codemap.json</code>. It is a static heuristic, not a runtime trace.</p></article>
-              <article class="docs-maintenance-item"><h3>build-codemap-html.js</h3><p>Injects the JSON map into <code>codemap/codemap-template.html</code> and writes a standalone viewer. Check that the template marker was actually replaced.</p></article>
+              <article class="docs-maintenance-item"><h3>build-codemap.js</h3><p>Parses every directly runnable maintainer script (the <code>node …</code> and <code>python3 …</code> commands in <code>package.json</code>, plus the executables in <code>scripts-dev/</code>) into <code>codemap/codemap.json</code> and <code>codemap/mmd/*.mmd</code>: options, subcommands, the functions <code>main()</code> calls, and the files, folders and programs each one reads, writes, deletes or runs. It is static analysis one call deep, not a runtime trace.</p></article>
+              <article class="docs-maintenance-item"><h3>build-codemap-html.js</h3><p>Injects the JSON map into <code>codemap/codemap-template.html</code> and writes the viewer, one flowchart per script. It fails when the template marker is missing. Mermaid is loaded from a CDN at view time; offline the flow is shown as text.</p></article>
               <article class="docs-maintenance-item"><h3>validate-plugin.js</h3><p>Checks one Ghostyle header and supported export patterns without executing the module. Its regular-expression checks cover only a subset of the full authoring policy.</p></article>
               <article class="docs-maintenance-item"><h3>extract-i18n-pot.cjs</h3><p>Evaluates the translation catalogue and overwrites the POT and summary files. It extracts interface strings, not functional documentation prose.</p></article>
               <article class="docs-maintenance-item"><h3>extract-text-only.js</h3><p>Extracts reviewable visible copy, metadata, and accessibility attributes from public HTML and structured data. It is an editorial aid, not a complete DOM or localisation audit.</p></article>

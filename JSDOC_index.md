@@ -169,7 +169,7 @@ The JSDoc cleanup must remain scoped to `docs/jsdoc/`. It must not delete the fu
 
 1. Read the functional guide so you know which user-visible promise depends on the code.
 2. Inspect the source module and its generated reference.
-3. Check `Ghostmaxxing.d.ts`, event consumers, tests, and the codemap.
+3. Check `Ghostmaxxing.d.ts`, event consumers, and tests.
 4. Change source documentation and functional copy where the behaviour changes.
 5. Run the narrow tests, then the relevant end-to-end path.
 6. Regenerate only the outputs whose sources changed and inspect their diffs.

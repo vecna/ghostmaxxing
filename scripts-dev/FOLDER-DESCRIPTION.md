@@ -14,9 +14,9 @@ Related-project generation lives beside its data in `projects/`, mirroring the e
 
 - `mark-ai-images.cjs` — visibly stamps synthetic JPEG/PNG fixtures with a configurable `AI Gen` corner badge using node-canvas, the committed Atkinson Bold font and `styles/tokens.css`. Defaults to `tests/fixtures/synthetic-faces/`; compares visible pixels before overwriting, skips an existing badge (including other sizes), supports `--dry-run`, and atomically replaces unmarked images. JPEG is re-encoded and source metadata is not preserved. See `README.md` for commands and detection limits.
 
-- `build-codemap.js` — builds a static architecture map of the app by scanning `lab-js/*.js`, parsing imports and event bus usage, and listing which HTML entry pages reach each module. It produces `codemap.json` and is used to understand module connectivity and event flow.
+- `build-codemap.js` — builds the script map: for every maintainer script a person can run directly (the `node …`/`python3 …` commands in `package.json` and the executables in this folder) it parses the source without running it and records the header summary, the command-line options and subcommands, the functions `main()` calls, and every file, folder, program, server and network side effect with the gating option. It writes `codemap/codemap.json` and one Mermaid flowchart per script under `codemap/mmd/`. Static analysis, one call deep; not a runtime trace.
 
-- `build-codemap-html.js` — wraps the generated codemap JSON into the standalone HTML viewer under `codemap/`. It injects the JSON into the codemap template so the architecture map can be opened in a browser without extra setup.
+- `build-codemap-html.js` — injects the script-map JSON into `codemap/codemap-template.html` and writes `codemap/codemap.html`, a viewer with one flowchart, an options table and a side-effect table per script. The flowcharts are drawn by Mermaid loaded from a CDN; without it the page shows the same flow as text.
 
 - `build-functional-docs.cjs` — builds the hand-authored, translatable functional documentation from `docs-src/en/`. It supplies shared public-site chrome and documentation navigation, writes the static pages under `docs/`. It does not generate the separate JSDoc reference under `docs/jsdoc/`.
 
