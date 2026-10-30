@@ -45,7 +45,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npx http-server -p 8080',
+    command: 'node scripts-dev/static-server.cjs --port 8080 --silent',
     url: 'http://localhost:8080',
     reuseExistingServer: !process.env.CI,
   },

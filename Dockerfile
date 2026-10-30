@@ -19,11 +19,15 @@ FROM node:${NODE_VERSION}-bookworm-slim
 # command (dash, Debian's sh, does not), so the process chain is
 # tini → npm → node and docker stop's SIGTERM reaches the server, which lets
 # the running trial finish and the job resume on the next start.
+# NPM_CONFIG_OMIT=dev: any npm install/ci in the image installs package.json
+# "dependencies" only (what `npm run localfuzzer` needs), never the
+# devDependencies used to test and rebuild the website.
 ENV DEBIAN_FRONTEND=noninteractive \
     PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
     NPM_CONFIG_UPDATE_NOTIFIER=false \
     NPM_CONFIG_FUND=false \
     NPM_CONFIG_SCRIPT_SHELL=/bin/bash \
+    NPM_CONFIG_OMIT=dev \
     LOCALFUZZER_HOST=0.0.0.0 \
     LOCALFUZZER_PORT=11111 \
     LOCALFUZZER_DATA=/data
@@ -35,23 +39,21 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends ffmpeg zip tini util-linux ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
-# Only the fuzzer's one dependency, @playwright/test, at the version of the
-# lockfile, plus Playwright's headless Chromium and its system libraries. The
-# website's dev tooling (vitest, jsdom, canvas, ...) is not installed.
-COPY package-lock.json /tmp/package-lock.json
-WORKDIR /opt/fuzzer-deps
+# Only package.json "dependencies" (the fuzzer's one dependency,
+# @playwright/test, at the version of the lockfile), plus Playwright's headless
+# Chromium and its system libraries. The website's dev tooling (vitest, jsdom,
+# canvas, jsdoc, ...) is in devDependencies and is not installed. The manifests
+# are copied first so this layer is rebuilt only when they change.
+WORKDIR /app
+COPY package.json package-lock.json ./
 RUN set -eux; \
-    PW_VERSION="$(node -p "require('/tmp/package-lock.json').packages['node_modules/@playwright/test'].version")"; \
-    npm init -y >/dev/null; \
-    npm install --no-audit --omit=optional "@playwright/test@${PW_VERSION}"; \
+    npm ci --omit=dev --no-audit; \
     npx playwright install --with-deps --only-shell chromium; \
-    rm -rf /var/lib/apt/lists/* /root/.npm /root/.cache /tmp/package-lock.json; \
+    rm -rf /var/lib/apt/lists/* /root/.npm /root/.cache; \
     chmod -R a+rX "$PLAYWRIGHT_BROWSERS_PATH"
 
-WORKDIR /app
 COPY --chown=root:root . .
-RUN ln -s /opt/fuzzer-deps/node_modules /app/node_modules \
- && chmod 0755 docker/entrypoint.sh \
+RUN chmod 0755 docker/entrypoint.sh \
  && mkdir -p /data && chown node:node /data \
  && node scripts-dev/ghostyle-fuzz.cjs --version \
  && /usr/bin/tini --version && setpriv --version && ffprobe -version >/dev/null && zip -v >/dev/null \

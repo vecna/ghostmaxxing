@@ -1,6 +1,6 @@
 # Ghostmaxxing
 <!-- coverage-badge:start -->
-[![Unit Test Coverage](https://img.shields.io/badge/coverage-83.96%25-green)](coverage/)
+[![Unit Test Coverage](https://img.shields.io/badge/coverage-83.83%25-green)](coverage/)
 <!-- coverage-badge:end -->
 
 [![CI](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml/badge.svg)](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml)
@@ -46,12 +46,15 @@ experimental overlay as an operational safety guarantee.
 ```bash
 git clone https://github.com/vecna/ghostmaxxing.git
 cd ghostmaxxing
-npm install          # dev tooling only (tests, docs, validation)
+npm install          # Playwright (the local fuzzer's runtime) + dev tooling (tests, docs, validation)
 npm start            # serves the repo and opens /lab.html
 ```
 
-`npm start` runs a static file server — there is no build step. Any static
-server works:
+`npm install --omit=dev` installs only what `npm run localfuzzer` needs (the
+Docker image does this). `npm start` runs a small dependency-free static file
+server (`scripts-dev/static-server.cjs`) bound to this machine only;
+`npm start -- --host 0.0.0.0` makes it reachable from a phone. There is no
+build step, and any static server works:
 
 ```bash
 npm run serve        # http://localhost:8080/ (frontend only)

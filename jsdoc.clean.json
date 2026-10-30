@@ -15,9 +15,10 @@
   },
   "opts": {
     "theme_opts": {
+      "default_theme": "light",
       "footer": "<div style='text-align: center; padding: 1rem 0;'>Ghostmaxxing v1.0.0 | Last updated: 15 October 2026</div>"
     },
-    "template": "node_modules/clean-jsdoc-theme/dist",
+    "template": "node_modules/clean-jsdoc-theme",
     "tutorials": "./tutorials",
     "basePath": "/docs/jsdoc/",
     "destination": "./docs/jsdoc",

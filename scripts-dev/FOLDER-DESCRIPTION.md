@@ -32,6 +32,8 @@ Related-project generation lives beside its data in `projects/`, mirroring the e
 
 - `install-client-interface.cjs` — copies the runtime web app files into a sibling backend/client-interface target directory. It is a packaging/install script used to prepare a client interface bundle for a backend deployment or local integration target.
 
+- `static-server.cjs` — dependency-free static file server (node:http) for the repository. `npm start`, `npm run serve` and the Playwright e2e web server run it as a CLI; `lab-capture.cjs`, `video-loader.cjs` and `capture-doc-screenshots.cjs` start it on a free port through `startStaticServer()`. GET/HEAD only, `Cache-Control: no-store`, byte ranges for video seeking, no directory listings, binds to 127.0.0.1 unless `--host` says otherwise.
+
 - `test-upload-consent-post.cjs` — sends a multipart upload request that mirrors the app's consented clip upload flow. It is a local debugging aid for checking the backend upload endpoint, payload shape, and consent metadata without needing to trigger the browser UI.
 
 - `update-coverage-badge.js` — refreshes the coverage badge block in the main `README.md` using the latest Vitest JSON report. It updates only the badge section and leaves the surrounding documentation intact.

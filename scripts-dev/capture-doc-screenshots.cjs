@@ -14,7 +14,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const httpServer = require('http-server');
+const { startStaticServer } = require('./static-server.cjs');
 const { chromium } = require('@playwright/test');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -142,16 +142,7 @@ function findSystemChrome() {
 }
 
 async function startLocalServer() {
-   const server = httpServer.createServer({ root: ROOT, cache: -1, cors: false });
-   await new Promise((resolve, reject) => {
-      server.server.once('error', reject);
-      server.server.listen(0, '127.0.0.1', resolve);
-   });
-   const address = server.server.address();
-   return {
-      baseUrl: `http://127.0.0.1:${address.port}`,
-      close: () => new Promise((resolve) => server.server.close(resolve)),
-   };
+   return startStaticServer({ root: ROOT, host: '127.0.0.1', port: 0 });
 }
 
 function relativeFromRoot(file) {
