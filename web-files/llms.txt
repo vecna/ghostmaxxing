@@ -25,7 +25,7 @@ Licence: AGPL-3.0-or-later. Main Author: Claudio Agosti (https://me.vecna.eu). S
 
 - [Technical documentation](https://ghostmaxxing.vecna.eu/docs/): Runtime architecture, module map, and generated JSDoc reference.
 - [Ghostyle authoring guide](https://ghostmaxxing.vecna.eu/docs/tutorials/ghostyle-authoring/): The plugin contract. A Ghostyle is a single JavaScript file exporting `onDraw` (2D canvas) and/or `paintUV` (3D UV space), with a `==Ghostyle==` metadata header.
-- [Repository](https://github.com/vecna/ghostmaxxing): Source. Static site, native ES modules, no build step — `npm install` fetches test and documentation tooling only.
+- [Repository](https://github.com/vecna/ghostmaxxing): Source. Static site, native ES modules, no build step — `npm install --omit=dev` fetches Playwright only (the local fuzzer's runtime); a plain `npm install` adds the test and documentation tooling.
 - [Contributing](https://github.com/vecna/ghostmaxxing/blob/main/CONTRIBUTING.md): The one defined contribution path is submitting a new Ghostyle.
 
 ## Optional

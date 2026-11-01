@@ -144,7 +144,7 @@ re-run on it with a checkout of the repository.
 ## 4. Without Docker
 
 ```sh
-npm ci
+npm ci --omit=dev                   # the fuzzer's dependencies only (Playwright)
 npx playwright install chromium     # once
 npm run localfuzzer                 # http://127.0.0.1:11111, data in scratch/localfuzzer/
 ```

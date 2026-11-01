@@ -1,6 +1,6 @@
 /**
  * ==Ghostyle==
- * @name         Beauty Demo 2D
+ * @name         Demo-2D
  * @version      1.0.0
  * @author       NINA
  * @release_date 2025-01-01

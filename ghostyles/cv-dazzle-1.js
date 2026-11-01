@@ -1,6 +1,6 @@
 /**
  * ==Ghostyle==
- * @name         CV-Dazzle example 1
+ * @name         Blobs Random1
  * @version      1.0.0
  * @author       vecna, but actually a dump of random points
  * @release_date 2026-04-13
@@ -64,7 +64,7 @@ export function onDraw(ctx, landmarks) {
   const contrastoNero2 = [nose[5], nose[3], rightEye[3], gstmxx.lerp(rightEye[3], jaw[14], 0.5)];
   gstmxx.drawOpenPath(ctx, contrastoNero2, 'rgba(15, 17, 21, 0.25)', 18);
 
-  gstmxx.drawEyeWing(ctx, leftEye, leftBrow, 'CV-DAZZLE', {
+  gstmxx.drawEyeWing(ctx, leftEye, leftBrow, '', {
     scale: 1.8,
     brow: 0.8,
     fill: 'rgba(57, 255, 20, 0.35)',
@@ -75,7 +75,6 @@ export function onDraw(ctx, landmarks) {
     tailY: 20
   });
 
-  gstmxx.drawLabel(ctx, 'SECTOR-01-ANOMALY', nose[4].x - 85, nose[4].y + 35);
 }
 
 export function onClear() {
