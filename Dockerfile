@@ -62,7 +62,7 @@ RUN chmod 0755 docker/entrypoint.sh \
 LABEL org.opencontainers.image.title="ghostmaxxing local fuzzer" \
       org.opencontainers.image.description="Upload a video, search Ghostyles against face-api locally, download the assessment and the Ghostyles." \
       org.opencontainers.image.source="https://github.com/vecna/ghostmaxxing" \
-      org.opencontainers.image.documentation="https://github.com/vecna/ghostmaxxing/blob/fuzzer/tutorials/localfuzzer-docker.md"
+      org.opencontainers.image.documentation="https://ghostmaxxing.vecna.eu/docs/guides/localfuzzer.html"
 
 VOLUME ["/data"]
 EXPOSE 11111

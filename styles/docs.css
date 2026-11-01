@@ -236,6 +236,29 @@
   background: rgba(47, 122, 92, 0.14);
 }
 
+.docs-report-example {
+  margin-top: 1.25rem;
+  padding: 1rem 1.15rem;
+  border: 2px solid var(--gm-ink);
+  border-left: 0.65rem solid var(--gm-pink);
+  background: rgba(255, 241, 207, 0.75);
+}
+
+.docs-report-example__label {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: var(--gm-green-deep);
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  font-weight: 700;
+  letter-spacing: var(--ls-meta);
+  text-transform: uppercase;
+}
+
+.docs-report-example p {
+  margin: 0.45rem 0 0;
+}
+
 .docs-toc {
   position: sticky;
   top: 4.5rem;

@@ -10,11 +10,12 @@
 
 **Release:** 1.0.0 · 15 October 2026
 
-**Ghostmaxxing** is a static, browser-side lab for testing face-recognition
-camouflage. Point a webcam at your face, save a baseline, change how you look —
-paint directly on the tracked face or apply a **Ghostyle** overlay — and watch a
-local recognition pipeline react in real time. Everything runs in the browser;
-your face data stays on your device.
+**Ghostmaxxing** is a static, browser-side lab and an optional Docker-packaged
+local fuzzer for testing face-recognition camouflage. Point a webcam at your
+face for an interactive test, or give the fuzzer a controlled face-turn video
+and search many Ghostyle recipes across its clean poses. The browser tools run
+on the device; the fuzzer keeps its video and outputs in the local Docker data
+volume unless you deliberately copy or share them.
 
 It is **not** a protection product and it does not promise anonymity. It makes
 parts of a face-recognition pipeline visible, testable, and discussable.
@@ -71,6 +72,9 @@ Entry points once served:
 - [NINA reporting guidance](https://sindacato.nina.watch/en/ghostati/report/) — confidential whistleblowing, managed by NINA’s Universal Union.
 - [Ghòstati! workshops](https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/) — NINA’s facilitator guide and Signal group.
 - `/loader.html` — internal MP4 loader for repeatable 2D/3D video tests.
+- `/realtime.html` — temporal face-descriptor measurements from a camera or local video.
+- `/docs/guides/localfuzzer.html` — run the Docker-packaged Local Fuzzer.
+- `/docs/guides/localfuzzer-report.html` — interpret every number and visualization in its report.
 - `/projects/` — products, prototypes, and practices pursuing complementary anti-surveillance approaches.
 - `/references/` — cultural and technical source archive reached through the related-projects section.
 - `/docs/` — technical documentation (after `npm run docs`).
@@ -83,7 +87,9 @@ npm run test:unit          # Vitest unit tests
 npm run test:unit -- --coverage
 npm run test:e2e           # Playwright browser tests
 npm run test:e2e:realtime  # Focused realtime camera/video workflow
+npm run localfuzzer        # Local service on http://127.0.0.1:11111 (Node/ffmpeg setup)
 npm run docs               # generate the JSDoc site into docs/jsdoc/
+npm run docs:functional    # generate the public task guides into docs/
 npm run validate:ghostyles # validate every ghostyle in ghostyles/
 npm run validate:ghostyle -- ghostyles/your-slug.js   # validate one
 npm run update:references  # rebuild references/index.html from REFERENCES.json
@@ -182,4 +188,3 @@ uses `http://localhost:4040`, the backend default; the production hostname keeps
 all other hosts use `https://ghostmaxxing.vecna.eu`. Recognition models remain local.
 Private receipt links stay on the frontend that created them; their deletion requests use the backend.
 The backend must allow cross-origin POST/DELETE and the `X-Delete-Token` preflight header.
-See `migration/README-it.md` and the included backend patch.

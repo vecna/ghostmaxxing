@@ -12,7 +12,7 @@
  *   5. What matters   one trial feature against one score, with Pearson r
  *   6. Compare        dAtlas profiles of up to four ticked trials
  *
- * See tutorials/ghostyle-fuzz.md §8 for what each view is for.
+ * See /docs/guides/localfuzzer-report.html for what each view is for.
  */
 
 function escapeJson(value) {
@@ -68,17 +68,47 @@ code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-
 canvas { max-width: 100%; image-rendering: pixelated; }
 .empty { color: var(--muted); padding: 20px 0; }
 a { color: var(--accent); }
+.print-report { display: none; }
+.print-recipe { break-before: page; }
+.print-recipe:first-child { break-before: auto; }
+.print-recipe__title { margin: 0; padding: 18px 20px 8px; font-size: 22px; }
+.print-guide { margin-top: 12px; padding: 12px 14px; border-left: 4px solid var(--accent); border-radius: 6px; background: #292615; color: var(--text); }
+.print-guide h3 { margin: 0 0 5px; font-size: 13px; color: var(--accent); }
+.print-guide p { margin: 0; font-size: 12px; }
+@media print {
+  @page { margin: 12mm; }
+  :root { --bg: #fff; --panel: #fff; --line: #b9bec8; --text: #111318; --muted: #454b55; --accent: #7b5700; }
+  body { background: #fff; color: #111318; font-size: 10pt; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .screen-report { display: none !important; }
+  .print-report { display: block; }
+  .print-recipe { break-before: page; }
+  .print-recipe:first-child { break-before: auto; }
+  .print-recipe section { padding: 8px 0; }
+  .print-recipe header { padding: 0 0 8px; }
+  .print-recipe .panel { break-inside: avoid; border-color: #888; }
+  .print-recipe .grid2 { grid-template-columns: 1fr; }
+  .print-recipe .recipe-controls { display: none !important; }
+  .print-recipe .tablewrap { max-height: none; overflow: visible; }
+  .print-recipe th { position: static; background: #e7e9ed; }
+  .print-recipe th:last-child, .print-recipe td:last-child { display: none; }
+  .print-recipe svg { max-height: 185mm; }
+  .print-recipe img.print-canvas { max-width: 100%; height: auto; image-rendering: pixelated; }
+  .print-guide { break-inside: avoid; background: #fff8dc; border: 1px solid #b8952f; border-left-width: 4px; color: #111318; }
+  .print-guide h3 { color: #6c4b00; }
+  a { color: #5b4300; text-decoration: underline; }
+}
 </style>
 </head>
 <body>
+<div class="screen-report" id="screenReport">
 <header>
   <h1>ghostyle-fuzz report</h1>
-  <p class="sub">Random Ghostyles swept over the pose atlas of one video. Every distance is face-api's, measured in this lab with its own models; "escaped" means escaped <i>this</i> detector on <i>this</i> face, not protection against other systems.</p>
+  <p class="sub">Random Ghostyles swept over the pose atlas of one video. Every distance is face-api's, measured in this lab with its own models; "escaped" means escaped <i>this</i> detector on <i>this</i> face, not protection against other systems. <a href="https://ghostmaxxing.vecna.eu/docs/guides/localfuzzer-report.html">How to read this report</a>.</p>
   <div class="facts" id="facts"></div>
 </header>
 
 <section>
-  <div class="controls">
+  <div class="controls recipe-controls">
     Recipe <select id="recipe"></select>
     <label><input type="checkbox" id="showPruned"> include pruned trials</label>
     <span id="counts"></span>
@@ -156,6 +186,9 @@ a { color: var(--accent); }
   </div>
 </section>
 
+</div>
+<div class="print-report" id="printReport" aria-label="Printable report with every recipe"></div>
+
 <script type="application/json" id="data">${escapeJson(data)}</script>
 <script>
 (() => {
@@ -165,6 +198,17 @@ const TH = DATA.threshold;
 const NS = 'http://www.w3.org/2000/svg';
 const COMPARE_COLOURS = ['#ffd166', '#8fb3ff', '#ff8fab', '#7ae582'];
 const state = { recipe: null, showPruned: false, sort: 'escapeRate', selected: null, compare: new Set() };
+
+const PRINT_GUIDANCE = {
+  scatter: ['1 · Two criteria', 'Each point is one trial. Escape rate is the share of clean poses that escaped; worst case is the smallest measured dAtlas in that trial. Higher and farther right are stronger in this test. The gold Pareto front contains trials that no other trial beats on both numbers.'],
+  board: ['2 · Leaderboard', 'Read escape as lost + descr. Lost means the detector returned no face; descr means it found a face but the descriptor was at or beyond the identity threshold from every clean pose. Worst is the smallest dAtlas, margin is the typical distance above or below the threshold, and coverage is the share of the face oval painted.'],
+  thumb: ['3 · Trial', 'This is the selected trial: its seed makes the random design reproducible with the same atlas and recipe. The preview, palette, coverage, crossed regions and command describe the input; the scores describe only this face, video, model and threshold.'],
+  profile: ['Evasion profile', 'Each mark is one clean pose placed at its video time. dAtlas is the distance to the nearest clean pose and dPair is the distance to the same frame. Values at or above the threshold escape identity matching; a triangle means no face was detected, so no distance exists. The grey band is ordinary clean-pose drift.'],
+  posemap: ['Pose map', 'Each cell is one yaw × pitch bin. Red is below the identity threshold, teal is at or above it, × means the detector lost the face, and grey means the pose was visible to MediaPipe but face-api could not recognise it cleanly, so the fuzzer cannot score it.'],
+  matrix: ['4 · Fuzz matrix', 'Rows are trials and columns are clean pose imprints. Colour uses the same dAtlas scale as the pose map. Bright teal rows are broadly successful trials; persistent red columns are poses that defeat many designs. A missing or grey cell is not evidence of escape.'],
+  features: ['5 · What matters', 'Each point is one complete trial, comparing a design property with an outcome. Pearson r ranges from −1 to +1 and describes linear co-movement in this recipe only. It does not establish that the property caused the result; small samples and clustered points make r unstable.'],
+  compare: ['6 · Compare', 'The lines place up to four trials on the same video timeline. Compare where their dAtlas profiles cross the threshold and where detection is lost. This view compares designs inside one atlas; headline escape rates from atlases with different pose ranges or numbers of imprints are not directly comparable.'],
+};
 
 const fmt = (v, d = 3) => (v === null || v === undefined || Number.isNaN(v) ? '—' : Number(v).toFixed(d));
 const pct = (v) => (v === null || v === undefined ? '—' : (100 * v).toFixed(1) + '%');
@@ -522,6 +566,80 @@ function renderCompare() {
   box.appendChild(legend);
 }
 
+// ---- print: every recipe, with the reading guide once ----------------------
+function printGuide(title, copy) {
+  const note = document.createElement('aside');
+  note.className = 'print-guide';
+  const heading = document.createElement('h3');
+  heading.textContent = title;
+  const body = document.createElement('p');
+  body.textContent = copy;
+  note.append(heading, body);
+  return note;
+}
+
+function attachPrintGuidance(copy) {
+  for (const [id, [title, body]] of Object.entries(PRINT_GUIDANCE)) {
+    const visual = copy.querySelector('#' + id);
+    if (!visual) continue;
+    let after = visual;
+    if (id === 'board') after = visual.closest('.tablewrap') || visual;
+    if (id === 'thumb') after = copy.querySelector('#files') || visual;
+    after.insertAdjacentElement('afterend', printGuide(title, body));
+  }
+}
+
+function buildPrintReport() {
+  const target = document.getElementById('printReport');
+  const saved = {
+    recipe: state.recipe,
+    showPruned: state.showPruned,
+    selected: state.selected,
+    compare: new Set(state.compare),
+  };
+  target.innerHTML = '';
+
+  recipes.forEach((recipe, index) => {
+    state.recipe = recipe;
+    state.showPruned = false;
+    state.selected = null;
+    state.compare = new Set(visibleTrials().slice().sort(sorters.escapeRate).slice(0, 4));
+    recipeSel.value = recipe;
+    renderAll();
+
+    const source = document.getElementById('screenReport');
+    const copy = source.cloneNode(true);
+    copy.removeAttribute('id');
+    copy.className = 'print-recipe';
+    if (index > 0) copy.querySelector('header')?.remove();
+
+    const title = document.createElement('h1');
+    title.className = 'print-recipe__title';
+    title.textContent = 'Recipe ' + (index + 1) + ' of ' + recipes.length + ' · ' + recipe;
+    const firstSection = copy.querySelector('section');
+    copy.insertBefore(title, firstSection || copy.firstChild);
+
+    const sourceCanvases = source.querySelectorAll('canvas');
+    copy.querySelectorAll('canvas').forEach((canvas, canvasIndex) => {
+      const image = document.createElement('img');
+      image.className = 'print-canvas';
+      image.alt = 'Fuzz matrix for ' + recipe;
+      image.src = sourceCanvases[canvasIndex].toDataURL('image/png');
+      canvas.replaceWith(image);
+    });
+    if (index === 0) attachPrintGuidance(copy);
+    copy.querySelectorAll('[id]').forEach((node) => node.removeAttribute('id'));
+    target.appendChild(copy);
+  });
+
+  state.recipe = saved.recipe;
+  state.showPruned = saved.showPruned;
+  state.selected = saved.selected;
+  state.compare = saved.compare;
+  recipeSel.value = saved.recipe;
+  renderAll();
+}
+
 // ---- wiring ----------------------------------------------------------------
 function select(t) { state.selected = t; renderScatter(); renderBoard(); renderDetail(); }
 function renderAll() {
@@ -544,6 +662,7 @@ document.getElementById('matrixRows').addEventListener('change', renderMatrix);
 document.getElementById('matrixCols').addEventListener('change', renderMatrix);
 renderFacts();
 renderAll();
+window.addEventListener('beforeprint', buildPrintReport);
 })();
 </script>
 </body>

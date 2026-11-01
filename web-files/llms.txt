@@ -33,3 +33,5 @@ Licence: AGPL-3.0-or-later. Main Author: Claudio Agosti (https://me.vecna.eu). S
 - [Video loader](https://ghostmaxxing.vecna.eu/loader.html): Internal diagnostic that runs a local MP4 through the 2D and 3D engines for repeatable tests.
 - [Consent and ownership](https://ghostmaxxing.vecna.eu/docs/tutorials/consent-and-ownership/): The project's position on test imagery and consent — only submit imagery of people who agreed to it + data saved locally until explicit decision of sending it + production of an identification code to get back control of submitted material (which get shared in the fediverse).
 - [Test coverage report](https://ghostmaxxing.vecna.eu/coverage/): Generated unit-test coverage output.
+- [Run the Local Fuzzer](https://ghostmaxxing.vecna.eu/docs/guides/localfuzzer.html): Install Docker, record a controlled face-turn video, run a local fuzz job and download its outputs.
+- [Read a Local Fuzzer report](https://ghostmaxxing.vecna.eu/docs/guides/localfuzzer-report.html): Definitions, examples, visualization guide, print behaviour and conditions that change the reported numbers.

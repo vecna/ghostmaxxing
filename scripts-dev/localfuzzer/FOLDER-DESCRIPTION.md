@@ -4,7 +4,9 @@ The local fuzzer web service: `npm run localfuzzer` serves a page on
 http://127.0.0.1:11111 that wraps `scripts-dev/ghostyle-fuzz.cjs` (upload a
 video, pick a preset or edit every option of atlas/trial/report, queue, watch,
 download the Ghostyles). It is what the Docker image runs (`Dockerfile`,
-`docker/`). Documentation: `tutorials/localfuzzer-docker.md`.
+`docker/`). User documentation: `/docs/guides/localfuzzer.html` and
+`/docs/guides/localfuzzer-report.html`; image maintainer notes:
+`tutorials/localfuzzer-docker.md`.
 
 - `server.cjs` — zero-dependency HTTP server: uploads (checked with ffprobe),
   the job queue (one job at a time, resumed after a restart), the fuzzer as a

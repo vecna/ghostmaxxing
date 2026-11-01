@@ -1,0 +1,112 @@
+      <section class="content-page__header-area gm-prose" aria-labelledby="localfuzzer-title">
+        <span class="content-page__kicker">Functional guide · Local Fuzzer</span>
+        <h1 id="localfuzzer-title">Search many Ghostyles on your own video.</h1>
+        <p class="content-page__lead">Run the packaged fuzzer locally with Docker, upload one controlled face-turn video, and let it compare random Ghostyle recipes across the poses it can measure.</p>
+        <p class="content-page__deck">The video, biometric-derived descriptors, generated images, logs, and report stay in the local Docker data volume unless you deliberately copy or share them.</p>
+        <div class="content-page__actions">
+          <a class="docs-link docs-link--primary" href="#start">Start with Docker</a>
+          <a class="docs-link" href="/docs/guides/localfuzzer-report.html">How to read the report</a>
+        </div>
+      </section>
+
+      <div class="docs-reader">
+        <article class="docs-article gm-prose">
+          <section id="before">
+            <span class="docs-eyebrow">Before you start</span>
+            <h2>Install and start Docker</h2>
+            <p>The Local Fuzzer is distributed as a Linux container. Docker supplies Node, ffmpeg, a headless Chromium browser, the face models, recipes, and the web interface, so you do not have to install those parts separately.</p>
+            <table>
+              <thead><tr><th>Platform</th><th>Official installation guide</th><th>What “running” looks like</th></tr></thead>
+              <tbody>
+                <tr><td>macOS</td><td><a href="https://docs.docker.com/desktop/setup/install/mac-install/">Install Docker Desktop on Mac &#8599;</a></td><td>Docker Desktop is open and its status says the engine is running.</td></tr>
+                <tr><td>Windows</td><td><a href="https://docs.docker.com/desktop/setup/install/windows-install/">Install Docker Desktop on Windows &#8599;</a></td><td>Docker Desktop is open and its engine has finished starting.</td></tr>
+                <tr><td>Linux</td><td><a href="https://docs.docker.com/engine/install/">Install Docker Engine &#8599;</a></td><td>The Docker service is active and your account can run <code>docker</code>.</td></tr>
+              </tbody>
+            </table>
+            <p>Open Terminal, PowerShell, or your Linux shell and run <code>docker version</code>. Continue when it prints both a Client and Server section. If it prints only the client or cannot connect to the daemon, start Docker first.</p>
+          </section>
+
+          <section id="start">
+            <span class="docs-eyebrow">Start the service</span>
+            <h2>Pull once, then open the local page</h2>
+            <div class="docs-command"><code>docker pull ghcr.io/vecna/ghostmaxxing:latest</code></div>
+            <div class="docs-command"><code>docker run -d --name ghostmaxxing -p 127.0.0.1:11111:11111 --shm-size=1g --stop-timeout 120 -v ghostmaxxing-data:/data ghcr.io/vecna/ghostmaxxing:latest</code></div>
+            <p>When the command returns a container ID, open <a href="http://localhost:11111">http://localhost:11111</a> in a browser on the same computer. You should see the Ghostmaxxing Local Fuzzer page with an upload area, a preset selector, and no jobs yet.</p>
+            <div class="docs-note"><p><strong>Keep it local.</strong> The command binds the page to <code>127.0.0.1</code>. The service has no login and must not be exposed on <code>0.0.0.0</code> or a public network.</p></div>
+            <p>If you already created the container, use <code>docker start ghostmaxxing</code>. To watch its service log, use <code>docker logs -f ghostmaxxing</code>. To stop cleanly, use <code>docker stop ghostmaxxing</code>; an unfinished job resumes when the container starts again.</p>
+          </section>
+
+          <section id="video">
+            <span class="docs-eyebrow">Prepare the input</span>
+            <h2>Record one person turning slowly</h2>
+            <p>Use a 15–60 second video containing one consenting person. Keep the whole face large and sharp in the frame while the person turns slowly left and right, then looks slightly up and down. Return through the frontal pose. A phone video is suitable; MP4 is the simplest choice, and the container accepts other formats that ffmpeg can read.</p>
+            <ul>
+              <li>Use steady, even light and a simple background.</li>
+              <li>Keep camera distance, zoom, and orientation fixed.</li>
+              <li>Avoid fast motion, motion blur, cuts, filters, and other faces.</li>
+              <li>Do not begin with makeup if the clean video is intended to become the atlas.</li>
+              <li>Do not include more extreme poses than the clean face detector can recognise: unrecognised poses cannot be scored.</li>
+            </ul>
+            <div class="docs-warning"><p><strong>The video determines the experiment.</strong> A blurry, distant, dark, or narrow-pose clip changes the atlas and therefore changes every number in the report. It cannot be corrected by running more trials.</p></div>
+          </section>
+
+          <section id="run">
+            <span class="docs-eyebrow">Run a job</span>
+            <h2>Upload, choose a preset, and start</h2>
+            <div class="docs-step-list">
+              <div class="docs-step"><span class="docs-step__number">01</span><div><h3>Upload the video</h3><p>The page checks it with ffprobe. The upload is a copy into the local Docker data volume, not an internet upload.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">02</span><div><h3>Choose Quick first</h3><p>Quick uses coarser pose bins and fewer trials. Use it to check framing and runtime before committing hours to Standard or Deep.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">03</span><div><h3>Review the plan</h3><p>The page shows the exact atlas, trial, and report commands. Advanced settings change the pose atlas or individual recipe cells; changing either changes what the numbers mean.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">04</span><div><h3>Start and leave Docker running</h3><p>The job first builds a clean pose atlas, then sweeps each recipe. Jobs run one at a time. The estimate becomes more accurate after the first measured trials.</p></div></div>
+              <div class="docs-step"><span class="docs-step__number">05</span><div><h3>Inspect and download</h3><p>Open the full HTML report, download the selected Ghostyles and their images, or download logs for later analysis. Use <strong>Run again on this video</strong> to reuse an unchanged atlas.</p></div></div>
+            </div>
+            <p>A trial seed reproduces a design only with the same recipe and atlas conditions. Paired seeds keep stroke geometry aligned across compatible recipe cells and videos; the face, palette, pose atlas, and measured outcome can still differ.</p>
+          </section>
+
+          <section id="outputs">
+            <span class="docs-eyebrow">What you receive</span>
+            <h2>Report, Ghostyles, and evidence</h2>
+            <table>
+              <thead><tr><th>Output</th><th>Use</th><th>Sensitive content</th></tr></thead>
+              <tbody>
+                <tr><td>Full HTML report</td><td>Compare recipes and trials; print every recipe with the reading guide included under the first recipe.</td><td>Embeds an anchor image and detailed measurements.</td></tr>
+                <tr><td>Ghostyles archive</td><td>Generated <code>.js</code> modules, previews, pose sheets, CSV profiles, and report.</td><td>Contains face images and derived results.</td></tr>
+                <tr><td>Logs archive</td><td>Reproduce or audit the atlas and trials.</td><td>Contains descriptors, frames, configuration, and command history.</td></tr>
+              </tbody>
+            </table>
+            <p>Deleting a job removes its job folder from the Docker data volume. Removing the volume deletes every job. Downloaded copies remain wherever you saved them.</p>
+          </section>
+
+          <section id="problems">
+            <span class="docs-eyebrow">Troubleshooting</span>
+            <h2>Common startup and input problems</h2>
+            <table>
+              <thead><tr><th>What you see</th><th>What to check</th></tr></thead>
+              <tbody>
+                <tr><td>The local page does not open</td><td>Run <code>docker ps</code>, then <code>docker logs ghostmaxxing</code>. Confirm that Docker is running and port 11111 is free.</td></tr>
+                <tr><td>“name is already in use”</td><td>The container already exists. Run <code>docker start ghostmaxxing</code> instead of another <code>docker run</code>.</td></tr>
+                <tr><td>Chromium crashes during a long run</td><td>Confirm the container was created with <code>--shm-size=1g</code>.</td></tr>
+                <tr><td>Atlas fails or has few imprints</td><td>Use a larger, sharper face; steadier light; slower turns; and a visible frontal pose.</td></tr>
+                <tr><td>The computer becomes slow</td><td>The fuzzer is CPU-intensive. Let Quick finish first and allocate additional CPUs to Docker Desktop if appropriate.</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <nav class="docs-next" aria-label="Continue reading">
+            <a class="docs-link" href="/docs/">&#8592; Documentation home</a>
+            <a class="docs-link" href="/docs/guides/localfuzzer-report.html">Next: read the report &#8594;</a>
+          </nav>
+        </article>
+
+        <aside class="docs-toc">
+          <h2>On this page</h2>
+          <nav>
+            <a href="#before">Install Docker</a>
+            <a href="#start">Start the service</a>
+            <a href="#video">Record the video</a>
+            <a href="#run">Run a job</a>
+            <a href="#outputs">Outputs</a>
+            <a href="#problems">Troubleshooting</a>
+          </nav>
+        </aside>
+      </div>

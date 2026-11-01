@@ -21,8 +21,9 @@
  *                                             --recipe scripts-dev/ghostyle-fuzz/recipes/three-bands.json --trials 50
  *   node scripts-dev/ghostyle-fuzz.cjs report --atlas scratch/fuzz/my-moving-face/pose-atlas.json
  *
- * Documentation: tutorials/ghostyle-fuzz.md. Results describe face-api in
- * this lab only; they do not establish protection against other systems.
+ * Documentation: /docs/guides/localfuzzer.html and
+ * /docs/guides/localfuzzer-report.html. Results describe face-api in this lab
+ * only; they do not establish protection against other systems.
  *
  * History:
  *   1.0.0  2026-10-20  First version: atlas, trial, report.

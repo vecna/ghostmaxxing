@@ -79,7 +79,7 @@ function mediapipe(canvas) {
    return { mesh, pose };
 }
 
-/** Image cues used to check the pose signs (tutorials/ghostyle-fuzz.md §4.2). */
+/** Image cues used to check the documented pose-sign conventions. */
 function poseCues(meshPx) {
    const nose = meshPx[1];
    const left = meshPx[234];

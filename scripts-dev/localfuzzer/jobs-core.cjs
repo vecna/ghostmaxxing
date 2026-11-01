@@ -38,7 +38,7 @@ const DEFAULT_PRUNE_FACTOR = 0.8;
 const cell = (name, recipe, extra = {}) => ({ ...CELL_DEFAULTS, name, recipe, ...extra });
 
 /**
- * The cells of tutorials/ghostyle-fuzz-reading-the-numbers.md and run-samples.sh.
+ * The comparison cells used by the documented report method and run-samples.sh.
  * Every cell uses seed 1000 and paired seeds (or a forced colour), so seed N is
  * the same strokes in every three-bands cell, on every video, in every job:
  * `compare` can line jobs up design by design.

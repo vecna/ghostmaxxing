@@ -11,7 +11,7 @@
  * metric scale, anchor-to-UV baking, trial drawing, distances and scores, the
  * Ghostyle source generator and recipe validation.
  *
- * Documentation: tutorials/ghostyle-fuzz.md.
+ * Documentation: /docs/guides/localfuzzer-report.html.
  */
 
 export const CORE_VERSION = '1.1.0';
@@ -567,8 +567,8 @@ export function irisScale(meshPx) {
  * translation sits (the face is tens of cm in front of the camera, so the
  * z translation is the largest term). Euler order Z·Y·X.
  *
- * Sign conventions (fixed against tests/fixtures/my-moving-face.mp4, see
- * tutorials/ghostyle-fuzz.md): yaw > 0 when the nose points to the image's
+ * Sign conventions (fixed against tests/fixtures/my-moving-face.mp4): yaw > 0
+ * when the nose points to the image's
  * right; pitch > 0 when the chin goes up; roll > 0 when the head tilts
  * clockwise on screen.
  *

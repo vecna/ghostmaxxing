@@ -59,12 +59,12 @@ The source list and generation notes live in `images/social/cards-manifest.json`
 Every indexed page has exactly one parseable Schema.org JSON-LD block.
 
 - Homepage: `WebSite`, the author `Person`, and `SoftwareApplication`.
-- Lab and loader: `WebApplication` with vecna as author.
+- Lab, Video Analyser, Makeup Explorer: `WebApplication` with vecna as author.
 - About: `AboutPage`, the Ghostmaxxing `Project`, and vecna as author.
 - Projects, references and genealogy: `CollectionPage` and generated `ItemList`, with vecna as author.
 - Gallery: `CollectionPage` with an `ImageGallery`, vecna as author, and links to the gallery RSS feed and ActivityPub actor.
 - Functional and API documentation: `TechArticle`, with vecna as author.
-- Workshops: `CollectionPage`, with NINA as the responsible publisher or organizer. Vecna may remain credited as the project author.
+- Workshops: `CollectionPage`, with NINA as the responsible publisher or organizer.
 - Report: `WebPage` and `ContactPoint`, with NINA identified as operator of the separate GlobaLeaks submission service. Do not imply that Ghostmaxxing receives or operates submissions.
 - Other project pages: the closest accurate page type, with vecna as author.
 

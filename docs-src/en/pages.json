@@ -36,6 +36,20 @@
     "section": "tools"
   },
   {
+    "source": "localfuzzer.body.html",
+    "output": "docs/guides/localfuzzer.html",
+    "title": "Run the Local Fuzzer — Ghostmaxxing",
+    "description": "Install Docker, run the Ghostmaxxing Local Fuzzer on your computer, record a useful face-turn video, and download the results.",
+    "section": "tools"
+  },
+  {
+    "source": "localfuzzer-report.body.html",
+    "output": "docs/guides/localfuzzer-report.html",
+    "title": "How to read a Local Fuzzer report — Ghostmaxxing",
+    "description": "Interpret escape rate, detector loss, descriptor movement, pose maps, matrices, correlations, comparisons, and the limits of a Local Fuzzer report.",
+    "section": "understand"
+  },
+  {
     "source": "understand-results.body.html",
     "output": "docs/understand/index.html",
     "title": "Understand the results — Ghostmaxxing",

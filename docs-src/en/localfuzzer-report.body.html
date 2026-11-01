@@ -1,0 +1,153 @@
+      <section class="content-page__header-area gm-prose" aria-labelledby="fuzzer-report-title">
+        <span class="content-page__kicker">Local Fuzzer · Report guide</span>
+        <h1 id="fuzzer-report-title">Read the report as a conditional experiment.</h1>
+        <p class="content-page__lead">The report shows how random Ghostyle designs changed one face-api pipeline across the clean poses extracted from one video.</p>
+        <p class="content-page__deck">“Escaped” means that this local detector either lost the face or placed its descriptor at or beyond the report threshold. It does not mean anonymous, safe, or protected from another system.</p>
+        <div class="content-page__actions">
+          <a class="docs-link docs-link--primary" href="#numbers">Start with the numbers</a>
+          <a class="docs-link" href="/docs/guides/localfuzzer.html">Run the Local Fuzzer</a>
+        </div>
+      </section>
+
+      <div class="docs-reader">
+        <article class="docs-article gm-prose">
+          <section id="conditions">
+            <span class="docs-eyebrow">Read this first</span>
+            <h2>The conditions are part of every result</h2>
+            <p>Two reports can show different numbers even when they use the same recipe. The result changes with the person, video, pose range, light, blur, face size, clean detection confidence, number of atlas imprints, model files, threshold, recipe settings, random seed, pruning, and inference backend.</p>
+            <table>
+              <thead><tr><th>Condition</th><th>How it changes the report</th></tr></thead>
+              <tbody>
+                <tr><td>Face size and sharpness</td><td>A large, crisp face gives the recognition model more texture. A small or blurred face may make detector loss easier while limiting measurable descriptor movement.</td></tr>
+                <tr><td>Pose range</td><td>More extreme poses add fragile views. Poses that face-api cannot recognise cleanly are grey and cannot be scored.</td></tr>
+                <tr><td>Number of imprints</td><td><code>dAtlas</code> uses the nearest clean descriptor. A denser atlas gives a modified face more clean poses it might still match, so headline escape rates from differently sized atlases are not directly comparable.</td></tr>
+                <tr><td>Threshold</td><td>A row escapes identity comparison when <code>dAtlas</code> is at or above the threshold. Moving the threshold can change escape, descriptor, worst-case, and margin values without changing an image.</td></tr>
+                <tr><td>Recipe and seed</td><td>The recipe defines the family of shapes, colours, opacity, zones, and constraints. The seed selects one random design inside that family.</td></tr>
+                <tr><td>Pruning</td><td>A pruned trial was stopped after a subset of poses. It remains useful as search history but is not a complete sweep and should not be compared as though every imprint was measured.</td></tr>
+                <tr><td>Backend and model revision</td><td>GPU and software rendering, browser revisions, and different model files can shift landmarks or descriptors. Compare runs made under the same environment and check control drift.</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="numbers">
+            <span class="docs-eyebrow">Core quantities</span>
+            <h2>Distance is not a percentage</h2>
+            <table>
+              <thead><tr><th>Number</th><th>Definition</th><th>How to read it</th></tr></thead>
+              <tbody>
+                <tr><td><code>dPair</code></td><td>Distance from the modified imprint to the clean descriptor of that same frame.</td><td>How far the overlay moved this exact pose.</td></tr>
+                <tr><td><code>dAtlas</code></td><td>Smallest distance from the modified imprint to any clean descriptor in the atlas.</td><td>The stricter identity result. It is never greater than <code>dPair</code>.</td></tr>
+                <tr><td><code>escape rate</code></td><td>Share of measured imprints where the face was lost or <code>dAtlas</code> reached the threshold.</td><td>Pose coverage within this video, not protection probability.</td></tr>
+                <tr><td><code>lost rate</code></td><td>Share where no face was found even by the weak detection pass.</td><td>Detector failure. No identity distance exists for these rows.</td></tr>
+                <tr><td><code>descriptor escape</code></td><td>Share where a face was found but <code>dAtlas</code> reached the threshold.</td><td>Measured identity movement. <code>escape = lost + descriptor</code>.</td></tr>
+                <tr><td><code>descriptor | detected</code></td><td>Descriptor escapes divided only by rows where a face was detected.</td><td>How often identity moved when the detector still saw a face.</td></tr>
+                <tr><td><code>worst case</code></td><td>Smallest available <code>dAtlas</code> in the trial.</td><td>The easiest pose for this atlas to recognise. One recognised frame may be enough for a camera sequence.</td></tr>
+                <tr><td><code>median margin</code></td><td>Median of <code>dAtlas − threshold</code> over rows with distances.</td><td>Positive is typically beyond the line; negative is typically within it. It is not reported meaningfully when most rows are lost.</td></tr>
+                <tr><td><code>coverage</code></td><td>Share of the anchor face oval beneath at least one stroke.</td><td>Painted area, not efficacy.</td></tr>
+              </tbody>
+            </table>
+            <div class="docs-report-example">
+              <span class="docs-report-example__label">Worked example · illustrative values</span>
+              <p><strong>escape 42% = lost 18% + descriptor 24%</strong></p>
+              <p>Across 50 clean poses, about 21 escaped: 9 because no face was detected and 12 because a detected descriptor crossed the threshold. If <code>descriptor | detected</code> is 29%, that means 12 of the 41 detected rows moved beyond the threshold. A <code>worst case</code> of 0.31 still leaves at least one readily recognisable pose when the threshold is 0.60.</p>
+            </div>
+          </section>
+
+          <section id="header-summary">
+            <span class="docs-eyebrow">Before the charts</span>
+            <h2>Read the atlas facts and recipe summary</h2>
+            <p>The header identifies the source video, frame size, frame rate, duration, clean imprints, pose gaps, skin swatch, threshold, and number of runs. The recipe summary then reports complete sweeps, mean escape split into detector loss and descriptor movement, conditional descriptor movement, and mean coverage.</p>
+            <p>Do not start with the largest escape number. First check whether the atlas is sharp and broad enough for the question, how much of escape is detector loss, and whether all recipes used the same atlas and threshold.</p>
+          </section>
+
+          <section id="two-criteria">
+            <span class="docs-eyebrow">Report view</span>
+            <h2>1 · Two criteria</h2>
+            <p>Each point is one trial. Escape rate is the share of clean poses that escaped; worst case is the smallest measured dAtlas in that trial. Higher and farther right are stronger in this test. The gold Pareto front contains trials that no other trial beats on both numbers.</p>
+            <div class="docs-report-example"><span class="docs-report-example__label">Example</span><p>A trial at 80% escape and 0.22 worst case covers many poses but still has an easy recognised pose. A trial at 55% and 0.51 covers fewer poses but has no equally easy failure. Neither automatically dominates the other.</p></div>
+          </section>
+
+          <section id="leaderboard">
+            <span class="docs-eyebrow">Report view</span>
+            <h2>2 · Leaderboard</h2>
+            <p>Read escape as lost + descr. Lost means the detector returned no face; descr means it found a face but the descriptor was at or beyond the identity threshold from every clean pose. Worst is the smallest dAtlas, margin is the typical distance above or below the threshold, and coverage is the share of the face oval painted.</p>
+            <p>A Pareto badge marks a non-dominated trial. Sorting is a way to ask a question, not a universal ranking: sort by descriptor movement when identity change matters, by lost rate when studying detector fragility, or by worst case when looking for designs without one obvious recognised pose.</p>
+          </section>
+
+          <section id="trial">
+            <span class="docs-eyebrow">Report view</span>
+            <h2>3 · Trial</h2>
+            <p>This is the selected trial: its seed makes the random design reproducible with the same atlas and recipe. The preview, palette, coverage, crossed regions and command describe the input; the scores describe only this face, video, model and threshold.</p>
+            <p>A materialised trial links to its Ghostyle module, per-pose CSV, and pose sheet. The anchor preview is not the result by itself; read it together with the evasion profile and pose map.</p>
+
+            <h3 id="profile">Evasion profile</h3>
+            <p>Each mark is one clean pose placed at its video time. dAtlas is the distance to the nearest clean pose and dPair is the distance to the same frame. Values at or above the threshold escape identity matching; a triangle means no face was detected, so no distance exists. The grey band is ordinary clean-pose drift.</p>
+            <p>When <code>dPair</code> crosses the line but <code>dAtlas</code> does not, the overlay moved away from its own clean frame but remained close to another clean pose in the atlas. This is why denser atlases can produce lower escape rates.</p>
+
+            <h3 id="pose-map">Pose map</h3>
+            <p>Each cell is one yaw × pitch bin. Red is below the identity threshold, teal is at or above it, × means the detector lost the face, and grey means the pose was visible to MediaPipe but face-api could not recognise it cleanly, so the fuzzer cannot score it.</p>
+            <p>Look for contiguous regions rather than one isolated teal cell. A design that works only at a single extreme pose is less repeatable than one that changes neighbouring frontal and turned poses.</p>
+          </section>
+
+          <section id="matrix">
+            <span class="docs-eyebrow">Report view</span>
+            <h2>4 · Fuzz matrix</h2>
+            <p>Rows are trials and columns are clean pose imprints. Colour uses the same dAtlas scale as the pose map. Bright teal rows are broadly successful trials; persistent red columns are poses that defeat many designs. A missing or grey cell is not evidence of escape.</p>
+            <p>A vertical red band suggests a hard pose or an atlas imprint that is insensitive to the recipe. A teal row suggests a broadly effective trial within this atlas. Re-sort rows by escape rate or worst case and columns by yaw or time to see whether the structure follows design, pose, or recording order.</p>
+          </section>
+
+          <section id="what-matters">
+            <span class="docs-eyebrow">Report view</span>
+            <h2>5 · What matters</h2>
+            <p>Each point is one complete trial, comparing a design property with an outcome. Pearson r ranges from −1 to +1 and describes linear co-movement in this recipe only. It does not establish that the property caused the result; small samples and clustered points make r unstable.</p>
+            <div class="docs-report-example"><span class="docs-report-example__label">Example</span><p><code>r = 0.48, n = 80</code> for eye coverage against lost rate means trials with more painted eye area tended to lose detection more often in these 80 complete trials. It does not prove that eye coverage caused the loss or that the relation transfers to another face or recipe.</p></div>
+          </section>
+
+          <section id="compare">
+            <span class="docs-eyebrow">Report view</span>
+            <h2>6 · Compare</h2>
+            <p>The lines place up to four trials on the same video timeline. Compare where their dAtlas profiles cross the threshold and where detection is lost. This view compares designs inside one atlas; headline escape rates from atlases with different pose ranges or numbers of imprints are not directly comparable.</p>
+            <p>For several videos, use the Local Fuzzer’s <strong>Compare selected</strong> result. Prefer paired seeds and inspect the same design face by face, together with scale, sharpness, clean score, noise floor, pose range, and unrecognised bins.</p>
+          </section>
+
+          <section id="print">
+            <span class="docs-eyebrow">PDF and paper</span>
+            <h2>The printed report expands every recipe</h2>
+            <p>In a browser, the report menu switches between recipes and links back to this guide. When printed or saved as PDF, the interactive menu is removed and every recipe is rendered in sequence. The explanatory boxes from this page appear below the visualizations of the first recipe only; scroll back to that first recipe when reading later recipes.</p>
+            <p>Enable background graphics in the browser’s print dialog if you want the red–teal scales to retain their full visual distinction. The labels and numeric values remain the authoritative reading.</p>
+          </section>
+
+          <section id="limits">
+            <span class="docs-eyebrow">Limits</span>
+            <h2>What the report cannot establish</h2>
+            <ul>
+              <li>It does not test a named commercial or public-space recognition system.</li>
+              <li>It does not establish transfer to another person, camera, distance, light, model, or future frame.</li>
+              <li>It cannot score poses that face-api did not recognise cleanly.</li>
+              <li>It does not measure human recognition, liveness checks, gait, body tracking, or other biometric signals.</li>
+              <li>A high detector-lost rate and a high descriptor-escape rate are different mechanisms and should not be collapsed into one claim.</li>
+            </ul>
+          </section>
+
+          <nav class="docs-next" aria-label="Continue reading">
+            <a class="docs-link" href="/docs/guides/localfuzzer.html">&#8592; Run the Local Fuzzer</a>
+            <a class="docs-link" href="/docs/understand/">Understand the Browser Lab &#8594;</a>
+          </nav>
+        </article>
+
+        <aside class="docs-toc">
+          <h2>On this page</h2>
+          <nav>
+            <a href="#conditions">Conditions</a>
+            <a href="#numbers">Core numbers</a>
+            <a href="#two-criteria">Two criteria</a>
+            <a href="#leaderboard">Leaderboard</a>
+            <a href="#trial">Trial and pose views</a>
+            <a href="#matrix">Fuzz matrix</a>
+            <a href="#what-matters">What matters</a>
+            <a href="#compare">Compare</a>
+            <a href="#print">Printing</a>
+            <a href="#limits">Limits</a>
+          </nav>
+        </aside>
+      </div>

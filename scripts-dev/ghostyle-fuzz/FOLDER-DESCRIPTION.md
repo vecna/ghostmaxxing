@@ -1,8 +1,8 @@
 # scripts-dev/ghostyle-fuzz
 
 Support files of `scripts-dev/ghostyle-fuzz.cjs`, the random-trial search for
-Ghostyles over the head poses of one video. Documentation:
-`tutorials/ghostyle-fuzz.md`.
+Ghostyles over the head poses of one video. User documentation:
+`/docs/guides/localfuzzer.html` and `/docs/guides/localfuzzer-report.html`.
 
 - `fuzz-core.mjs` — pure helpers shared by the browser and Node, no DOM and no
   models: seeded RNG, CIELAB and CIEDE2000, the xterm-256 palette pool and
@@ -23,7 +23,7 @@ Ghostyles over the head poses of one video. Documentation:
   `six-thin-lines`, `ten-hairlines`, `two-patches`), opacity and colour
   (`three-bands-opaque`, `-any-colour`, `-perceptual`, `-white`, `-black`),
   placement (`three-bands-no-overlap`, `nose-bands`, `eye-bands`,
-  `no-eyes-bands`, `forehead-cheeks-lines`). See tutorials/ghostyle-fuzz.md §4.1.
+  `no-eyes-bands`, `forehead-cheeks-lines`).
 - `run-samples.sh` — builds the atlases of several videos under one root and
   runs a small matrix of recipes and options on each with paired seeds, then
   `report` and `compare`; packs the logs for sharing.

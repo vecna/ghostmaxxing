@@ -503,7 +503,7 @@ function ghostylesReadme(job) {
       '',
       'Trying a Ghostyle in the lab: copy the .js into ghostyles/ of a ghostmaxxing checkout, add an entry to',
       'ghostyles.json, and check it with `npm run validate-plugin -- ghostyles/<file>.js`',
-      '(see tutorials/ghostyle-fuzz.md §7.1 and tutorials/ghostyle-authoring.md).',
+      '(see https://ghostmaxxing.vecna.eu/docs/guides/localfuzzer-report.html and tutorials/ghostyle-authoring.md).',
       '',
       'escape = lost + descriptor: "lost" is the share of poses where the detector found no face, "descriptor" the',
       'share where a face was found but its descriptor is ≥ 0.6 from every clean pose (the identity moved).',
