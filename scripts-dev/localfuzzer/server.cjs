@@ -35,7 +35,7 @@ const { spawn, spawnSync } = require('node:child_process');
 const { pathToFileURL } = require('node:url');
 const lf = require('./jobs-core.cjs');
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 const ROOT = path.resolve(__dirname, '..', '..');
 const FUZZ_CLI = path.join(ROOT, 'scripts-dev', 'ghostyle-fuzz.cjs');
 const RECIPES_DIR = path.join(ROOT, 'scripts-dev', 'ghostyle-fuzz', 'recipes');

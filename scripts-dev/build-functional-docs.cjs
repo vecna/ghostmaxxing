@@ -16,8 +16,8 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..');
 const SOURCE_ROOT = path.join(ROOT, 'docs-src', 'en');
 const PAGE_INDEX = path.join(SOURCE_ROOT, 'pages.json');
-const PROJECT_VERSION = '1.0.0';
-const LAST_UPDATED = '15 October 2026';
+const PROJECT_VERSION = '1.1.0';
+const LAST_UPDATED = '1 November 2026';
 const SITE_URL = 'https://ghostmaxxing.vecna.eu';
 const SOCIAL_IMAGE = `${SITE_URL}/images/social/ghostmaxxing-generic.jpg`;
 

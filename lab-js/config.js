@@ -127,4 +127,4 @@ export const RECORDING_CONFIG = {
 };
 
 export const UPLOAD_CONSENT_VERSION = '2026-07-v1';
-export const APP_VERSION = '1.0.0';
+export const APP_VERSION = '1.1.0';

@@ -1,6 +1,6 @@
 # Development and maintenance scripts
 
-Version 1.0.0 · 15 October 2026
+Version 1.1.0 · 1 November 2026
 
 This guide describes development and maintenance scripts, together with the relevant commands in `package.json`.
 
@@ -309,7 +309,7 @@ Example for a local test endpoint; substitute the endpoint, fixture path and ver
 UPLOAD_ENDPOINT='http://localhost:3000/api/uploads' \
 CLIP_PATH='./tmp/test-clip.mp4' \
 CONSENT_VERSION='2026-07-v1' \
-APP_VERSION='1.0.0' \
+APP_VERSION='1.1.0' \
 node scripts-dev/test-upload-consent-post.cjs
 ```
 

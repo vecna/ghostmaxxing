@@ -27,6 +27,7 @@
  *   node scripts-dev/lab-capture.cjs shots   --baseline clean.jpg --dazzled painted.jpg
  *
  * History:
+ *   1.1.0  2026-11-01  Uses the repository's zero-dependency static server.
  *   1.0.0  2026-10-15  Stable release.
  *   0.8    2026-09-07  measure/shots/probe over the figureN Y4M fixtures.
  *   0.9    2026-09-15  render added for the homepage story cards.
@@ -52,7 +53,7 @@ const { spawnSync } = require('node:child_process');
 const { startStaticServer } = require('./static-server.cjs');
 const { chromium } = require('@playwright/test');
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 
 /**
  * render's browser window. 4:3, like the fake webcam frame, so the feed fills

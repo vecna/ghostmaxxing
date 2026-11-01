@@ -2,8 +2,8 @@ cff-version: 1.2.0
 title: "Ghostmaxxing: a browser-side lab for testing face-recognition camouflage"
 message: "If you use this software or reference it in research, please cite it."
 type: software
-version: 1.0.0
-date-released: 2026-10-15
+version: 1.1.0
+date-released: 2026-11-01
 authors:
   - name: "Claudio Agosti (me.vecna.eu)"
 repository-code: "https://github.com/vecna/ghostmaxxing"

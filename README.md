@@ -8,7 +8,7 @@
 [![Source](https://img.shields.io/badge/source-GitHub-black)](https://github.com/vecna/ghostmaxxing)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue)](#license)
 
-**Release:** 1.0.0 · 15 October 2026
+**Release:** 1.1.0 · 1 November 2026
 
 **Ghostmaxxing** is a static, browser-side lab and an optional Docker-packaged
 local fuzzer for testing face-recognition camouflage. Point a webcam at your
@@ -166,6 +166,25 @@ maintenance notes live in [`references/NOTES.md`](references/NOTES.md);
 Both datasets also feed [`genealogy.html`](genealogy.html): every reference and
 every project is drawn at its year, in the row its `target` tags select. Run
 `npm run update:genealogy` after editing either file.
+
+## CHANGELOG
+
+### 1.1.0 (1 November 2026)
+
+- Added the Docker-packaged Local Fuzzer, its browser interface, reproducible
+  Ghostyle search recipes, comparison workflow, and detailed HTML reports.
+- Added two measured, generated Ghostyles and expanded the fuzzer documentation
+  with guidance for interpreting scores, pose coverage, and limitations.
+- Reworked site navigation and project attribution, clarified the boundary
+  between Ghostmaxxing and NINA's Ghòstati! initiative, and fixed the homepage
+  carousel.
+- Moved the supported runtime to Node.js 24, reduced dependencies, refreshed CI
+  and Docker workflows, and expanded the generated code map.
+
+### 1.0.0 (15 October 2026)
+
+- Published the first stable release of the browser lab, documentation,
+  Ghostyle interface, reference archive, and local analysis tools.
 
 ## Provenance
 

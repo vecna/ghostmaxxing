@@ -14,7 +14,7 @@
  * @example node scripts-dev/static-server.cjs
  * @example node scripts-dev/static-server.cjs --port 8080 --open /lab.html
  * @example node scripts-dev/static-server.cjs --host 0.0.0.0   # reachable from the LAN (phones)
- * @version 1.0.0
+ * @version 1.1.0
  */
 'use strict';
 
@@ -23,7 +23,7 @@ const http = require('node:http');
 const path = require('node:path');
 const { spawn } = require('node:child_process');
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 const ROOT = path.resolve(__dirname, '..');
 
 const MIME = {
