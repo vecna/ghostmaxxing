@@ -5,6 +5,7 @@
   { "id": "cv-dazzle-1", "url": "ghostyles/cv-dazzle-1.js" },
   { "id": "soft-contour", "url": "ghostyles/soft-contour.js" },
   { "id": "uv-stripes", "url": "ghostyles/uv-stripes.js" },
-  { "id": "seed-1044-d", "url": "ghostyles/d-100-fuzz-1044.js" },
-  { "id": "seed-1068-d", "url": "ghostyles/ghostyle-fuzz-1068.js" }
+  { "id": "seed-1028-l", "url": "ghostyles/l6-fuzz-1028.js" },
+  { "id": "seed-1044-d", "url": "ghostyles/d3-fuzz-1044.js" },
+  { "id": "seed-1068-h", "url": "ghostyles/h6-fuzz-1068.js" }
 ]
