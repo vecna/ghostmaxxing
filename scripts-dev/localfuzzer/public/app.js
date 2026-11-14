@@ -6,6 +6,7 @@ const $ = (id) => document.getElementById(id);
 const state = {
    info: null, upload: null, fromJob: null, preset: 'quick', plan: null,
    jobs: [], selected: new Set(), detailId: null, logFrom: 0, previewTimer: null, previewSeq: 0,
+   shareSelected: new Set(),
 };
 
 // ---- helpers -------------------------------------------------------------
@@ -366,6 +367,7 @@ async function compare() {
 // ---- 3. detail ---------------------------------------------------------------
 
 function openDetail(id) {
+   if (state.detailId !== id) state.shareSelected.clear();
    state.detailId = id; state.logFrom = 0;
    $('log').textContent = '';
    $('detail').hidden = false;
@@ -378,6 +380,77 @@ function closeDetail() { state.detailId = null; $('detail').hidden = true; rende
 function splitBar(s) {
    return h('span', { class: 'split', title: `${pct(s.lostRate, 1)} lost + ${pct(s.descriptorEscape, 1)} identity moved` },
       h('i', { class: 'l', style: `width:${100 * (s.lostRate || 0)}%` }), h('i', { class: 'd', style: `width:${100 * (s.descriptorEscape || 0)}%` }));
+}
+
+const ghostyleKey = (item) => `${item.recipeId}::${item.seed}`;
+const selectedGhostyles = () => [...state.shareSelected].map((key) => {
+   const split = key.lastIndexOf('::');
+   return { recipeId: key.slice(0, split), seed: Number(key.slice(split + 2)) };
+});
+
+function saveJson(name, value) {
+   const blob = new Blob([`${JSON.stringify(value, null, 2)}\n`], { type: 'application/json' });
+   const url = URL.createObjectURL(blob);
+   const link = h('a', { href: url, download: name });
+   document.body.append(link); link.click(); link.remove();
+   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function shareBody(consent = false) {
+   return {
+      subjectCode: $('feedbackCode').value,
+      feedback: $('feedbackText').value,
+      selectedGhostyles: selectedGhostyles(),
+      consent,
+      consentVersion: state.info.feedback.consentVersion,
+   };
+}
+
+async function downloadFeedback(job) {
+   const status = $('feedbackStatus');
+   status.textContent = 'preparing the anonymous package…';
+   try {
+      const payload = await api('POST', `/api/jobs/${job.id}/feedback-package`, shareBody(false));
+      saveJson(`ghostmaxxing-fuzzer-feedback-${new Date().toISOString().slice(0, 10)}.json`, payload);
+      status.textContent = `Downloaded: ${payload.attempts.total} attempts, ${payload.recipes.length} complete recipe definition(s), ${payload.selectedGhostyles.length} selected Ghostyle(s).`;
+   } catch (error) { status.textContent = `Could not build the package: ${error.message}`; }
+}
+
+async function sendFeedback(job) {
+   const status = $('feedbackStatus');
+   if (!$('feedbackConsent').checked) { status.textContent = 'Tick the consent box before sending.'; return; }
+   const button = $('feedbackSend');
+   button.disabled = true; status.textContent = 'sending the anonymous package…';
+   try {
+      const receipt = await api('POST', `/api/jobs/${job.id}/feedback`, shareBody(true));
+      const savedReceipt = { submissionId: receipt.submissionId, deleteToken: receipt.deleteToken, endpoint: state.info.feedback.endpoint, createdAt: new Date().toISOString() };
+      let browserSaved = false;
+      try {
+         const saved = JSON.parse(localStorage.getItem('gstmxx-fuzzer-receipts') || '[]');
+         saved.push(savedReceipt);
+         localStorage.setItem('gstmxx-fuzzer-receipts', JSON.stringify(saved.slice(-20)));
+         browserSaved = true;
+      } catch { /* a private browser may block local storage; the download remains */ }
+      let downloaded = false;
+      try { saveJson(`ghostmaxxing-feedback-receipt-${receipt.submissionId}.json`, savedReceipt); downloaded = true; } catch { /* show the ID below */ }
+      status.textContent = `Received as ${receipt.submissionId}. The deletion receipt was ${downloaded ? 'downloaded' : 'returned'}${browserSaved ? ' and saved in this browser' : ''}; keep it.${!downloaded && !browserSaved ? ` Delete token: ${receipt.deleteToken}` : ''}`;
+   } catch (error) { status.textContent = `Submission failed: ${error.message}`; }
+   finally { button.disabled = false; }
+}
+
+function feedbackPanel(job) {
+   const selectedCount = state.shareSelected.size;
+   return h('section', { class: 'feedback-box' },
+      h('h3', {}, 'Help test the beta — optional anonymous results'),
+      h('p', { class: 'small' }, 'The package contains attempt counts, aggregate scores, runtime details, the complete definitions (and hashes) of bundled or custom recipes, and only the Ghostyle modules you select above. It does not contain the video, face images, descriptors, skin-colour measurements, file names, job name, paths, logs or pose-by-pose data.'),
+      h('label', { class: 'field' }, 'Participant code (optional; an initial is enough)', h('input', { type: 'text', id: 'feedbackCode', maxlength: 32, placeholder: 'for example: D' })),
+      h('label', { class: 'field feedback-comment' }, 'What was clear or confusing? (optional)', h('textarea', { id: 'feedbackText', maxlength: 4000, rows: 4, placeholder: 'What did you expect? Where did you get stuck?' })),
+      h('p', { class: 'muted small' }, `${selectedCount} Ghostyle module(s) selected. The aggregate statistics and full recipe definitions are included even when none is selected.`),
+      h('label', { class: 'check consent' }, h('input', { type: 'checkbox', id: 'feedbackConsent' }), ` I choose to send this anonymous package to ${state.info.feedback.endpoint}. I understand that a deletion receipt will be downloaded.`),
+      h('div', { class: 'row' },
+         h('button', { type: 'button', onclick: () => downloadFeedback(job) }, 'Download package to inspect'),
+         h('button', { type: 'button', class: 'primary', id: 'feedbackSend', onclick: () => sendFeedback(job) }, 'Send anonymous results')),
+      h('p', { class: 'muted small feedback-status', id: 'feedbackStatus', 'aria-live': 'polite' }));
 }
 
 function renderDetail(job) {
@@ -412,11 +485,16 @@ function renderDetail(job) {
             h('div', { class: 'body' },
                h('b', {}, `escape ${pct(m.scores.escapeRate)}`), h('span', {}, splitBar(m.scores), `${pct(m.scores.lostRate)} lost + ${pct(m.scores.descriptorEscape)} identity`),
                h('span', { class: 'muted' }, `${m.recipeId} · seed ${m.seed}`), h('span', { class: 'muted' }, `face covered ${pct(m.coverage)} · worst ${m.scores.allLost ? 'all lost' : m.scores.worstCase}`),
+               h('label', { class: 'check share-pick' }, h('input', { type: 'checkbox', checked: state.shareSelected.has(ghostyleKey(m)), onchange: (event) => {
+                  if (event.target.checked) state.shareSelected.add(ghostyleKey(m)); else state.shareSelected.delete(ghostyleKey(m));
+                  if ($('feedbackStatus')) $('feedbackStatus').textContent = `${state.shareSelected.size} Ghostyle module(s) selected for the optional package.`;
+               } }), ' include this .js in optional feedback'),
                h('div', { class: 'links' },
                   h('a', { href: fileUrl(job, `${job.atlasDirName}/${m.files.ghostyle}`, true) }, 'Ghostyle .js'),
                   h('a', { href: fileUrl(job, `${job.atlasDirName}/${m.files.sheet}`), target: '_blank', rel: 'noopener' }, 'all poses'),
                   h('a', { href: fileUrl(job, `${job.atlasDirName}/${m.files.csv}`, true) }, 'CSV')))))));
       }
+      body.push(feedbackPanel(job));
    }
    body.push(h('details', { class: 'commands' }, h('summary', {}, 'Commands run by this job'), h('pre', {}, job.commands.join('\n'))));
    $('detailBody').replaceChildren(...body);

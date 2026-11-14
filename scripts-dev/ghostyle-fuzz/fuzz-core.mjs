@@ -1064,7 +1064,7 @@ export function buildGhostyleSource({ recipe, recipeId, seed, strokes, palette, 
       .map((s) => `   { colour: '${s.colour}', points: ${JSON.stringify(s.uvPolygon)} }`)
       .join(',\n');
    const comment = [
-      `atlas source : ${atlasSource || '-'}`,
+      `atlas source : ${atlasSource ? 'local video; filename withheld' : '-'}`,
       `recipe       : ${JSON.stringify(recipe)}`,
       `palette      : ${palette.colours.map((c) => `${c.hex} (${c.xterm === null ? `forced "${palette.forced}"` : `xterm ${c.xterm}`}, dL ${c.deltaL})`).join(', ')}`,
       `reproduce    : node scripts-dev/ghostyle-fuzz.cjs trial --atlas <pose-atlas.json> --recipe <recipe.json> --seed ${seed} --trials 1`,

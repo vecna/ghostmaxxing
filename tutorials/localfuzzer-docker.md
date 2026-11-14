@@ -192,6 +192,21 @@ The healthcheck calls `http://127.0.0.1:11111/api/info` inside the container.
 It proves the HTTP service responds; it does not prove Chromium, ffmpeg, or a
 full fuzz job works. That is the smoke test's role.
 
+## Anonymous beta feedback
+
+Completed jobs can build a privacy-allow-listed JSON package and, only after
+an explicit click and consent checkbox, POST it to
+`https://ghostmaxxing.vecna.eu/api/fuzzer-results`. Override the destination
+for staging with `LOCALFUZZER_FEEDBACK_URL`.
+
+The package builder lives in `scripts-dev/localfuzzer/feedback-core.cjs`. It
+contains aggregate atlas quality, attempts and scores, complete recipe
+definitions (including custom recipes), and explicitly selected Ghostyle
+sources. It must never gain video, frames, descriptors, skin measurements,
+file or job names, local paths, logs, or per-pose rows. Keep its privacy unit
+test next to any schema change. The intake returns a deletion token; the page
+downloads a receipt and also keeps the last receipts in local storage.
+
 ## Release checklist
 
 1. Run unit tests for fuzzer and local-service plan logic.

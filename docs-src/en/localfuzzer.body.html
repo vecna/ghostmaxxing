@@ -2,7 +2,7 @@
         <span class="content-page__kicker">Functional guide · Local Fuzzer</span>
         <h1 id="localfuzzer-title">Search many Ghostyles on your own video.</h1>
         <p class="content-page__lead">Run the packaged fuzzer locally with Docker, upload one controlled face-turn video, and let it compare random Ghostyle recipes across the poses it can measure.</p>
-        <p class="content-page__deck">The video, biometric-derived descriptors, generated images, logs, and report stay in the local Docker data volume unless you deliberately copy or share them.</p>
+        <p class="content-page__deck">The video, biometric-derived descriptors, generated images, logs, and report stay in the local Docker data volume. A separate, inspectable beta-feedback package leaves the computer only if you explicitly submit it.</p>
         <div class="content-page__actions">
           <a class="docs-link docs-link--primary" href="#start">Start with Docker</a>
           <a class="docs-link" href="/docs/guides/localfuzzer-report.html">How to read the report</a>
@@ -63,6 +63,15 @@
             <p>A trial seed reproduces a design only with the same recipe and atlas conditions. Paired seeds keep stroke geometry aligned across compatible recipe cells and videos; the face, palette, pose atlas, and measured outcome can still differ.</p>
           </section>
 
+          <section id="feedback">
+            <span class="docs-eyebrow">Optional beta feedback</span>
+            <h2>Inspect the anonymous package before sharing it</h2>
+            <p>After a job has produced a report, the result page can build a small JSON package for the Ghostmaxxing maintainers. Use <strong>Download package to inspect</strong> first. Sending is a separate action with an explicit consent checkbox.</p>
+            <p>The package includes the app and runtime version, preset and duration, pose-atlas quality aggregates, number of attempted/completed/pruned trials, aggregate results, and the complete definition and stable ID of every recipe—including recipes you created yourself. You may also select individual generated Ghostyle <code>.js</code> modules to include.</p>
+            <div class="docs-note"><p><strong>Never included:</strong> video, face images, descriptors, skin-colour measurements, file names, job name, local paths, logs, or pose-by-pose profiles. The optional participant code is local text you choose; an initial is enough.</p></div>
+            <p>After a successful submission, the page downloads a receipt containing a submission ID and deletion token and stores the same receipt in that browser. Keep it if you may want the maintainers to delete the submission.</p>
+          </section>
+
           <section id="outputs">
             <span class="docs-eyebrow">What you receive</span>
             <h2>Report, Ghostyles, and evidence</h2>
@@ -105,6 +114,7 @@
             <a href="#start">Start the service</a>
             <a href="#video">Record the video</a>
             <a href="#run">Run a job</a>
+            <a href="#feedback">Share beta feedback</a>
             <a href="#outputs">Outputs</a>
             <a href="#problems">Troubleshooting</a>
           </nav>

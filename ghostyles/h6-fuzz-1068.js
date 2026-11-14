@@ -13,7 +13,7 @@
  * MediaPipe UV space (data/face_canonical_uv.json), as fractions of the
  * texture; the lab warps the texture onto the face mesh every frame.
  *
- * atlas source : scratch/localfuzzer/jobs/20261030-195853-30ba/video/Hager.mp4
+ * atlas source : local video; filename withheld
  * recipe       : {"name":"six-thin-lines","shape":"line","count":6,"lengthCm":5,"widthCm":1,"opacity":0.8,"palette":{"pool":"xterm256","size":4,"contrast":"luminance","quantile":0.75,"minPairDeltaE":20},"pairedSeeds":true}
  * palette      : #005f00 (xterm 22, dL 29.43), #005f5f (xterm 23, dL 27.79), #000000 (xterm 16, dL 63.79), #00ffff (xterm 51, dL 27.32)
  * reproduce    : node scripts-dev/ghostyle-fuzz.cjs trial --atlas <pose-atlas.json> --recipe <recipe.json> --seed 1068 --trials 1

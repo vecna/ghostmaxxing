@@ -9,7 +9,8 @@
  * "cell" (recipe + options), a report after each cell and at the end. The page
  * shows progress, an estimate of the time left, the log, the results and the
  * Ghostyles to download. Everything lives under the data directory; nothing
- * leaves the machine.
+ * leaves the machine unless the participant explicitly submits the anonymous
+ * beta feedback package shown after a completed job.
  *
  * Environment:
  *   LOCALFUZZER_PORT           default 11111
@@ -19,6 +20,8 @@
  *   LOCALFUZZER_MAX_UPLOAD_MB  default 4096
  *   LOCALFUZZER_ALLOWED_HOSTS  extra Host header names accepted, comma-separated
  *                              (default: localhost, 127.0.0.1, [::1])
+ *   LOCALFUZZER_FEEDBACK_URL   anonymous beta intake endpoint
+ *                              (default: https://ghostmaxxing.vecna.eu/api/fuzzer-results)
  *
  * No dependency beyond Node, ffmpeg/ffprobe, zip (optional; tar.gz otherwise)
  * and what ghostyle-fuzz.cjs itself needs. Documentation:
@@ -34,6 +37,7 @@ const readline = require('node:readline');
 const { spawn, spawnSync } = require('node:child_process');
 const { pathToFileURL } = require('node:url');
 const lf = require('./jobs-core.cjs');
+const feedbackCore = require('./feedback-core.cjs');
 
 const VERSION = '1.1.0';
 const ROOT = path.resolve(__dirname, '..', '..');
@@ -50,6 +54,7 @@ const SETTINGS_FILE = path.join(DATA, 'settings.json');
 const MAX_UPLOAD = Number(process.env.LOCALFUZZER_MAX_UPLOAD_MB || 4096) * 1024 * 1024;
 const ALLOWED_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]', ...(process.env.LOCALFUZZER_ALLOWED_HOSTS || '').split(',').map((h) => h.trim().toLowerCase()).filter(Boolean)]);
 const STOP_GRACE_MS = 100000; // SIGINT lets the fuzzer finish its trial and materialise the top
+const FEEDBACK_URL = process.env.LOCALFUZZER_FEEDBACK_URL || 'https://ghostmaxxing.vecna.eu/api/fuzzer-results';
 
 let fuzzCore = null; // fuzz-core.mjs, loaded at start
 let toolVersion = '?';
@@ -104,6 +109,16 @@ function cellRecipeId(cell, recipeJson) {
    for (const key of Object.keys(overrides)) if (recipeJson[key] !== undefined && recipeJson[key] !== null) delete overrides[key];
    const recipe = fuzzCore.normaliseRecipe({ ...recipeJson, ...overrides });
    return `${recipe.name}-${fuzzCore.recipeHash(recipe)}`;
+}
+
+function effectiveCellRecipe(cell, recipeJson) {
+   const overrides = {};
+   if (cell.color) overrides.color = cell.color;
+   if (cell.noOverlap) overrides.overlap = false;
+   if (cell.zones) overrides.zones = cell.zones;
+   if (cell.paired) overrides.pairedSeeds = true;
+   for (const key of Object.keys(overrides)) if (recipeJson[key] !== undefined && recipeJson[key] !== null) delete overrides[key];
+   return fuzzCore.normaliseRecipe({ ...recipeJson, ...overrides });
 }
 
 function probeVideo(file) {
@@ -261,6 +276,50 @@ function publicJob(job, { full = false } = {}) {
       out.commands = job.steps.map((s) => lf.commandLine(s.args.map((a) => (a.startsWith(DATA) ? `$DATA${a.slice(DATA.length)}` : a.startsWith(ROOT) ? path.relative(ROOT, a) : a))));
    }
    return out;
+}
+
+function feedbackPayload(job, body = {}) {
+   const summary = readJson(summaryFile(job.id));
+   if (!summary) throw new Error('the job has no result summary yet');
+   const recipes = job.plan.cells.map((cell, index) => {
+      const raw = typeof cell.recipe === 'string' ? readJson(path.join(RECIPES_DIR, cell.recipe)) : cell.recipe;
+      const definition = effectiveCellRecipe(cell, raw);
+      const recipeId = `${definition.name}-${fuzzCore.recipeHash(definition)}`;
+      const row = summary.recipes.find((item) => item.recipeId === recipeId);
+      if (!row) throw new Error(`no summary row for recipe ${recipeId}`);
+      return { cellName: cell.name, definition, row };
+   });
+   const selected = Array.isArray(body.selectedGhostyles) ? body.selectedGhostyles : [];
+   const selectedGhostyles = selected.map((picked) => {
+      const item = (summary.materialised || []).find((candidate) => candidate.recipeId === picked.recipeId && candidate.seed === Number(picked.seed));
+      if (!item) throw new Error(`selected Ghostyle ${picked.recipeId}/${picked.seed} was not materialised by this job`);
+      const file = inside(path.join(jobDir(job.id), job.atlasDirName), item.files && item.files.ghostyle);
+      if (!file || !fs.existsSync(file)) throw new Error(`selected Ghostyle ${picked.recipeId}/${picked.seed} is missing`);
+      return { ...item, source: fs.readFileSync(file, 'utf8') };
+   });
+   return feedbackCore.buildFeedbackPayload({
+      version: VERSION,
+      runtime: { platform: process.platform, arch: process.arch, node: process.version, backend: job.plan.gpu ? 'webgl' : 'swiftshader' },
+      job,
+      summary,
+      recipes,
+      selectedGhostyles,
+      subjectCode: body.subjectCode,
+      feedback: body.feedback,
+   });
+}
+
+async function submitFeedback(payload) {
+   const controller = new AbortController();
+   const timer = setTimeout(() => controller.abort(), 30000);
+   try {
+      const response = await fetch(FEEDBACK_URL, {
+         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: controller.signal,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || `feedback endpoint returned HTTP ${response.status}`);
+      return data;
+   } finally { clearTimeout(timer); }
 }
 
 // ---------------------------------------------------------------------------
@@ -548,6 +607,7 @@ async function handleApi(req, res, url) {
          presets: Object.fromEntries(Object.entries(lf.PRESETS).map(([k, p]) => [k, { label: p.label, description: p.description, plan: p.plan }])),
          recipes: bundledRecipes(), zones: lf.ZONES, atlasDefaults: lf.ATLAS_DEFAULTS, cellDefaults: lf.CELL_DEFAULTS,
          settings: readJson(SETTINGS_FILE), warnings: machineWarnings(), running: current ? current.job.id : null,
+         feedback: { consentVersion: feedbackCore.CONSENT_VERSION, endpoint: FEEDBACK_URL },
       });
       return;
    }
@@ -672,6 +732,18 @@ async function handleApi(req, res, url) {
          const what = url.searchParams.get('what');
          if (!['ghostyles', 'logs'].includes(what)) { fail(res, 400, 'what=ghostyles or what=logs'); return; }
          streamArchive(res, job, what);
+         return;
+      }
+      if (action === 'feedback-package' && method === 'POST') {
+         const body = await readBody(req);
+         send(res, 200, feedbackPayload(job, body));
+         return;
+      }
+      if (action === 'feedback' && method === 'POST') {
+         const body = await readBody(req);
+         if (body.consentVersion !== feedbackCore.CONSENT_VERSION || body.consent !== true) { fail(res, 400, 'explicit consent is required for this submission'); return; }
+         const receipt = await submitFeedback(feedbackPayload(job, body));
+         send(res, 201, receipt);
          return;
       }
    }
