@@ -8,10 +8,10 @@
     <meta name="theme-color" content="#f26a1b" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/images/logo/mark-color.svg">
-    <title>Ghostmaxxing: to challenge face-recognition</title>
+    <title>Tools to challenge face recognition — Ghostmaxxing</title>
     <meta name="description"
       content="Ghostmaxxing is a public lab for testing face-recognition camouflage through browser experiments, Ghostyles, references, and reporting." />
-    <meta property="og:title" content="Ghostmaxxing: to challenge face-recognition" />
+    <meta property="og:title" content="Tools to challenge face recognition — Ghostmaxxing" />
     <meta property="og:description"
       content="A public lab for testing face-recognition camouflage." />
     <meta property="og:type" content="website" />
@@ -22,7 +22,7 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Ghostmaxxing: test face-recognition camouflage in your browser." />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Ghostmaxxing: to challenge face-recognition" />
+    <meta name="twitter:title" content="Tools to challenge face recognition — Ghostmaxxing" />
     <meta name="twitter:description"
       content="A public lab for testing face-recognition camouflage." />
     <meta name="twitter:image" content="https://ghostmaxxing.vecna.eu/images/social/ghostmaxxing-generic.jpg" />
@@ -52,13 +52,14 @@
       "@type": "SoftwareApplication",
       "@id": "https://ghostmaxxing.vecna.eu/#app",
       "name": "Ghostmaxxing",
-      "url": "https://ghostmaxxing.vecna.eu/lab.html",
+      "url": "https://ghostmaxxing.vecna.eu/docs/",
+      "softwareVersion": "1.3.0",
       "alternateName": "Ghòstati",
       "applicationCategory": ["EducationalApplication", "SecurityApplication"],
       "applicationSubCategory": "Research instrument",
       "operatingSystem": "Web",
       "browserRequirements": "A modern browser with webcam permission, WebGL and WebAssembly",
-      "description": "A static, browser-side lab for testing face-recognition camouflage. A local recognition pipeline runs against the webcam feed; a baseline face is enrolled, altered with painted overlays or Ghostyle plugins, and re-tested in real time. All processing is client-side and no face data leaves the device.",
+      "description": "Use Lab and Realtime to test physical makeup locally. Use Ghostyle Player, Ghostyle Transfer and the Docker-based Local Fuzzer to preview, extract and measure digital Ghostyles.",
       "license": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
       "isAccessibleForFree": true,
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
@@ -105,9 +106,12 @@
 <details class="gm-site-nav__group gm-site-nav__group--tools">
   <summary class="gm-site-nav__trigger" aria-controls="gmToolsMenu">Tools <span aria-hidden="true">▾</span></summary>
   <div class="gm-site-menu" id="gmToolsMenu"><ul>
-  <li><a href="/lab.html">Camouflage lab</a><small>Apply Ghostyles and compare local results.</small></li>
-  <li><a href="/loader.html">Video analyser</a><small>Analyse a recorded makeup video.</small></li>
-  <li><a href="/realtime.html">Makeup Explorer</a><small>See how makeup changes face descriptors in real time.</small></li>
+  <li><a href="/lab.html">Workshop Lab</a><small>Save faces and compare live recognition results.</small></li>
+  <li><a href="/realtime.html">Makeup Explorer</a><small>Measure descriptor drift across makeup steps.</small></li>
+  <li><a href="/ghostyle-player.html">Ghostyle Player</a><small>Preview and edit Ghostyles beside the camera.</small></li>
+  <li><a href="/ghostyle-transfer.html">Ghostyle Transfer</a><small>Extract a Ghostyle from two photos.</small></li>
+  <li><a href="/docs/guides/localfuzzer.html">Local Fuzzer</a><small>Search Ghostyles locally with Docker.</small></li>
+  <li><a href="/loader.html">Video analyser</a><small>Compare frames from a recorded video.</small></li>
 </ul></div>
 </details>
 <details class="gm-site-nav__group ">
@@ -181,8 +185,7 @@
        =================================================================== -->
     <section class="story" aria-labelledby="storyTitle">
       <div class="story__head">
-        <p class="story__kicker">What the lab is for</p>
-        <h2 class="story__title" id="storyTitle">Disrupt face recognition, one Ghostyle at a time</h2>
+        <h1 class="story__title" id="storyTitle">Tools to challenge face recognition</h1>
       </div>
 
       <div class="story__viewport">
@@ -331,7 +334,7 @@
                 <p class="story__text">Ghostyle 3 reads 0.61, above the
                   threshold: the biometric points no longer match what is saved.
                   See <a href="https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/">how these were made</a>, or
-                  <a href="/lab.html">open the lab</a> and draw the next one.</p>
+                  <a href="/lab.html">open the lab</a> and compare your own makeup.</p>
                 <p class="story__meter story__meter--escaped" style="--reading: 0.61">
                   <span class="story__meter-bar" aria-hidden="true"></span>
                   <span class="story__meter-reading">distance <b>0.61</b></span>
@@ -396,51 +399,9 @@
       -->
     </section>
 
-    <section class="home-tools gm-prose" aria-labelledby="homeToolsTitle">
-      <p class="home-tools__kicker">Pick the tool</p>
-      <div class="home-tools__grid">
-        <a class="home-tool home-tool--lab" href="/lab.html">
-          <span class="home-tool__index" aria-hidden="true">01</span>
-          <span class="home-tool__copy">
-            <strong class="home-tool__title">Open the lab</strong>
-            <span class="home-tool__description">Apply Ghostyles, draw on the face and test camouflage - for workshop and group.</span>
-          </span>
-          <span class="home-tool__arrow" aria-hidden="true">↗</span>
-        </a>
-        <a class="home-tool home-tool--realtime" href="/realtime.html">
-          <span class="home-tool__index" aria-hidden="true">02</span>
-          <span class="home-tool__copy">
-            <strong class="home-tool__title">Realtime analysis</strong>
-            <span class="home-tool__description">Watch descriptor drift and distance thresholds live - best for individual makeup researcher.</span>
-          </span>
-          <span class="home-tool__arrow" aria-hidden="true">↗</span>
-        </a>
-      </div>
-        <!-- <h1
-        style="font-family:Newsreader,Georgia,serif;font-size:clamp(3.6rem, 2.6rem + 5.5vw, 7.4rem);line-height:.96;margin:0 0 1.3rem;letter-spacing:-.01em">
-          Disrupt Face Recognition
-        </h1>
-        -->
-      <p
-        style="font-size:1.1rem;margin:0 auto .8rem;max-width:52ch;line-height:1.55;text-align:left">
-        Ghostmaxxing is your personal laboratory for <b>testing any kind of camouflage</b>.
-        Use your phone or webcam, change how your face looks (makeup, clothing, prosthetics&hellip;),
-        and measure how face recognition reacts. <b>Everything runs on your device. Nothing leaves it</b>,
-        unless you choose to share a success in the <a href="/gallery.html">public gallery</a>.
-      </p>
-<!--
-      <p
-        style="font-size:.92rem;margin:0 auto 1.6rem;max-width:54ch;opacity:.85">Built
-        for hands-on <a href="https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/">workshops</a> and
-        self-experiments.</p>
--->
-    </section>
-
-    <section class="gm-prose"
+    <section class="gm-prose" aria-labelledby="homeExampleTitle"
       style="max-width:1080px;margin:0 auto;padding:1rem 2rem 4rem;border-top:2px solid #0a0a08">
-      <p
-        style="font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;opacity:.72;margin:1.5rem 0 1.2rem">How
-        it works</p>
+      <h2 class="home-tools__kicker" id="homeExampleTitle">Apply makeup, test, share</h2>
       <div class="gm-how-grid">
         <div class="gm-how-step">
           <span class="gm-how-icon" aria-hidden="true">
@@ -467,12 +428,11 @@
               <circle cx="14.8" cy="10.5" r="1.4" fill="var(--gm-ink)"></circle>
             </svg>
           </span>
-          <p class="gm-how-title">2. Paint until camouflaged</p>
+          <p class="gm-how-title">2. Apply makeup and test</p>
           <img class="gm-how-image" src="/images/home/how-paint.svg"
             alt="Stylised face with asymmetric paint around the eyes, cheek and mouth"
             width="220" height="220" />
-          <p class="gm-how-text">Apply a Ghostyle or your own intervention:
-            makeup, an overlay, a physical change to the face.</p>
+          <p class="gm-how-text">Apply makeup, then compare the live reading with your saved reference.</p>
         </div>
         <div class="gm-how-step">
           <span class="gm-how-icon" aria-hidden="true">
@@ -487,10 +447,57 @@
           <img class="gm-how-image" src="/images/home/how-upload.svg"
             alt="Stylised face card with an upload arrow and an explicit optional consent control"
             width="220" height="220" />
-          <p class="gm-how-text">Share your result to the gallery. Together
-            we will find the most subtle, least invasive, and still effective
-            camouflage.</p>
+          <p class="gm-how-text">Submit your clip for review and possible publication.</p>
         </div>
+      </div>
+    </section>
+
+    <section class="home-tools gm-prose" aria-labelledby="homeToolsTitle">
+      <h2 class="home-tools__kicker" id="homeToolsTitle">Test physical makeup</h2>
+      <div class="home-tools__grid">
+        <a class="home-tool home-tool--lab" href="/lab.html">
+          <span class="home-tool__index" aria-hidden="true">01</span>
+          <span class="home-tool__copy">
+            <strong class="home-tool__title">Open the lab</strong>
+            <span class="home-tool__description">Save numbered face references and compare physical makeup live in a workshop.</span>
+          </span>
+          <span class="home-tool__arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="home-tool home-tool--realtime" href="/realtime.html">
+          <span class="home-tool__index" aria-hidden="true">02</span>
+          <span class="home-tool__copy">
+            <strong class="home-tool__title">Realtime analysis</strong>
+            <span class="home-tool__description">Watch descriptor drift and distance thresholds live - best for individual makeup researcher.</span>
+          </span>
+          <span class="home-tool__arrow" aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="home-tools gm-prose" aria-labelledby="homeGhostylesTitle">
+      <h2 class="home-tools__kicker" id="homeGhostylesTitle">Work with Ghostyles</h2>
+      <div class="home-tools__grid home-tools__grid--ghostyles">
+        <a class="home-tool" href="/ghostyle-player.html">
+          <span class="home-tool__copy">
+            <strong class="home-tool__title">Ghostyle Player</strong>
+            <span class="home-tool__description">Draw on the live camera or edit a Ghostyle in JavaScript.</span>
+          </span>
+          <span class="home-tool__arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="home-tool" href="/ghostyle-transfer.html">
+          <span class="home-tool__copy">
+            <strong class="home-tool__title">Ghostyle Transfer</strong>
+            <span class="home-tool__description">Turn clean and painted photos into a downloadable Ghostyle.</span>
+          </span>
+          <span class="home-tool__arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="home-tool" href="/docs/guides/localfuzzer.html">
+          <span class="home-tool__copy">
+            <strong class="home-tool__title">Local Fuzzer</strong>
+            <span class="home-tool__description">Search Ghostyle designs on a local video with Docker.</span>
+          </span>
+          <span class="home-tool__arrow" aria-hidden="true">↗</span>
+        </a>
       </div>
     </section>
 
@@ -549,9 +556,12 @@
     <a class="gm-site-footer__brand" href="/"><img src="/images/logo/mark-ondark.svg" width="32" height="32" alt="" aria-hidden="true">Ghostmaxxing</a>
     <nav class="gm-site-footer__columns" aria-label="Footer">
 <section><h2>Tools</h2><ul>
-  <li><a href="/lab.html">Camouflage lab</a></li>
-  <li><a href="/loader.html">Video analyser</a></li>
+  <li><a href="/lab.html">Workshop Lab</a></li>
   <li><a href="/realtime.html">Makeup Explorer</a></li>
+  <li><a href="/ghostyle-player.html">Ghostyle Player</a></li>
+  <li><a href="/ghostyle-transfer.html">Ghostyle Transfer</a></li>
+  <li><a href="/docs/guides/localfuzzer.html">Local Fuzzer</a></li>
+  <li><a href="/loader.html">Video analyser</a></li>
 </ul></section>
 <section><h2>Research</h2><ul>
   <li><a href="/genealogy.html">Genealogy</a></li>
@@ -574,7 +584,6 @@
   <li><a href="https://sindacato.nina.watch/en/ghostati/report/">Confidential reporting at NINA ↗</a></li>
 </ul></section>
     </nav>
-    <p class="gm-site-footer__responsibility">Ghostmaxxing develops the software. Ghòstati!, part of <a href="https://sindacato.nina.watch/en/">NINA’s Universal Union ↗</a>, organises workshops and handles confidential reporting.</p>
   </div>
 </footer>
 

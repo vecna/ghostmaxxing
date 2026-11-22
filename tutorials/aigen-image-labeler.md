@@ -10,7 +10,7 @@ node scripts-dev/mark-ai-images.cjs --size 15%
 `--size 160` means a 160px-wide badge. Default: 15% of image width, bottom-right.
 The marker defaults to all JPEG/PNG files under `tests/fixtures/synthetic-faces/`.
 Existing visible badges are skipped, including badges of another size. See
-`README.md` in this folder for exact overwrite behaviour and detection limits.
+`scripts-dev/README.md` for exact overwrite behaviour and detection limits.
 
 ## Why a visible label
 

@@ -1,0 +1,61 @@
+body.transfer-page { overflow: auto; }
+.player.transfer { position: static; min-height: 100dvh; grid-template-rows: auto 1fr auto; }
+.transfer-links {
+  display: flex; flex-wrap: wrap; justify-content: end; gap: 6px 14px;
+  margin-inline-start: auto; padding-inline-end: 6px;
+  font-size: .81rem;
+}
+.transfer-workspace {
+  width: min(100%, 94rem); margin-inline: auto;
+  padding: 14px clamp(12px, 3vw, 28px) 18px;
+}
+.transfer-intro { margin: 0 0 12px; color: var(--workshop-muted); }
+.transfer-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;
+}
+.transfer-card {
+  display: grid; grid-row: span 4; grid-template-rows: subgrid; gap: 7px; min-width: 0;
+  padding: clamp(8px, 1.4vw, 14px);
+  border: 1px solid var(--workshop-line); border-radius: 6px;
+  background: var(--workshop-panel);
+}
+.transfer-card h2 { margin: 0; font: 650 1.2rem var(--serif); }
+.transfer-card p { margin: 0; color: var(--workshop-muted); }
+.transfer-card p:empty { display: none; }
+.transfer-card [data-error], .transfer-status[data-error] { color: var(--workshop-red); }
+.transfer-card input[type="file"] { align-self: end; width: 100%; min-width: 0; font: inherit; text-overflow: ellipsis; }
+.transfer-card input::file-selector-button {
+  min-height: 34px; margin-inline-end: 7px; padding-inline: 8px;
+  color: var(--workshop-cream); background: var(--workshop-ink);
+  border: 1px solid var(--workshop-line); border-radius: 5px; cursor: pointer; font: inherit;
+}
+.transfer-image {
+  display: grid; place-items: center; overflow: hidden;
+  height: clamp(11rem, 46vh, 35rem);
+  border: 1px solid var(--workshop-line); border-radius: 4px; background: #080705;
+}
+.transfer-image canvas { width: 100%; height: 100%; min-height: 0; object-fit: contain; }
+.transfer-details, .transfer-target { display: grid; align-content: start; gap: 5px; }
+.transfer-reference, .transfer-target-picker {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 5px 10px;
+}
+.transfer-target-picker { flex-wrap: nowrap; }
+.transfer-target-label { color: var(--workshop-muted); font-size: .8rem; }
+.transfer-status { margin: 8px 12px 3px; min-height: 1.2em; text-align: center; }
+.transfer-controls { gap: 6px 10px; }
+.transfer-controls input { accent-color: var(--workshop-green); max-width: 35vw; }
+.transfer-controls output { min-width: 3ch; color: var(--workshop-green); font: .85rem var(--mono); }
+#download-transfer {
+  --action-color: var(--workshop-green);
+  --action-border: color-mix(in srgb, var(--workshop-green) 45%, var(--workshop-line));
+}
+@media (max-width: 740px) {
+  .transfer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .transfer-card:last-child { grid-column: 1 / -1; }
+  .transfer-image { height: clamp(9rem, 33vw, 18rem); min-height: 0; }
+  .transfer-card:last-child .transfer-image { height: clamp(12rem, 46vw, 22rem); }
+}
+@media (max-width: 400px) {
+  .transfer-workspace { padding-inline: 8px; }
+  .transfer-links { column-gap: 8px; font-size: .72rem; }
+}

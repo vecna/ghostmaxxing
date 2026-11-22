@@ -6,14 +6,14 @@
  * backend multipart payload, and stores the returned delete-token receipt in
  * localStorage so the user can revoke later from the upload panel.
  */
-import { APP_VERSION, RECORDING_CONFIG, UPLOAD_CONSENT_VERSION } from './config.js';
+import { APP_VERSION, UPLOAD_CONSENT_VERSION } from './config.js';
 import { backendUrl } from './backend-url.js';
 import { t } from './i18n.js';
-import { state } from './state.js';
-import { setLog } from './utils.js';
+import { deliverMedia } from './workshop/media.js';
 
 export const RECEIPTS_STORAGE_KEY = 'ghostmaxxing-upload-receipts-v1';
 const RECEIPT_HASH_PREFIX = '#receipt=';
+const UPLOAD_PATH = '/api/uploads';
 
 function $(selector, root = document) {
    return root.querySelector(selector);
@@ -84,45 +84,22 @@ function parseReceiptHash() {
    return { uploadId, deleteToken };
 }
 
-function compactMatchMetrics(detail) {
-   if (!detail || typeof detail !== 'object') return null;
-   const faceapi = detail.faceapi || null;
-   const mediapipe = detail.mediapipe || null;
-   return {
-      source: detail.source || null,
-      overall: detail.overall || null,
-      ghostylePresent: !!detail.ghostylePresent,
-      faceapi: faceapi ? {
-         detectionState: faceapi.detectionState || null,
-         liveMinDist: faceapi.liveMinDist ?? faceapi.distance ?? null,
-         obfMinDist: faceapi.obfMinDist ?? null,
-         matchedId: faceapi.matchedId ?? faceapi.liveMinId ?? faceapi.obfMinId ?? null
-      } : null,
-      mediapipe: mediapipe ? {
-         detectionState: mediapipe.detectionState || null,
-         liveMaxSim: mediapipe.liveMaxSim ?? null,
-         obfMaxSim: mediapipe.obfMaxSim ?? null,
-         matchedId: mediapipe.matchedId ?? mediapipe.liveMaxId ?? mediapipe.obfMaxId ?? null
-      } : null
-   };
-}
-
-function buildUploadFormData(clip, note) {
+function buildUploadFormData(clip, note, channel) {
    const formData = new FormData();
    formData.append('video', clip.blob, clip.filename);
    formData.set('kind', 'video');
+   if (channel) formData.set('channel', channel);
    formData.set('consent_version', UPLOAD_CONSENT_VERSION);
    formData.set('app_version', APP_VERSION);
    if (clip.ghostyleId) formData.set('ghostyle_id', clip.ghostyleId);
    if (note) formData.set('user_note', note);
-   if (clip.metrics) formData.set('metrics_json', JSON.stringify(clip.metrics));
    return formData;
 }
 
-async function postUpload(clip, note) {
-   const response = await fetch(RECORDING_CONFIG.uploadEndpoint, {
+async function postUpload(clip, note, channel) {
+   const response = await fetch(backendUrl(UPLOAD_PATH), {
       method: 'POST',
-      body: buildUploadFormData(clip, note)
+      body: buildUploadFormData(clip, note, channel)
    });
    const body = await response.json().catch(() => ({}));
    if (!response.ok || !body.ok) {
@@ -135,7 +112,7 @@ async function postUpload(clip, note) {
 }
 
 async function deleteUpload(receipt) {
-   const response = await fetch(`${RECORDING_CONFIG.uploadEndpoint}/${encodeURIComponent(receipt.uploadId)}`, {
+   const response = await fetch(`${backendUrl(UPLOAD_PATH)}/${encodeURIComponent(receipt.uploadId)}`, {
       method: 'DELETE',
       headers: { 'X-Delete-Token': receipt.deleteToken }
    });
@@ -146,10 +123,6 @@ async function deleteUpload(receipt) {
       throw err;
    }
    return body;
-}
-
-function emitQueueChanged(count) {
-   state.gstmxxEvents.dispatchEvent(new CustomEvent('uploadQueueChanged', { detail: { count } }));
 }
 
 function copyText(value) {
@@ -170,7 +143,21 @@ function addLabelRow(parent, label, value) {
    parent.append(row);
 }
 
-export function initUploadConsentFlow() {
+/**
+ * Binds the upload queue and receipt panel to a recording event source.
+ * @param {object} options Flow dependencies.
+ * @param {EventTarget} options.events Clip and queue events.
+ * @param {("makeup"|"ghostyles")} [options.channel] Video publication channel.
+ * @param {function(string): void} [options.log] Success logger.
+ * @param {boolean} [options.showGhostyle] Whether the source uses Ghostyles.
+ * @returns {void}
+ */
+export function initUploadConsentFlow({
+   events,
+   channel,
+   log = console.info,
+   showGhostyle = true,
+}) {
    const preview = $('#gm-upload-preview');
    const empty = $('#gm-upload-empty');
    const current = $('#gm-upload-current');
@@ -180,6 +167,7 @@ export function initUploadConsentFlow() {
    const consentInput = $('#gm-upload-consent');
    const submitBtn = $('#gm-upload-submit');
    const discardBtn = $('#gm-upload-discard');
+   const copyBtn = $('#gm-upload-copy');
    const statusEl = $('#gm-upload-status');
    const receiptsEl = $('#gm-receipt-log');
 
@@ -189,7 +177,6 @@ export function initUploadConsentFlow() {
    let selectedClipId = null;
    let receipts = loadUploadReceipts();
    let previewUrl = null;
-   let lastMetrics = null;
 
    function selectedClip() {
       return clips.find((clip) => clip.id === selectedClipId) || null;
@@ -237,9 +224,8 @@ export function initUploadConsentFlow() {
       clipMeta.replaceChildren();
       addLabelRow(clipMeta, t('upload_meta_recorded_label'), new Date(clip.recordedAt).toLocaleString());
       addLabelRow(clipMeta, t('upload_meta_size_label'), formatBytes(clip.size));
-      addLabelRow(clipMeta, t('upload_meta_ghostyle_label'), text(clip.ghostyleId));
-      const overall = clip.metrics?.overall || clip.metrics?.faceapi?.detectionState || null;
-      addLabelRow(clipMeta, t('upload_meta_result_label'), text(overall));
+      if (showGhostyle) addLabelRow(clipMeta, t('upload_meta_ghostyle_label'), text(clip.ghostyleId));
+
    }
 
    function receiptStatusLabel(receipt) {
@@ -276,7 +262,7 @@ export function initUploadConsentFlow() {
          meta.className = 'upload-meta';
          addLabelRow(meta, t('receipt_upload_id_label'), receipt.uploadId);
          addLabelRow(meta, t('receipt_consent_label'), receipt.consentVersion || UPLOAD_CONSENT_VERSION);
-         addLabelRow(meta, t('upload_meta_ghostyle_label'), text(receipt.ghostyleId));
+         if (showGhostyle) addLabelRow(meta, t('upload_meta_ghostyle_label'), text(receipt.ghostyleId));
 
          const actions = document.createElement('div');
          actions.className = 'receipt-actions';
@@ -334,7 +320,7 @@ export function initUploadConsentFlow() {
       renderClipList();
       renderCurrentClip();
       renderReceipts();
-      emitQueueChanged(clips.length);
+      events.dispatchEvent(new CustomEvent('uploadQueueChanged', { detail: { count: clips.length } }));
    }
 
    function importReceiptFromHash() {
@@ -357,20 +343,24 @@ export function initUploadConsentFlow() {
       persistUploadReceipts(receipts);
    }
 
-   state.gstmxxEvents.addEventListener('matchStateChanged', (event) => {
-      lastMetrics = compactMatchMetrics(event.detail);
-   });
-
-   state.gstmxxEvents.addEventListener('clipRecorded', (event) => {
-      const clip = {
-         ...event.detail,
-         metrics: lastMetrics
-      };
+   events.addEventListener('clipRecorded', event => {
+      const clip = event.detail;
       clips.unshift(clip);
       selectedClipId = clip.id;
       if (consentInput) consentInput.checked = false;
       setStatus(t('upload_clip_ready_status'), 'ok');
       render();
+   });
+
+   copyBtn?.addEventListener('click', async () => {
+      const clip = selectedClip();
+      if (!clip) return;
+      try {
+         const outcome = await deliverMedia(clip.blob, clip.filename, clip.mimeType);
+         if (outcome !== 'cancelled') setStatus(t('lab_clip_' + outcome), 'ok');
+      } catch {
+         setStatus(t('lab_clip_error'), 'error');
+      }
    });
 
    consentInput?.addEventListener('change', renderCurrentClip);
@@ -391,7 +381,7 @@ export function initUploadConsentFlow() {
       submitBtn.disabled = true;
       setStatus(t('video_uploading_log'), 'working');
       try {
-         const body = await postUpload(clip, note);
+         const body = await postUpload(clip, note, channel);
          const receipt = {
             id: body.uploadId,
             uploadId: body.uploadId,
@@ -413,7 +403,7 @@ export function initUploadConsentFlow() {
          selectedClipId = clips[0]?.id || null;
          if (noteInput) noteInput.value = '';
          consentInput.checked = false;
-         setLog(t('video_upload_done_log', { status: 201, filename: clip.filename }));
+         log(t('video_upload_done_log', { status: 201, filename: clip.filename }));
          setStatus(t('upload_receipt_created_status'), 'ok');
       } catch (err) {
          setStatus(t('video_upload_network_error_log', { message: err.message }), 'error');

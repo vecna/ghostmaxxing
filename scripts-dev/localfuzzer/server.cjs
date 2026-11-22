@@ -39,7 +39,7 @@ const { pathToFileURL } = require('node:url');
 const lf = require('./jobs-core.cjs');
 const feedbackCore = require('./feedback-core.cjs');
 
-const VERSION = '1.1.0';
+const { version: VERSION } = require('../../package.json');
 const ROOT = path.resolve(__dirname, '..', '..');
 const FUZZ_CLI = path.join(ROOT, 'scripts-dev', 'ghostyle-fuzz.cjs');
 const RECIPES_DIR = path.join(ROOT, 'scripts-dev', 'ghostyle-fuzz', 'recipes');

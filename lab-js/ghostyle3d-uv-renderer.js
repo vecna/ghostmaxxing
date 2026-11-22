@@ -10,11 +10,11 @@ import { t } from './i18n.js';
 /**
  * Crea un renderer UV 3D side-effect free.
  *
- * @param {{
- *   uvPath: string,
- *   getFaceLandmarker: ?(function(): any),
- *   log: ?(function(string): void)
- * }} options
+ * @param {object} options - Input geometry and optional renderer services.
+ * @param {string} [options.uvPath] - URL to load when an atlas is not already available.
+ * @param {object} [options.atlas] - Preloaded canonical geometry shared with UV tools.
+ * @param {function(): object} [options.getFaceLandmarker] - Provider of facial region topology.
+ * @param {function(string): void} [options.log] - Diagnostic callback.
  * @returns {{ ensureLoaded: (function(): Promise<void>), render: (function(any, CanvasRenderingContext2D, any[], object): void) }}
  */
 export function createUvRenderer(options) {
@@ -24,7 +24,7 @@ export function createUvRenderer(options) {
       : () => null;
    const log = (options && options.log) ? options.log : () => {};
 
-   if (!uvPath) throw new Error(t('uv_path_required_error'));
+   if (!uvPath && !options?.atlas) throw new Error(t('uv_path_required_error'));
 
    function resolveUvPath(path) {
       try {
@@ -40,7 +40,7 @@ export function createUvRenderer(options) {
       }
    }
 
-   let uvData = null;
+   let uvData = options?.atlas ?? null;
    let loadPromise = null;
 
    function ensureLoaded() {

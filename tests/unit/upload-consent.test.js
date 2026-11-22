@@ -1,6 +1,4 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
-import { state } from '../../lab-js/state.js';
-import { setLog } from '../../lab-js/utils.js';
 import { t } from '../../lab-js/i18n.js';
 import {
   createReceiptCode,
@@ -11,14 +9,6 @@ import {
   RECEIPTS_STORAGE_KEY,
   initUploadConsentFlow
 } from '../../lab-js/upload-consent.js';
-
-vi.mock('../../lab-js/utils.js', async () => {
-  const actual = await vi.importActual('../../lab-js/utils.js');
-  return {
-     ...actual,
-     setLog: vi.fn()
-  };
-});
 
 vi.mock('../../lab-js/i18n.js', () => ({
   t: vi.fn((key, params) => {
@@ -34,6 +24,8 @@ const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 10));
 describe('upload-consent flow and helpers', () => {
   let originalClipboard;
   let originalFetch;
+  let events;
+  const log = vi.fn();
   
   beforeEach(() => {
     localStorage.removeItem(RECEIPTS_STORAGE_KEY);
@@ -73,8 +65,8 @@ describe('upload-consent flow and helpers', () => {
       <div id="gm-receipt-log"></div>
     `;
 
-    // Clear event listeners on state.gstmxxEvents by reinstantiating
-    state.gstmxxEvents = new EventTarget();
+    events = new EventTarget();
+    log.mockClear();
   });
 
   afterEach(() => {
@@ -113,12 +105,12 @@ describe('upload-consent flow and helpers', () => {
   describe('initUploadConsentFlow', () => {
     it('does not initialize if required DOM elements are missing', () => {
       document.body.innerHTML = '';
-      expect(() => initUploadConsentFlow()).not.toThrow();
+      expect(() => initUploadConsentFlow({ events, log })).not.toThrow();
     });
 
     it('imports receipt from location hash if valid', () => {
       window.location.hash = '#receipt=myupload123.mydeletetoken456';
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
 
       const receipts = loadUploadReceipts();
       expect(receipts).toHaveLength(1);
@@ -132,21 +124,21 @@ describe('upload-consent flow and helpers', () => {
 
     it('ignores invalid hash patterns during import', () => {
       window.location.hash = '#receipt=invalidpayload';
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
       expect(loadUploadReceipts()).toHaveLength(0);
 
       window.location.hash = '#receipt=.missing-id';
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
       expect(loadUploadReceipts()).toHaveLength(0);
 
       window.location.hash = '#receipt=missing-token.';
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
       expect(loadUploadReceipts()).toHaveLength(0);
     });
 
     it('handles clipboard copy success and failure', async () => {
       window.location.hash = '#receipt=myupload123.mydeletetoken456';
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
 
       const copyBtn = document.querySelector('.receipt-actions button');
       expect(copyBtn.textContent).toBe('receipt_copy_private_button');
@@ -166,7 +158,7 @@ describe('upload-consent flow and helpers', () => {
 
     it('handles revoking / deleting uploads (success, 410, and generic failure)', async () => {
       window.location.hash = '#receipt=myupload123.mydeletetoken456';
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
 
       const revokeBtn = document.querySelectorAll('.receipt-actions button')[1];
       expect(revokeBtn.textContent).toBe('receipt_revoke_button');
@@ -193,7 +185,7 @@ describe('upload-consent flow and helpers', () => {
       const receipts = loadUploadReceipts();
       receipts[0].status = 'pending';
       persistUploadReceipts(receipts);
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
       const newRevokeBtn = document.querySelectorAll('.receipt-actions button')[1];
 
       // 2. Failure with 410 status code (already deleted on server)
@@ -211,7 +203,7 @@ describe('upload-consent flow and helpers', () => {
       const receipts2 = loadUploadReceipts();
       receipts2[0].status = 'pending';
       persistUploadReceipts(receipts2);
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
       const finalRevokeBtn = document.querySelectorAll('.receipt-actions button')[1];
 
       // 3. Failure with other status code
@@ -227,32 +219,12 @@ describe('upload-consent flow and helpers', () => {
     });
 
     it('processes recorded clips, updates consent status, and discards them', () => {
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
 
-      // Dispatch metrics first
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
-        detail: {
-          source: 'faceapi',
-          overall: 'unmatched',
-          ghostylePresent: true,
-          faceapi: {
-             detectionState: 'ok',
-             distance: 0.35,
-             obfMinDist: 0.6,
-             liveMinId: 1
-          },
-          mediapipe: {
-             detectionState: 'ok',
-             liveMaxSim: 0.92,
-             obfMaxSim: 0.75,
-             matchedId: 1
-          }
-        }
-      }));
 
       // Dispatch clipRecorded
       const dummyBlob = new Blob(['dummy content'], { type: 'video/mp4' });
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+      events.dispatchEvent(new CustomEvent('clipRecorded', {
         detail: {
           id: 'clip123',
           blob: dummyBlob,
@@ -288,11 +260,11 @@ describe('upload-consent flow and helpers', () => {
     });
 
     it('submits a recorded clip successfully', async () => {
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
 
       // Setup a clip
       const dummyBlob = new Blob(['dummy content'], { type: 'video/mp4' });
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+      events.dispatchEvent(new CustomEvent('clipRecorded', {
         detail: {
           id: 'clip123',
           blob: dummyBlob,
@@ -333,14 +305,14 @@ describe('upload-consent flow and helpers', () => {
       expect(receipts).toHaveLength(1);
       expect(receipts[0].uploadId).toBe('up-999');
       expect(receipts[0].userNote).toBe('My user note');
-      expect(setLog).toHaveBeenCalled();
+      expect(log).toHaveBeenCalled();
     });
 
     it('handles network error during clip submission', async () => {
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
 
       const dummyBlob = new Blob(['dummy content'], { type: 'video/mp4' });
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+      events.dispatchEvent(new CustomEvent('clipRecorded', {
         detail: {
           id: 'clip123',
           blob: dummyBlob,
@@ -372,23 +344,15 @@ describe('upload-consent flow and helpers', () => {
       );
     });
 
-    it('compacts partial metrics, ignores empty actions, and handles response JSON errors', async () => {
-      initUploadConsentFlow();
+    it('ignores empty actions, and handles response JSON errors', async () => {
+      initUploadConsentFlow({ events, log });
       const discard = document.getElementById('gm-upload-discard');
       const submit = document.getElementById('gm-upload-submit');
       submit.disabled = false;
       submit.click();
       discard.click();
 
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', { detail: null }));
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', { detail: 1 }));
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
-        detail: {
-          faceapi: { detectionState: '', liveMinDist: 0, distance: 0.4, liveMinId: 3, obfMinId: 4 },
-          mediapipe: { detectionState: '', liveMaxSim: 0, obfMaxSim: 0.7, obfMaxId: 5 },
-        },
-      }));
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+      events.dispatchEvent(new CustomEvent('clipRecorded', {
         detail: { id: 'small', blob: new Blob(['x']), filename: 'small.mp4', size: 0, recordedAt: Date.now() },
       }));
       expect(document.getElementById('gm-upload-clip-meta').textContent).toContain('0 B');
@@ -406,8 +370,8 @@ describe('upload-consent flow and helpers', () => {
 
     it('tolerates a missing status element while processing clips', () => {
       document.getElementById('gm-upload-status').remove();
-      initUploadConsentFlow();
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+      initUploadConsentFlow({ events, log });
+      events.dispatchEvent(new CustomEvent('clipRecorded', {
         detail: { id: 'without-status', blob: new Blob(['x']), filename: 'x.mp4', size: 1, recordedAt: Date.now() },
       }));
       expect(document.getElementById('gm-upload-current').hidden).toBe(false);
@@ -416,51 +380,16 @@ describe('upload-consent flow and helpers', () => {
     it('handles missing consent and submit controls and empty translated status text', () => {
       document.getElementById('gm-upload-consent').remove();
       document.getElementById('gm-upload-submit').remove();
-      initUploadConsentFlow();
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', { detail: null }));
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', { detail: 1 }));
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
-        detail: {
-          source: '', overall: '', faceapi: null, mediapipe: null,
-        },
-      }));
+      initUploadConsentFlow({ events, log });
       t.mockReturnValueOnce('');
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+      events.dispatchEvent(new CustomEvent('clipRecorded', {
         detail: { id: 'no-consent', blob: new Blob(['x']), filename: 'x.mp4', size: 1, recordedAt: Date.now() },
       }));
       expect(document.getElementById('gm-upload-status').textContent).toBe('');
       expect(document.getElementById('gm-upload-current').hidden).toBe(false);
     });
 
-    it('normalizes empty metric sections and null fallback fields', () => {
-      initUploadConsentFlow();
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
-        detail: {
-          faceapi: {
-            detectionState: '', liveMinDist: null, distance: 0.42, obfMinDist: null,
-            matchedId: null, liveMinId: null, obfMinId: 7,
-          },
-          mediapipe: {
-            detectionState: '', liveMaxSim: null, obfMaxSim: 0.8,
-            matchedId: null, liveMaxId: null, obfMaxId: 8,
-          },
-        },
-      }));
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
-        detail: { id: 'fallback-metrics', blob: new Blob(['x']), filename: 'x.mp4', size: 1, recordedAt: Date.now() },
-      }));
-      expect(document.getElementById('gm-upload-clip-meta').textContent).toContain('n/a');
-
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
-        detail: { faceapi: {}, mediapipe: {} },
-      }));
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
-        detail: { id: 'empty-metrics', blob: new Blob(['x']), filename: 'x.mp4', size: 1, recordedAt: Date.now() },
-      }));
-      expect(document.getElementById('gm-upload-current').hidden).toBe(false);
-    });
-
-    it('handles legacy receipts, absent optional controls, malformed DELETE JSON, and metric uploads', async () => {
+    it('handles legacy receipts, absent optional controls, malformed DELETE JSON, and uploads', async () => {
       localStorage.setItem(RECEIPTS_STORAGE_KEY, JSON.stringify([{
         uploadId: 'legacy-id', deleteToken: 'legacy-token', publicUrl: 'https://example.test/video.mp4',
         privateUrl: 'https://example.test/lab.html#receipt=legacy-id.legacy-token', status: 'pending',
@@ -468,7 +397,7 @@ describe('upload-consent flow and helpers', () => {
       document.getElementById('gm-upload-empty').remove();
       document.getElementById('gm-upload-status').remove();
       document.getElementById('gm-upload-note').remove();
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
 
       const legacyCard = document.querySelector('.receipt-card');
       expect(legacyCard.querySelector('h3').textContent).toBe('legacy-id');
@@ -490,11 +419,8 @@ describe('upload-consent flow and helpers', () => {
       submit.click();
       expect(globalThis.fetch).toHaveBeenCalledTimes(1);
 
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('matchStateChanged', {
-        detail: { source: 'auto', overall: 'eluded', faceapi: { detectionState: 'eluded', distance: 0.6, liveMinId: 7 } },
-      }));
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
-        detail: { id: 'metric-clip', blob: new Blob(['clip']), filename: 'clip.mp4', size: 1024, recordedAt: Date.now() },
+      events.dispatchEvent(new CustomEvent('clipRecorded', {
+        detail: { id: 'clip', blob: new Blob(['clip']), filename: 'clip.mp4', size: 1024, recordedAt: Date.now() },
       }));
       expect(document.getElementById('gm-upload-current').hidden).toBe(false);
       expect(document.getElementById('gm-upload-clip-meta').textContent).toContain('1.0 KB');
@@ -503,16 +429,16 @@ describe('upload-consent flow and helpers', () => {
       document.getElementById('gm-upload-consent').dispatchEvent(new Event('change'));
       globalThis.fetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ ok: true, uploadId: 'metric-upload', deleteToken: 'metric-token' }),
+        json: async () => ({ ok: true, uploadId: 'clip-upload', deleteToken: 'clip-token' }),
       });
       submit.click();
       await flushPromises();
       const uploadCall = globalThis.fetch.mock.calls.at(-1);
       const form = uploadCall[1].body;
-      expect(form.get('metrics_json')).toContain('"liveMinDist":0.6');
+      expect(form.get('metrics_json')).toBeNull();
       expect(form.get('user_note')).toBeNull();
       expect(form.get('ghostyle_id')).toBeNull();
-      expect(loadUploadReceipts()[0].uploadId).toBe('metric-upload');
+      expect(loadUploadReceipts()[0].uploadId).toBe('clip-upload');
     });
 
     it('handles localStorage errors gracefully during loadUploadReceipts', () => {
@@ -535,7 +461,7 @@ describe('upload-consent flow and helpers', () => {
       });
 
       window.location.hash = '#receipt=myupload123.mydeletetoken456';
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
 
       const copyBtn = document.querySelector('.receipt-actions button');
       copyBtn.click();
@@ -552,16 +478,16 @@ describe('upload-consent flow and helpers', () => {
     });
 
     it('selects clip when clicking on the clip list button', () => {
-      initUploadConsentFlow();
+      initUploadConsentFlow({ events, log });
 
       const dummyBlob1 = new Blob(['1'], { type: 'video/mp4' });
       const dummyBlob2 = new Blob(['2'], { type: 'video/mp4' });
 
       // Add two clips
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+      events.dispatchEvent(new CustomEvent('clipRecorded', {
         detail: { id: 'clip1', blob: dummyBlob1, filename: 'test1.mp4', size: 100, recordedAt: Date.now() }
       }));
-      state.gstmxxEvents.dispatchEvent(new CustomEvent('clipRecorded', {
+      events.dispatchEvent(new CustomEvent('clipRecorded', {
         detail: { id: 'clip2', blob: dummyBlob2, filename: 'test2.mp4', size: 200, recordedAt: Date.now() }
       }));
 

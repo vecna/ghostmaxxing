@@ -31,6 +31,8 @@ const COPY_FILES = [
   'index.html',
   'about.html',
   'lab.html',
+  'ghostyle-player.html',
+  'ghostyle-transfer.html',
   'realtime.html',
   'loader.html',
   'fediverse.html',

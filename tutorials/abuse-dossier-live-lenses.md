@@ -109,7 +109,7 @@ Notes on the file itself:
 - Em dashes are gone, per `brand-voice.md`. The previous file used them
   throughout, which the publication checklist should have caught.
 - External links open in a new tab with `rel="noopener noreferrer"`, which
-  `pages-js/index.js` already does for every fact link, and get the ↗ marker.
+  `pages-js/camera-stage.js` already does for every fact link, and get the ↗ marker.
 - Every claim is past tense, specific and attributed, which is what the claims
   ladder requires before a consequential statement can be published as fact.
 

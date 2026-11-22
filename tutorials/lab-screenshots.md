@@ -1,19 +1,22 @@
-# Capturing lab screenshots without a camera
+# Capturing Lab and Player screenshots without a camera
 
 The workshop pages need pictures of the lab in use, and the claims pages need
-numbers. Both come from the same harness: `lab.html` running in a headless
-browser with a synthetic face in place of the webcam. The commands live in
+numbers. The capture harness runs Workshop Lab for recognition and Ghostyle Player for digital overlays, with a synthetic face in place of the webcam. The commands live in
 `scripts-dev/README.md`, under "Capture lab screenshots and measure
 recognition distance". This page covers why the harness exists and how to read
 what it produces.
 
-## Three commands, one harness
+## Functional documentation screenshots
+
+Run `npm run docs:screenshots -- --locale en,it --include-brush` to refresh the desktop captures and manifest. Use `--only lab,player` to capture the Workshop Lab recognition views and the Player editor and brush views. Keep the full set when updating the published manifest, including Video Loader.
+
+## Workshop and story captures
 
 Everything goes through `scripts-dev/lab-capture.cjs`, and every command takes
 explicit file names:
 
 ```sh
-# one picture in, one picture out: the lab's layers drawn on a photograph
+# one picture in, one picture out: the Player’s layers drawn on a photograph
 node scripts-dev/lab-capture.cjs render --baseline face.jpg --layers landmarks --output face-landmarks.jpg
 node scripts-dev/lab-capture.cjs render --baseline face.jpg --ghostyle cv-dazzle-1 --output face-dazzle.jpg
 
@@ -24,7 +27,7 @@ node scripts-dev/lab-capture.cjs measure --baseline face.jpg --dazzled face-dazz
 node scripts-dev/lab-capture.cjs shots --baseline clean.jpeg --dazzled painted.jpeg
 ```
 
-`render` is what the homepage story cards are made with. A Ghostyle is an overlay drawn on the video by the lab, so two renders of the same photograph are the same frame: same crop, same light, same pose, guaranteed by the renderer rather than by the subject holding still. Two pictures that differ only in the thing being tested are comparable; two photographs of a person who moved between them are not.
+`render` is what the homepage story cards are made with. A Ghostyle is an overlay drawn on the video by Ghostyle Player, so two renders of the same photograph are the same frame: same crop, same light, same pose, guaranteed by the renderer rather than by the subject holding still. Two pictures that differ only in the thing being tested are comparable; two photographs of a person who moved between them are not.
 
 `measure` is where the numbers come from. It saves the identity from the baseline in one browser session, carries the lab's face database into a second session that sees the dazzled picture, and reads the distance the lab reports. It prints the readings and a verdict, and writes nothing unless asked (`--json`, `--output-visual-log`): the numbers that reach a page are typed in by hand.
 
@@ -32,21 +35,13 @@ node scripts-dev/lab-capture.cjs shots --baseline clean.jpeg --dazzled painted.j
 
 Chromium can be handed a video file as its webcam. The lab then runs its full
 pipeline against it: face-api detects, the landmark and recognition models run,
-the baseline is saved to local storage, the auto-find loop measures distance.
+the baseline is saved to local storage, the Lab compares the live descriptor with the saved reference.
 Nothing is faked and nothing is drawn on afterwards. Every number in the two
 pictures is what the lab computed.
 
 ```bash
-# 1. a still becomes a fake webcam feed (Y4M, I420, what Chromium expects)
-ffmpeg -loop 1 -i face.jpeg -t 8 -r 15 \
-  -vf "scale=-1:300,pad=640:480:(ow-iw)/2:(oh-ih)/2:color=0x9a938c,format=yuv420p" \
-  -pix_fmt yuv420p face.y4m
-
-# 2. serve the repo
-python3 -m http.server 8127
-
-# 3. drive the lab
-node tutorials/final.js
+# Render against a synthetic camera feed made from the reference photo
+node scripts-dev/lab-capture.cjs render --baseline face.jpg --layers landmarks --output face-landmarks.jpg
 ```
 
 The browser flags that matter:

@@ -22,7 +22,7 @@ const DEFAULT_OUTPUT = path.join(ROOT, 'docs', 'assets', 'screenshots');
 const FAKE_CAMERA = path.join(ROOT, 'tests', 'fixtures', 'mock-face.y4m');
 const LOADER_VIDEO = path.join(ROOT, 'tests', 'fixtures', 'my-moving-face.mp4');
 const SUPPORTED_LOCALES = ['en', 'it', 'pt'];
-const PAGE_GROUPS = ['lab', 'loader'];
+const PAGE_GROUPS = ['lab', 'player', 'loader'];
 const VIEWPORTS = {
    desktop: { width: 1440, height: 1000 },
    mobile: { width: 390, height: 844 },
@@ -37,7 +37,7 @@ Options:
   --locale <value>      en, it, pt, comma-separated values, or all (default: all)
   --viewport <value>    desktop, mobile, comma-separated values, or all
                         (default: desktop)
-  --only <value>        lab, loader, comma-separated values, or all
+  --only <value>        lab, player, loader, comma-separated values, or all
                         (default: all)
   --loader-time <sec>   Loader frame timestamp in seconds (default: 3)
   --include-brush       Add the optional scripted Face Brush capture
@@ -194,12 +194,6 @@ async function freezeUi(page) {
    await page.waitForTimeout(200);
 }
 
-async function pauseVideos(page) {
-   await page.locator('video').evaluateAll((videos) => {
-      for (const video of videos) video.pause();
-   });
-}
-
 async function runCameraBriefly(page, milliseconds = 700) {
    await page.locator('#video').evaluate((video) => video.play());
    await page.waitForTimeout(milliseconds);
@@ -256,40 +250,6 @@ function createRecorder({ output, locale, viewport, manifest }) {
  * Close a drawer as a state transition. A floating brand mark can overlap the
  * button visually, so a DOM click is more appropriate than testing hit targets.
  */
-async function domClick(page, selector) {
-   await page.locator(selector).evaluate((element) => element.click());
-}
-
-/** Paint three repeatable, face-area strokes through the Brush pointer API. */
-async function paintBrushStrokes(page) {
-   await page.waitForFunction(() => {
-      const overlay = document.getElementById('overlay');
-      const panel = document.querySelector('[data-gstmxx-plugin="brush"]');
-      return Boolean(overlay && panel && getComputedStyle(overlay).pointerEvents === 'auto');
-   });
-
-   const overlay = page.locator('#overlay');
-   const box = await overlay.boundingBox();
-   if (!box) throw new Error('Unable to determine the Face Brush overlay dimensions.');
-
-   const strokes = [
-      [[0.37, 0.29], [0.57, 0.43]],
-      [[0.35, 0.46], [0.55, 0.57]],
-      [[0.56, 0.31], [0.66, 0.51]],
-   ];
-
-   for (const [[startX, startY], [endX, endY]] of strokes) {
-      await page.mouse.move(box.x + box.width * startX, box.y + box.height * startY);
-      await page.mouse.down();
-      await page.mouse.move(box.x + box.width * endX, box.y + box.height * endY, { steps: 18 });
-      await page.mouse.up();
-   }
-
-   await page.waitForFunction(() =>
-      document.querySelector('[data-gstmxx-plugin="brush"] [data-role="count"]')?.textContent === '3 strokes'
-   );
-}
-
 async function preparePage(context, baseUrl, route, locale) {
    const page = await context.newPage();
    page.setDefaultTimeout(60000);
@@ -302,130 +262,53 @@ async function preparePage(context, baseUrl, route, locale) {
    return page;
 }
 
-async function waitForLiveEngine(page) {
-   await page.waitForFunction(() => {
-      const video = document.getElementById('video');
-      const dot = document.getElementById('statusDot');
-      return Boolean(window.gstmxx && video && video.readyState >= 2 && dot?.classList.contains('live'));
-   }, undefined, { timeout: 90000 });
+/** Captures the current workshop views using the fake camera. */
+async function captureLab(context, run) {
+   const route = 'lab.html';
+   const page = await preparePage(context, run.baseUrl, route, run.locale);
+   try {
+      await page.locator('#saveBtn:enabled').waitFor({ timeout: 60000 });
+      await run.capture(page, 'lab-01-camera', { page: route, purpose: 'The workshop camera and recognition history.' });
+      await page.locator('#saveBtn').click();
+      await page.waitForFunction(() => document.getElementById('readout')?.dataset.status === 'matched', {}, { timeout: 30000 });
+      await run.capture(page, 'lab-02-recognised', { page: route, purpose: 'A saved reference and its current match.' });
+      await page.locator('[data-overlay="2d"]').click();
+      await runCameraBriefly(page);
+      await run.capture(page, 'lab-04-2d-points', { page: route, purpose: 'The Lab camera with the 2D landmarks enabled.' });
+      await page.locator('[data-overlay="3d"]').click();
+      await page.locator('[data-overlay="2d"]').click();
+      await runCameraBriefly(page, 1800);
+      await run.capture(page, 'lab-05-3d-mesh', { page: route, purpose: 'The Lab camera with the 3D mesh enabled.' });
+      await page.locator('[data-open-panel="historyDrawer"]').click();
+      await run.capture(page, 'lab-08-saved-faces', { page: route, purpose: 'The shared local face archive.' });
+   } finally {
+      await page.close();
+   }
 }
 
-async function captureLab(context, run) {
-   const page = await preparePage(context, run.baseUrl, 'lab.html', run.locale);
+/** Captures the Player editor and optionally a native brush stroke. */
+async function capturePlayer(context, run) {
+   const route = 'ghostyle-player.html';
+   const page = await preparePage(context, run.baseUrl, route, run.locale);
    try {
-      await waitForLiveEngine(page);
-      await page.locator('#ghostylesContainer .preview-btn').first().waitFor({ state: 'attached' });
-      await runCameraBriefly(page);
-
-      await run.capture(page, 'lab-01-camera', {
-         page: 'lab.html',
-         purpose: 'The initial live-camera workspace and match readout before a baseline is saved.',
-      });
-
-      await page.locator('#saveBtn').click();
-      await page.waitForFunction(() => document.getElementById('dbCount')?.textContent === '1');
-      await pauseVideos(page);
-      await run.capture(page, 'lab-02-recognised', {
-         page: 'lab.html',
-         purpose: 'A saved baseline and the recognised state displayed by the local matcher.',
-      });
-
-      await page.evaluate(() => {
-         window.gstmxx.events.dispatchEvent(new CustomEvent('matchStateChanged', {
-            detail: {
-               source: 'docs-capture',
-               overall: 'eluded',
-               faceapi: {
-                  detectionState: 'eluded',
-                  distance: 0.91,
-                  matchedId: null,
-                  liveMinDist: 0.91,
-                  liveMinId: 0,
-                  obfMinDist: null,
-                  obfMinId: null,
-               },
-               mediapipe: null,
-            },
-         }));
-      });
-      await run.capture(page, 'lab-03-escaped-example', {
-         page: 'lab.html',
-         purpose: 'Illustrative escaped state for explaining distance and threshold readouts.',
-         stateSource: 'documented synthetic event over the committed fake-camera stream',
-      });
-
-      await page.locator('[role="tab"][data-view="2d"]').click();
-      await runCameraBriefly(page);
-      await run.capture(page, 'lab-04-2d-points', {
-         page: 'lab.html',
-         purpose: 'The 2D landmark view used by the functional guide and technical glossary.',
-      });
-
-      await page.locator('[role="tab"][data-view="3d"]').click();
-      await runCameraBriefly(page);
-      await run.capture(page, 'lab-05-3d-mesh', {
-         page: 'lab.html',
-         purpose: 'The MediaPipe mesh view used to explain dense landmarks.',
-      });
-
-      await page.locator('[data-screen="settings"]').click();
-      await page.locator('#settingsDrawer').waitFor({ state: 'visible' });
-      await run.capture(page, 'lab-06-settings-and-ghostyles', {
-         page: 'lab.html',
-         purpose: 'Settings, thresholds, and the available Ghostyle list.',
-      });
-
-      const preferredGhostyle = page.locator('.preview-btn[data-effect="cv-dazzle-1"]');
-      const firstGhostyle = page.locator('#ghostylesContainer .preview-btn').first();
-      if (await preferredGhostyle.count()) await preferredGhostyle.click();
-      else await firstGhostyle.click();
-      await domClick(page, '#settingsDrawer [data-close-screen]');
-      await runCameraBriefly(page);
-      await run.capture(page, 'lab-07-ghostyle-active', {
-         page: 'lab.html',
-         purpose: 'A Ghostyle rendered over the deterministic fake-camera stream.',
-      });
-
-      await page.locator('[data-screen="faces"]').click();
-      await page.locator('#historyDrawer').waitFor({ state: 'visible' });
-      await run.capture(page, 'lab-08-saved-faces', {
-         page: 'lab.html',
-         purpose: 'The on-device saved-face archive after recording one baseline.',
-      });
-
+      await page.locator('#ghostyle-source:enabled').waitFor({ state: 'attached', timeout: 30000 });
+      await page.waitForFunction(() => Boolean(window.gstmxx?.getLastResult()), {}, { timeout: 60000 });
+      if (run.viewport === 'desktop') {
+         await run.capture(page, 'player-01-source', { page: route, purpose: 'The selected Ghostyle beside its editable source.' });
+      } else {
+         await run.capture(page, 'player-01-preview', { page: route, purpose: 'The selected Ghostyle in the mobile camera preview.' });
+      }
       if (run.includeBrush) {
-         try {
-            await domClick(page, '#historyDrawer [data-close-screen]');
-            await page.locator('[role="tab"][data-view="off"]').click();
-            await page.locator('[data-screen="settings"]').click();
-            await page.locator('#settingsDrawer').waitFor({ state: 'visible' });
-
-            const brush = page.locator('.preview-btn[data-effect="brush"]');
-            if (!await brush.count()) throw new Error('The Face Brush Ghostyle is not available in this build.');
-
-            await brush.click();
-            if (await page.locator('#settingsDrawer').isVisible()) {
-               await domClick(page, '#settingsDrawer [data-close-screen]');
-            }
-            await runCameraBriefly(page, 1000);
-            await paintBrushStrokes(page);
-            await runCameraBriefly(page, 500);
-            await run.capture(page, 'lab-09-brush-painted', {
-               page: 'lab.html',
-               purpose: 'Optional Face Brush authoring state with three face-anchored digital paint strokes.',
-               stateSource: 'scripted pointer strokes over the committed fake-camera stream',
-            });
-         } catch (error) {
-            const reason = cleanErrorMessage(error);
-            run.manifest.skipped.push({
-               id: 'lab-09-brush-painted',
-               page: 'lab.html',
-               locale: run.locale,
-               viewport: run.viewport,
-               reason,
-            });
-            process.stderr.write(`optional Brush capture skipped (${run.locale}, ${run.viewport}): ${reason}\n`);
-         }
+         await page.locator('#toggle-brush').click();
+         const frame = await page.locator('#brush-layer').boundingBox();
+         const x = frame.x + frame.width * 0.48;
+         const y = frame.y + frame.height * 0.47;
+         await page.mouse.move(x, y);
+         await page.mouse.down();
+         await page.mouse.move(x + 28, y + 9, { steps: 6 });
+         await page.mouse.up();
+         await runCameraBriefly(page, 400);
+         await run.capture(page, 'player-02-brush', { page: route, purpose: 'A face-anchored stroke from the native brush.' });
       }
    } finally {
       await page.close();
@@ -574,6 +457,7 @@ async function main() {
             for (const group of options.only) {
                try {
                   if (group === 'lab') await captureLab(context, run);
+                  if (group === 'player') await capturePlayer(context, run);
                   if (group === 'loader') await captureLoader(context, run);
                } catch (error) {
                   const failure = { group, locale, viewport, message: cleanErrorMessage(error) };

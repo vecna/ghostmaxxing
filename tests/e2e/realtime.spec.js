@@ -348,6 +348,22 @@ test.describe('Realtime page', () => {
     expect(header.type).toBe('application/zip');
   });
 
+  test('makes an accepted Realtime camera baseline visible and matchable in Lab', async ({ page }) => {
+    await page.goto('/realtime.html');
+    await expect.poll(() => page.evaluate(() => window.gstmxxRealtime?.getState().running)).toBe(true);
+    await page.locator('#btn-baseline-start').click();
+    await expect.poll(
+      () => page.evaluate(() => window.gstmxxRealtime.getState().appState),
+      { timeout: 20000 },
+    ).toBe('TRACKING');
+
+    await page.goto('/lab.html');
+    await expect(page.locator('#dbCountBadge')).toHaveText('1');
+    await expect(page.locator('#gm-state')).toHaveText('Recognised · #0');
+    await page.getByRole('button', { name: 'Faces 1' }).click();
+    await expect(page.getByRole('dialog', { name: 'Saved faces' }).getByAltText('Saved face #0')).toBeVisible();
+  });
+
   test('duration formatting collapses long absences readably', async ({ page }) => {
     await page.goto('/realtime.html');
 

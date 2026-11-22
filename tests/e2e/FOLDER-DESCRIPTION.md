@@ -6,9 +6,10 @@ The tests exercise complementary-project generation and category filtering, cult
 
 These files are excluded from code2prompt because they are browser test implementation detail, but the project keeps them as regression coverage for user-visible flows.
 
-Loader and overlay tests intercept the current `/lab-js/vendor/` runtime URLs
-so their model stubs actually run. The face-matching test uses the real vendored
-models and `tests/fixtures/mock-face.y4m`; because this fixture moves, it asserts
-a recognised identity below the current threshold rather than an exact zero
-distance. Its subsequent non-match UI assertion uses a synthetic event, not a
-claim that the video evades recognition.
+The Workshop UI tests load known archive records and model responses to exercise
+the verdicts, identity changes, overlays, About, and the clip consent flow.
+The face-matching integration test also runs the actual face-api models on
+`workshop-sequence.webm` to save two faces and observe a blank frame. Realtime's
+camera baseline test opens the Workshop Lab to verify the shared ID and preview.
+
+`ghostyle-transfer.spec.js` exercises local photo loading, preview, JavaScript export and shared Lab face references with the bundled models.

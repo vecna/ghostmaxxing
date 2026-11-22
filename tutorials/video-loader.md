@@ -20,9 +20,7 @@ applications may share pure mathematics or model adapters, but they must not
 share UI state, scheduling state, or assumptions about whether old frames can
 be recovered.
 
-The future Ghostyle Studio is a third application. It consumes one or more
-selected frames to reconstruct, edit, and export a Ghostyle. It does not run
-the long-video scan.
+Ghostyle Transfer accepts a clean and a painted photo of the same face and exports a reusable module. Ghostyle Player previews and edits that module. The Loader performs the long-video scan.
 
 ## Baseline acquisition
 
@@ -1022,8 +1020,7 @@ makeup was already present or that no face existed throughout the clip.
 - face-api work is serialised but currently runs in the page's execution
   context, not a dedicated worker.
 - The current report exports single evidence frames and portable HTML/JSON.
-  Paired cards, animated sequences, Fediverse publishing, and Ghostyle Studio
-  are later phases built on the same event/session contract.
+  The Loader’s evidence report and the two-photo Ghostyle Transfer workflow have separate inputs and outputs.
 
 ## Test strategy
 

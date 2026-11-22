@@ -1,6 +1,6 @@
 # Ghostmaxxing
 
-> A static, browser-side lab for testing face-recognition camouflage. A webcam feed runs through an open-source recognition pipeline locally; the user saves a baseline face, alters their appearance with painted overlays, and watches the match score react in real time. Recognition runs in the browser. Only an explicitly consented gallery submission sends a clip to the server.
+> Ghostmaxxing 1.3.0 includes browser tools for physical-makeup tests and tools for creating, previewing, and measuring digital Ghostyles. Camera and photo processing are local. Gallery clips are submitted only with explicit consent.
 
 Ghostmaxxing is a distributed research experiment. It also assist activist in running workshop for training and exibithion. It can't guarantee "protection" because the effective bypassing of face recognition, the threat modeling, and the multitude of technologies existing would never allow a piece of software to make such promises. 
 
@@ -15,23 +15,33 @@ Licence: AGPL-3.0-or-later. Main Author: Claudio Agosti (https://me.vecna.eu). S
 ## Main pages
 
 - [Ghostmaxxing home](https://ghostmaxxing.vecna.eu/): Project landing page — what the lab is, who it is for, and where to start.
-- [The lab](https://ghostmaxxing.vecna.eu/lab.html): The application itself. Webcam AR environment where a face is enrolled, altered, and re-tested against the local recognition pipeline. Requires camera permission; runs entirely client-side.
 - [Vision & about](https://ghostmaxxing.vecna.eu/about.html): Why the project exists, its position on minimal camouflage as a research question, its workshop practice, and its provenance.
 - [How to leak to us](https://sindacato.nina.watch/en/ghostati/report/): Guidance for reporting a face-recognition deployment, including how to assess your own risk before writing anything and how the submission channel works.
 - [Related projects](https://ghostmaxxing.vecna.eu/projects/): Products, prototypes, artworks, and collective practices that intervene in biometric and computer-vision surveillance.
 - [Cultural references](https://ghostmaxxing.vecna.eu/references/): Papers, documentation, articles, and cultural work on face recognition and adversarial camouflage.
 
+## Test physical makeup
+
+- [Workshop Lab](https://ghostmaxxing.vecna.eu/lab.html) — Save numbered references and compare live recognition.
+- [Realtime](https://ghostmaxxing.vecna.eu/realtime.html) — Measure descriptor drift across a makeup session.
+
+## Work with Ghostyles
+
+- [Ghostyle Player](https://ghostmaxxing.vecna.eu/ghostyle-player.html) — Preview and edit designs and draw face-anchored strokes.
+- [Ghostyle Transfer](https://ghostmaxxing.vecna.eu/ghostyle-transfer.html) — Extract a downloadable Ghostyle from two photos.
+- [Local Fuzzer](https://ghostmaxxing.vecna.eu/docs/guides/localfuzzer.html) — Run in Docker to search Ghostyles on controlled video poses and download reports.
+
 ## For developers
 
 - [Technical documentation](https://ghostmaxxing.vecna.eu/docs/): Runtime architecture, module map, and generated JSDoc reference.
-- [Ghostyle authoring guide](https://ghostmaxxing.vecna.eu/docs/tutorials/ghostyle-authoring/): The plugin contract. A Ghostyle is a single JavaScript file exporting `onDraw` (2D canvas) and/or `paintUV` (3D UV space), with a `==Ghostyle==` metadata header.
+- [Ghostyle authoring guide](https://ghostmaxxing.vecna.eu/docs/jsdoc/tutorial-ghostyle-authoring.html): The plugin contract. A Ghostyle is a single JavaScript file exporting `onDraw` (2D canvas) and/or `paintUV` (3D UV space), with a `==Ghostyle==` metadata header.
 - [Repository](https://github.com/vecna/ghostmaxxing): Source. Static site, native ES modules, no build step — `npm install --omit=dev` fetches Playwright only (the local fuzzer's runtime); a plain `npm install` adds the test and documentation tooling.
 - [Contributing](https://github.com/vecna/ghostmaxxing/blob/main/CONTRIBUTING.md): The one defined contribution path is submitting a new Ghostyle.
 
 ## Optional
 
 - [Video loader](https://ghostmaxxing.vecna.eu/loader.html): Internal diagnostic that runs a local MP4 through the 2D and 3D engines for repeatable tests.
-- [Consent and ownership](https://ghostmaxxing.vecna.eu/docs/tutorials/consent-and-ownership/): The project's position on test imagery and consent — only submit imagery of people who agreed to it + data saved locally until explicit decision of sending it + production of an identification code to get back control of submitted material (which get shared in the fediverse).
+- [Consent and ownership](https://ghostmaxxing.vecna.eu/docs/jsdoc/tutorial-consent-and-ownership.html): The project's position on test imagery and consent — only submit imagery of people who agreed to it + data saved locally until explicit decision of sending it + production of an identification code to get back control of submitted material (which get shared in the fediverse).
 - [Test coverage report](https://ghostmaxxing.vecna.eu/coverage/): Generated unit-test coverage output.
 - [Run the Local Fuzzer](https://ghostmaxxing.vecna.eu/docs/guides/localfuzzer.html): Install Docker, record a controlled face-turn video, run a local fuzz job and download its outputs.
 - [Read a Local Fuzzer report](https://ghostmaxxing.vecna.eu/docs/guides/localfuzzer-report.html): Definitions, examples, visualization guide, print behaviour and conditions that change the reported numbers.

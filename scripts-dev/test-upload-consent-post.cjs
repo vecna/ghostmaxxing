@@ -8,11 +8,11 @@
  * - formData.set('kind', 'video')
  * - formData.set('consent_version', ...)
  * - formData.set('app_version', ...)
- * - optional ghostyle_id, user_note, metrics_json
+ * - optional channel, ghostyle_id, user_note, metrics_json
  *
  * Uploaded content provenance (same app flow):
- * - In production, lab-js/camera.js creates clip.blob from MediaRecorder chunks
- *   and emits it in the clipRecorded event.
+ * - Workshop Lab and Ghostyle Player use lab-js/workshop/media.js to capture
+ *   a media stream and emit the resulting clip in the clipRecorded event.
  * - This standalone script cannot access the browser's in-memory Blob, so it uses
  *   CLIP_PATH as a file-backed equivalent of clip.blob and CLIP_FILENAME as the
  *   multipart filename.
@@ -21,12 +21,13 @@
  * - UPLOAD_ENDPOINT   Backend URL (example: http://localhost:3000/api/uploads)
  * - CLIP_PATH         Path to local video file used as clip.blob equivalent
  * - CONSENT_VERSION   Example: 2026-07-v1
- * - APP_VERSION       Example: 1.1.0
+ * - APP_VERSION       Example: 1.3.0
  *
  * Optional environment variables:
  * - CLIP_FILENAME     Multipart filename (default: basename(CLIP_PATH))
  * - CLIP_MIME_TYPE    MIME type for Blob (default: inferred by extension, fallback video/mp4)
  * - KIND              Default: video
+ * - CHANNEL           Video channel: makeup or ghostyles
  * - GHOSTYLE_ID
  * - USER_NOTE
  * - METRICS_JSON      Must be valid JSON string if provided
@@ -35,7 +36,7 @@
  *   UPLOAD_ENDPOINT=http://localhost:3000/api/uploads \
  *   CLIP_PATH=./tmp/ghostati-recording-123.mp4 \
  *   CONSENT_VERSION=2026-07-v1 \
- *   APP_VERSION=1.1.0 \
+ *   APP_VERSION=1.3.0 \
  *   node scripts-dev/test-upload-consent-post.cjs
  */
 
@@ -80,6 +81,7 @@ function buildUploadFormData(clip, note, options) {
   formData.set('kind', options.kind);
   formData.set('consent_version', options.consentVersion);
   formData.set('app_version', options.appVersion);
+  if (options.channel) formData.set('channel', options.channel);
   if (options.ghostyleId) formData.set('ghostyle_id', options.ghostyleId);
   if (note) formData.set('user_note', note);
   if (clip.metricsJson) formData.set('metrics_json', clip.metricsJson);
@@ -114,6 +116,7 @@ async function main() {
   const clipFilename = optionalEnv('CLIP_FILENAME') || path.basename(clipPath);
   const clipMimeType = optionalEnv('CLIP_MIME_TYPE') || inferMimeType(clipPath);
   const kind = optionalEnv('KIND') || 'video';
+  const channel = optionalEnv('CHANNEL');
   const ghostyleId = optionalEnv('GHOSTYLE_ID');
   const userNote = optionalEnv('USER_NOTE');
   const metricsJson = validateMetricsJson(optionalEnv('METRICS_JSON'));
@@ -136,6 +139,7 @@ async function main() {
     consentVersion,
     appVersion,
     kind,
+    channel,
     ghostyleId
   };
 
@@ -147,6 +151,7 @@ async function main() {
   console.log(`- kind: ${kind}`);
   console.log(`- consent_version: ${consentVersion}`);
   console.log(`- app_version: ${appVersion}`);
+  if (channel) console.log(`- channel: ${channel}`);
   if (ghostyleId) console.log(`- ghostyle_id: ${ghostyleId}`);
   if (userNote) console.log(`- user_note: ${userNote}`);
   if (metricsJson) console.log('- metrics_json: provided');

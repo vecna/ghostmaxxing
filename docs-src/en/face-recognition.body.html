@@ -28,7 +28,6 @@
             <span class="docs-eyebrow">Stage 01</span>
             <h2>Detection asks where a face might be.</h2>
             <p>The current Lab uses face-api's TinyFaceDetector with an input size of <code>416</code> and a normal score threshold of <code>0.5</code>. A <a href="/docs/glossary/#bounding-box">bounding box</a> means that the detector found a candidate. It does not establish identity.</p>
-            <p>For analysis of a modified composite, the implementation may retry a failed detection at <code>0.1</code>. That relaxed pass can recover diagnostic measurements, but it is more permissive and should not be presented as equivalent evidence.</p>
             <div class="docs-note"><p><strong>Historical context:</strong> Haar cascades and the high-contrast T-zone are useful for understanding early CV Dazzle tactics. They are not the detector used by the current Lab.</p></div>
           </section>
 
@@ -67,10 +66,9 @@
           </section>
 
           <section id="ghostyle-pass">
-            <span class="docs-eyebrow">Testing an intervention</span>
-            <h2>Analysing a Ghostyle</h2>
-            <p>The live detector follows the original camera image so the effect can remain attached to the face. On a slower loop, the Lab draws the Ghostyle onto a composite image and analyses that modified image. Keeping these paths separate makes the overlay responsive while allowing the intervention to affect the measured result.</p>
-            <p>An experiment can therefore change at several points: the composite detector may stop returning a box, landmarks may shift, the face descriptor may move beyond its threshold, or the two comparison paths may disagree. Record which event occurred.</p>
+            <h2>Physical makeup and digital designs</h2>
+            <p>Lab and Realtime measure the face visible in the camera. Lab compares it against numbered references, and Realtime measures how its descriptor changes over a session.</p>
+            <p>Ghostyle Player uses facial geometry to place and preview digital designs. The Docker-based <a href="/docs/guides/localfuzzer.html">Local Fuzzer</a> measures generated designs on controlled video poses. Its <a href="/docs/guides/localfuzzer-report.html">report guide</a> explains detection loss and distance changes on rendered samples.</p>
           </section>
 
           <section id="security">
@@ -99,7 +97,7 @@
             <a href="#geometry">Landmarks</a>
             <a href="#identity">Descriptor and distance</a>
             <a href="#parallel">Experimental path</a>
-            <a href="#ghostyle-pass">Ghostyle pass</a>
+            <a href="#ghostyle-pass">Physical and digital tests</a>
             <a href="#security">Security boundary</a>
           </nav>
         </aside>

@@ -3,7 +3,7 @@
     "source": "index.body.html",
     "output": "docs/index.html",
     "title": "Documentation — Ghostmaxxing",
-    "description": "Use the Ghostmaxxing tools, understand local face-matching results, extend the lab, and maintain the project.",
+    "description": "Test physical makeup with Lab and Realtime, or work with Ghostyles using Player, Local Fuzzer, and Transfer.",
     "section": "tools",
     "mainClass": "docs-main--landing"
   },
@@ -11,14 +11,14 @@
     "source": "lab.body.html",
     "output": "docs/guides/lab.html",
     "title": "Run a local face-matching experiment — Ghostmaxxing",
-    "description": "Save a baseline, apply a Ghostyle, and read the local face-matching result in the Ghostmaxxing Lab.",
+    "description": "Save numbered face references, read eight seconds of recognition history, and compare makeup changes in the Ghostmaxxing workshop Lab.",
     "section": "tools"
   },
   {
     "source": "video-loader.body.html",
     "output": "docs/guides/video-loader.html",
     "title": "Compare frames from a recorded video — Ghostmaxxing",
-    "description": "Use a local MP4 and exact timestamps to record and compare faces with the Ghostmaxxing Video Loader.",
+    "description": "Use a local video to inspect a single frame or compare measurements across a sampled segment.",
     "section": "tools"
   },
   {
@@ -31,8 +31,15 @@
   {
     "source": "face-brush.body.html",
     "output": "docs/guides/face-brush.html",
-    "title": "Sketch a Ghostyle with Face Brush — Ghostmaxxing",
-    "description": "Paint a face-anchored digital intervention, observe the local matcher, and turn a promising state into a physical makeup test.",
+    "title": "Edit and replay Ghostyles — Ghostmaxxing",
+    "description": "Edit Ghostyle source beside the camera preview and paint with the native brush.",
+    "section": "tools"
+  },
+  {
+    "source": "ghostyle-transfer.body.html",
+    "output": "docs/guides/ghostyle-transfer.html",
+    "title": "Extract a Ghostyle from two photos — Ghostmaxxing",
+    "description": "Use Ghostyle Transfer to extract, preview, and download a Ghostyle from clean and painted photos of the same face.",
     "section": "tools"
   },
   {

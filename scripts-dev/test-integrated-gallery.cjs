@@ -74,11 +74,12 @@ async function main() {
 
     const lab = await fetch(`${origin}/lab.html`);
     assert.equal(lab.status, 200);
-    assert.match(await lab.text(), /id="gm-gallery-grid"/);
+    assert.match(await lab.text(), /href="\/gallery.html"/);
 
-    const clientModule = await fetch(`${origin}/lab-js/gallery.js`);
-    assert.equal(clientModule.status, 200);
-    assert.match(await clientModule.text(), /api\/gallery/);
+    const player = await fetch(`${origin}/ghostyle-player.html`);
+    assert.equal(player.status, 200);
+    assert.match(await player.text(), /id="ghostyle-source"/);
+    assert.equal((await fetch(`${origin}/lab-js/ghostyle-player/main.js`)).status, 200);
 
     const galleryPage = await fetch(`${origin}/gallery.html`);
     assert.equal(galleryPage.status, 200);

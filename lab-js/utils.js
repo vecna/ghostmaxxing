@@ -14,16 +14,12 @@
  *      `drawCheekSweep`, `drawContourBand`. Built from the lower layers,
  *      these are what most 2D ghostyle plugins reach for.
  *
- * Plus the in-app logging helpers (`formatTime`, `setLog`, `updateLogDisplay`)
- * which write to `state.logsArchive` and rerender the log box.
- *
  * Why this module exists as the public plugin API surface: plugin authors
  * should never need to know about face-api or MediaPipe internals — they
  * should just `gstmxx.drawClosedPath(ctx, points, …)` and have it look
  * consistent with everything else. Keeping the helpers here (and pure) makes
  * them unit-testable without a browser.
  */
-import { state } from './state.js';
 
 /**
  * Euclidean distance between two equal-length numeric arrays. Returns
@@ -34,8 +30,6 @@ import { state } from './state.js';
  * @param {number[]} a  First vector.
  * @param {number[]} b  Second vector, same length as `a`.
  * @returns {number} Euclidean distance, or `Infinity` if inputs are invalid.
- * @see lab-js/engine.js – `seekFaceInDb()` and `computeCompositeMetrics()`
- *   use this against 128-D face-api descriptors.
  */
 export function distance(a, b) {
    if (!a || !b || a.length !== b.length) return Number.POSITIVE_INFINITY;
@@ -170,22 +164,28 @@ export function drawOpenPath(ctx, points, strokeStyle, lineWidth = 2, dashed = f
    ctx.restore();
 }
 
+/** Reads the horizontal flip used by the visible Player canvas. */
+function isMirroredCanvas(canvas) {
+   return Boolean(canvas?.isConnected && getComputedStyle(canvas).transform.startsWith('matrix(-1,'));
+}
+
 /**
  * Draw a small labelled box at `(x, y)`. The label background is a rounded
  * dark rectangle with a thin outline; the text is rendered in the
  * project-standard sans-serif. When the canvas is mirrored
- * (`state.isMirrored`) the label is un-mirrored locally so the text remains
+ * the label is flipped locally so the text remains
  * readable left-to-right.
  *
  * @param {CanvasRenderingContext2D} ctx
  * @param {string} text  Label text.
  * @param {number} x     Left anchor (the box grows rightward from here).
  * @param {number} y     Bottom-of-label baseline.
+ * @param {boolean} [mirrored] Whether the visible destination is flipped horizontally.
  * @see drawEyeWing, drawCheekSweep, drawContourBand – call this to caption
  *   the corresponding region.
  * @see roundRect – used internally to draw the background pill.
  */
-export function drawLabel(ctx, text, x, y) {
+export function drawLabel(ctx, text, x, y, mirrored = isMirroredCanvas(ctx.canvas)) {
    ctx.save();
    ctx.font = '700 14px Inter, system-ui, sans-serif';
    const padX = 10;
@@ -193,7 +193,7 @@ export function drawLabel(ctx, text, x, y) {
    const width = ctx.measureText(text).width + padX * 2;
    const height = 30;
 
-   if (state.isMirrored) {
+   if (mirrored) {
       ctx.translate(x + width / 2, y - height / 2);
       ctx.scale(-1, 1);
       ctx.translate(-(x + width / 2), -(y - height / 2));
@@ -489,196 +489,4 @@ export function clipRightHalfUV(ctx, landmarks3d) {
    ctx.rect(axisX, -margin, ctx.canvas.width - axisX + margin * 2, ctx.canvas.height + margin * 2);
    ctx.clip();
    return true;
-}
-
-/**
- * Current wall-clock time as a `HH:MM:SS` string. Used exclusively for log
- * timestamping so the workshop participants can correlate UI events with
- * what they did.
- *
- * @returns {string}
- * @see setLog – prefixes every log line with `[formatTime()]`.
- */
-export function formatTime() {
-   const now = new Date();
-   return now.toTimeString().split(' ')[0]; // Returns HH:MM:SS
-}
-
-/**
- * Convert a date-like value into a compact Italian relative-time label.
- * Used by plugin buttons to show freshness metadata ("aggiornato X fa").
- *
- * @param {Date|string|number|null|undefined} dateLike
- * @returns {string} Relative time label (e.g. "ora", "17 minuti fa",
- *   "2 mesi fa") or "n/d" when input is invalid.
- */
-export function formatRelativeTime(dateLike) {
-   if (!dateLike) return 'n/d';
-
-   const date = dateLike instanceof Date ? dateLike : new Date(dateLike);
-   if (Number.isNaN(date.getTime())) return 'n/d';
-
-   const diffMs = Date.now() - date.getTime();
-   const inFuture = diffMs < 0;
-   const absMs = Math.abs(diffMs);
-
-   const minute = 60 * 1000;
-   const hour = 60 * minute;
-   const day = 24 * hour;
-   const month = 30 * day;
-   const year = 365 * day;
-
-   if (absMs < minute) return 'ora';
-
-   const suffix = inFuture ? 'tra' : 'fa';
-   const asLabel = (value, singular, plural) => {
-      const unit = value === 1 ? singular : plural;
-      return inFuture ? `${suffix} ${value} ${unit}` : `${value} ${unit} ${suffix}`;
-   };
-
-   if (absMs < hour) {
-      const value = Math.floor(absMs / minute);
-      return asLabel(value, 'minuto', 'minuti');
-   }
-
-   if (absMs < day) {
-      const value = Math.floor(absMs / hour);
-      return asLabel(value, 'ora', 'ore');
-   }
-
-   if (absMs < month) {
-      const value = Math.floor(absMs / day);
-      return asLabel(value, 'giorno', 'giorni');
-   }
-
-   if (absMs < year) {
-      const value = Math.floor(absMs / month);
-      return asLabel(value, 'mese', 'mesi');
-   }
-
-   const value = Math.floor(absMs / year);
-   return asLabel(value, 'anno', 'anni');
- }
-
-/**
- * Re-render the on-screen log box from `state.logsArchive`. Has two modes:
- * expanded (full archive, oldest at top, autoscrolled to bottom — for
- * post-mortem) and collapsed (latest four lines, newest at top — for live
- * peripheral attention). Mode is driven by `state.isLogExpanded`, toggled
- * by clicking the log box.
- *
- * @see setLog – calls this after pushing a new entry.
- * @see lab-js/main.js – wires the click handler that toggles
- *   `state.isLogExpanded`.
- */
-export function updateLogDisplay() {
-   const logBox = document.getElementById('logBox');
-   if (!logBox) return;
-   logBox.innerHTML = '';
-
-   if (state.isLogExpanded) {
-      logBox.classList.add('expanded');
-      const startIdx = Math.max(0, state.logsArchive.length - 100);
-      for (let i = startIdx; i < state.logsArchive.length; i++) {
-         const clone = state.logsArchive[i].cloneNode(true);
-         logBox.appendChild(clone);
-      }
-      logBox.scrollTop = logBox.scrollHeight;
-   } else {
-      logBox.classList.remove('expanded');
-      let renderedCount = 0;
-      for (let i = state.logsArchive.length - 1; i >= state.visibleLogStartIndex && renderedCount < 4; i--) {
-         const clone = state.logsArchive[i].cloneNode(true);
-         logBox.insertBefore(clone, logBox.firstChild);
-         renderedCount++;
-      }
-   }
-}
-
-/**
- * Append a log line to `state.logsArchive` and refresh the on-screen log.
- * Each line is timestamped via `formatTime()` and may carry an optional
- * source-plugin tag (rendered in accent colour) so a workshop participant
- * can tell at a glance which plugin emitted the message. The archive is
- * capped at 100 entries (FIFO drop); `visibleLogStartIndex` shifts in step
- * so the "clear visible logs" feature never accidentally reveals stale data.
- *
- * @param {string} message               Text of the log entry.
- * @param {string|null} [sourcePlugin=null]  Optional plugin tag.
- * @see formatTime – produces the timestamp prefix.
- * @see updateLogDisplay – refreshes the DOM after the push.
- */
-export function setLog(message, sourcePlugin = null) {
-   const line = document.createElement('div');
-   line.className = 'log-line';
-
-   const timeSpan = document.createElement('span');
-   timeSpan.style.color = 'var(--muted)';
-   timeSpan.style.marginRight = '8px';
-   timeSpan.textContent = `[${formatTime()}]`;
-   line.appendChild(timeSpan);
-
-   if (sourcePlugin) {
-      const span = document.createElement('span');
-      span.style.color = 'var(--accent-2)';
-      span.style.fontWeight = '800';
-      span.style.marginRight = '8px';
-      span.textContent = `[${sourcePlugin.toUpperCase()}]`;
-      line.appendChild(span);
-   }
-   const textSpan = document.createElement('span');
-   textSpan.textContent = message;
-   line.appendChild(textSpan);
-
-   state.logsArchive.push(line);
-   if (state.logsArchive.length > 100) {
-      state.logsArchive.shift();
-      if (state.visibleLogStartIndex > 0) state.visibleLogStartIndex--;
-   }
-
-   updateLogDisplay();
-}
-
-/**
- * Converts thrown plugin failures into the compact label used by loader logs.
- * In this project it keeps broken `paintUV` errors readable while preserving
- * non-Error throws from third-party ghostyles.
- *
- * @param {*} err - Value caught while rendering a 3D ghostyle.
- * @returns {string} Error name and message, or a stringified thrown value.
- * @see deactivateBroken3dPlugin - Formats the `paintUV` failure logged for a disabled plugin.
- */
-export function asErrorLabel(err) {
-   if (err instanceof Error) return `${err.name}: ${err.message}`;
-   return String(err);
-}
-
-/**
- * Keeps the hidden 3D plugin canvas matched to the live overlay dimensions so
- * UV paint is composited into the same coordinate space as the camera frame.
- *
- * @param {HTMLCanvasElement} canvas  The hidden 3D plugin canvas.
- * @param {HTMLCanvasElement} overlayEl  The main overlay canvas.
- * @returns {void}
- * @see initPlugins3dLoader - Called on each `landmarks3d` frame before drawing the active ghostyle.
- */
-export function syncSize(canvas, overlayEl) {
-   if (canvas.width !== overlayEl.width || canvas.height !== overlayEl.height) {
-      canvas.width = overlayEl.width;
-      canvas.height = overlayEl.height;
-   }
-}
-
-/**
- * Mirrors the 3D plugin canvas with the main overlay transform, preserving the
- * webcam mirror mode when UV-painted effects are displayed or composited.
- *
- * @param {HTMLCanvasElement} canvas  The hidden 3D plugin canvas.
- * @param {HTMLCanvasElement} overlayEl  The main overlay canvas.
- * @returns {void}
- * @see initPlugins3dLoader - Called on each `landmarks3d` frame before drawing the active ghostyle.
- */
-export function syncMirror(canvas, overlayEl) {
-   const transform = overlayEl.style.transform;
-   if (canvas.style.transform !== transform) canvas.style.transform = transform;
 }

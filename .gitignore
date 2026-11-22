@@ -31,6 +31,7 @@ EXTRACTED-text-*.md
 /tests/fixtures/*.m4v
 !/tests/fixtures/my-moving-face.mp4
 !/tests/fixtures/face-descriptor.webm
+!/tests/fixtures/workshop-sequence.webm
 
 # Local measurements produced while calibrating model thresholds.
 /tests/fixtures/synthetic-faces/lab-measurements.json

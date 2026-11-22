@@ -1,6 +1,6 @@
 # Ghostmaxxing
 <!-- coverage-badge:start -->
-[![Unit Test Coverage](https://img.shields.io/badge/coverage-83.83%25-green)](coverage/)
+[![Unit Test Coverage](https://img.shields.io/badge/coverage-49.73%25-red)](coverage/)
 <!-- coverage-badge:end -->
 
 [![CI](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml/badge.svg)](https://github.com/vecna/ghostmaxxing/actions/workflows/ci.yml)
@@ -8,7 +8,7 @@
 [![Source](https://img.shields.io/badge/source-GitHub-black)](https://github.com/vecna/ghostmaxxing)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue)](#license)
 
-**Release:** 1.1.0 · 1 November 2026
+**Release:** 1.3.0
 
 **Ghostmaxxing** is a static, browser-side lab and an optional Docker-packaged
 local fuzzer for testing face-recognition camouflage. Point a webcam at your
@@ -64,20 +64,27 @@ npm run test:integration # isolated same-origin gallery lifecycle
 python3 -m http.server 8000
 ```
 
-Entry points once served:
+### Test physical makeup
 
-- `/lab.html` — the main webcam / AR lab (the app).
+- [Workshop Lab](https://ghostmaxxing.vecna.eu/lab.html) — Save numbered face references, compare live recognition and inspect landmarks.
+- [Realtime](https://ghostmaxxing.vecna.eu/realtime.html) — Mark makeup steps and measure descriptor drift over time from a camera or local video.
+
+### Work with Ghostyles
+
+- [Ghostyle Player](https://ghostmaxxing.vecna.eu/ghostyle-player.html) — Preview and edit Ghostyles, draw with the brush and capture composite clips.
+- [Ghostyle Transfer](https://ghostmaxxing.vecna.eu/ghostyle-transfer.html) — Extract and download a Ghostyle from clean and painted photos of the same face.
+- [Local Fuzzer](https://ghostmaxxing.vecna.eu/docs/guides/localfuzzer.html) — Use Docker to search Ghostyle designs across poses from a controlled video. See the [report guide](https://ghostmaxxing.vecna.eu/docs/guides/localfuzzer-report.html).
+
+### Other entry points
+
 - `/` (`index.html`) — public landing page.
 - `/about.html` — project vision and context.
 - [NINA reporting guidance](https://sindacato.nina.watch/en/ghostati/report/) — confidential whistleblowing, managed by NINA’s Universal Union.
 - [Ghòstati! workshops](https://sindacato.nina.watch/en/blog/ghostati-workshop-october-2026/) — NINA’s facilitator guide and Signal group.
 - `/loader.html` — internal MP4 loader for repeatable 2D/3D video tests.
-- `/realtime.html` — temporal face-descriptor measurements from a camera or local video.
-- `/docs/guides/localfuzzer.html` — run the Docker-packaged Local Fuzzer.
-- `/docs/guides/localfuzzer-report.html` — interpret every number and visualization in its report.
 - `/projects/` — products, prototypes, and practices pursuing complementary anti-surveillance approaches.
 - `/references/` — cultural and technical source archive reached through the related-projects section.
-- `/docs/` — technical documentation (after `npm run docs`).
+- `/docs/` — technical documentation (after `npm run docs:functional`).
 
 ## Common tasks
 
@@ -120,8 +127,8 @@ authoring guide — kept there so they live in one place only.
 Runtime translations for English, Italian, and Portuguese are shipped through
 `lab-js/i18n.js` (a single inline message catalog + `data-i18n*` attributes +
 `t()` in JS). There is no `locales/` directory and no build step. Translated
-pages currently include `index.html`, `lab.html`, and `loader.html`; other static
-pages are English-baseline until they add `data-i18n*` bindings. See
+pages with runtime translation bindings include the home page, Lab, Realtime,
+Video Loader, Ghostyle Player and Ghostyle Transfer. See
 `translations/README.md` for the add-a-string / add-a-language workflow, and run
 `npm run i18n:extract` after adding user-facing strings.
 
@@ -168,6 +175,17 @@ every project is drawn at its year, in the row its `target` tags select. Run
 `npm run update:genealogy` after editing either file.
 
 ## CHANGELOG
+
+### 1.3.0
+
+- Rebuilt the Workshop Lab for live physical-makeup tests with numbered face
+  references, an eight-second recognition history, and independent 2D and 3D
+  landmark overlays. Lab and Realtime share local face references.
+- Added the standalone Ghostyle Player with live previews, a JavaScript editor,
+  a face-anchored brush that can generate reusable source, and composite clips.
+- Added Ghostyle Transfer to extract a downloadable Ghostyle from a clean and
+  painted photo, adjust sensitivity, and preview the result on another face.
+- Organized the documentation around physical-makeup tests and Ghostyle workflows.
 
 ### 1.1.0 (1 November 2026)
 

@@ -9,14 +9,11 @@
       </section>
 
       <section class="content-section gm-prose" id="tools" aria-labelledby="tools-title">
-        <span class="docs-eyebrow">01 · Start with a task</span>
-        <h2 id="tools-title">Use the tools</h2>
-
+        <h2 id="tools-title">Test physical makeup</h2>
         <div class="docs-grid">
           <article class="docs-card">
-            <span class="docs-card__number">Tool 01</span>
             <h3>Browser Lab</h3>
-            <p>Save a face as a local baseline, apply a modular AR intervention called a Ghostyle, and watch the face-matching pipeline react.</p>
+            <p>Save numbered face references, test a makeup change and read the recognition history while the camera is live.</p>
             <div class="docs-card__actions">
               <a class="docs-link docs-link--primary" href="/lab.html">Open the Lab &#8599;</a>
               <a class="docs-link" href="/docs/guides/lab.html">Read the guide</a>
@@ -24,7 +21,52 @@
           </article>
 
           <article class="docs-card">
-            <span class="docs-card__number">Tool 02 [Experimental!]</span>
+            <h3>Realtime (Latent Space Visualizer)</h3>
+            <p>Mark makeup steps and measure face-descriptor drift over short, comparable time windows using a camera or local video.</p>
+            <div class="docs-card__actions">
+              <a class="docs-link docs-link--primary" href="/realtime.html">Open the Visualizer &#8599;</a>
+              <a class="docs-link" href="/docs/guides/realtime.html">Read the guide</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section gm-prose" id="ghostyles" aria-labelledby="ghostyles-title">
+        <h2 id="ghostyles-title">Work with Ghostyles</h2>
+        <div class="docs-grid">
+          <article class="docs-card">
+            <h3>Ghostyle Player</h3>
+            <p>Preview and edit Ghostyles on the live camera, or draw with the brush.</p>
+            <div class="docs-card__actions">
+              <a class="docs-link docs-link--primary" href="/ghostyle-player.html">Open Ghostyle Player &#8599;</a>
+              <a class="docs-link" href="/docs/guides/face-brush.html">Read the guide</a>
+            </div>
+          </article>
+
+          <article class="docs-card">
+            <h3>Local Fuzzer</h3>
+            <p>Run locally with Docker to search Ghostyle designs across poses from a controlled face-turn video.</p>
+            <div class="docs-card__actions">
+              <a class="docs-link docs-link--primary" href="/docs/guides/localfuzzer.html">How to use it</a>
+              <a class="docs-link" href="/docs/guides/localfuzzer-report.html">How to read the report</a>
+            </div>
+          </article>
+
+          <article class="docs-card">
+            <h3>Ghostyle Transfer</h3>
+            <p>Turn clean and painted photos of the same face into a downloadable Ghostyle.</p>
+            <div class="docs-card__actions">
+              <a class="docs-link docs-link--primary" href="/ghostyle-transfer.html">Open Ghostyle Transfer &#8599;</a>
+              <a class="docs-link" href="/docs/guides/ghostyle-transfer.html">Read the guide</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-section gm-prose" id="video-tools" aria-labelledby="video-tools-title">
+        <h2 id="video-tools-title">Recorded-video diagnostics</h2>
+        <div class="docs-grid">
+          <article class="docs-card">
             <h3>Video Loader</h3>
             <p>Compare before-and-after frames in a local MP4 at exact timestamps.</p>
             <div class="docs-card__actions">
@@ -32,31 +74,6 @@
               <a class="docs-link" href="/docs/guides/video-loader.html">Read the guide</a>
             </div>
           </article>
-
-          <article class="docs-card">
-            <span class="docs-card__number">Tool 03 [Experimental!]</span>
-            <h3>Latent Space Visualizer</h3>
-            <p>Mark makeup steps and measure face-descriptor drift over short, comparable time windows using a camera or local video.</p>
-            <div class="docs-card__actions">
-              <a class="docs-link docs-link--primary" href="/realtime.html">Open the Visualizer &#8599;</a>
-              <a class="docs-link" href="/docs/guides/realtime.html">Read the guide</a>
-            </div>
-          </article>
-
-          <article class="docs-card">
-            <span class="docs-card__number">Tool 04 · Local Docker</span>
-            <h3>Local Fuzzer</h3>
-            <p>Upload a controlled face-turn video and search many random Ghostyle designs across its clean poses without sending the video off the computer.</p>
-            <div class="docs-card__actions">
-              <a class="docs-link docs-link--primary" href="/docs/guides/localfuzzer.html">How to use it</a>
-              <a class="docs-link" href="/docs/guides/localfuzzer-report.html">How to read the report</a>
-            </div>
-          </article>
-
-        </div>
-
-        <div class="docs-note">
-          <p><strong>Also inside the Lab:</strong> <a href="/docs/guides/face-brush.html">Face Brush</a> lets you sketch a pattern before testing it with physical makeup.</p>
         </div>
       </section>
 
@@ -68,7 +85,7 @@
           <article class="docs-card docs-card--compact">
             <span class="docs-card__number">Guide</span>
             <h3>Read the Lab</h3>
-            <p>Learn what the top readout means, why a missing face is not the same as a failed match, and what changes when a Ghostyle is active.</p>
+            <p>Read the closest face number, distance, color and eight-second recognition history.</p>
             <div class="docs-card__actions"><a class="docs-link" href="/docs/understand/">Understand the readout</a></div>
           </article>
           <article class="docs-card docs-card--compact">

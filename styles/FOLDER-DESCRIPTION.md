@@ -49,8 +49,9 @@ These files are linked directly by HTML pages and provide page layout or unique 
 - `content-pages.css` — shared content-page styling for long-form editorial pages and generated reference pages.
   - Included by: `about.html`, `report.html`, `references/index.html`, `references/templates/references.template.html`, `workshops.html`
 
-- `lab.css` — lab and live-analysis page styling; used for full-screen camera surfaces and tooling chrome.
-  - Included by: `lab.html`, `realtime.html`
+- `workshop.css` — Workshop Lab camera, recognition history, and face archive.
+- `ghostyle-player.css` — Player camera, editor, and brush, with shared styling used by Transfer.
+- `ghostyle-transfer.css` — Transfer photo inputs, preview, and sensitivity controls.
 
 - `realtime.css` — layout, timeline, experiment phases, descriptor equalizer, and radial plot for the Latent Space Visualizer.
   - Included by: `realtime.html`
@@ -80,6 +81,6 @@ Most pages follow this basic pattern:
 - `styles.css` is the universal layer and is always linked first.
 - One page stylesheet is then added only when the page needs unique layout or a page-specific composition.
 - For the long-form content pages, `pages.css` and `content-pages.css` are often used together.
-- For the Lab UX, `lab.css` is the primary page layer. `realtime.html` reuses that chrome and adds `realtime.css` for its three-panel measurement workspace.
+- Workshop Lab uses `workshop.css`. Realtime uses `realtime.css` for the measurement workspace.
 
 This makes the stylesheet folder a layered CSS system rather than a flat set of unrelated files: shared tokens and components first, page placement last, with the HTML deciding which page layer to attach.

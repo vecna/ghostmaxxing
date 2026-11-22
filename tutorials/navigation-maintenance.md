@@ -4,7 +4,7 @@ The header and footer are intentionally duplicated. Committed HTML works with `n
 
 ## Current navigation
 
-- **Tools:** Camouflage lab, Video analyser, Makeup Explorer.
+- **Tools:** Workshop Lab and Makeup Explorer (Realtime) for physical makeup. Ghostyle Player, Ghostyle Transfer, and the Docker Local Fuzzer guide for digital designs. Video analyser for recorded-video diagnostics.
 - **Explore / Understand:** About Ghostmaxxing, Genealogy, Research references, Related projects.
 - **Explore / Use and contribute:** Documentation, Gallery, Fediverse integration, Source code.
 - **Ghòstati! / NINA:** Union blog in Italian and English, initiative/workshops, confidential reporting at NINA.
@@ -25,7 +25,7 @@ Generated pages and their sources:
 | `genealogy.html` | HEADER and FOOTER strings in `scripts-dev/build-genealogy.py` |
 | Functional documentation under `docs/` | siteHeader() and siteFooter() in `scripts-dev/build-functional-docs.cjs` |
 
-Tool variants: `lab.html`, `loader.html`, `realtime.html`. They contain home / Tools / Help navigation and no full footer. Preserve each tool's controls, IDs, locale selector and session behaviour. The compact script lives in `lab-js/tool-nav.js` so the Sindacato importer includes it. Root links are deliberately rewritten to the software host by that importer; other tools are not silently imported along with the lab.
+Tool variants: `lab.html`, `loader.html`, `realtime.html`, `ghostyle-player.html`, and `ghostyle-transfer.html` use compact tool navigation. The public Tools menu links to both physical-makeup tools and the Ghostyle workflows. Preserve each tool's controls, IDs, locale selector and session behaviour. The compact script lives in `lab-js/tool-nav.js` so the Sindacato importer includes it. Root links are deliberately rewritten to the software host by that importer; other tools are not silently imported along with the lab.
 
 Shared CSS: `styles/chrome.css`. Content enhancement: `pages-js/nav.js`. The styleguide and the site-chrome / CTA sections of the visual and voice guides document this pattern; review them when it changes. Generated JSDoc and the codemap retain their own technical navigation and are reached from documentation.
 

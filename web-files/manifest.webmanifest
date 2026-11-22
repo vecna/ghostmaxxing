@@ -31,7 +31,17 @@
     {
       "name": "Open the lab",
       "url": "/lab.html",
-      "description": "Webcam AR lab"
+      "description": "Compare live recognition with saved faces"
+    },
+    {
+      "name": "Ghostyle Player",
+      "url": "/ghostyle-player.html",
+      "description": "Preview and edit Ghostyles"
+    },
+    {
+      "name": "Ghostyle Transfer",
+      "url": "/ghostyle-transfer.html",
+      "description": "Extract a Ghostyle from two photos"
     }
   ]
 }

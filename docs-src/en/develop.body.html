@@ -21,7 +21,7 @@
                 <tr><td>Create or modify a Ghostyle</td><td><a href="/docs/jsdoc/tutorial-ghostyle-authoring.html">Ghostyle Authoring Guide</a></td><td><a href="https://github.com/vecna/ghostmaxxing/blob/main/ghostyles/00-template.js"><code>ghostyles/00-template.js</code></a></td></tr>
                 <tr><td>Call or integrate a runtime module</td><td><a href="/docs/jsdoc/">Generated JSDoc</a></td><td><a href="https://github.com/vecna/ghostmaxxing/tree/main/lab-js"><code>lab-js/</code> source</a></td></tr>
                 <tr><td>See what a maintainer script reads, writes and runs</td><td><a href="/codemap/codemap.html">Script map</a></td><td>The script's header comment and <code>scripts-dev/README.md</code></td></tr>
-                <tr><td>Use the public browser API</td><td><a href="https://github.com/vecna/ghostmaxxing/blob/main/lab-js/Ghostmaxxing.d.ts"><code>Ghostmaxxing.d.ts</code></a></td><td><code>window.gstmxx</code> in <code>main.js</code></td></tr>
+                <tr><td>Use the public browser API</td><td><a href="https://github.com/vecna/ghostmaxxing/blob/main/lab-js/Ghostmaxxing.d.ts"><code>Ghostmaxxing.d.ts</code></a></td><td><code>window.gstmxx</code> in <code>ghostyle-player/main.js</code></td></tr>
                 <tr><td>Run and inspect the realtime measurement method</td><td><a href="/docs/jsdoc/tutorial-realtime.html">Realtime guide and methodology</a></td><td><a href="https://github.com/vecna/ghostmaxxing/tree/main/lab-js/realtime"><code>lab-js/realtime/</code> source</a></td></tr>
                 <tr><td>Search Ghostyles across a controlled face-turn video</td><td><a href="/docs/guides/localfuzzer.html">Local Fuzzer guide</a></td><td><a href="https://github.com/vecna/ghostmaxxing/tree/main/scripts-dev/localfuzzer"><code>scripts-dev/localfuzzer/</code> and <code>scripts-dev/ghostyle-fuzz.cjs</code></a></td></tr>
                 <tr><td>Regenerate or package the project</td><td><a href="/docs/maintain/">Maintainer guide</a></td><td><a href="https://github.com/vecna/ghostmaxxing/tree/main/scripts-dev"><code>scripts-dev/</code></a></td></tr>
@@ -36,7 +36,9 @@
             <table>
               <thead><tr><th>Page</th><th>Controller</th><th>Functional role</th></tr></thead>
               <tbody>
-                <tr><td><code>lab.html</code></td><td><code>lab-js/main.js</code></td><td>Live camera, local baseline, 2D and mesh views, Ghostyles, composite analysis.</td></tr>
+                <tr><td><code>lab.html</code></td><td><code>lab-js/workshop/main.js</code></td><td>Live workshop camera, shared face references, recognition history, and independent 2D and 3D overlays.</td></tr>
+                <tr><td><code>ghostyle-player.html</code></td><td><code>lab-js/ghostyle-player/main.js</code></td><td>Live Ghostyle playback, source editing, and native brush.</td></tr>
+                <tr><td><code>ghostyle-transfer.html</code></td><td><code>lab-js/ghostyle-transfer/main.js</code></td><td>Aligns two photos in UV space, traces the differences and exports a Ghostyle module.</td></tr>
                 <tr><td><code>loader.html</code></td><td><code>lab-js/loader.js</code></td><td>Repeatable comparison of frames from a local MP4.</td></tr>
                 <tr><td><code>realtime.html</code></td><td><code>lab-js/realtime/realtime.js</code></td><td>Temporal baseline and operator-declared makeup-step measurements from a camera or local video.</td></tr>
                 <tr><td><code>http://localhost:11111</code></td><td><code>scripts-dev/localfuzzer/server.cjs</code></td><td>Docker-packaged local service for creating a pose atlas, sweeping Ghostyle recipes, and reading or downloading reports.</td></tr>
@@ -50,12 +52,10 @@
             <table>
               <thead><tr><th>Area</th><th>Primary modules</th><th>Responsibility</th></tr></thead>
               <tbody>
-                <tr><td>State and lifecycle</td><td><code>main.js</code>, <code>state.js</code>, <code>config.js</code></td><td>Initialisation, thresholds, shared state, public API, <code>gstmxxReady</code>.</td></tr>
-                <tr><td>Camera and persistence</td><td><code>camera.js</code>, <code>db.js</code></td><td>Media stream, short recording, local saved-face records.</td></tr>
-                <tr><td>2D analysis</td><td><code>engine.js</code>, <code>landmark-analysis.js</code></td><td>Detection, 68 landmarks, face descriptors, distance, result classification.</td></tr>
-                <tr><td>Mesh and visual embedding</td><td><code>mediapipe-loop.js</code>, <code>engine-3d.js</code></td><td>478-point geometry and the separate experimental ImageEmbedder path.</td></tr>
-                <tr><td>Composite feedback</td><td><code>auto-find-loop.js</code>, <code>bbox-overlay.js</code>, <code>analyze-panel.js</code></td><td>Slower modified-image pass, live scaffold, status, metrics, report text.</td></tr>
-                <tr><td>Extensions</td><td><code>ghostyles-manager.js</code>, <code>plugins3d-loader.js</code>, <code>ghostyle3d-uv-renderer.js</code></td><td>Load 2D, UV, and hybrid Ghostyles and expose their controls.</td></tr>
+                <tr><td>Workshop recognition</td><td><code>workshop/recognition.js</code>, <code>face-archive.js</code></td><td>Comparison, timed history, and numbered browser references shared with Realtime.</td></tr>
+                <tr><td>Camera and clips</td><td><code>workshop/media.js</code>, <code>upload-consent.js</code></td><td>Camera access, recording, clipboard delivery, upload and receipts.</td></tr>
+                <tr><td>Player</td><td><code>ghostyle-player/catalog.js</code>, <code>preview.js</code>, <code>brush.js</code></td><td>Loads code, applies editor drafts, renders face geometry and reprojects native brush strokes.</td></tr>
+                <tr><td>UV extensions</td><td><code>ghostyle3d-uv-renderer.js</code></td><td>Projects a Ghostyle texture onto MediaPipe landmarks.</td></tr>
                 <tr><td>Realtime experiment</td><td><code>realtime.js</code>, <code>realtime-capture.js</code>, <code>realtime-graph.js</code>, <code>realtime-radial.js</code></td><td>2D-only temporal capture, comparable-condition filtering, phase timeline, and 128-value descriptor views.</td></tr>
               </tbody>
             </table>
@@ -80,10 +80,8 @@
           </section>
 
           <section id="two-detectors">
-            <span class="docs-eyebrow">Architecture invariant</span>
-            <h2>Keep live tracking and composite evidence separate.</h2>
-            <p>The live scaffold follows the unmodified camera frame for responsive visual feedback. The auto-find loop re-runs analysis on the Ghostyle composite at a slower cadence. Pointing both displays at one image would conflate two questions: “where is the face now?” and “what did the modified image do to the comparison?”</p>
-            <p>When changing either path, test the no-Ghostyle baseline, one 2D effect, one UV effect, detector absence, a matched descriptor, and a disagreement between the face-api and experimental ImageEmbedder paths.</p>
+            <h2>Face geometry and comparison</h2>
+            <p>Ghostyle Player uses landmarks to position paint. Model comparisons and saved face references are available in the Workshop Lab and Realtime.</p>
           </section>
 
           <section id="documentation-layers">

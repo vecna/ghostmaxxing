@@ -1,7 +1,7 @@
 # Functional documentation source
 
-Version: 1.1.0<br>
-Last updated: 1 November 2026
+Version: 1.3.0<br>
+Last updated: 22 November 2026
 
 The public functional documentation is hand-authored here and generated into `docs/` by `npm run docs:functional`.
 

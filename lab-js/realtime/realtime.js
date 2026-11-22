@@ -14,6 +14,7 @@
  */
 
 import { MODEL_URLS, DETECTOR_OPTIONS } from '../config.js';
+import { captureThumbnail } from '../face-thumbnails.js';
 import { createGraph, formatDuration } from './realtime-graph.js';
 import {
   createQualityGate,
@@ -87,6 +88,7 @@ const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 const runtime = {
   appState: APP_STATES.NO_BASELINE,
   baseline: null,
+  baselineEpoch: 0,
   equalizerRows: [],
   equalizerLit: new Int16Array(DESCRIPTOR_SIZE).fill(-1),
   distanceBuffer: [],
@@ -550,6 +552,8 @@ async function startBaselineCapture() {
   );
   if (!playing) return;
   runtime.appState = APP_STATES.CAPTURING;
+  runtime.baselineEpoch += 1;
+  const archiveId = runtime.baseline?.archiveId ?? null;
   runtime.baseline = null;
   runtime.distanceBuffer = [];
   runtime.comparisonExcluded = false;
@@ -557,7 +561,7 @@ async function startBaselineCapture() {
   runtime.lastMeasurement = null;
   runtime.hasValidDescriptorView = false;
   setSessionPhase(SESSION_PHASES.IDLE);
-  clearBaseline();
+  void clearBaseline({ id: archiveId });
 
   setTrackingState(APP_STATES.CAPTURING);
   setDistanceValue(0);
@@ -648,9 +652,12 @@ function adoptBaseline(baseline, restored = false) {
 /**
  * Discards the current baseline and returns to the capture prompt.
  *
+ * @param {boolean} [removeFace=false] Delete the shared template on explicit reset.
  * @returns {void}
  */
-function deleteBaseline() {
+function deleteBaseline(removeFace = false) {
+  const archiveId = runtime.baseline?.archiveId ?? null;
+  runtime.baselineEpoch += 1;
   runtime.baseline = null;
   runtime.appState = APP_STATES.NO_BASELINE;
   runtime.comparisonExcluded = false;
@@ -658,7 +665,7 @@ function deleteBaseline() {
   runtime.lastMeasurement = null;
   runtime.hasValidDescriptorView = false;
   setSessionPhase(SESSION_PHASES.IDLE);
-  clearBaseline();
+  void clearBaseline({ id: archiveId, removeFace });
   baselineCollector.cancel();
   measurementCollector.cancel();
 
@@ -681,12 +688,12 @@ function deleteBaseline() {
 }
 
 /**
- * Feeds one detection into the baseline collector.
+ * Feeds one detection into the baseline collector and archives an accepted camera reference.
  *
  * @param {*} detection face-api detection result.
- * @returns {void}
+ * @returns {Promise<void>} Resolves after any archive write.
  */
-function processBaselineFrame(detection) {
+async function processBaselineFrame(detection) {
   const verdict = qualityGate.evaluate(detection);
   const progress = baselineCollector.offer(verdict, detection.descriptor, currentObservation());
 
@@ -715,15 +722,24 @@ function processBaselineFrame(detection) {
     return;
   }
   if (progress.status === 'done') {
-    // Camera baselines can be restored against the same physical source. A
-    // local video's blob URL disappears on reload, so persisting that template
-    // would silently compare the next camera session with the wrong source.
-    if (runtime.sourceKind === 'camera') {
-      saveBaseline({ ...progress.baseline, sourceKind: 'camera' });
-    } else {
-      clearBaseline();
+    const epoch = runtime.baselineEpoch;
+    if (runtime.sourceKind === 'video') {
+      adoptBaseline(progress.baseline, false);
+      return;
     }
-    adoptBaseline(progress.baseline, false);
+
+    const thumbnail = await captureThumbnail(els.video, detection.detection?.box)
+      .catch(() => null);
+    if (epoch !== runtime.baselineEpoch) return;
+
+    const face = await saveBaseline({ ...progress.baseline, sourceKind: 'camera', thumbnail });
+    if (epoch !== runtime.baselineEpoch) {
+      if (face) void clearBaseline({ id: face.id, removeFace: true });
+      return;
+    }
+
+    adoptBaseline({ ...progress.baseline, archiveId: face?.id ?? null }, false);
+    if (!face) setStatus('Baseline set for this session. Browser storage could not save it for Lab.', true);
   }
 }
 
@@ -1071,7 +1087,7 @@ async function onFrame() {
     processFaceReturned();
 
     if (runtime.appState === APP_STATES.CAPTURING) {
-      processBaselineFrame(detection);
+      await processBaselineFrame(detection);
     } else if (runtime.appState === APP_STATES.TRACKING && runtime.baseline) {
       await processTrackingFrame(detection);
     }
@@ -1368,7 +1384,7 @@ function bindListeners() {
   });
   els.btnUseCamera.addEventListener('click', useCameraSource);
 
-  guardDestructive(els.btnBaseline, 'Reset baseline', 'Reset — sure?', deleteBaseline);
+  guardDestructive(els.btnBaseline, 'Reset baseline', 'Reset — sure?', () => deleteBaseline(true));
   guardDestructive(els.btnDeleteAll, 'Delete all', 'Delete all — sure?', () => gallery.deleteAll());
 
   els.thresholdHelp.addEventListener('click', () => {

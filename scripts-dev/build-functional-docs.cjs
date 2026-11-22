@@ -16,8 +16,6 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..');
 const SOURCE_ROOT = path.join(ROOT, 'docs-src', 'en');
 const PAGE_INDEX = path.join(SOURCE_ROOT, 'pages.json');
-const PROJECT_VERSION = '1.1.0';
-const LAST_UPDATED = '1 November 2026';
 const SITE_URL = 'https://ghostmaxxing.vecna.eu';
 const SOCIAL_IMAGE = `${SITE_URL}/images/social/ghostmaxxing-generic.jpg`;
 
@@ -55,9 +53,12 @@ function siteHeader() {
 <details class="gm-site-nav__group gm-site-nav__group--tools">
   <summary class="gm-site-nav__trigger" aria-controls="gmToolsMenu">Tools <span aria-hidden="true">▾</span></summary>
   <div class="gm-site-menu" id="gmToolsMenu"><ul>
-  <li><a href="/lab.html">Camouflage lab</a><small>Apply Ghostyles and compare local results.</small></li>
-  <li><a href="/loader.html">Video analyser</a><small>Analyse a recorded makeup video.</small></li>
-  <li><a href="/realtime.html">Makeup Explorer</a><small>See how makeup changes face descriptors in real time.</small></li>
+  <li><a href="/lab.html">Workshop Lab</a><small>Save faces and compare live recognition results.</small></li>
+  <li><a href="/realtime.html">Makeup Explorer</a><small>Measure descriptor drift across makeup steps.</small></li>
+  <li><a href="/ghostyle-player.html">Ghostyle Player</a><small>Preview and edit Ghostyles beside the camera.</small></li>
+  <li><a href="/ghostyle-transfer.html">Ghostyle Transfer</a><small>Extract a Ghostyle from two photos.</small></li>
+  <li><a href="/docs/guides/localfuzzer.html">Local Fuzzer</a><small>Search Ghostyles locally with Docker.</small></li>
+  <li><a href="/loader.html">Video analyser</a><small>Compare frames from a recorded video.</small></li>
 </ul></div>
 </details>
 <details class="gm-site-nav__group ">

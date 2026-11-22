@@ -52,14 +52,14 @@ Preview images are absolute, fetchable 1200×630 JPEG files. Open Graph and Twit
 | Genealogy | `images/social/ghostmaxxing-pole.jpg` |
 | Community gallery | `images/social/ghostmaxxing-gallery.jpg` |
 
-The source list and generation notes live in `images/social/cards-manifest.json` and `images/social/FOLDER-DESCRIPTION.md`. New preview assets belong in `images/social/` or `images/preview/`; never overwrite an unrelated source image in `images/`. Record the source and generation method, and update `scripts-dev/check-seo.cjs` when adding a page-specific card.
+The source list and generation notes live in `images/social/cards-manifest.json` and `images/social/FOLDER-DESCRIPTION.md`. New preview assets belong in `images/social/` or `images/preview/`; never overwrite an unrelated source image in `images/`. Record the source and generation method in the social-card manifest when adding a page-specific card.
 
 ## Structured data
 
 Every indexed page has exactly one parseable Schema.org JSON-LD block.
 
 - Homepage: `WebSite`, the author `Person`, and `SoftwareApplication`.
-- Lab, Video Analyser, Makeup Explorer: `WebApplication` with vecna as author.
+- Use tool-specific metadata. The Lab declares a `WebApplication`. Describe Realtime as makeup-session measurement, Player as live Ghostyle editing, Transfer as photo-pair extraction, and Video Analyser as recorded-video diagnostics.
 - About: `AboutPage`, the Ghostmaxxing `Project`, and vecna as author.
 - Projects, references and genealogy: `CollectionPage` and generated `ItemList`, with vecna as author.
 - Gallery: `CollectionPage` with an `ImageGallery`, vecna as author, and links to the gallery RSS feed and ActivityPub actor.
@@ -102,10 +102,9 @@ npm run update:genealogy
 npm run docs:functional
 npm run docs:rebuild
 npm run codemap
-npm run check:seo
 ```
 
-`npm run check:seo` verifies required metadata, canonical URLs, JSON-LD, page-specific preview images, image dimensions, generated list counts, sitemap coverage and the robots-to-sitemap link. It does not guarantee how an external service will cache or render a preview. After deployment, test representative URLs with a Schema.org validator and the relevant social preview debuggers.
+After regeneration, check titles, descriptions, canonical URLs, JSON-LD, preview image paths and dimensions, and sitemap entries for the affected pages. After deployment, test representative URLs with a Schema.org validator and the relevant social preview debuggers.
 
 `npm run htmls:install` replaces the sibling backend client interface before copying the site. Run it only when that deployment replacement is intended.
 

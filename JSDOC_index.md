@@ -1,7 +1,7 @@
 # Ghostmaxxing technical reference
 
-> Version 1.1.0
-> Last updated: 1 November 2026
+> Version 1.3.0
+> Last updated: 22 November 2026
 > Functional documentation: [use the tools and understand the results](/docs/)
 
 Ghostmaxxing is a static browser lab for testing how selected face-analysis models respond to visible interventions. This site is the generated developer reference. It documents runtime modules, functions, parameters, events, and the Ghostyle extension contract.
@@ -22,9 +22,17 @@ If you want to operate an interface, begin with the functional guides. If you ar
 
 ### Browser Lab
 
-`lab.html` loads `lab-js/main.js`, the application controller. It coordinates the camera, local baselines, face-api analysis, MediaPipe geometry, Ghostyles, composite checks, UI, and the public `window.gstmxx` API.
+`ghostyle-transfer.html` extracts a Ghostyle from clean and painted photos.
 
-Use it when you need live feedback or are developing an effect that follows the face.
+`lab.html` loads `lab-js/workshop/main.js` for camera comparison, numbered faces, eight seconds of recognition history, and independent landmarks.
+
+### Ghostyle Player
+
+`ghostyle-player.html` loads `lab-js/ghostyle-player/main.js` to replay bundled Ghostyles, apply edits to the local preview, and use the native face-anchored brush.
+
+### Ghostyle Transfer
+
+`ghostyle-transfer.html` loads `lab-js/ghostyle-transfer/main.js` to align a clean and painted photo on the canonical UV mesh and export the detected regions as colored polygons. The preview renders the exported `paintUV` callback. Face-api comparisons and explicitly saved clean references use the same local archive as Lab and Realtime.
 
 ### Video Loader
 
@@ -48,70 +56,11 @@ interpreting the threshold, noise floor, or per-coordinate plots.
 
 ## Runtime architecture
 
-Ghostmaxxing has no production bundling step. The browser loads HTML, CSS, ES modules, vendored libraries, model assets, and `ghostyles.json` directly. Node tooling supports tests, documentation, validation, inspection, and packaging.
-
-```text
-lab.html
-  └─ lab-js/main.js
-       ├─ camera.js + db.js
-       ├─ engine.js + landmark-analysis.js
-       ├─ mediapipe-loop.js + engine-3d.js
-       ├─ auto-find-loop.js + bbox-overlay.js + analyze-panel.js
-       ├─ ghostyles-manager.js
-       └─ plugins3d-loader.js + ghostyle3d-uv-renderer.js
-
-loader.html
-  └─ lab-js/loader.js
-
-realtime.html
-  └─ lab-js/realtime/realtime.js
-       ├─ realtime-capture.js (quality, temporal collectors, spike/frame buffer)
-       ├─ realtime-graph.js + realtime-radial.js
-       ├─ realtime-settings.js
-       └─ realtime-gallery.js
-
-```
-
-### Core state and lifecycle
-
-- `main.js` initialises the Lab, dispatches `gstmxxReady`, and exposes `window.gstmxx`.
-- `state.js` owns shared mutable state and the `gstmxxEvents` bus.
-- `config.js` owns model locations, detector options, and recording configuration.
-- `dom.js`, `lab-ui.js`, and `mobile-ui.js` bind the interface to that state.
-
-### Camera and local records
-
-- `camera.js` manages webcam lifecycle, facing mode, and short recordings.
-- `db.js` stores face-api descriptors and experimental ImageEmbedder vectors locally under related record IDs.
-- `face-thumbnails.js` renders saved records.
-- `upload-consent.js` is an in-progress client contract. Do not document the end-to-end upload flow as released until the backend and consent milestone are complete.
-
-### 2D face-api path
-
-- `engine.js` runs TinyFaceDetector, 68-point landmarks, 128-value face descriptors, and identity comparison.
-- `landmark-analysis.js` turns metrics into the 2D result state.
-- `MATCH_THRESHOLD` defaults to `0.58`. Face-api uses Euclidean distance, so lower is more similar and a distance at or below the threshold is a match.
-
-### MediaPipe geometry and experimental image embedding
-
-- `mediapipe-loop.js` runs FaceLandmarker and publishes 478 normalised landmarks for mesh and UV work.
-- `engine-3d.js` runs MediaPipe ImageEmbedder with MobileNetV3 Small and compares general visual embeddings with cosine similarity.
-- `MATCH_THRESHOLD_3D` defaults to `0.85`. Higher is more similar and a value at or above the threshold is a match.
-
-The FaceLandmarker and ImageEmbedder paths serve different purposes. User-facing technical copy should call the latter an **experimental visual embedding**, not reliable 3D face recognition. It responds to global image content and is not a dedicated ArcFace-style face descriptor.
-
-## The two-pass Ghostyle contract
-
-The Lab intentionally analyses two images at different cadences:
-
-1. The live scaffold tracks the original webcam frame for responsive positioning.
-2. The selected Ghostyle draws onto a composite image.
-3. `auto-find-loop.js` analyses that modified composite on a slower interval.
-4. `bbox-overlay.js` and `analyze-panel.js` expose the resulting state and metrics.
-
-Do not merge the original and composite paths as a cleanup. A visible live box answers “where is the face now?” The composite result answers “what did the modified image do to this local comparison?” Keeping both is necessary to interpret an intervention.
-
-The combined state can be `matched`, `eluded`, `partial-elusion`, or `unknown`. The public word “Escaped” is an interface label, not a universal security result. Preserve raw per-path measurements wherever the distinction matters.
+- `workshop/recognition.js` classifies observations and computes the timed history.
+- `face-archive.js` gives Lab and Realtime access to the same numbered camera references.
+- `workshop/media.js` and `workshop/overlays.js` provide the camera, clips, model setup and geometry rendering.
+- `ghostyle-player/catalog.js` loads and compiles editable modules.
+- `ghostyle-player/preview.js` and `ghostyle3d-uv-renderer.js` render the Player's 2D and 3D paint.
 
 ## Ghostyle extension contract
 
@@ -137,16 +86,7 @@ The current validator enforces only the implemented minimum and format checks. P
 
 ## Public browser API
 
-`window.gstmxx` is exposed for plugins, tests, and integrations after the `gstmxxReady` event. Use [`lab-js/Ghostmaxxing.d.ts`](https://github.com/vecna/ghostmaxxing/blob/main/lab-js/Ghostmaxxing.d.ts) as the typed index and the generated symbols in this site as the detailed reference.
-
-Important groups include:
-
-- latest analysis and thresholds, including `getLastResult()`;
-- detector, model, and FaceLandmarker access required by supported extensions;
-- active Ghostyle and composite helpers;
-- utility functions deliberately surfaced to plugins.
-
-Treat everything else in module state as internal. If an integration needs a new stable function, add it to the public object, type declaration, JSDoc, and a test together.
+Ghostyle Player exposes `window.gstmxx` before loading the selected Ghostyle. The API contains the current geometry, active Ghostyle ID, events and drawing helpers. See [Ghostmaxxing.d.ts](https://github.com/vecna/ghostmaxxing/blob/main/lab-js/Ghostmaxxing.d.ts).
 
 ## Generated and hand-authored documentation
 

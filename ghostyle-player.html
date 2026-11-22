@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="canonical" href="https://ghostmaxxing.vecna.eu/ghostyle-player.html">
+  <title>Ghostyle Player — Ghostmaxxing</title>
+  <meta name="description" content="Preview Ghostyles on camera, paint with the brush and edit the source beside the live result.">
+  <link rel="icon" href="/images/logo/mark-onlight.svg">
+  <link rel="stylesheet" href="/styles/styles.css">
+  <link rel="stylesheet" href="/styles/ghostyle-player.css">
+</head>
+<body class="gm-tool-page--lab player-page">
+  <main class="player" id="player">
+    <header class="player-bar">
+      <a class="match-home" href="/" aria-label="Home" data-i18n-aria-label="lab_home">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10h-6v-6H9v6H3z"/></svg>
+      </a>
+      <h1>Ghostyle Player</h1>
+      <label class="player-style">
+        <span class="workshop-visually-hidden">Ghostyle</span>
+        <select id="ghostyle-select" disabled>
+          <option value="" data-i18n="player_none">No Ghostyle</option>
+        </select>
+      </label>
+      <button id="toggle-source" aria-controls="player-source-panel" aria-expanded="false" type="button" data-i18n="player_show_code">Show code</button>
+    </header>
+
+    <div class="player-workspace">
+      <div id="viewer" class="player-stage">
+        <div class="player-camera">
+          <div class="player-picture">
+            <video id="video" autoplay muted playsinline></video>
+            <canvas id="ghostyle-3d" aria-hidden="true"></canvas>
+            <canvas id="ghostyle-2d" aria-hidden="true"></canvas>
+            <canvas id="landmarks-3d" aria-hidden="true" hidden></canvas>
+            <canvas id="landmarks-2d" aria-hidden="true" hidden></canvas>
+            <canvas id="brush-layer" aria-hidden="true"></canvas>
+          </div>
+          <p id="player-status" role="status" data-i18n="placeholder_loading_webcam">Loading models and requesting the webcam…</p>
+        </div>
+        <div id="player-parameters" class="player-parameters" role="group" aria-label="Ghostyle settings" data-i18n-aria-label="player_parameters" hidden></div>
+      </div>
+
+      <section id="player-source-panel" class="player-source" aria-label="Ghostyle code" data-i18n-aria-label="player_editor_label" hidden>
+        <div class="player-editor-toolbar">
+          <label for="ghostyle-source" data-i18n="player_editor_label">Ghostyle code</label>
+          <div class="player-editor-actions">
+            <button id="indent-source" type="button" data-i18n="player_indent" disabled>Auto-indent</button>
+            <button id="download-source" type="button" data-i18n="player_download" disabled>Download .js</button>
+            <button id="reload-source" type="button" data-i18n="player_apply" disabled>Reload</button>
+          </div>
+        </div>
+        <div class="player-code">
+          <pre class="player-highlight" aria-hidden="true"><code id="source-highlight"></code></pre>
+          <textarea id="ghostyle-source" spellcheck="false" autocapitalize="off" autocorrect="off" wrap="off" disabled></textarea>
+        </div>
+        <p id="player-editor-status" role="status"></p>
+      </section>
+    </div>
+
+    <div class="player-dock">
+      <div class="player-controls">
+         <div class="player-brush" role="group" aria-label="Brush" data-i18n-aria-label="player_brush">
+           <button id="toggle-brush" aria-pressed="false" type="button" data-i18n="player_brush">Brush</button>
+           <label><span data-i18n="player_color">Color</span> <input id="brush-color" type="color" value="#00e5ff"></label>
+           <label><span data-i18n="player_size">Size</span> <input id="brush-size" type="range" min="4" max="80" value="26"></label>
+           <label><span data-i18n="player_opacity">Opacity</span> <input id="brush-opacity" type="range" min="0.05" max="1" step="0.05" value="0.85"></label>
+           <button id="brush-undo" type="button" data-i18n="player_undo" disabled>Undo</button>
+           <button id="brush-clear" type="button" data-i18n="player_clear" disabled>Clear</button>
+           <button id="brush-bake" type="button" data-i18n="player_bake" disabled>Bake to code</button>
+         </div>
+         <div class="player-actions">
+           <div class="player-overlay-actions" role="group" aria-label="Overlays" data-i18n-aria-label="lab_overlays">
+             <button data-overlay="2d" type="button" aria-pressed="false" data-i18n-aria-label="view_2d_points">2D</button>
+             <button data-overlay="3d" type="button" aria-pressed="false" data-i18n-aria-label="view_3d_mesh">3D</button>
+           </div>
+           <div class="player-clip-actions" role="group" aria-label="Clips" data-i18n-aria-label="player_clips">
+             <button id="recordBtn" type="button" disabled data-i18n="player_record">Record 2s</button>
+             <button id="copySnapshotBtn" type="button" disabled data-i18n="lab_copy_snapshot">Copy image</button>
+             <button id="gm-nav-upload" type="button"><span data-i18n="upload_button">Upload</span> <span id="gm-upload-badge" class="workshop-count" hidden></span></button>
+           </div>
+           <a href="/lab.html" data-i18n="player_lab">Workshop Lab</a>
+           <a href="/ghostyle-transfer.html">Ghostyle Transfer</a>
+         </div>
+      </div>
+    </div>
+  </main>
+
+  <dialog id="gm-screen-upload" class="workshop-panel" aria-labelledby="upload-heading">
+    <button class="screen__close" type="button" data-close-panel aria-label="Close" data-i18n-aria-label="close_button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <h1 id="upload-heading" data-i18n="upload_report_title">Upload &amp; report</h1>
+    <div class="cardlist">
+      <div class="card upload-card">
+        <h3 data-i18n="share_clip_title">Share a clip</h3>
+        <p id="gm-upload-count" data-i18n="no_clips_recorded">No clips recorded yet.</p>
+        <p id="gm-upload-empty" class="upload-empty" data-i18n="lab_record_first">Record a clip to preview it here.</p>
+        <div id="gm-upload-current" hidden>
+          <video id="gm-upload-preview" class="upload-preview" controls playsinline preload="metadata"></video>
+          <div id="gm-upload-clip-meta" class="upload-meta"></div>
+          <div id="gm-upload-clip-list" class="upload-chiplist" aria-label="Recorded clips" data-i18n-aria-label="upload_clip_list_label"></div>
+          <label class="upload-field">
+            <span data-i18n="upload_note_label">Note for moderators</span>
+            <textarea id="gm-upload-note" rows="3" maxlength="500" data-i18n-placeholder="upload_note_placeholder" placeholder="What is this clip showing?"></textarea>
+          </label>
+          <label class="consent-check">
+            <input id="gm-upload-consent" type="checkbox" />
+            <span data-i18n="lab_upload_consent">I consent to send this clip to the Ghostmaxxing server for storage, human moderation, possible public web/feed/ActivityPub publication after approval, and deletion by private receipt token.</span>
+          </label>
+          <div class="upload-actions">
+            <button id="gm-upload-copy" class="secondary-btn" type="button" data-i18n="lab_copy_clip">Copy clip</button>
+            <button id="gm-upload-submit" class="secondary-btn" type="button" disabled data-i18n="upload_submit_button">Submit to moderation</button>
+            <button id="gm-upload-discard" class="secondary-btn" type="button" data-i18n="upload_discard_button">Discard clip</button>
+          </div>
+        </div>
+        <p id="gm-upload-status" class="upload-status" aria-live="polite"></p>
+      </div>
+      <div class="card">
+        <h3 data-i18n="receipt_log_title">Receipt log</h3>
+        <p data-i18n="receipt_log_description">Private receipts from this browser. Keep them to reach the future public URL and revoke the upload with the delete token.</p>
+        <div id="gm-receipt-log" class="receipt-log"></div>
+      </div>
+      <div class="card"><h3><a href="https://sindacato.nina.watch/en/ghostati/report/" data-nina-report data-i18n="report_deployment_title">Report a deployment</a></h3><p data-i18n="report_deployment_description">Where face recognition appears in public space, who runs it, what it looks like.</p></div>
+    </div>
+  </dialog>
+
+  <script type="module" src="/lab-js/nina-links.js"></script>
+  <script src="/lab-js/vendor/face-api.js"></script>
+  <script type="module" src="/lab-js/ghostyle-player/main.js"></script>
+</body>
+</html>

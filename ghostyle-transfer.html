@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Extract a Ghostyle from clean and painted photos of the same face.">
+  <title>Ghostyle Transfer — Ghostmaxxing</title>
+  <link rel="canonical" href="https://ghostmaxxing.vecna.eu/ghostyle-transfer.html">
+  <link rel="icon" href="/images/logo/mark-onlight.svg">
+  <link rel="stylesheet" href="/styles/styles.css">
+  <link rel="stylesheet" href="/styles/ghostyle-player.css">
+  <link rel="stylesheet" href="/styles/ghostyle-transfer.css">
+  <script defer src="/lab-js/vendor/face-api.js"></script>
+</head>
+<body class="gm-tool-page--lab transfer-page">
+  <main class="player transfer">
+    <header class="player-bar">
+      <a class="match-home" href="/" aria-label="Home" data-i18n-aria-label="lab_home">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10h-6v-6H9v6H3z"/></svg>
+      </a>
+      <h1>Ghostyle Transfer</h1>
+      <nav class="transfer-links" aria-label="Tools" data-i18n-aria-label="transfer_tools">
+        <a href="/lab.html" data-i18n="player_lab">Workshop Lab</a>
+        <a href="/ghostyle-player.html">Ghostyle Player</a>
+        <a href="/docs/guides/ghostyle-transfer.html">Help</a>
+      </nav>
+    </header>
+
+    <div class="transfer-workspace">
+      <p class="transfer-intro" data-i18n="transfer_intro">Use two photos of the same face with similar pose and lighting. Processing stays in this browser.</p>
+      <div class="transfer-grid">
+        <section class="transfer-card" aria-labelledby="clean-heading">
+          <h2 id="clean-heading" data-i18n="transfer_clean">Clean photo</h2>
+          <input id="clean-file" type="file" accept="image/*" aria-labelledby="clean-heading" aria-describedby="clean-message">
+          <div class="transfer-image"><canvas id="clean-image" hidden aria-hidden="true"></canvas></div>
+          <div class="transfer-details">
+            <p id="clean-message" role="status"></p>
+            <div class="transfer-reference">
+              <p id="clean-match"></p>
+              <button id="save-transfer-face" type="button" disabled data-i18n="transfer_save">Save clean face to Lab</button>
+            </div>
+            <p id="transfer-save-status" role="status"></p>
+          </div>
+        </section>
+        <section class="transfer-card" aria-labelledby="painted-heading">
+          <h2 id="painted-heading" data-i18n="transfer_painted">Painted photo</h2>
+          <input id="painted-file" type="file" accept="image/*" aria-labelledby="painted-heading" aria-describedby="painted-message">
+          <div class="transfer-image"><canvas id="painted-image" hidden aria-hidden="true"></canvas></div>
+          <div class="transfer-details">
+            <p id="painted-message" role="status"></p>
+            <p id="painted-match"></p>
+          </div>
+        </section>
+        <section class="transfer-card" aria-labelledby="preview-heading">
+          <h2 id="preview-heading" data-i18n="transfer_preview">Ghostyle preview</h2>
+          <div class="transfer-target">
+            <label class="transfer-target-label" for="target-file" data-i18n="transfer_target">Try another face (optional)</label>
+            <div class="transfer-target-picker">
+              <input id="target-file" type="file" accept="image/*" aria-describedby="target-message">
+              <button id="clear-transfer-target" type="button" hidden data-i18n="transfer_remove_target">Remove</button>
+            </div>
+          </div>
+          <div class="transfer-image"><canvas id="transfer-preview" role="img" aria-labelledby="preview-heading" hidden></canvas></div>
+          <div class="transfer-details"><p id="target-message" role="status"></p></div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="player-dock">
+      <p id="transfer-status" class="transfer-status" role="status" data-i18n="transfer_start">Choose a clean photo and a painted photo.</p>
+      <div class="player-controls transfer-controls">
+        <label for="transfer-sensitivity" data-i18n="transfer_sensitivity">Sensitivity</label>
+        <input id="transfer-sensitivity" type="range" min="0" max="100" value="65" disabled>
+        <output id="transfer-sensitivity-value" for="transfer-sensitivity" aria-hidden="true">65</output>
+        <button id="download-transfer" type="button" disabled data-i18n="transfer_download">Download Ghostyle .js</button>
+      </div>
+    </footer>
+  </main>
+  <script type="module" src="/lab-js/ghostyle-transfer/main.js"></script>
+</body>
+</html>

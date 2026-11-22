@@ -1,8 +1,8 @@
       <section class="content-page__header-area gm-prose" aria-labelledby="loader-guide-title">
         <span class="content-page__kicker">Functional guide · Video Loader</span>
-        <h1 id="loader-guide-title">Compare faces at exact video times.</h1>
-        <p class="content-page__lead">Load a local MP4, save a face at one timestamp, and compare the face visible at another timestamp.</p>
-        <p class="content-page__deck">Each action records the playhead time. Model outputs may vary across browsers, hardware and inference backends.</p>
+        <h1 id="loader-guide-title">Analyse makeup in a recorded video</h1>
+        <p class="content-page__lead">Inspect a frame at an exact timestamp or track changes across a sampled segment of a local video.</p>
+        <p class="content-page__deck">Measurements use the video playhead time. Model outputs may vary across browsers, hardware and inference backends.</p>
         <div class="content-page__actions">
           <a class="docs-link docs-link--primary" href="/loader.html">Open the Loader &#8599;</a>
           <a class="docs-link" href="/docs/glossary/#baseline">What is a baseline?</a>
@@ -21,42 +21,32 @@
 
           <section id="procedure">
             <span class="docs-eyebrow">Minimum procedure</span>
-            <h2>Compare two frames</h2>
-            <div class="docs-step-list">
-              <div class="docs-step"><span class="docs-step__number">01</span><div><h3>Wait for Ready</h3><p>The status indicates when the local face-api models and the experimental image embedder have loaded.</p></div></div>
-              <div class="docs-step"><span class="docs-step__number">02</span><div><h3>Select Load MP4</h3><p>Choose a video from your device. The duration and millisecond timeline become available when the browser decodes its metadata.</p></div></div>
-              <div class="docs-step"><span class="docs-step__number">03</span><div><h3>Choose a baseline frame</h3><p>Pause the video and move the timeline to a clear face. Note the displayed time, then select <strong>Record face</strong>.</p></div></div>
-              <div class="docs-step"><span class="docs-step__number">04</span><div><h3>Choose a comparison frame</h3><p>Move to another time. Keep the variable you want to study clear, such as pose, expression, occlusion, or visible makeup.</p></div></div>
-              <div class="docs-step"><span class="docs-step__number">05</span><div><h3>Select Seek face</h3><p>The Loader detects the current face and compares it with the saved 2D and 3D records. A new activity entry is added at the time where you pressed the button.</p></div></div>
-              <div class="docs-step"><span class="docs-step__number">06</span><div><h3>Read the log</h3><p>Record the timestamp, nearest ID, 2D distance, 3D similarity, thresholds, and whether each pipeline returned a face.</p></div></div>
-            </div>
+            <h2>Inspect a frame or analyse a sequence</h2>
+            <ol>
+              <li>Wait for the local models to load, then choose <strong>Select local video</strong>.</li>
+              <li>Scrub to the frame you want to inspect and select <strong>Analyse this frame</strong>.</li>
+              <li>For a sequence, scrub to a clear reference frame, select <strong>Select base at</strong> the displayed time, choose a sample interval and select <strong>Analyse video</strong>.</li>
+              <li>Read the timeline and results in <strong>Evidence and story order</strong>. Use <strong>Download report</strong> or <strong>Download technical log</strong> to keep a local copy.</li>
+            </ol>
 
             <figure class="docs-figure">
-              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/loader-01-empty.png" width="1400" height="397" alt="Empty Ghostmaxxing Video Loader stage with the Load MP4 control and disabled timeline" /></div>
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/loader-01-empty.png" width="1384" height="1045" alt="Empty Ghostmaxxing Video Loader stage with the Select local video control and disabled timeline" /></div>
               <figcaption>The Loader before a file is selected. Face actions remain unavailable until the models and video are ready.<span class="docs-figure__provenance">Element capture · loader stage</span></figcaption>
             </figure>
 
             <figure class="docs-figure">
-              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/loader-02-video-loaded.png" width="1400" height="397" alt="Video Loader with a local MP4 visible at two seconds and the timeline enabled" /></div>
-              <figcaption>A local MP4 at a controlled playhead time. The documentation fixture uses 00:02.000; choose times appropriate to your own test.<span class="docs-figure__provenance">Element capture · requested timestamp 2 seconds</span></figcaption>
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/loader-02-video-loaded.png" width="1384" height="1045" alt="Video Loader with a local MP4 visible at three seconds and the timeline enabled" /></div>
+              <figcaption>A local MP4 at a controlled playhead time. The documentation fixture uses 00:03.000; choose times appropriate to your own test.<span class="docs-figure__provenance">Element capture · requested timestamp 3 seconds</span></figcaption>
             </figure>
           </section>
 
           <section id="actions">
-            <span class="docs-eyebrow">Two different actions</span>
-            <h2>Record creates the reference. Seek compares with it.</h2>
-            <table>
-              <thead><tr><th>Action</th><th>What it does</th><th>What appears in the log</th></tr></thead>
-              <tbody>
-                <tr><td><strong>Record face</strong></td><td>Saves a 128-value face-api descriptor, a thumbnail when available, and an experimental image embedding under the same ID.</td><td>Saved ID, detection score, 2D landmark count, embedding length, and video position.</td></tr>
-                <tr><td><strong>Seek face</strong></td><td>Detects the face in the current frame and compares it with the faces already in memory.</td><td>Nearest 2D distance, nearest 3D similarity, faces compared, thresholds, and structured details.</td></tr>
-              </tbody>
-            </table>
-            <p>The 2D and 3D numbers have opposite directions. A lower face-api Euclidean distance is closer. A higher image-embedding cosine similarity is closer. Do not compare the raw numbers as if they used the same scale.</p>
+            <h2>Read the model lanes</h2>
+            <p>The report keeps MediaPipe coverage, experimental ImageEmbedder similarity, and face-api distance in separate lanes. A lower face-api Euclidean distance means a closer match. A higher ImageEmbedder cosine similarity means more similar visual input.</p>
 
             <figure class="docs-figure">
-              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/loader-03-record-result.png" width="1400" height="288" alt="Video Loader activity log containing a Record face entry and diagnostic metadata" /></div>
-              <figcaption>Every button action produces a timestamped entry. Use the structured details when documenting a result.<span class="docs-figure__provenance">Element capture · activity log</span></figcaption>
+              <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/loader-03-record-result.png" width="1384" height="1520" alt="Video Loader report showing separate model lanes after a video analysis" /></div>
+              <figcaption>The report after sampling a short segment of the documentation fixture.</figcaption>
             </figure>
           </section>
 
@@ -67,7 +57,7 @@
               <li>Pause before pressing an action. Confirm the playhead after the seek completes.</li>
               <li>Use the same file and timestamp when comparing revisions of the application.</li>
               <li>Record browser, model files, hardware backend, and thresholds for consequential comparisons.</li>
-              <li>Do not treat the wall-clock time in the log as the video timestamp. The video position chip is the relevant one.</li>
+              <li>Use the video position when referring to a result.</li>
               <li>A frame with no detected face is a valid observation, but it does not produce an identity comparison.</li>
             </ul>
           </section>
@@ -76,8 +66,7 @@
             <span class="docs-eyebrow">Limits</span>
             <h2>This is a work in progress.</h2>
             <div class="docs-warning"><p>
-            Proposed features include Ghostyle extraction, before-and-after differences
-              and continuous distance recording. Discuss them in the <a href="https://github.com/vecna/ghostmaxxing/issues">github issues</a>.
+            For Ghostyle extraction from a pair of photos, use <a href="/docs/guides/ghostyle-transfer.html">Ghostyle Transfer</a>. Proposed Loader features include additional before-and-after diagnostics. Discuss them in the <a href="https://github.com/vecna/ghostmaxxing/issues">github issues</a>.
             </p></div>
           </section>
 
@@ -91,7 +80,7 @@
           <nav>
             <a href="#purpose">Purpose</a>
             <a href="#procedure">Minimum procedure</a>
-            <a href="#actions">Record and Seek</a>
+            <a href="#actions">Read the model lanes</a>
             <a href="#repeatability">Repeatability</a>
             <a href="#limits">Limits</a>
           </nav>

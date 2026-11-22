@@ -8,6 +8,10 @@ Use `lab-js/vendor/fetch-sources.sh` to refresh the assets it manages.
 |---|---|---|---|
 | `face-api.js` | `https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js` | floating (no `@x.y.z` in URL) | Main `faceapi` browser bundle used by the Lab pages. |
 
+Acorn `8.18.0` is copied from `node_modules/acorn/dist/acorn.mjs` after
+`npm ci` for local JavaScript tokenization in Ghostyle Player. Copy its
+`LICENSE` alongside the runtime as `acorn-LICENSE` when updating it.
+
 ## URLs synced by `fetch-sources.sh`
 
 ### face-api.js model assets

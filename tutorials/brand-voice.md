@@ -53,7 +53,7 @@ Apply these rules to headings, navigation, body copy, metadata, social cards and
 
 | Avoid | Write instead |
 |---|---|
-| Unlock the transformative power of adversarial beauty. | Apply a Ghostyle and compare the result with your saved baseline. |
+| Unlock the transformative power of adversarial beauty. | Save a face reference in Lab and compare the reading after applying physical makeup. |
 | The greens are ordered, and the order is the contract. | Use `--gm-green` for camera outlines and `--gm-green-deep` inside the lens. |
 | Your face is now invisible. | The detector found no face in this frame. |
 | Green means you are safe to go. | The comparison crossed this model's threshold in this test. |
@@ -189,10 +189,10 @@ Distinguish the task before describing a result:
 
 | Task | Current implementation reference | Editorial consequence |
 |---|---|---|
-| Face detection and biometric matching | `lab-js/engine-2d.js` | Detection is not identification. A face-api descriptor and distance concern this local comparison. |
+| Face detection and biometric matching | `lab-js/workshop/media.js`, `lab-js/workshop/recognition.js` | Detection is not identification. A face-api descriptor and distance concern this local comparison. |
 | Face geometry and tracking | MediaPipe integration in `lab-js/` | A 3D mesh is not proof of biometric identity recognition. |
-| General image similarity | `lab-js/engine-3d.js` | ImageEmbedder/MobileNetV3 produces embeddings too. It is not trained for biometric face recognition; scene, colour and lighting can affect the comparison. |
-| Public media submission | `lab-js/upload.js`, `gallery.html`, `fediverse.html` | Submission is optional; review precedes publication. It is not a confidential report. |
+| General image similarity | `lab-js/loader.js`, `lab-js/video-loader/controller.js` | ImageEmbedder/MobileNetV3 produces embeddings too. It is not trained for biometric face recognition; scene, colour and lighting can affect the comparison. |
+| Public media submission | `lab-js/upload-consent.js`, `gallery.html`, `fediverse.html` | Submission is optional; review precedes publication. It is not a confidential report. |
 
 Feature extraction produces an embedding/descriptor; avoid teaching these as two independent recognition stages. Scores from different engines are not interchangeable. A missing detection, a failed match, an unready model and an error are different states. Explain the actual label, model, threshold and conditions rather than translating all of them into “success”.
 
@@ -227,7 +227,7 @@ Describe implemented publishing and feeds using `fediverse.html` and the backend
 
 ## Names and invitations
 
-A **Ghostyle** is a modular visual intervention applied through the lab. Define it at first mention for a general audience. A plugin can reproduce an intervention; it does not certify protection. Use “filter” only when the cosmetic/rendering sense is intended.
+A **Ghostyle** is a modular visual intervention previewed in Ghostyle Player. Define it at first mention for a general audience. A plugin can reproduce an intervention; it does not certify protection. Use “filter” only when the cosmetic/rendering sense is intended.
 
 | Destination | Suggested invitation | Owner |
 |---|---|---|
@@ -271,8 +271,8 @@ When changing a feature, review visible copy, metadata, structured data, preview
 Useful implementation references:
 
 - `styles/tokens.css`, `styles/cameras.css`, `styles/chrome.css`
-- `styles/lab.css`, `styles/realtime.css`, `styles/loader.css`
-- `lab-js/backend-url.js`, `lab-js/upload-consent.js`, `lab-js/gallery.js`
+- `styles/workshop.css`, `styles/realtime.css`, `styles/ghostyle-player.css`, `styles/ghostyle-transfer.css`, `styles/loader.css`
+- `lab-js/backend-url.js`, `lab-js/upload-consent.js`, `pages-js/gallery.js`
 - `scripts-dev/social-cards.html`, `scripts-dev/build-social-cards.cjs`
 - `scripts-dev/enrich-jsdoc-seo.cjs`, `web-files/sitemap.xml`
 
@@ -360,7 +360,7 @@ Prefer "a local test of face-matching evasion in a browser pipeline" to "face re
 
 **Ghostyle** is a term introduced as part of Ghostmaxxing.
 
-A Ghostyle is a modular visual intervention applied to the face through the Ghostmaxxing lab. It is also the unit in which an intervention can be saved, described, tested and shared.
+A Ghostyle is a modular visual intervention applied to the face through Ghostyle Player. It is also the unit in which an intervention can be saved, described, tested and shared.
 
 Write:
 

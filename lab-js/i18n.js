@@ -24,6 +24,486 @@ export const localeFlags = {
 export const LOCALE_STORAGE_KEY = 'ghostmaxxing-locale';
 
 export const messages = {
+   transfer_tools: {
+      en: "Tools",
+      it: "Strumenti",
+      pt: "Ferramentas",
+   },
+   transfer_intro: {
+      en: "Use two photos of the same face with similar pose and lighting. Processing stays in this browser.",
+      it: "Usa due foto dello stesso volto con posa e luce simili. Le immagini vengono elaborate in questo browser.",
+      pt: "Use duas fotos do mesmo rosto com pose e iluminação semelhantes. O processamento é feito neste navegador.",
+   },
+   transfer_clean: {
+      en: "Clean photo",
+      it: "Foto pulita",
+      pt: "Foto sem maquiagem",
+   },
+   transfer_painted: {
+      en: "Painted photo",
+      it: "Foto pitturata",
+      pt: "Foto com maquiagem",
+   },
+   transfer_save: {
+      en: "Save clean face to Lab",
+      it: "Salva il volto pulito nel Lab",
+      pt: "Salvar rosto sem maquiagem no Lab",
+   },
+   transfer_preview: {
+      en: "Ghostyle preview",
+      it: "Anteprima Ghostyle",
+      pt: "Prévia do Ghostyle",
+   },
+   transfer_target: {
+      en: "Try another face (optional)",
+      it: "Prova su un altro volto (facoltativo)",
+      pt: "Testar em outro rosto (opcional)",
+   },
+   transfer_remove_target: {
+      en: "Remove",
+      it: "Rimuovi",
+      pt: "Remover",
+   },
+   transfer_sensitivity: {
+      en: "Sensitivity",
+      it: "Sensibilità",
+      pt: "Sensibilidade",
+   },
+   transfer_download: {
+      en: "Download Ghostyle .js",
+      it: "Scarica Ghostyle .js",
+      pt: "Baixar Ghostyle .js",
+   },
+   transfer_start: {
+      en: "Choose a clean photo and a painted photo.",
+      it: "Scegli una foto pulita e una foto pitturata.",
+      pt: "Escolha uma foto sem maquiagem e outra com maquiagem.",
+   },
+   transfer_reading_photo: {
+      en: "Reading photo and detecting the face…",
+      it: "Lettura della foto e rilevamento del volto…",
+      pt: "Lendo a foto e detectando o rosto…",
+   },
+   transfer_reading_pair: {
+      en: "Waiting for face detection in both photos…",
+      it: "Rilevamento dei volti nelle due foto…",
+      pt: "Aguardando a detecção do rosto nas duas fotos…",
+   },
+   transfer_extracting: {
+      en: "Extracting Ghostyle polygons…",
+      it: "Estrazione dei poligoni del Ghostyle…",
+      pt: "Extraindo os polígonos do Ghostyle…",
+   },
+   transfer_bad_photo: {
+      en: "Could not open this image. Choose another photo.",
+      it: "Impossibile aprire questa immagine. Scegli un’altra foto.",
+      pt: "Não foi possível abrir esta imagem. Escolha outra foto.",
+   },
+   transfer_mesh_error: {
+      en: "Could not load or run the face mesh. Select the photo again to retry.",
+      it: "Impossibile avviare la mesh del volto. Seleziona di nuovo la foto per riprovare.",
+      pt: "Não foi possível executar a malha facial. Selecione a foto novamente para tentar de novo.",
+   },
+   transfer_many_faces: {
+      en: "More than one face detected. Choose a photo with one face.",
+      it: "Rilevato più di un volto. Scegli una foto con un solo volto.",
+      pt: "Mais de um rosto detectado. Escolha uma foto com apenas um rosto.",
+   },
+   transfer_no_face: {
+      en: "No face detected. Try a clearer, more frontal photo.",
+      it: "Nessun volto rilevato. Prova con una foto più nitida e frontale.",
+      pt: "Nenhum rosto detectado. Tente usar uma foto mais nítida e frontal.",
+   },
+   transfer_check_photos: {
+      en: "Check the messages under the source photos.",
+      it: "Controlla i messaggi sotto le foto di partenza.",
+      pt: "Confira as mensagens abaixo das fotos de origem.",
+   },
+   transfer_no_coverage: {
+      en: "The two face meshes have no comparable areas.",
+      it: "Le due mesh non hanno aree confrontabili.",
+      pt: "As duas malhas faciais não têm áreas comparáveis.",
+   },
+   transfer_no_pattern: {
+      en: "No paint regions at this sensitivity.",
+      it: "Nessuna zona di colore a questa sensibilità.",
+      pt: "Nenhuma região pintada com esta sensibilidade.",
+   },
+   transfer_one_polygon: {
+      en: "1 polygon ready to export.",
+      it: "1 poligono pronto da esportare.",
+      pt: "1 polígono pronto para exportar.",
+   },
+   transfer_polygons: {
+      en: "{count} polygons ready to export.",
+      it: "{count} poligoni pronti da esportare.",
+      pt: "{count} polígonos prontos para exportar.",
+   },
+   transfer_extract_error: {
+      en: "Could not generate the Ghostyle.",
+      it: "Impossibile generare il Ghostyle.",
+      pt: "Não foi possível gerar o Ghostyle.",
+   },
+   transfer_reference_empty: {
+      en: "No Lab references saved.",
+      it: "Nessun riferimento salvato nel Lab.",
+      pt: "Nenhuma referência salva no Lab.",
+   },
+   transfer_reference_unavailable: {
+      en: "Lab face descriptor unavailable.",
+      it: "Descrittore del volto per il Lab non disponibile.",
+      pt: "Descritor facial do Lab indisponível.",
+   },
+   transfer_reference_matched: {
+      en: "Lab match #{id} · distance {distance}",
+      it: "Corrispondenza Lab #{id} · distanza {distance}",
+      pt: "Correspondência no Lab #{id} · distância {distance}",
+   },
+   transfer_reference_near: {
+      en: "Near Lab reference #{id} · distance {distance}",
+      it: "Vicino al riferimento Lab #{id} · distanza {distance}",
+      pt: "Próximo da referência do Lab #{id} · distância {distance}",
+   },
+   transfer_reference_far: {
+      en: "Closest Lab reference #{id} · no match ({distance})",
+      it: "Riferimento Lab più vicino #{id} · nessuna corrispondenza ({distance})",
+      pt: "Referência mais próxima do Lab #{id} · sem correspondência ({distance})",
+   },
+   transfer_reference_absent: {
+      en: "Lab face descriptor unavailable.",
+      it: "Descrittore del volto per il Lab non disponibile.",
+      pt: "Descritor facial do Lab indisponível.",
+   },
+   player_desktop_code: {
+      en: "Code editor is available on desktop only.",
+      it: "Editor del codice previsto solo per desktop.",
+      pt: "Editor de código disponível apenas no computador.",
+   },
+   player_snapshot_ghostyle: {
+      en: "Ghostyle {name}",
+      it: "Ghostyle {name}",
+      pt: "Ghostyle {name}",
+   },
+   lab_copy_snapshot: {
+      en: "Copy image",
+      it: "Copia immagine",
+      pt: "Copiar imagem",
+   },
+   lab_snapshot_measurement: {
+      en: "Distance {distance} / threshold {threshold}",
+      it: "Distanza {distance} / soglia {threshold}",
+      pt: "Distância {distance} / limiar {threshold}",
+   },
+   lab_snapshot_copied: {
+      en: "Image copied",
+      it: "Immagine copiata",
+      pt: "Imagem copiada",
+   },
+   lab_snapshot_shared: {
+      en: "Image shared",
+      it: "Immagine condivisa",
+      pt: "Imagem compartilhada",
+   },
+   lab_snapshot_downloaded: {
+      en: "Image downloaded",
+      it: "Immagine scaricata",
+      pt: "Imagem baixada",
+   },
+   lab_snapshot_error: {
+      en: "Could not copy or export the image.",
+      it: "Impossibile copiare o esportare l’immagine.",
+      pt: "Não foi possível copiar ou exportar a imagem.",
+   },
+   player_none: {
+      en: "No Ghostyle",
+      it: "Nessun Ghostyle",
+      pt: "Sem Ghostyle",
+   },
+   player_show_code: {
+      en: "Show code",
+      it: "Mostra codice",
+      pt: "Mostrar código",
+   },
+   player_hide_code: {
+      en: "Hide code",
+      it: "Nascondi codice",
+      pt: "Ocultar código",
+   },
+   player_indent: {
+      en: "Auto-indent",
+      it: "Indenta",
+      pt: "Indentar",
+   },
+   player_download: {
+      en: "Download .js",
+      it: "Scarica .js",
+      pt: "Baixar .js",
+   },
+   player_parameters: {
+      en: "Ghostyle settings",
+      it: "Impostazioni Ghostyle",
+      pt: "Configurações do Ghostyle",
+   },
+   player_editor_label: {
+      en: "Ghostyle code",
+      it: "Codice del Ghostyle",
+      pt: "Código do Ghostyle",
+   },
+   player_apply: {
+      en: "Reload",
+      it: "Ricarica",
+      pt: "Recarregar",
+   },
+   player_pending: {
+      en: "Reload to apply your changes.",
+      it: "Ricarica per applicare le modifiche.",
+      pt: "Recarregue para aplicar as alterações.",
+   },
+   player_applied: {
+      en: "Code applied",
+      it: "Codice applicato",
+      pt: "Código aplicado",
+   },
+   player_brush: {
+      en: "Brush",
+      it: "Pennello",
+      pt: "Pincel",
+   },
+   player_color: {
+      en: "Color",
+      it: "Colore",
+      pt: "Cor",
+   },
+   player_size: {
+      en: "Size",
+      it: "Dimensione",
+      pt: "Tamanho",
+   },
+   player_opacity: {
+      en: "Opacity",
+      it: "Opacità",
+      pt: "Opacidade",
+   },
+   player_undo: {
+      en: "Undo",
+      it: "Annulla",
+      pt: "Desfazer",
+   },
+   player_clear: {
+      en: "Clear",
+      it: "Cancella",
+      pt: "Limpar",
+   },
+   player_bake: {
+      en: "Bake to code",
+      it: "Crea codice",
+      pt: "Converter em código",
+   },
+   player_sketch: {
+      en: "Brush sketch",
+      it: "Disegno a pennello",
+      pt: "Esboço do pincel",
+   },
+   player_clips: {
+      en: "Clips",
+      it: "Clip",
+      pt: "Clipes",
+   },
+   player_record: {
+      en: "Record 2s",
+      it: "Registra 2 s",
+      pt: "Gravar 2 s",
+   },
+   player_lab: {
+      en: "Workshop Lab",
+      it: "Lab per workshop",
+      pt: "Lab para oficinas",
+   },
+   player_tracking_error: {
+      en: "2D face tracking unavailable.",
+      it: "Tracciamento 2D del volto non disponibile.",
+      pt: "Rastreamento facial 2D indisponível.",
+   },
+   lab_home: {
+      en: "Home",
+      it: "Home",
+      pt: "Início",
+   },
+   lab_recognition: {
+      en: "Face recognition",
+      it: "Riconoscimento del volto",
+      pt: "Reconhecimento facial",
+   },
+   lab_history_label: {
+      en: "Last 8 seconds of recognition",
+      it: "Ultimi 8 secondi di riconoscimento",
+      pt: "Últimos 8 segundos de reconhecimento",
+   },
+   lab_match_recognised: {
+      en: "Recognised",
+      it: "Riconosciuto",
+      pt: "Reconhecido",
+   },
+   lab_match_near: {
+      en: "Near threshold",
+      it: "Vicino alla soglia",
+      pt: "Perto do limiar",
+   },
+   lab_match_far: {
+      en: "Above threshold",
+      it: "Oltre la soglia",
+      pt: "Acima do limiar",
+   },
+   lab_record: {
+      en: "Record 1s",
+      it: "Registra 1 s",
+      pt: "Gravar 1 s",
+   },
+   lab_record_first: {
+      en: "Record a clip to preview it here.",
+      it: "Registra una clip per vederla qui.",
+      pt: "Grave um clipe para visualizá-lo aqui.",
+   },
+   lab_clip_ready: {
+      en: "Clip ready",
+      it: "Clip pronta",
+      pt: "Clipe pronto",
+   },
+   lab_copy_clip: {
+      en: "Copy clip",
+      it: "Copia clip",
+      pt: "Copiar clipe",
+   },
+   lab_clip_copied: {
+      en: "Clip copied",
+      it: "Clip copiata",
+      pt: "Clipe copiado",
+   },
+   lab_clip_shared: {
+      en: "Clip shared",
+      it: "Clip condivisa",
+      pt: "Clipe compartilhado",
+   },
+   lab_clip_downloaded: {
+      en: "Clip downloaded",
+      it: "Clip scaricata",
+      pt: "Clipe baixado",
+   },
+   lab_clip_error: {
+      en: "Could not record or deliver the clip.",
+      it: "Errore nella registrazione o nell’esportazione della clip.",
+      pt: "Não foi possível gravar ou exportar o clipe.",
+   },
+   lab_overlays: {
+      en: "Overlays",
+      it: "Overlay",
+      pt: "Sobreposições",
+   },
+   lab_mesh_error: {
+      en: "3D overlay unavailable.",
+      it: "Overlay 3D non disponibile.",
+      pt: "Sobreposição 3D indisponível.",
+   },
+   lab_about: {
+      en: "About",
+      it: "Info",
+      pt: "Sobre",
+   },
+   lab_about_docs: {
+      en: "Documentation",
+      it: "Documentazione",
+      pt: "Documentação",
+   },
+   lab_about_tools: {
+      en: "Tools",
+      it: "Strumenti",
+      pt: "Ferramentas",
+   },
+   lab_about_links: {
+      en: "Latest links",
+      it: "Ultimi link",
+      pt: "Links recentes",
+   },
+   lab_about_code: {
+      en: "Code",
+      it: "Codice",
+      pt: "Código",
+   },
+   lab_about_guide: {
+      en: "Use the workshop Lab",
+      it: "Usare il Lab nei workshop",
+      pt: "Usar o Lab em oficinas",
+   },
+   lab_about_recognition: {
+      en: "How face recognition works",
+      it: "Come funziona il riconoscimento facciale",
+      pt: "Como funciona o reconhecimento facial",
+   },
+   lab_about_video: {
+      en: "Video analyser",
+      it: "Analizzatore video",
+      pt: "Analisador de vídeo",
+   },
+   lab_about_workshops: {
+      en: "Ghòstati! workshop guide",
+      it: "Guida ai workshop Ghòstati!",
+      pt: "Guia de oficinas Ghòstati!",
+   },
+   lab_about_channels: {
+      en: "Fediverse accounts and feeds",
+      it: "Account e feed del Fediverso",
+      pt: "Contas e feeds do Fediverso",
+   },
+   lab_faces_help: {
+      en: "The camera is compared with these local references.",
+      it: "Il volto in camera viene confrontato con questi riferimenti locali.",
+      pt: "O rosto na câmera é comparado com estas referências locais.",
+   },
+   lab_faces_empty: {
+      en: "No faces saved yet.",
+      it: "Nessun volto salvato.",
+      pt: "Nenhum rosto salvo.",
+   },
+   lab_face_saved: {
+      en: "Face #{id} saved",
+      it: "Volto #{id} salvato",
+      pt: "Rosto #{id} salvo",
+   },
+   lab_saved_preview: {
+      en: "Saved face #{id}",
+      it: "Volto salvato #{id}",
+      pt: "Rosto salvo #{id}",
+   },
+   lab_remove_face: {
+      en: 'Delete',
+      it: 'Elimina',
+      pt: 'Excluir',
+   },
+   lab_delete_face: {
+      en: "Delete face #{id}?",
+      it: "Eliminare il volto #{id}?",
+      pt: "Excluir o rosto #{id}?",
+   },
+   lab_face_storage_error: {
+      en: "Could not update saved faces.",
+      it: "Impossibile aggiornare i volti salvati.",
+      pt: "Não foi possível atualizar os rostos salvos.",
+   },
+   lab_camera_error: {
+      en: "Camera unavailable. Check your browser permissions.",
+      it: "Webcam non disponibile. Controlla i permessi del browser.",
+      pt: "Câmera indisponível. Verifique as permissões do navegador.",
+   },
+   lab_model_error: {
+      en: "Face recognition unavailable.",
+      it: "Riconoscimento facciale non disponibile.",
+      pt: "Reconhecimento facial indisponível.",
+   },
+   lab_upload_consent: {
+      en: "I consent to send this clip to the Ghostmaxxing server for storage, human moderation, possible public web/feed/ActivityPub publication after approval, and deletion by private receipt token.",
+      it: "Acconsento all’invio di questa clip al server Ghostmaxxing per la conservazione, la moderazione umana, l’eventuale pubblicazione su web, feed e ActivityPub dopo l’approvazione e la rimozione tramite token privato.",
+      pt: "Autorizo o envio deste clipe ao servidor Ghostmaxxing para armazenamento, moderação humana, possível publicação na web, em feeds e ActivityPub após aprovação e exclusão por token privado.",
+   },
   status_initialising: {
       context: 'lab.html:30',
       it: 'inizializzazione…',

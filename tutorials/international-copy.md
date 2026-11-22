@@ -22,21 +22,25 @@ Use this as the short payoff in headers, metadata, social cards, and partner ref
 
 ## Short Boilerplate
 
-Ghostmaxxing is a browser-based public lab for testing face-recognition camouflage. It lets people compare local recognition behavior, build modular AR Ghostyles, explore the history of anti-biometric appearance design, and report real-world deployments of facial recognition.
+Ghostmaxxing is a browser-based public lab for testing face-recognition camouflage. Use Lab and Realtime to test physical makeup, or work with digital designs called Ghostyles. The project also maintains a research archive.
 
 ## Medium Boilerplate
 
-Ghostmaxxing helps people test how visual interventions affect a local face-recognition pipeline in the browser. It combines webcam-based experiments, modular AR Ghostyles, a curated reference archive, and a reporting node for documenting where facial recognition appears in public space.
+Ghostmaxxing helps people test how visual interventions affect a local face-recognition pipeline in the browser. It combines local makeup experiments, modular AR Ghostyles, and a curated reference archive. NINA’s Universal Union runs the separate confidential reporting channel.
 
 ## Landing Copy
 
 Disrupt the read.
 
-Ghostmaxxing tests face-recognition camouflage through browser-based overlays and local experiments. Explore the archive, build a Ghostyle, or report where facial recognition appears in public space.
+Test physical makeup in Lab or Realtime. Work with Ghostyles in Player, Transfer, or the Docker-based Local Fuzzer. Explore the archive for previous research and its limits.
 
 ## Lab Copy
 
-Test visual interventions against a local browser pipeline. Record a baseline, apply a Ghostyle, and compare how detection and matching behavior changes under your own camera, light, pose, and model conditions.
+Save a numbered face reference, apply physical makeup, and compare the live recognition reading under the same camera, light and pose.
+
+## Ghostyle Tools Copy
+
+Preview and edit a design in Ghostyle Player. Extract a reusable design from two photos in Ghostyle Transfer, or search generated designs on controlled video poses with Local Fuzzer in Docker.
 
 ## References Copy
 

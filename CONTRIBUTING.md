@@ -14,7 +14,7 @@ only if and when real external PRs start showing up.
    required tags (`@name`, `@description`, `@slug`, `@version`, `@author`,
    `@license`). Export at least one of `onDraw` (2D) or `paintUV` (UV/3D).
    The full authoring contract is in the
-   [Ghostyle Authoring Guide](https://ghostmaxxing.vecna.eu/docs/).
+   [Ghostyle Authoring Guide](https://ghostmaxxing.vecna.eu/docs/jsdoc/tutorial-ghostyle-authoring.html).
 3. **Validate.** It must pass:
    ```bash
    npm run validate:ghostyle -- ghostyles/your-slug.js

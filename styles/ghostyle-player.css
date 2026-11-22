@@ -1,0 +1,122 @@
+@import url("./workshop.css");
+
+.player {
+  position: fixed; inset: 0;
+  display: grid; grid-template: auto minmax(0, 1fr) auto / minmax(0, 1fr);
+  background: var(--workshop-ink); color: var(--workshop-cream);
+  font: 600 .875rem var(--sans);
+}
+.player [hidden] { display: none; }
+.player button, .player select {
+  min-height: 34px; padding: 3px 9px;
+  color: var(--action-color, inherit);
+  background: var(--action-surface, var(--workshop-panel));
+  border: 1px solid var(--action-border, var(--workshop-line));
+  border-radius: 5px; cursor: pointer; font: inherit;
+}
+.player button:disabled, .player select:disabled { opacity: .5; cursor: default; }
+.player button[aria-pressed="true"], .player button[aria-expanded="true"] {
+  background: var(--action-color, var(--workshop-cream)); color: var(--workshop-ink);
+}
+.player :focus-visible { outline: 2px solid var(--workshop-yellow); outline-offset: 1px; }
+.player a { color: inherit; text-underline-offset: 3px; }
+.player-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: calc(5px + env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) 5px max(8px, env(safe-area-inset-left));
+  border-bottom: 1px solid var(--workshop-line);
+}
+.player-bar h1 { margin: 0; font: 650 clamp(.96rem, 2.1vw, 1.4rem)/1 var(--serif); }
+.player-style { flex: 1; display: flex; justify-content: end; min-width: 0; }
+.player-style select { max-width: min(100%, 340px); }
+.player-workspace { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 0; }
+.player[data-source-open] .player-workspace { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.player-stage {
+  display: grid; grid-template: minmax(0, 1fr) auto / minmax(0, 1fr);
+  min-width: 0; min-height: 0; background: #080705;
+}
+.player-camera { position: relative; min-width: 0; min-height: 0; overflow: hidden; }
+.player-picture, .player-picture video, .player-picture canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.player-picture video, .player-picture canvas { object-fit: contain; transform: scaleX(-1); }
+.player-picture canvas { pointer-events: none; }
+.player-picture #brush-layer[data-painting] { pointer-events: auto; cursor: crosshair; touch-action: none; }
+#player-status {
+  position: absolute; margin: 0; inset: auto 10px 10px;
+  padding: 7px; text-align: center; pointer-events: none;
+  background: #100d0add; border-radius: 4px;
+}
+#player-status:empty { display: none; }
+.player-source {
+  display: flex; flex-direction: column; min-height: 0; min-width: 0;
+  border-left: 1px solid var(--workshop-line); background: var(--workshop-panel);
+}
+.player-editor-toolbar, .player-editor-actions {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 5px;
+}
+.player-editor-toolbar { justify-content: space-between; padding: 6px 10px; }
+.player-code {
+  position: relative; flex: 1; min-height: 0;
+  border-block: 1px solid var(--workshop-line); background: var(--workshop-ink);
+  --editor-font-size: max(12px, .78rem);
+}
+.player-code textarea, .player-highlight {
+  position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
+  border: 0; border-radius: 0; padding: 10px;
+  font: 400 var(--editor-font-size)/1.45 var(--mono); tab-size: 3;
+  letter-spacing: normal; white-space: pre; overflow-wrap: normal; word-break: normal;
+}
+.player-highlight { overflow: hidden; pointer-events: none; color: var(--workshop-cream); }
+.player-highlight code { display: block; width: max-content; padding: 0; font: inherit; color: inherit; background: transparent; }
+.player-highlight .source-keyword { color: var(--gm-yellow); }
+.player-highlight .source-string { color: var(--workshop-green); }
+.player-highlight .source-number { color: var(--workshop-red); }
+.player-highlight .source-comment { color: var(--workshop-muted); }
+.player-code textarea {
+  display: block; resize: none; overflow: auto;
+  background: transparent; color: transparent; caret-color: var(--workshop-cream);
+  -webkit-text-fill-color: transparent;
+}
+.player-code textarea::selection { color: transparent; background: #86e2b244; }
+@media (forced-colors: active) {
+  .player-highlight { visibility: hidden; }
+  .player-code textarea { color: CanvasText; caret-color: CanvasText; -webkit-text-fill-color: CanvasText; }
+}
+#player-editor-status { margin: 0; padding: 6px 10px; min-height: 30px; color: var(--workshop-muted); overflow-wrap: anywhere; }
+#player-editor-status[data-error] { color: var(--workshop-red); }
+.player-controls {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 5px 14px;
+  padding: 5px max(8px, env(safe-area-inset-right)) calc(5px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+}
+.player-dock { min-width: 0; border-top: 1px solid var(--workshop-line); }
+.player-parameters {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 7px 12px;
+  justify-self: center; width: min(calc(100% - 16px), 56rem); max-height: 32dvh;
+  overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
+  margin-bottom: 6px; padding: 5px 10px;
+  border: 1px solid var(--gm-green-soft); border-radius: 6px;
+  background: var(--gm-green-night); color: var(--gm-cream); font-size: .81rem;
+}
+.player-parameter { display: inline-flex; max-width: 100%; align-items: center; gap: 5px; overflow-wrap: anywhere; }
+.player-parameter input[type="range"] { width: clamp(48px, 5.2vw, 75px); accent-color: var(--workshop-green); }
+.player-parameter input[type="checkbox"] { accent-color: var(--workshop-green); }
+.player-parameter input[type="color"] { width: 30px; height: 28px; padding: 1px; }
+.player-parameter select { max-width: min(10rem, 40vw); }
+.player-parameter-value { min-width: 3ch; color: var(--workshop-green); font: .78em var(--mono); }
+.player-brush, .player-actions, .player-actions div {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px;
+}
+.player-brush label { display: inline-flex; align-items: center; gap: 4px; }
+.player-brush input[type="range"] { width: clamp(39px, 5vw, 90px); accent-color: var(--workshop-cream); }
+.player-brush input[type="color"] { width: 32px; height: 30px; padding: 1px; }
+.player-actions { gap: 5px 12px; }
+.player-brush { --action-color: var(--gm-yellow); }
+.player-overlay-actions { --action-color: var(--workshop-green); }
+.player-clip-actions { --action-color: var(--workshop-red); }
+.player-controls button {
+  --action-border: color-mix(in srgb, var(--action-color) 33%, var(--workshop-line));
+  --action-surface: color-mix(in srgb, var(--action-color) 9%, var(--workshop-panel));
+}
+#recordBtn[data-recording] { color: var(--workshop-red); }
+
+@media (max-width: 850px) {
+  .player-controls { font-size: .78rem; }
+}

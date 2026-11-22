@@ -15,7 +15,7 @@ export interface GhostmaxxingPoint {
 }
 
 /**
- * @source lab-js/engine.js
+ * @source lab-js/ghostyle-player/preview.js
  */
 export interface GhostmaxxingFaceBox {
   x: number;
@@ -33,16 +33,17 @@ export interface GhostmaxxingPaintUvParams {
 }
 
 /**
- * @source lab-js/ghostyles-manager.js
+ * @source lab-js/ghostyle-player/catalog.js
  */
 export type GhostmaxxingOnDraw = (
   ctx: CanvasRenderingContext2D,
   landmarks: unknown,
-  box?: GhostmaxxingFaceBox
+  box?: GhostmaxxingFaceBox,
+  params?: Record<string, unknown>
 ) => void;
 
 /**
- * @source lab-js/ghostyles-manager.js
+ * @source lab-js/ghostyle-player/catalog.js
  */
 export type GhostmaxxingPaintUV = (
   ctx: CanvasRenderingContext2D,
@@ -51,7 +52,7 @@ export type GhostmaxxingPaintUV = (
 ) => void;
 
 /**
- * @source lab-js/ghostyles-manager.js
+ * @source lab-js/ghostyle-player/catalog.js
  */
 export interface GhostmaxxingPluginModule {
   onInit?: () => string | void;
@@ -70,36 +71,16 @@ export interface GhostmaxxingPluginModule {
   }>;
 }
 
-/**
- * @source lab-js/ghostyles-manager.js
- */
-export interface GhostmaxxingPluginRecord {
-  id: string;
-  name: string;
-  url: string;
-  version: string | null;
-  author: string | null;
-  description: string | null;
-  releaseDate: string | null;
-  module: GhostmaxxingPluginModule;
+/** Geometry available from the Player's current camera frame. */
+export interface GhostmaxxingFrame {
+  detection: { box: GhostmaxxingFaceBox };
+  landmarks: { positions: GhostmaxxingPoint[] };
 }
 
-/**
- * @source lab-js/state.js
- */
-export interface GhostmaxxingMatchResult {
-  [key: string]: unknown;
-}
-
-/**
- * @source lab-js/main.js
- */
+/** Public drawing API exposed by Ghostyle Player. */
 export interface GhostmaxxingApi {
   /** @source lab-js/utils.js */
   log(message: string, sourcePlugin?: string | null): void;
-
-  /** @source lab-js/main.js */
-  clearVisibleLogs(): void;
 
   /** @source lab-js/utils.js */
   distance(a: number[], b: number[]): number;
@@ -135,7 +116,7 @@ export interface GhostmaxxingApi {
   ): void;
 
   /** @source lab-js/utils.js */
-  drawLabel(ctx: CanvasRenderingContext2D, text: string, x: number, y: number): void;
+  drawLabel(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, mirrored?: boolean): void;
 
   /** @source lab-js/utils.js */
   roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void;
@@ -193,64 +174,16 @@ export interface GhostmaxxingApi {
   /** @source lab-js/utils.js */
   clipRightHalfUV(ctx: CanvasRenderingContext2D, landmarks3d: unknown): boolean;
 
-  /** @source lab-js/main.js */
   events: EventTarget;
-
-  /** @source lab-js/main.js */
-  getDb(): { [key: string]: unknown };
-
-  /** @source lab-js/main.js */
-  getDb3d(): { [key: string]: unknown };
-
-  /** @source lab-js/main.js */
   getActiveEffect(): string | null;
-
-  /** @source lab-js/main.js */
-  getLastResult(): GhostmaxxingMatchResult | null;
-
-  /** @source lab-js/main.js */
-  getMatchThreshold(): number;
-
-  /** @source lab-js/main.js */
-  getMatchThreshold3d(): number;
-
-  /** @source lab-js/plugins3d-loader.js */
-  getActiveEffect3d(): string | null;
-
-  /** @source lab-js/plugins3d-loader.js */
-  activateEffect3d(id: string): boolean;
-
-  /** @source lab-js/plugins3d-loader.js */
-  deactivateEffect3d(): boolean;
-
-  /** @source lab-js/plugins3d-loader.js */
-  toggleEffect3d(id: string): boolean;
-
-  /** @source lab-js/plugins3d-loader.js */
-  reloadPlugins3d(): boolean;
-
-  /** @source lab-js/ghostyles-manager.js */
-  reloadPlugins(): Promise<number>;
-
-  /** @source lab-js/main.js */
-  lastLandmarks3d: Array<{ x: number; y: number; z?: number }> | null;
-
-  /** @source lab-js/engine.js */
-  compositeAndDetect(liveResult: unknown): Promise<unknown>;
-
-  /** @source lab-js/engine-3d.js */
-  compositeAndDetect3d(): Promise<unknown>;
-
-  /** @source lab-js/config.js */
-  detectorOptions: unknown;
-
-  /** @source lab-js/mediapipe-loop.js */
-  FaceLandmarker?: unknown;
+  getLastResult(): GhostmaxxingFrame | null;
+  readonly lastLandmarks3d: (GhostmaxxingPoint & {z?: number})[] | null;
+  readonly FaceLandmarker?: unknown;
 }
 
 declare global {
   interface Window {
-    Ghostmaxxing: GhostmaxxingApi;
+    gstmxx: GhostmaxxingApi;
   }
 }
 

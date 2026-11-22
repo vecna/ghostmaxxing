@@ -2,7 +2,7 @@
 
 **Project:** Ghostmaxxing  
 **Audience:** maintainers implementing or reviewing the upload flow  
-**Status:** July 2026 client contract for browser-managed recording, consent, receipts, and revocation
+**Status:** Ghostmaxxing 1.3.0 client contract for browser-managed recording, consent, receipts, and revocation
 
 ## 1. Purpose
 
@@ -17,18 +17,16 @@ The ownership object is the receipt. A receipt gives the user:
 - the private delete token needed to revoke the upload;
 - a copyable private receipt URL that can restore the receipt on this browser.
 
-The MP4 is a real-world painted-face recording. If a Ghostyle is active in the
-lab while the clip is recorded, the Ghostyle id is submitted as context only.
-The current recorder does not bake AR overlays into the MP4.
+Workshop Lab records one second of the camera stream. Ghostyle Player records two seconds of the composited camera and visible layers. The browser chooses the supported recording format.
 
 ## 2. Browser Sequence
 
 ```text
 Record button
-  -> MediaRecorder starts on the webcam MediaStream
-  -> MediaRecorder stops after RECORDING_CONFIG.durationMs
+  -> MediaRecorder captures the Lab camera stream or the Player canvas stream
+  -> MediaRecorder stops after the tool’s recording duration
   -> chunks become a video Blob
-  -> camera.js dispatches gstmxxEvents "clipRecorded"
+  -> the tool dispatches "clipRecorded" on its local EventTarget
   -> upload-consent.js stores the Blob in the in-memory queue
   -> upload panel shows preview, metadata, note, and consent checkbox
   -> explicit consent enables "Submit to moderation"
@@ -71,6 +69,7 @@ video            Blob, field name required by multer
 kind             "video"
 consent_version  "2026-07-v1"
 app_version      current client version
+channel          makeup for Lab, ghostyles for Player
 ghostyle_id      optional active Ghostyle id
 user_note        optional moderator note
 metrics_json     optional compact local match metrics
@@ -83,7 +82,7 @@ client constant must therefore move in lockstep with any consent-copy revision.
 
 Consent must describe the real behavior:
 
-- a painted-face video clip is sent to the Ghostmaxxing server;
+- the displayed clip is sent to the Ghostmaxxing server;
 - the server stores it in a pending moderation queue;
 - a human moderator may approve or reject it;
 - approved uploads may become reachable on the web, in feeds, and over
@@ -92,16 +91,14 @@ Consent must describe the real behavior:
 - remote copies, caches, screenshots, or federated copies may outlive origin
   deletion.
 
-Do not say that the browser uploads an AR-composited result unless the recorder
-is changed to capture a canvas stream.
+Describe the Lab clip as camera footage and the Player clip as a composite.
 
 ## 6. Receipt Model
 
-The backend response is:
+The backend returns the upload ID and delete token. The client builds and stores a local receipt with those values, tool-specific links and consent metadata. Its ownership fields include:
 
 ```json
 {
-  "ok": true,
   "uploadId": "uuid",
   "deleteToken": "opaque-secret"
 }
@@ -153,32 +150,16 @@ record that revocation was requested from this browser.
 
 ## 8. Why Ghostyle Metadata Exists
 
-`ghostyle_id` is not consent. It is experiment context.
-
-If a user records a clip while `smokey-eyes` or `brush` is active in the lab,
-the backend can store that id so moderators and public feeds understand what
-the session was testing. This helps later analysis group clips by technique.
-
-For the current raw-camera recorder, `ghostyle_id` must be interpreted as:
-
-```text
-"This Ghostyle was active in the lab while the real painted-face clip was recorded."
-```
-
-It must not be interpreted as:
-
-```text
-"This MP4 contains the Ghostyle overlay."
-```
+`ghostyle_id` records the active design when Ghostyle Player captures a composite. The recorded pixels reflect the visible layers at capture time. Workshop Lab submits camera footage without a Ghostyle ID. Consent is recorded separately in both flows. The backend routes approved makeup uploads to `@video` and Ghostyles uploads to `@ghostyles`, including Player clips without a design ID. The moderation view can filter by channel. Older clients without `channel` still route by the presence of `ghostyle_id`.
 
 ## 9. Implementation Entry Points
 
-- `lab-js/camera.js`: records the webcam stream and emits `clipRecorded`.
+- `lab-js/workshop/media.js`: records a supplied stream and returns the local clip.
+- `lab-js/workshop/main.js` and `lab-js/ghostyle-player/main.js`: select the capture stream and emit `clipRecorded`.
 - `lab-js/upload-consent.js`: owns local clip queue, consent gate, upload,
   receipt storage, private receipt import, and revocation.
-- `lab-js/lab-ui.js`: reflects the real upload queue count in the Online dock.
-- `lab.html`: upload review and receipt-log markup.
-- `styles/lab.css`: upload and receipt tool styling.
+- `lab.html` and `ghostyle-player.html`: recording and upload review. Private receipt URLs identify the frontend that created them.
+- `styles/workshop.css` and `styles/ghostyle-player.css`: tool layouts for clip submission.
 
 ## 10. Test Checklist
 
@@ -187,7 +168,7 @@ The client should keep tests around these contracts:
 - recording emits a local clip and does not upload automatically;
 - submit is disabled until consent is checked;
 - upload sends `video`, `kind`, `consent_version`, `app_version`, optional
-  `ghostyle_id`, note, and metrics;
+  `ghostyle_id`, channel, and note;
 - successful upload creates a durable receipt;
 - private receipt hash imports a missing receipt;
 - revoke calls `DELETE /api/uploads/:id` with `X-Delete-Token`;

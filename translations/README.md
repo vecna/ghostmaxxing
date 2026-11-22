@@ -51,14 +51,14 @@ Keys must stay lowercase with underscores, for example `face_saved_status`.
 
 8. Upload the refreshed `translations/ghostmaxxing.pot` to Crowdin.
 9. Export/import completed Crowdin translations back into `lab-js/i18n.js` or the future build pipeline.
-10. Test the language selector in `index.html`, `lab.html`, and `loader.html`.
+10. Test the language selector in the home page, Lab, Realtime, and Video Loader. Verify translated controls in Ghostyle Player and Ghostyle Transfer.
 
 ## Language Selection Persistence
 
 The language selector is shared by the homepage, the lab, and the video loader.
 
 1. `index.html` loads `lab-js/home.js`.
-2. `lab.html` loads the main lab JavaScript, which also initializes i18n.
+2. Each tool entry point initializes i18n for its own controls.
 3. `loader.html` loads `lab-js/loader.js`, which initializes i18n for the video-loader interface.
 4. All three pages call `setupLocaleSelect()` from `lab-js/i18n.js`.
 5. When a user selects a language, `setLocale()` saves the selected locale in browser `localStorage`.

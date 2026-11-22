@@ -24,9 +24,7 @@ limits. Someone who has never opened the code should be able to run a session
 and judge what its readings do and do not support.
 
 **Code scope:** `realtime.html`, `styles/realtime.css`,
-`lab-js/realtime/realtime.js`, and its `realtime-*.js` modules. The 2D and 3D
-effect pipelines in `lab.html` use different models (MediaPipe FaceLandmarker
-and MobileNetV3 ImageEmbedder) and are outside this document's scope.
+`lab-js/realtime/realtime.js`, and its `realtime-*.js` modules. The Workshop Lab uses the shared local archive for numbered face references and offers independent 2D and 3D landmark overlays.
 
 ## Run an experiment
 
@@ -147,8 +145,7 @@ timestamp remains in stored metadata and exported filenames. Camera baselines
 and view settings use `localStorage`. The selected video is neither uploaded
 nor persisted by the page.
 
-**Source → Reset baseline** removes the persisted camera descriptor but does
-not erase the gallery. Use **Delete all** or delete individual captures in the
+Confirming **Source → Reset baseline** removes the active numbered camera reference from the shared Lab archive. Capture deletion is managed separately in the Realtime viewer. Use **Delete all** or delete individual captures in the
 viewer when those records are no longer needed.
 
 A 128-value face descriptor is biometric data. Treat exported images and local
@@ -1089,7 +1086,7 @@ The tool keeps the following local records. None is transmitted.
 
 | Data | Store | Deletion |
 |---|---|---|
-| Camera baseline descriptor + noise floor + averaged conditions + median 2D guide + timestamp | `localStorage` (`gstmxx.realtime.baseline`, format 3) | "Source → Reset baseline": removes the key |
+| Camera baseline descriptor + noise floor + averaged conditions + median 2D guide + timestamp | `localStorage` in the shared face archive (`gstmxx.faces.v1`), as a numbered face with Realtime calibration | Confirm **Source → Reset baseline** to remove the associated numbered face, or delete that face in Lab |
 | Local-video baseline | Memory for the current page session | Change source, delete baseline, or close the page |
 | Spike, manual and declared-step captures (watermarked JPEGs) | IndexedDB (`gstmxx-realtime` / `captures`) | "Delete all", or per-capture in the viewer |
 | View settings | `localStorage` (`gstmxx.realtime.settings`) | Browser storage clear |
@@ -1175,7 +1172,7 @@ enforcement backdrop to Art. 5(1)(e).
 
 ## 16. Vendored assets and provenance
 
-Full inventory in `lab-js/vendor/README.md`; refresh via
+Full inventory in `lab-js/vendor/scripts-vendor-README.md`; refresh via
 `lab-js/vendor/fetch-sources.sh`.
 
 | Asset | Upstream | Version |

@@ -1,6 +1,6 @@
 # Development and maintenance scripts
 
-Version 1.1.0 · 1 November 2026
+Version 1.3.0
 
 This guide describes development and maintenance scripts, together with the relevant commands in `package.json`.
 
@@ -11,7 +11,7 @@ Run the commands below from the `ghostmaxxing` repository root. Most scripts res
 | Task | Command | Output or effect |
 |---|---|---|
 | Visibly mark synthetic images | `node scripts-dev/mark-ai-images.cjs --size 15%` | Overwrites unmarked JPEG/PNG fixtures; skips existing badges |
-| Validate one Ghostyle | `npm run validate:ghostyle -- ghostyles/brush.js` | Errors and warnings on stdout |
+| Validate one Ghostyle | `npm run validate:ghostyle -- ghostyles/beauty-2d.js` | Errors and warnings on stdout |
 | Validate all Ghostyles | `npm run validate:ghostyles` | Stops when a file fails validation |
 | Generate API documentation | `npm run docs` | JSDoc output; configuration is `jsdoc.clean.json` |
 | Rebuild API documentation | `npm run docs:rebuild` | Deletes `docs/jsdoc/`, then runs JSDoc |
@@ -49,8 +49,8 @@ Install the repository's development dependencies using its normal locked depend
 Source: `scripts-dev/validate-plugin.js`.
 
 ```sh
-npm run validate:ghostyle -- ghostyles/brush.js
-npm run validate-plugin -- ghostyles/brush.js
+npm run validate:ghostyle -- ghostyles/beauty-2d.js
+npm run validate-plugin -- ghostyles/beauty-2d.js
 npm run validate:ghostyles
 ```
 
@@ -299,21 +299,24 @@ Optional variables:
 | `CLIP_FILENAME` | Basename of `CLIP_PATH` |
 | `CLIP_MIME_TYPE` | Inferred for MP4, WebM, MOV and MKV; otherwise `video/mp4` |
 | `KIND` | `video` |
-| `GHOSTYLE_ID` | Omitted when unset |
+| `CHANNEL` | `makeup` or `ghostyles` for video. Omit to simulate a legacy client. |
+| `GHOSTYLE_ID` | Optional design ID for Ghostyles. Leave unset to simulate brush-only recording. |
 | `USER_NOTE` | Omitted when unset |
 | `METRICS_JSON` | Must parse as JSON when supplied; no metrics schema validation |
 
-Example for a local test endpoint; substitute the endpoint, fixture path and versions with those used by the test backend:
+Run from the frontend repository with a local backend listening on port 4040. The following sends the same fixture twice with different channels, including a Ghostyles upload without a design ID:
 
 ```sh
-UPLOAD_ENDPOINT='http://localhost:3000/api/uploads' \
-CLIP_PATH='./tmp/test-clip.mp4' \
-CONSENT_VERSION='2026-07-v1' \
-APP_VERSION='1.1.0' \
-node scripts-dev/test-upload-consent-post.cjs
+for channel in makeup ghostyles; do
+  UPLOAD_ENDPOINT='http://127.0.0.1:4040/api/uploads' \
+  CLIP_PATH='tests/fixtures/workshop-sequence.webm' \
+  CONSENT_VERSION='2026-07-v1' APP_VERSION='1.3.0' \
+  CHANNEL="$channel" GHOSTYLE_ID='' USER_NOTE="Simulation: $channel" \
+  node scripts-dev/test-upload-consent-post.cjs || break
+done
 ```
 
-The example consent version comes from the script header and is not a verified current server setting.
+The moderation page at `/api/admin/` can filter by **Makeup videos** or **Ghostyle videos**. After approval, check `/feed/video.xml` and `/feed/ghostyles.xml`. For the automated simulation in the backend checkout, run `npm run test:upload-channels`.
 
 The multipart payload includes `video`, `kind`, `consent_version`, `app_version` and any optional metadata. Success requires both an HTTP success status and a truthy `ok` field in the parsed JSON response. Missing `uploadId` or `deleteToken` fields are printed as missing but do not cause failure.
 
@@ -423,7 +426,7 @@ selection, story ordering, failure preservation, and calibration policy are in
 
 Source: `scripts-dev/lab-capture.cjs`. Run from the repository root.
 
-The script runs `lab.html` in a headless browser with a file in place of the
+The script opens Ghostyle Player for rendering or the Workshop Lab for measurements and consent screenshots. It uses a headless browser with a file in place of the
 webcam. Chromium is started with `--use-fake-device-for-media-stream` and
 `--use-file-for-fake-video-capture=<file>`, which accept a raw Y4M clip; any
 JPEG, PNG or video you pass is converted into one with `ffmpeg` first (a still
@@ -486,7 +489,7 @@ node scripts-dev/lab-capture.cjs render --baseline original1.jpg \
 | Option | Meaning |
 |---|---|
 | `--baseline <file>` | A JPEG or PNG with one frontal face, a video, or a `.y4m`. Required. |
-| `--layers <list>` | From `none`, `box`, `landmarks`, `mesh`; comma-separated. Default `none`. `box` is the detection box with its metric label; `landmarks` adds the face-api 68-point scaffold, the "recognised" look; `mesh` is the MediaPipe mesh. |
+| `--layers <list>` | From `none`, `box`, `landmarks`, `mesh`; comma-separated. Default `none`. `box` outlines the detector box, `landmarks` draws the face-api points, and `mesh` draws the MediaPipe mesh. |
 | `--ghostyle <id>` | Paint this Ghostyle, an id from `ghostyles.json`. Combines with `--layers`: both are drawn. |
 | `--output <file>` | The picture to write. `.png` or `.jpg` decides the format. Default `scratch/<input>-<layers>[-<ghostyle>].jpg`. |
 | `--save-identity` | Save the face as an identity before drawing, so the box label reads `Recognised · #0` rather than `face detected`. Adds about a minute. Off by default. |
@@ -512,7 +515,7 @@ node scripts-dev/lab-capture.cjs measure --baseline original1.jpg \
 `measure` opens the lab twice. The first session loads `--baseline`, clicks
 Save and exports the lab's face database from `localStorage`. The second
 session seeds that database before loading `--dazzled`, waits for the lab's
-auto-find loop to report, and reads the distance several times. It prints the
+Lab recognition loop to report, and reads the distance several times. It prints the
 readings, the threshold and a verdict:
 
 ```
@@ -606,7 +609,7 @@ keeps `sd` unless told otherwise.
 
 `--feed <size>` (above), `--seconds` (clip length, default 8), `--settle` (seconds after the first
 detection, default 2), `--locale` (lab language, default `en`), `--base-url`,
-`--lab` (page path, default `/lab.html`), `--headed`, `--keep-open <sec>`,
+`--lab` (page override), `--headed`, `--keep-open <sec>`,
 `--debug`, `--version`, `--help`. The script carries its own version
 (`VERSION` at the top of the file, with a short history in the header
 comment); `--version` prints it, every run logs it on its first line, and

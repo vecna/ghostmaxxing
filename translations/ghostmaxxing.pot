@@ -4,10 +4,586 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Ghostmaxxing 1.1.0\n"
-"POT-Creation-Date: 2026-11-01\n"
+"Project-Id-Version: Ghostmaxxing 1.3.0\n"
+"POT-Creation-Date: 2026-11-22\n"
 "Language-Team: NotYetExisting <translators at vecna dot eu>\n"
 "Content-Type: text/plain; charset=UTF-8\n"
+
+#. key: transfer_tools
+#. it: Strumenti
+#: lab-js/i18n.js
+msgid "Tools"
+msgstr ""
+
+#. key: transfer_intro
+#. it: Usa due foto dello stesso volto con posa e luce simili. Le immagini vengono elaborate in questo browser.
+#: lab-js/i18n.js
+msgid "Use two photos of the same face with similar pose and lighting. Processing stays in this browser."
+msgstr ""
+
+#. key: transfer_clean
+#. it: Foto pulita
+#: lab-js/i18n.js
+msgid "Clean photo"
+msgstr ""
+
+#. key: transfer_painted
+#. it: Foto pitturata
+#: lab-js/i18n.js
+msgid "Painted photo"
+msgstr ""
+
+#. key: transfer_save
+#. it: Salva il volto pulito nel Lab
+#: lab-js/i18n.js
+msgid "Save clean face to Lab"
+msgstr ""
+
+#. key: transfer_preview
+#. it: Anteprima Ghostyle
+#: lab-js/i18n.js
+msgid "Ghostyle preview"
+msgstr ""
+
+#. key: transfer_target
+#. it: Prova su un altro volto (facoltativo)
+#: lab-js/i18n.js
+msgid "Try another face (optional)"
+msgstr ""
+
+#. key: transfer_remove_target
+#. it: Rimuovi
+#: lab-js/i18n.js
+msgid "Remove"
+msgstr ""
+
+#. key: transfer_sensitivity
+#. it: Sensibilità
+#: lab-js/i18n.js
+msgid "Sensitivity"
+msgstr ""
+
+#. key: transfer_download
+#. it: Scarica Ghostyle .js
+#: lab-js/i18n.js
+msgid "Download Ghostyle .js"
+msgstr ""
+
+#. key: transfer_start
+#. it: Scegli una foto pulita e una foto pitturata.
+#: lab-js/i18n.js
+msgid "Choose a clean photo and a painted photo."
+msgstr ""
+
+#. key: transfer_reading_photo
+#. it: Lettura della foto e rilevamento del volto…
+#: lab-js/i18n.js
+msgid "Reading photo and detecting the face…"
+msgstr ""
+
+#. key: transfer_reading_pair
+#. it: Rilevamento dei volti nelle due foto…
+#: lab-js/i18n.js
+msgid "Waiting for face detection in both photos…"
+msgstr ""
+
+#. key: transfer_extracting
+#. it: Estrazione dei poligoni del Ghostyle…
+#: lab-js/i18n.js
+msgid "Extracting Ghostyle polygons…"
+msgstr ""
+
+#. key: transfer_bad_photo
+#. it: Impossibile aprire questa immagine. Scegli un’altra foto.
+#: lab-js/i18n.js
+msgid "Could not open this image. Choose another photo."
+msgstr ""
+
+#. key: transfer_mesh_error
+#. it: Impossibile avviare la mesh del volto. Seleziona di nuovo la foto per riprovare.
+#: lab-js/i18n.js
+msgid "Could not load or run the face mesh. Select the photo again to retry."
+msgstr ""
+
+#. key: transfer_many_faces
+#. it: Rilevato più di un volto. Scegli una foto con un solo volto.
+#: lab-js/i18n.js
+msgid "More than one face detected. Choose a photo with one face."
+msgstr ""
+
+#. key: transfer_no_face
+#. it: Nessun volto rilevato. Prova con una foto più nitida e frontale.
+#: lab-js/i18n.js
+msgid "No face detected. Try a clearer, more frontal photo."
+msgstr ""
+
+#. key: transfer_check_photos
+#. it: Controlla i messaggi sotto le foto di partenza.
+#: lab-js/i18n.js
+msgid "Check the messages under the source photos."
+msgstr ""
+
+#. key: transfer_no_coverage
+#. it: Le due mesh non hanno aree confrontabili.
+#: lab-js/i18n.js
+msgid "The two face meshes have no comparable areas."
+msgstr ""
+
+#. key: transfer_no_pattern
+#. it: Nessuna zona di colore a questa sensibilità.
+#: lab-js/i18n.js
+msgid "No paint regions at this sensitivity."
+msgstr ""
+
+#. key: transfer_one_polygon
+#. it: 1 poligono pronto da esportare.
+#: lab-js/i18n.js
+msgid "1 polygon ready to export."
+msgstr ""
+
+#. key: transfer_polygons
+#. it: {count} poligoni pronti da esportare.
+#: lab-js/i18n.js
+msgid "{count} polygons ready to export."
+msgstr ""
+
+#. key: transfer_extract_error
+#. it: Impossibile generare il Ghostyle.
+#: lab-js/i18n.js
+msgid "Could not generate the Ghostyle."
+msgstr ""
+
+#. key: transfer_reference_empty
+#. it: Nessun riferimento salvato nel Lab.
+#: lab-js/i18n.js
+msgid "No Lab references saved."
+msgstr ""
+
+#. key: transfer_reference_unavailable
+#. it: Descrittore del volto per il Lab non disponibile.
+#: lab-js/i18n.js
+msgid "Lab face descriptor unavailable."
+msgstr ""
+
+#. key: transfer_reference_matched
+#. it: Corrispondenza Lab #{id} · distanza {distance}
+#: lab-js/i18n.js
+msgid "Lab match #{id} · distance {distance}"
+msgstr ""
+
+#. key: transfer_reference_near
+#. it: Vicino al riferimento Lab #{id} · distanza {distance}
+#: lab-js/i18n.js
+msgid "Near Lab reference #{id} · distance {distance}"
+msgstr ""
+
+#. key: transfer_reference_far
+#. it: Riferimento Lab più vicino #{id} · nessuna corrispondenza ({distance})
+#: lab-js/i18n.js
+msgid "Closest Lab reference #{id} · no match ({distance})"
+msgstr ""
+
+#. key: transfer_reference_absent
+#. it: Descrittore del volto per il Lab non disponibile.
+#: lab-js/i18n.js
+msgid "Lab face descriptor unavailable."
+msgstr ""
+
+#. key: player_desktop_code
+#. it: Editor del codice previsto solo per desktop.
+#: lab-js/i18n.js
+msgid "Code editor is available on desktop only."
+msgstr ""
+
+#. key: player_snapshot_ghostyle
+#. it: Ghostyle {name}
+#: lab-js/i18n.js
+msgid "Ghostyle {name}"
+msgstr ""
+
+#. key: lab_copy_snapshot
+#. it: Copia immagine
+#: lab-js/i18n.js
+msgid "Copy image"
+msgstr ""
+
+#. key: lab_snapshot_measurement
+#. it: Distanza {distance} / soglia {threshold}
+#: lab-js/i18n.js
+msgid "Distance {distance} / threshold {threshold}"
+msgstr ""
+
+#. key: lab_snapshot_copied
+#. it: Immagine copiata
+#: lab-js/i18n.js
+msgid "Image copied"
+msgstr ""
+
+#. key: lab_snapshot_shared
+#. it: Immagine condivisa
+#: lab-js/i18n.js
+msgid "Image shared"
+msgstr ""
+
+#. key: lab_snapshot_downloaded
+#. it: Immagine scaricata
+#: lab-js/i18n.js
+msgid "Image downloaded"
+msgstr ""
+
+#. key: lab_snapshot_error
+#. it: Impossibile copiare o esportare l’immagine.
+#: lab-js/i18n.js
+msgid "Could not copy or export the image."
+msgstr ""
+
+#. key: player_none
+#. it: Nessun Ghostyle
+#: lab-js/i18n.js
+msgid "No Ghostyle"
+msgstr ""
+
+#. key: player_show_code
+#. it: Mostra codice
+#: lab-js/i18n.js
+msgid "Show code"
+msgstr ""
+
+#. key: player_hide_code
+#. it: Nascondi codice
+#: lab-js/i18n.js
+msgid "Hide code"
+msgstr ""
+
+#. key: player_indent
+#. it: Indenta
+#: lab-js/i18n.js
+msgid "Auto-indent"
+msgstr ""
+
+#. key: player_download
+#. it: Scarica .js
+#: lab-js/i18n.js
+msgid "Download .js"
+msgstr ""
+
+#. key: player_parameters
+#. it: Impostazioni Ghostyle
+#: lab-js/i18n.js
+msgid "Ghostyle settings"
+msgstr ""
+
+#. key: player_editor_label
+#. it: Codice del Ghostyle
+#: lab-js/i18n.js
+msgid "Ghostyle code"
+msgstr ""
+
+#. key: player_apply
+#. it: Ricarica
+#: lab-js/i18n.js
+msgid "Reload"
+msgstr ""
+
+#. key: player_pending
+#. it: Ricarica per applicare le modifiche.
+#: lab-js/i18n.js
+msgid "Reload to apply your changes."
+msgstr ""
+
+#. key: player_applied
+#. it: Codice applicato
+#: lab-js/i18n.js
+msgid "Code applied"
+msgstr ""
+
+#. key: player_brush
+#. it: Pennello
+#: lab-js/i18n.js
+msgid "Brush"
+msgstr ""
+
+#. key: player_color
+#. it: Colore
+#: lab-js/i18n.js
+msgid "Color"
+msgstr ""
+
+#. key: player_size
+#. it: Dimensione
+#: lab-js/i18n.js
+msgid "Size"
+msgstr ""
+
+#. key: player_opacity
+#. it: Opacità
+#: lab-js/i18n.js
+msgid "Opacity"
+msgstr ""
+
+#. key: player_undo
+#. it: Annulla
+#: lab-js/i18n.js
+msgid "Undo"
+msgstr ""
+
+#. key: player_clear
+#. it: Cancella
+#: lab-js/i18n.js
+msgid "Clear"
+msgstr ""
+
+#. key: player_bake
+#. it: Crea codice
+#: lab-js/i18n.js
+msgid "Bake to code"
+msgstr ""
+
+#. key: player_sketch
+#. it: Disegno a pennello
+#: lab-js/i18n.js
+msgid "Brush sketch"
+msgstr ""
+
+#. key: player_clips
+#. it: Clip
+#: lab-js/i18n.js
+msgid "Clips"
+msgstr ""
+
+#. key: player_record
+#. it: Registra 2 s
+#: lab-js/i18n.js
+msgid "Record 2s"
+msgstr ""
+
+#. key: player_lab
+#. it: Lab per workshop
+#: lab-js/i18n.js
+msgid "Workshop Lab"
+msgstr ""
+
+#. key: player_tracking_error
+#. it: Tracciamento 2D del volto non disponibile.
+#: lab-js/i18n.js
+msgid "2D face tracking unavailable."
+msgstr ""
+
+#. key: lab_home
+#. it: Home
+#: lab-js/i18n.js
+msgid "Home"
+msgstr ""
+
+#. key: lab_recognition
+#. it: Riconoscimento del volto
+#: lab-js/i18n.js
+msgid "Face recognition"
+msgstr ""
+
+#. key: lab_history_label
+#. it: Ultimi 8 secondi di riconoscimento
+#: lab-js/i18n.js
+msgid "Last 8 seconds of recognition"
+msgstr ""
+
+#. key: lab_match_recognised
+#. it: Riconosciuto
+#: lab-js/i18n.js
+msgid "Recognised"
+msgstr ""
+
+#. key: lab_match_near
+#. it: Vicino alla soglia
+#: lab-js/i18n.js
+msgid "Near threshold"
+msgstr ""
+
+#. key: lab_match_far
+#. it: Oltre la soglia
+#: lab-js/i18n.js
+msgid "Above threshold"
+msgstr ""
+
+#. key: lab_record
+#. it: Registra 1 s
+#: lab-js/i18n.js
+msgid "Record 1s"
+msgstr ""
+
+#. key: lab_record_first
+#. it: Registra una clip per vederla qui.
+#: lab-js/i18n.js
+msgid "Record a clip to preview it here."
+msgstr ""
+
+#. key: lab_clip_ready
+#. it: Clip pronta
+#: lab-js/i18n.js
+msgid "Clip ready"
+msgstr ""
+
+#. key: lab_copy_clip
+#. it: Copia clip
+#: lab-js/i18n.js
+msgid "Copy clip"
+msgstr ""
+
+#. key: lab_clip_copied
+#. it: Clip copiata
+#: lab-js/i18n.js
+msgid "Clip copied"
+msgstr ""
+
+#. key: lab_clip_shared
+#. it: Clip condivisa
+#: lab-js/i18n.js
+msgid "Clip shared"
+msgstr ""
+
+#. key: lab_clip_downloaded
+#. it: Clip scaricata
+#: lab-js/i18n.js
+msgid "Clip downloaded"
+msgstr ""
+
+#. key: lab_clip_error
+#. it: Errore nella registrazione o nell’esportazione della clip.
+#: lab-js/i18n.js
+msgid "Could not record or deliver the clip."
+msgstr ""
+
+#. key: lab_overlays
+#. it: Overlay
+#: lab-js/i18n.js
+msgid "Overlays"
+msgstr ""
+
+#. key: lab_mesh_error
+#. it: Overlay 3D non disponibile.
+#: lab-js/i18n.js
+msgid "3D overlay unavailable."
+msgstr ""
+
+#. key: lab_about
+#. it: Info
+#: lab-js/i18n.js
+msgid "About"
+msgstr ""
+
+#. key: lab_about_docs
+#. it: Documentazione
+#: lab-js/i18n.js
+msgid "Documentation"
+msgstr ""
+
+#. key: lab_about_tools
+#. it: Strumenti
+#: lab-js/i18n.js
+msgid "Tools"
+msgstr ""
+
+#. key: lab_about_links
+#. it: Ultimi link
+#: lab-js/i18n.js
+msgid "Latest links"
+msgstr ""
+
+#. key: lab_about_code
+#. it: Codice
+#: lab-js/i18n.js
+msgid "Code"
+msgstr ""
+
+#. key: lab_about_guide
+#. it: Usare il Lab nei workshop
+#: lab-js/i18n.js
+msgid "Use the workshop Lab"
+msgstr ""
+
+#. key: lab_about_recognition
+#. it: Come funziona il riconoscimento facciale
+#: lab-js/i18n.js
+msgid "How face recognition works"
+msgstr ""
+
+#. key: lab_about_video
+#. it: Analizzatore video
+#: lab-js/i18n.js
+msgid "Video analyser"
+msgstr ""
+
+#. key: lab_about_workshops
+#. it: Guida ai workshop Ghòstati!
+#: lab-js/i18n.js
+msgid "Ghòstati! workshop guide"
+msgstr ""
+
+#. key: lab_about_channels
+#. it: Account e feed del Fediverso
+#: lab-js/i18n.js
+msgid "Fediverse accounts and feeds"
+msgstr ""
+
+#. key: lab_faces_help
+#. it: Il volto in camera viene confrontato con questi riferimenti locali.
+#: lab-js/i18n.js
+msgid "The camera is compared with these local references."
+msgstr ""
+
+#. key: lab_faces_empty
+#. it: Nessun volto salvato.
+#: lab-js/i18n.js
+msgid "No faces saved yet."
+msgstr ""
+
+#. key: lab_face_saved
+#. it: Volto #{id} salvato
+#: lab-js/i18n.js
+msgid "Face #{id} saved"
+msgstr ""
+
+#. key: lab_saved_preview
+#. it: Volto salvato #{id}
+#: lab-js/i18n.js
+msgid "Saved face #{id}"
+msgstr ""
+
+#. key: lab_remove_face
+#. it: Elimina
+#: lab-js/i18n.js
+msgid "Delete"
+msgstr ""
+
+#. key: lab_delete_face
+#. it: Eliminare il volto #{id}?
+#: lab-js/i18n.js
+msgid "Delete face #{id}?"
+msgstr ""
+
+#. key: lab_face_storage_error
+#. it: Impossibile aggiornare i volti salvati.
+#: lab-js/i18n.js
+msgid "Could not update saved faces."
+msgstr ""
+
+#. key: lab_camera_error
+#. it: Webcam non disponibile. Controlla i permessi del browser.
+#: lab-js/i18n.js
+msgid "Camera unavailable. Check your browser permissions."
+msgstr ""
+
+#. key: lab_model_error
+#. it: Riconoscimento facciale non disponibile.
+#: lab-js/i18n.js
+msgid "Face recognition unavailable."
+msgstr ""
+
+#. key: lab_upload_consent
+#. it: Acconsento all’invio di questa clip al server Ghostmaxxing per la conservazione, la moderazione umana, l’eventuale pubblicazione su web, feed e ActivityPub dopo l’approvazione e la rimozione tramite token privato.
+#: lab-js/i18n.js
+msgid "I consent to send this clip to the Ghostmaxxing server for storage, human moderation, possible public web/feed/ActivityPub publication after approval, and deletion by private receipt token."
+msgstr ""
 
 #. key: status_initialising
 #. it: inizializzazione…

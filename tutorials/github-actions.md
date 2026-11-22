@@ -3,7 +3,7 @@
 This repository can use GitHub Actions to do two separate jobs:
 
 1. Run unit tests and Playwright end-to-end tests on every pull request to `main` and every push to `main`.
-2. Refresh the README coverage badge after successful pushes to `main`.
+2. Check whether the README coverage badge needs a manual refresh after successful pushes to `main`.
 
 The workflow file is:
 
@@ -44,9 +44,7 @@ It does the following:
 
 1. runs unit coverage again to produce `coverage/coverage-final.json`
 2. runs `npm run update:coverage-badge`
-3. commits the updated README badge if the badge changed
-
-The commit message contains `[skip ci]` so the bot commit does not trigger the workflow again.
+3. reports whether the badge needs a manual update
 
 ## Files involved
 
@@ -96,6 +94,6 @@ npm run update:coverage-badge
 
 ## Notes
 
-- The workflow updates the coverage badge only after code is already on `main`.
+- The badge check runs after code reaches `main`. Apply any README update locally.
 - The merge gate is provided by the pull request test run plus branch protection.
 - If you want the badge update to happen in a separate maintenance branch instead of committing directly to `main`, the workflow should be changed to open a pull request instead of pushing.

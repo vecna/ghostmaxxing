@@ -11,6 +11,12 @@ clip. VP8 avoids a dependency on a distro's optional H.264 decoder. Rebuild:
 ffmpeg -loop 1 -i tests/fixtures/mock-face.jpg -t 8 -vf scale=512:640 -r 5 -c:v libvpx -b:v 400k -pix_fmt yuv420p -an -y tests/fixtures/face-descriptor.webm
 ```
 
+The 8-second VP8 `workshop-sequence.webm` uses `figure1-clean.jpeg` for
+three seconds, `figure2-clean.jpeg` for three seconds, and an empty frame for
+two seconds. The Lab browser test seeks within those intervals to save two
+references and check identity changes and loss of detection with face-api.
+The frames are fitted to 360 × 480, padded with `#222222`, and encoded at 5 fps.
+
 The fixture files are local mock face images and video-like assets used to make unit and browser tests repeatable without relying on live camera input.
 
 They are excluded from code2prompt because they are binary/media test data.

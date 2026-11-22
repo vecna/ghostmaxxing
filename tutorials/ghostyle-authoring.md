@@ -29,11 +29,13 @@ That file should stay very heavily commented. It is not only a test plugin; it i
 
 ## 2. Current runtime assumptions
 
-Ghostmaxxing is currently a static browser application. The main webcam app is:
+Ghostmaxxing is currently a static browser application. Open the live editor and brush in Ghostyle Player:
 
 ```text
-lab.html
+ghostyle-player.html
 ```
+
+Use Ghostyle Transfer to start from a photo pair or Local Fuzzer in Docker to start from generated designs. Paste the exported module into the desktop Player editor and reload to preview it.
 
 The site pages around the app are:
 
@@ -66,26 +68,7 @@ The project direction is to keep this file machine-editable and eventually make 
 
 Ghostmaxxing is the active project name.
 
-Old names may still exist in code during migration:
-
-```js
-window.gstmxx
-window.gstmxx
-```
-
-The desired short public API name is:
-
-```js
-window.gstmxx
-```
-
-During the migration, plugin examples should use a compatibility alias:
-
-```js
-const G = window.gstmxx || window.gstmxx || window.gstmxx;
-```
-
-After the runtime migration is complete, examples can be simplified to:
+Ghostyle Player exposes drawing helpers as `window.gstmxx`. Use the same global in authored modules and in the Player source editor.
 
 ```js
 const G = window.gstmxx;
@@ -113,7 +96,7 @@ A minimal 2D Ghostyle:
  * ==/Ghostyle==
  */
 
-const G = window.gstmxx || window.gstmxx || window.gstmxx;
+const G = window.gstmxx;
 
 export function onDraw(ctx, landmarks, box) {
   const leftEye = landmarks.getLeftEye();

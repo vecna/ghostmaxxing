@@ -14,6 +14,9 @@
  * working" is not a claim you want resting on a photo of someone moving.
  */
 
+import { descriptorDistance as euclidean } from '../face-descriptor.js';
+export { euclidean };
+
 /** Landmark indices in face-api's 68-point model. */
 const LM_LEFT_EYE_OUTER = 36;
 const LM_RIGHT_EYE_OUTER = 45;
@@ -160,25 +163,6 @@ export function compareConditions(baseline, current, overrides = {}) {
     return { ok: false, reason: reasons[0], reasons, differences };
   }
   return { ok: true, reason: '', reasons: [], differences };
-}
-
-/**
- * Euclidean distance between two descriptors.
- *
- * Kept local rather than reaching for the global `faceapi` so this module can
- * be imported and unit tested without the vendor bundle present.
- *
- * @param {Float32Array|number[]} a First descriptor.
- * @param {Float32Array|number[]} b Second descriptor.
- * @returns {number} Euclidean distance.
- */
-export function euclidean(a, b) {
-  let sum = 0;
-  for (let i = 0; i < a.length; i += 1) {
-    const d = a[i] - b[i];
-    sum += d * d;
-  }
-  return Math.sqrt(sum);
 }
 
 /**

@@ -19,6 +19,9 @@
     <loc>https://ghostmaxxing.vecna.eu/docs/guides/face-brush.html</loc>
   </url>
   <url>
+    <loc>https://ghostmaxxing.vecna.eu/docs/guides/ghostyle-transfer.html</loc>
+  </url>
+  <url>
     <loc>https://ghostmaxxing.vecna.eu/docs/guides/lab.html</loc>
   </url>
   <url>
@@ -26,6 +29,9 @@
   </url>
   <url>
     <loc>https://ghostmaxxing.vecna.eu/docs/guides/localfuzzer-report.html</loc>
+  </url>
+  <url>
+    <loc>https://ghostmaxxing.vecna.eu/docs/guides/realtime.html</loc>
   </url>
   <url>
     <loc>https://ghostmaxxing.vecna.eu/docs/guides/video-loader.html</loc>
@@ -50,6 +56,12 @@
   </url>
   <url>
     <loc>https://ghostmaxxing.vecna.eu/lab.html</loc>
+  </url>
+  <url>
+    <loc>https://ghostmaxxing.vecna.eu/ghostyle-player.html</loc>
+  </url>
+  <url>
+    <loc>https://ghostmaxxing.vecna.eu/ghostyle-transfer.html</loc>
   </url>
   <url>
     <loc>https://ghostmaxxing.vecna.eu/loader.html</loc>

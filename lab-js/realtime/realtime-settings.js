@@ -15,9 +15,10 @@
  * reads an exposure change as a lighting-robustness result.
  */
 
+import { createFaceArchive } from '../face-archive.js';
+
 const SETTINGS_KEY = 'gstmxx.realtime.settings';
-const BASELINE_KEY = 'gstmxx.realtime.baseline';
-const BASELINE_FORMAT = 3;
+const BASELINE_FORMAT = 1;
 const CONDITION_KEYS = [
   'rollDegrees',
   'yawOffset',
@@ -66,71 +67,64 @@ export function saveSettings(settings) {
 }
 
 /**
- * Reads a persisted baseline.
- *
- * The baseline is a biometric template. It never leaves the device, and
- * "Reset baseline" removes it outright rather than flipping a flag.
- *
- * @returns {{descriptor: number[], noiseFloor: number, capturedAt: number, sourceKind: 'camera', conditions: object, guide: object}|null} Stored baseline.
+ * Restores the active camera baseline and validates the Realtime calibration.
+ * @param {object} [archive] Shared archive, injectable for tests.
+ * @returns {object|null} Valid camera baseline including its descriptor.
  */
-export function loadBaseline() {
+export function loadBaseline(archive = createFaceArchive()) {
+  const { activeRealtimeId, faces } = archive.read();
+  const face = faces.find(record => record.id === activeRealtimeId);
+  const calibration = face?.realtime;
+  if (calibration?.format !== BASELINE_FORMAT || calibration.sourceKind !== 'camera') return null;
+  const { capturedAt, noiseFloor, conditions, guide } = calibration;
+  if (!Number.isFinite(capturedAt) || !Number.isFinite(noiseFloor)) return null;
+  if (!conditions || CONDITION_KEYS.some(key => !Number.isFinite(conditions[key]))) return null;
+  if (
+    !Number.isFinite(guide?.aspectRatio) ||
+    !guide.box ||
+    ['x', 'y', 'width', 'height'].some(key => !Number.isFinite(guide.box[key])) ||
+    !Array.isArray(guide.landmarks) ||
+    guide.landmarks.length !== 68 ||
+    guide.landmarks.some(point => !Number.isFinite(point?.x) || !Number.isFinite(point?.y))
+  ) return null;
+  return { ...calibration, descriptor: face.descriptor, archiveId: face.id };
+}
+
+/**
+ * Saves a camera baseline as a numbered face shared with Lab.
+ * @param {object} baseline Camera descriptor and calibration.
+ * @param {object} [archive] Shared archive, injectable for tests.
+ * @returns {Promise<object|null>} The saved face, or null for session-only references.
+ */
+export async function saveBaseline(baseline, archive = createFaceArchive()) {
+  const { descriptor, capturedAt, sourceKind, thumbnail, noiseFloor, conditions, guide } = baseline;
+  if (sourceKind !== 'camera') return null;
   try {
-    const raw = window.localStorage.getItem(BASELINE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (parsed.format !== BASELINE_FORMAT) return null;
-    if (!Array.isArray(parsed.descriptor) || parsed.descriptor.length !== 128) return null;
-    if (parsed.descriptor.some((value) => !Number.isFinite(value))) return null;
-    if (!Number.isFinite(parsed.noiseFloor)) return null;
-    if (!Number.isFinite(parsed.capturedAt)) return null;
-    if (parsed.sourceKind !== 'camera') return null;
-    if (!parsed.conditions || CONDITION_KEYS.some((key) => !Number.isFinite(parsed.conditions[key]))) {
-      return null;
-    }
-    if (
-      !parsed.guide ||
-      !Number.isFinite(parsed.guide.aspectRatio) ||
-      !parsed.guide.box ||
-      ['x', 'y', 'width', 'height'].some((key) => !Number.isFinite(parsed.guide.box[key])) ||
-      !Array.isArray(parsed.guide.landmarks) ||
-      parsed.guide.landmarks.length !== 68 ||
-      parsed.guide.landmarks.some((point) => !Number.isFinite(point?.x) || !Number.isFinite(point?.y))
-    ) {
-      return null;
-    }
-    return parsed;
-  } catch {
+    return await archive.save({
+      descriptor,
+      savedAt: new Date(capturedAt).toISOString(),
+      thumbnail,
+      realtime: { format: BASELINE_FORMAT, sourceKind, capturedAt, noiseFloor, conditions, guide },
+    });
+  } catch (error) {
+    console.warn('Could not save the Realtime baseline to the face archive', error);
     return null;
   }
 }
 
 /**
- * Persists a baseline.
- *
- * @param {object} baseline Baseline record to store.
- * @returns {void}
+ * Detaches the active camera baseline, deleting its face on explicit reset.
+ * @param {object} [options] Session reference and storage.
+ * @param {?number} [options.id] ID used by this session.
+ * @param {boolean} [options.removeFace=false] True when the user confirms Reset baseline.
+ * @param {object} [options.archive] Shared archive, injectable for tests.
+ * @returns {Promise<void>}
  */
-export function saveBaseline(baseline) {
+export async function clearBaseline({ id, removeFace = false, archive = createFaceArchive() } = {}) {
   try {
-    window.localStorage.setItem(
-      BASELINE_KEY,
-      JSON.stringify({ ...baseline, format: BASELINE_FORMAT }),
-    );
-  } catch {
-    /* Storage disabled; the baseline holds for this session only. */
-  }
-}
-
-/**
- * Removes the persisted baseline.
- *
- * @returns {void}
- */
-export function clearBaseline() {
-  try {
-    window.localStorage.removeItem(BASELINE_KEY);
-  } catch {
-    /* Nothing to clear. */
+    await archive.clearRealtime({ id, removeFace });
+  } catch (error) {
+    console.warn('Could not clear the Realtime baseline', error);
   }
 }
 

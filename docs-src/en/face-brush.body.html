@@ -1,79 +1,29 @@
       <section class="content-page__header-area gm-prose" aria-labelledby="brush-guide-title">
-        <span class="content-page__kicker">Optional guide · Face Brush</span>
-        <h1 id="brush-guide-title">Digital sketch.</h1>
-        <p class="content-page__lead">Sketch a pattern on your face before testing it with physical makeup.</p>
-        <p class="content-page__deck">Control brush colour, size and opacity.</p>
+        <h1 id="brush-guide-title">Edit and replay Ghostyles.</h1>
+        <p class="content-page__lead">Ghostyle Player shows the camera result beside the JavaScript source and includes a native brush.</p>
         <div class="content-page__actions">
-          <a class="docs-link docs-link--primary" href="/lab.html">Open the Lab &#8599;</a>
-          <a class="docs-link" href="/docs/guides/lab.html">Lab fundamentals</a>
+          <a class="docs-link docs-link--primary" href="/ghostyle-player.html">Open Ghostyle Player &#8599;</a>
         </div>
       </section>
-
-      <div class="docs-reader">
-        <article class="docs-article gm-prose">
-          <section id="idea">
-            <span class="docs-eyebrow">Digital sketch</span>
-            <h2>2D brush and 3D face striping.</h2>
-
-            <p>At the first software release, two specific Ghostyles exists to allow realtime simulation 
-              and preview to</p>
-            <H1 class="docs-article__todo">TODO how yo select ghostyles</H1>
-            <H1 class="docs-article__todo">TODO brush example </H1>
-            <H1 class="docs-article__todo">TODO 3d stripes example </H1>
-          </section>
-
-          <section id="procedure">
-            <span class="docs-eyebrow">Experiment minimum procedure</span>
-            <div class="docs-step-list">
-              <div class="docs-step"><span class="docs-step__number">01</span><div><h3>Save the clean face</h3><p>Use the same camera, pose, and light you intend to keep during the digital sketch.</p></div></div>
-              <div class="docs-step"><span class="docs-step__number">02</span><div><h3>Activate Brush</h3><p>Select Face Brush from the Ghostyles. The control bar exposes colour, size, opacity, Undo, Clear, Copy state, and Bake Ghostyle.</p></div></div>
-              <div class="docs-step"><span class="docs-step__number">03</span><div><h3>Reduce the brush size</h3><p>Start with small marks around the eyes, brows, cheeks, nose and mouth.</p></div></div>
-              <div class="docs-step"><span class="docs-step__number">04</span><div><h3>Hold and paint</h3><p>The plugin stores samples relative to nearby 68-point face-api landmarks and an eye-based frame. Marks follow translation, in-plane rotation, and scale while the face remains detectable.</p></div></div>
-              <div class="docs-step"><span class="docs-step__number">05</span><div><h3>Observe a series</h3><p>Wait for several composite analyses after each small change. Keep a note of the baseline, threshold, brush settings, and regions changed.</p></div></div>
-              <div class="docs-step"><span class="docs-step__number">06</span><div><h3>Save a proposal</h3><p><strong>Copy state</strong> preserves the stroke data. <strong>Bake Ghostyle</strong> downloads a standalone plugin proposal, or copy/upload the resulting picture.</p></div></div>
-            </div>
-          </section>
-
-          <section id="figure">
-            <span class="docs-eyebrow">Image under revision</span>
-            <h2>The automated example needs finer marks.</h2>
-            <div class="docs-placeholder">
-              <p>Planned figure: a small brush traced from the current 68-point landmark positions around the eyes, cheeks, nose, and mouth. The existing three-stripe capture is intentionally excluded from this guide.</p>
-            </div>
-            <p>The current plugin and browser harness expose enough information to automate this accurately. Playwright can read <code>window.gstmxx.getLastResult()</code>, obtain the 68 landmark positions, set a smaller brush size, and generate pointer paths derived from those points. The 3D mesh is available too, but the current Brush stores its anchors against the 2D face-api landmarks, so the 68-point geometry is the correct source for this specific capture.</p>
-          </section>
-
-          <section id="physical">
-            <span class="docs-eyebrow">Physical translation</span>
-            <h2>Retest with real makeup.</h2>
-            <ul>
-              <li>Reload your saved Ghostyle.</li>
-              <li>Match the colours and opacity as closely as possible.</li>
-              <li>While both are visible, the Lab measures the makeup and overlay together.</li>
-              <li>Remove the digital Ghostyle before testing the physical pattern.</li>
-              <li>Share the result with its test conditions.</li>
-            </ul>
-          </section>
-
-          <section id="limits">
-            <span class="docs-eyebrow">Limits</span>
-            <h2>Test small patterns</h2>
-            <p>Broad occlusion can make a detector lose the face, but it may also produce an impractical or misleading design. A useful authoring session records where the pattern sits, how visible it is, whether the face remains trackable, and how stable the result is across frames.</p>
-          </section>
-
-          <nav class="docs-next" aria-label="Continue reading">
-            <a class="docs-link" href="/docs/understand/">Next: understand the results &#8594;</a>
-          </nav>
-        </article>
-
-        <aside class="docs-toc">
-          <h2>On this page</h2>
-          <nav>
-            <a href="#idea">The workflow</a>
-            <a href="#procedure">Minimum procedure</a>
-            <a href="#figure">Image under revision</a>
-            <a href="#physical">Physical translation</a>
-            <a href="#limits">Limits</a>
-          </nav>
-        </aside>
-      </div>
+      <article class="docs-article gm-prose">
+        <section id="source">
+          <h2>Open the source</h2>
+          <p>On desktop, choose a Ghostyle by name and select <strong>Show code</strong>. The camera and the scrolling editor each take half of the workspace. Edit the JavaScript and select <strong>Reload</strong> to apply it locally. Use <strong>Auto-indent</strong> to align the highlighted JavaScript and <strong>Download .js</strong> to save the current draft. Drafts stay open while switching between Ghostyles in the current tab.</p>
+          <figure class="docs-figure">
+            <div class="docs-figure__frame"><img src="/docs/assets/screenshots/en/desktop/player-01-source.png" width="1440" height="1000" alt="Ghostyle Player camera preview beside the JavaScript source editor" /></div>
+            <figcaption>Desktop Ghostyle Player with the source panel open.</figcaption>
+          </figure>
+        </section>
+        <section id="brush">
+          <h2>Draw with the brush</h2>
+          <p>Enable <strong>Brush</strong>, choose color, size and opacity, then draw over the camera. The strokes follow the face landmarks. Use <strong>Undo</strong> or <strong>Clear</strong> to change the drawing. On desktop, <strong>Bake to code</strong> opens a reusable Ghostyle draft from the strokes.</p>
+        </section>
+        <section id="preview">
+          <h2>Inspect and capture the preview</h2>
+          <p>Toggle 2D and 3D independently to check landmark placement. Ghostyle settings such as the UV Stripes colors and opacity appear below the camera and update the preview immediately. Use <strong>Copy image</strong> to paste the current preview with the project credit and, when available, the Ghostyle name. <strong>Record 2s</strong> captures the camera and its visible layers. Open <strong>Upload</strong> to preview or copy the clip and to consent to sending it for moderation.</p>
+        </section>
+        <section id="related">
+          <h2>Start from a photo pair or a fuzzer result</h2>
+          <p><a href="/docs/guides/ghostyle-transfer.html">Ghostyle Transfer</a> extracts a module from two photos. The <a href="/docs/guides/localfuzzer.html">Local Fuzzer</a> generates modules in Docker. To preview a downloaded module, replace the text in the desktop source editor and select <strong>Reload</strong>.</p>
+        </section>
+      </article>

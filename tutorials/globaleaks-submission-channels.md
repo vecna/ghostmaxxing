@@ -175,7 +175,7 @@ those questions.
 
 | Field label | Hint shown to submitter | Type | Mandatory |
 |---|---|---|---|
-| What did you test? | | Single choice: A Ghostyle from the lab or the @ghostyles feed · A look from a workshop or photo · My own variant · Something else | No |
+| What did you test? | | Single choice: A Ghostyle from Ghostyle Player or the @ghostyles feed · A look from a workshop or photo · My own variant · Something else | No |
 | Which one? | The Ghostyle name or slug, a link to the post, or a description of the pattern. | Short text | No |
 | Against what? | Product or vendor if known, otherwise the kind of system and where it is used. | Short text | No |
 | Which stage did it affect? | Select everything that applies. | Multiple choice: Detection (it did not find a face) · Alignment or landmarks · Matching against a known identity · Liveness or anti-spoofing · None, it worked as normal · Not sure | No |

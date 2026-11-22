@@ -53,7 +53,7 @@ const { spawnSync } = require('node:child_process');
 const { startStaticServer } = require('./static-server.cjs');
 const { chromium } = require('@playwright/test');
 
-const VERSION = '1.1.0';
+const { version: VERSION } = require('../package.json');
 
 /**
  * render's browser window. 4:3, like the fake webcam frame, so the feed fills
@@ -66,7 +66,7 @@ const RENDER_CAPTURE_SCALE = 2;
 
 /**
  * Upper bound for --label-scale. The viewport is divided by it, and under 700
- * CSS px wide the lab switches to its phone layout (styles/lab.css), which is a
+ * CSS px wide the lab switches to its phone layout, which is a
  * different picture altogether. 1280 / 1.8 = 711.
  */
 const LABEL_SCALE_MAX = 1.8;
@@ -78,28 +78,11 @@ const COMMANDS = ['render', 'measure', 'shots'];
 const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif', '.tif', '.tiff'];
 const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.mov', '.mkv', '.avi', '.m4v', '.ogv'];
 
-/** `--layers` names to the lab's own overlay modes (bbox-overlay.js). */
-const LAYER_OVERLAY = {
-   none: null,
-   box: 'bbox',        // the face box plus its metric labels
-   landmarks: '2d',    // the box AND the face-api 68-point scaffold: "recognised"
-   mesh: 'mesh',       // MediaPipe mesh dots
-};
-const LAYER_NAMES = Object.keys(LAYER_OVERLAY);
-
-/** localStorage keys the lab reads on boot. The two DB keys are what `measure`
- *  carries from the baseline session to the dazzled one (db.js). */
-const STORAGE = {
-   db: 'local-face-lab-db-v1',
-   db3d: 'local-face-lab-db-3d-v1',
-   locale: 'ghostmaxxing-locale',
-};
-
-/** Lab chrome that must not appear inside a crop. */
+const LAYER_NAMES = ['none', 'box', 'landmarks', 'mesh'];
+const STORAGE = { db: 'gstmxx.faces.v1', locale: 'ghostmaxxing-locale' };
 const LAB_CHROME = [
-   '.viewbar', '.rail', '.rec-dot', '.bottombar', '.scrim-top', '.scrim-bottom',
-   '.status-pill', '#placeholder', '.screen', '#gm-pluginbar', '.locale-control',
-   '.gm-tool-back',
+   '.player-bar', '.player-dock', '.player-parameters', '#player-status', '#player-source-panel',
+   '.match-bar', '.workshop-rail', '.workshop-dock', '.workshop-toast', '#placeholder',
 ];
 
 // ---------------------------------------------------------------------------
@@ -139,8 +122,7 @@ Inputs (--baseline, --dazzled):
 
 render options:
   --layers <list>        Comma-separated, from none, box, landmarks, mesh
-                         (default: none). "landmarks" is the box plus the
-                         face-api 68-point scaffold, the "recognised" look.
+                         (default: none). "landmarks" draws the 68-point face-api overlay.
   --ghostyle <id>        Paint this Ghostyle (an id from ghostyles.json)
   --output <file>        Output picture; .png or .jpg decides the format
                          (default: scratch/<input>-<layers>[-<ghostyle>].jpg)
@@ -194,7 +176,7 @@ Common options:
   --settle <sec>         Seconds to wait after the first detection (default: 2)
   --locale <code>        Lab language (default: en)
   --base-url <url>       Use an already-running server instead of starting one
-  --lab <path>           Lab page path (default: /lab.html)
+  --lab <path>           Page override (render uses Player, measure and shots use Lab)
   --headed               Show the browser
   --keep-open <sec>      Leave the browser open after each run, for debugging
   --debug                Print the page state and the browser console after
@@ -261,7 +243,7 @@ function parseArgs(argv) {
       settle: 2,
       locale: 'en',
       baseUrl: null,
-      lab: '/lab.html',
+      lab: null,
       headed: false,
       keepOpen: 0,
       debug: false,
@@ -358,6 +340,7 @@ function parseArgs(argv) {
       options.format = /\.png$/i.test(options.output) ? 'png' : 'jpg';
    }
    if (options.command === 'shots' && !options.output) options.output = DEFAULT_SHOT_OUTPUT;
+   options.lab ??= options.command === 'render' ? '/ghostyle-player.html' : '/lab.html';
    if (!options.feed) options.feed = options.command === 'render' ? FEEDS.fit : FEEDS.sd;
    return options;
 }
@@ -533,10 +516,12 @@ async function openLab(y4mFile, options, baseUrl, { viewport, seed = {} } = {}) 
    await page.goto(`${baseUrl}${options.lab}`, { waitUntil: 'load' });
    const detected = await waitFor(
       page,
-      () => Boolean(window.gstmxx && window.gstmxx.getLastResult && window.gstmxx.getLastResult()),
+      () => document.getElementById('player')
+         ? Boolean(window.gstmxx?.getLastResult())
+         : Boolean(document.getElementById('saveBtn')?.matches(':enabled')),
       60000,
    );
-   progress(detected ? 'face detected' : 'no detection within 60s');
+   progress(detected ? 'camera ready' : 'camera or geometry unavailable after 60s');
    if (detected) await page.waitForTimeout(options.settle * 1000);
 
    const session = { browser, page, logs, detected };
@@ -557,7 +542,7 @@ async function printDebug(session, options) {
          video: video ? { width: video.videoWidth, height: video.videoHeight, paused: video.paused, hasStream: Boolean(video.srcObject) } : null,
          gstmxx: typeof window.gstmxx,
          activeEffect: window.gstmxx && window.gstmxx.getActiveEffect ? window.gstmxx.getActiveEffect() : null,
-         dbFaces: window.gstmxx && window.gstmxx.getDb ? (window.gstmxx.getDb().faces || []).length : null,
+         dbFaces: document.getElementById('dbCountBadge')?.textContent ?? null,
          bodyClass: document.body.className,
          view: (document.querySelector('.viewer') || {}).dataset ? document.querySelector('.viewer').dataset.view : null,
       };
@@ -674,9 +659,8 @@ async function waitForReadout(page, timeoutMs) {
    const settled = await waitFor(page, () => {
       const text = (id) => { const el = document.getElementById(id); return el ? String(el.textContent || '').trim() : ''; };
       const num = text('gm-num');
-      const state = text('gm-state');
-      return (num !== '' && num !== '—' && Number.isFinite(Number.parseFloat(num)))
-         || /recognised|escaped|no face/i.test(state);
+      const state = document.getElementById('readout')?.dataset.status;
+      return state === 'absent' || (num !== '' && num !== '—' && Number.isFinite(Number.parseFloat(num)));
    }, timeoutMs, undefined, 1500);
    return settled;
 }
@@ -698,10 +682,7 @@ function parseDistance(value) {
  */
 async function saveIdentity(page, timeoutMs = 90000) {
    const facesStored = () => {
-      const db = window.gstmxx && window.gstmxx.getDb && window.gstmxx.getDb();
-      const stored = db && Array.isArray(db.faces) ? db.faces.length : 0;
-      if (stored > 0) return true;
-      const counter = document.getElementById('dbCount');
+      const counter = document.getElementById('dbCountBadge');
       return Boolean(counter) && Number(counter.textContent) > 0;
    };
    const enabled = (sel) => { const button = document.querySelector(sel); return Boolean(button) && !button.disabled; };
@@ -724,7 +705,6 @@ async function saveIdentity(page, timeoutMs = 90000) {
 async function exportDatabase(page) {
    return withTimeout(page.evaluate((keys) => ({
       [keys.db]: window.localStorage.getItem(keys.db),
-      [keys.db3d]: window.localStorage.getItem(keys.db3d),
    }), STORAGE), 8000);
 }
 
@@ -756,12 +736,9 @@ async function freezeUi(page) {
 /** Hide the lab's own interface so a wide crop cannot catch a button. */
 async function hideLabChrome(page) {
    await injectCss(page, `${LAB_CHROME.join(', ')} { display: none !important; }
-                html, body { background: #000 !important; }
-                /* The lab fades the Ghostyle out a few seconds after each pass
-                   (engine.js clearOverlay), which is right for a live tool and
-                   wrong for a still. The canvas is repainted every pass, so
-                   pinning the opacity shows the current drawing. */
-                #overlay { opacity: 1 !important; transition: none !important; }`);
+      .player { grid-template-rows: minmax(0, 1fr); }
+      .player[data-source-open] .player-workspace { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+      html, body { background: #000 !important; }`);
 }
 
 /**
@@ -807,137 +784,31 @@ async function captureViewport(page, file, options) {
 // Layers and Ghostyles
 // ---------------------------------------------------------------------------
 
-/** Which view tab a `--layers` list needs, and the overlay mode inside it.
- *
- * The lab hides the box canvas in the Camera view (lab-ui.js applyView), so a
- * box or a scaffold is only reachable through the 2D or 3D tab. Within a tab
- * the mode can still be cycled with #overlayModeBtn, which is how box-only is
- * reached: the 2D tab would otherwise draw the full 68-point scaffold too.
- */
-function viewPlanFor(layers) {
-   const has = (name) => layers.includes(name);
-   if (!layers.length || (layers.length === 1 && has('none'))) return { view: 'off', mode: null };
-   if (has('box') && has('mesh')) return { view: '3d', mode: 'entrambi' };
-   if (has('mesh')) return { view: '3d', mode: 'mesh' };
-   if (has('landmarks')) return { view: '2d', mode: '2d' };
-   return { view: '2d', mode: 'bbox' };
-}
-
-/**
- * Put the lab into the view the requested layers need, by clicking its own
- * controls, all inside one page call.
- *
- * Every round trip into this page costs seconds while inference runs, so the
- * view tab and the mode button are clicked from a single evaluate. The view
- * tab sets the overlay mode itself (lab-ui.js applyView: 2D -> "2d",
- * 3D -> "mesh") without updating the mode button's data attribute, so the
- * button is only consulted after it has been clicked once, when the two
- * are back in step.
- */
+/** Enables the selected diagnostic layers through the public controls. */
 async function applyLayers(page, options) {
-   const plan = viewPlanFor(options.layers);
-   progress(`layers ${options.layers.join(',')}: view "${plan.view}"${plan.mode ? `, overlay mode "${plan.mode}"` : ''}`);
-   const viewModes = { off: 'bbox', '2d': '2d', '3d': 'mesh' };
-   let reached = null;
-   for (let attempt = 0; attempt < 3 && reached !== plan.mode; attempt += 1) {
-      reached = await withTimeout(page.evaluate(({ view, mode, viewMode }) => {
-         const tab = document.querySelector(`.seg[data-view="${view}"]`);
-         if (!tab) return null;
-         tab.click();
-         if (!mode || mode === viewMode) return mode;
-         const button = document.getElementById('overlayModeBtn');
-         if (!button) return viewMode;
-         for (let clicks = 0; clicks < 4; clicks += 1) {
-            button.click();
-            if (button.dataset.overlayMode === mode) return mode;
-         }
-         return button.dataset.overlayMode || null;
-      }, { view: plan.view, mode: plan.mode, viewMode: viewModes[plan.view] }), 15000).catch(() => null);
-      if (reached !== plan.mode) await page.waitForTimeout(1000);
-   }
-   if (reached !== plan.mode) throw new Error(`the lab did not reach overlay mode "${plan.mode}" (reached: ${reached || 'none'}). Re-run with --headed to watch it.`);
-   await page.waitForTimeout(1200);
-   return plan.mode || 'none';
-}
-
-/**
- * Activate a 2D Ghostyle through its own button, then confirm with the lab.
- *
- * Only the 3D helpers are exposed on window.gstmxx, so the 2D button is the
- * way in. A press that lands while the lab is still busy is dropped without
- * any error, so the click is confirmed, not trusted.
- */
-async function activateGhostyle(page, id, options) {
-   progress(`activating Ghostyle "${id}"`);
-   const selector = `.preview-btn[data-effect="${id}"]`;
-   // The list of buttons is asked for until the page answers with one: an
-   // unanswered evaluate is a busy frame, not a missing Ghostyle.
-   let known = null;
-   const deadline = Date.now() + 60000;
-   while (known === null && Date.now() < deadline) {
-      known = await withTimeout(page.evaluate(() => {
-         const buttons = Array.from(document.querySelectorAll('.preview-btn[data-effect]'));
-         return buttons.length ? buttons.map((button) => button.dataset.effect) : null;
-      }), 15000).catch(() => null);
-      if (known === null) await page.waitForTimeout(1000);
-   }
-   if (!known) throw new Error('the lab never listed its Ghostyles; re-run with --debug.');
-   if (!known.includes(id)) {
-      throw new Error(`no Ghostyle called "${id}" in the lab.\n  Loaded ids: ${known.join(', ')}\n  Ids come from ghostyles.json.`);
-   }
-   const ready = await waitFor(
-      page, (sel) => { const button = document.querySelector(sel); return Boolean(button) && !button.disabled; },
-      30000, selector,
-   );
-   if (!ready) throw new Error(`the lab left Ghostyle "${id}" disabled; it is still busy.`);
-
-   let active = null;
-   for (let round = 0; round < 3 && active !== id; round += 1) {
-      if (round) await page.waitForTimeout(2500);
-      await clickAction(page, selector, `Ghostyle ${id}`);
-      await page.waitForTimeout(Math.max(1500, options.settle * 1000));
-      for (let attempt = 0; attempt < 8; attempt += 1) {
-         active = await withTimeout(page.evaluate(() => window.gstmxx.getActiveEffect()), 10000).catch(() => null);
-         if (active === id) break;
-         await page.waitForTimeout(1200);
+   const points = options.layers.includes('landmarks');
+   const mesh = options.layers.includes('mesh');
+   await page.evaluate(({ points, mesh }) => {
+      for (const [layer, enabled] of [['2d', points], ['3d', mesh]]) {
+         const toggle = document.querySelector(`[data-overlay="${layer}"]`);
+         if (toggle && (toggle.getAttribute('aria-pressed') === 'true') !== enabled) toggle.click();
       }
-   }
-   if (active !== id) {
-      throw new Error(`Ghostyle "${id}" did not become active after three attempts (active: ${active || 'none'}). Re-run with --headed to watch the lab.`);
-   }
-   progress(`Ghostyle "${id}" active`);
+   }, { points, mesh });
+   return options.layers.join(', ');
 }
 
-/**
- * Flip the lab back to the photograph's orientation.
- *
- * camera.js mirrors #video and #overlay (scaleX(-1)) whenever the facing mode
- * is "user", which is the only mode a fake webcam has, and the box, mesh and
- * label canvases follow #overlay. The lab's own #mirrorToggle undoes it and
- * keeps the lab's state in step (main.js), so label text is still drawn the
- * right way round; setting the transform from outside would not. The button is
- * hidden in the interface but still wired, and Element.click() does not care.
- */
+/** Selects a catalog entry and waits until its callbacks are active. */
+async function activateGhostyle(page, id) {
+   await page.locator('#ghostyle-select').selectOption(id || '');
+   const active = await waitFor(page, expected => {
+      return (window.gstmxx?.getActiveEffect() ?? '') === expected;
+   }, 15000, id || '');
+   if (!active) throw new Error(`Ghostyle "${id}" did not activate`);
+}
+
+/** Restores the source orientation for a non-selfie render. */
 async function unmirror(page) {
-   const state = () => withTimeout(page.evaluate(() => {
-      const overlay = document.getElementById('overlay');
-      const toggle = document.getElementById('mirrorToggle');
-      const mirrored = (overlay && overlay.style.transform || '').includes('scaleX(-1)');
-      return { mirrored, hasToggle: Boolean(toggle) };
-   }), 15000).catch(() => null);
-
-   let current = await state();
-   if (!current) throw new Error('the lab did not answer when asked whether it is mirrored. Re-run with --headed to watch it.');
-   if (!current.mirrored) { progress('lab is not mirrored'); return false; }
-   if (!current.hasToggle) throw new Error('the lab is mirrored and has no #mirrorToggle to undo it; pass --mirror to keep the selfie view.');
-
-   for (let attempt = 0; attempt < 3 && current.mirrored; attempt += 1) {
-      await withTimeout(page.evaluate(() => document.getElementById('mirrorToggle').click()), 15000).catch(() => {});
-      await page.waitForTimeout(600);
-      current = await state() || current;
-   }
-   if (current.mirrored) throw new Error('the lab stayed mirrored after three presses of #mirrorToggle. Re-run with --headed to watch it.');
-   progress('lab un-mirrored: the picture reads like the photograph');
+   await injectCss(page, '.player-picture video, .player-picture canvas { transform: none !important; }');
    return true;
 }
 
@@ -965,25 +836,22 @@ async function faceBoxOnPage(page, attempts = 4) {
 
 async function faceBoxOnce(page) {
    return withTimeout(page.evaluate(() => {
-      const overlay = document.getElementById('overlay');
-      if (!overlay) return null;
-      const rect = overlay.getBoundingClientRect();
-      const viewer = { x: rect.left, y: rect.top, width: rect.width, height: rect.height };
-      const result = window.gstmxx && window.gstmxx.getLastResult && window.gstmxx.getLastResult();
-      const raw = result && ((result.detection && result.detection.box) || result.box) || null;
+      const video = document.getElementById('video');
+      if (!video?.videoWidth) return null;
+      const rect = video.getBoundingClientRect();
+      const scale = Math.min(rect.width / video.videoWidth, rect.height / video.videoHeight);
+      const width = video.videoWidth * scale;
+      const height = video.videoHeight * scale;
+      const x0 = rect.left + (rect.width - width) / 2;
+      const y0 = rect.top + (rect.height - height) / 2;
+      const viewer = { x: x0, y: y0, width, height };
+      const raw = window.gstmxx?.getLastResult()?.detection?.box;
       if (!raw) return { viewer, face: null };
-
-      const intrinsicW = overlay.width || rect.width;
-      const intrinsicH = overlay.height || rect.height;
-      const scaleX = rect.width / intrinsicW;
-      const scaleY = rect.height / intrinsicH;
-      const transform = window.getComputedStyle(overlay).transform || 'none';
-      const mirrored = transform !== 'none' && Number((transform.match(/matrix\(([-\d.]+)/) || [])[1]) < 0;
-      const x = mirrored ? intrinsicW - (raw.x + raw.width) : raw.x;
+      const mirrored = getComputedStyle(video).transform.startsWith('matrix(-1');
+      const x = mirrored ? video.videoWidth - raw.x - raw.width : raw.x;
       return {
-         viewer,
-         mirrored,
-         face: { x: rect.left + x * scaleX, y: rect.top + raw.y * scaleY, width: raw.width * scaleX, height: raw.height * scaleY },
+         viewer, mirrored,
+         face: { x: x0 + x * scale, y: y0 + raw.y * scale, width: raw.width * scale, height: raw.height * scale },
       };
    }), 15000).catch(() => null);
 }
@@ -1063,21 +931,34 @@ async function render(options, baseUrl, workDir) {
       }
       let identity = null;
       if (options.saveIdentity) {
-         // Saved while the lab's controls are still visible: the saved-faces
-         // badge is one of the things hideLabChrome removes.
-         const saved = await saveIdentity(page);
-         identity = saved ? await readoutWithRetry(page) : null;
+         const lab = await openLab(y4mFile, { ...options, lab: '/lab.html' }, baseUrl, { viewport });
+         try {
+            if (await saveIdentity(lab.page)) identity = await readoutWithRetry(lab.page);
+         } finally {
+            await lab.close();
+         }
       }
-
       const flipped = options.mirror ? false : await unmirror(page);
-
-      await hideLabChrome(page);
       const mode = await applyLayers(page, options);
-      if (options.ghostyle) await activateGhostyle(page, options.ghostyle, options);
-      await page.waitForTimeout(1500);
+      await activateGhostyle(page, options.ghostyle);
+      await hideLabChrome(page);
+      if (options.layers.includes('mesh')) {
+         await waitFor(page, () => Boolean(window.gstmxx?.lastLandmarks3d?.length), 20000);
+      }
+      await page.waitForTimeout(500);
 
       const geometry = await faceBoxOnPage(page);
-      if (!geometry) throw new Error('the lab did not answer when asked where the video is on the page. Re-run with --headed to watch it.');
+      if (!geometry) throw new Error('The Player did not report the camera dimensions.');
+      if (geometry.face && options.layers.includes('box')) {
+         await page.evaluate(box => {
+            const mark = document.createElement('div');
+            Object.assign(mark.style, {
+               position: 'fixed', pointerEvents: 'none', border: '2px solid #ffe7a8',
+               left: box.x + 'px', top: box.y + 'px', width: box.width + 'px', height: box.height + 'px',
+            });
+            document.body.append(mark);
+         }, geometry.face);
+      }
       let clip;
       if (options.crop === 'frame' || !geometry.face) {
          if (options.crop === 'face') progress('the lab reports no face box right now, saving the whole frame instead');
@@ -1147,15 +1028,15 @@ async function measure(options, baseUrl, workDir) {
          // Polled rather than asked once: a busy frame can leave one evaluate
          // unanswered, and that is not proof the database is empty.
          const known = await waitFor(session.page, () => {
-            const db = window.gstmxx && window.gstmxx.getDb && window.gstmxx.getDb();
-            return Boolean(db && Array.isArray(db.faces) && db.faces.length > 0);
+            return Number(document.getElementById('dbCountBadge')?.textContent) > 0;
          }, 30000, undefined, 1000);
          if (!known) throw new Error('the dazzled session did not load the saved identity from storage; nothing to compare against.');
          // With no detection there is nothing the loop can measure: one look
          // at the readout is kept for the record and the sampling is skipped.
-         const settled = await waitForReadout(session.page, session.detected ? 120000 : 15000);
-         if (!settled) progress(session.detected ? 'the readout never settled; the readings below are whatever the lab shows' : 'no face, no distance to sample');
-         const sampleCount = session.detected ? options.samples : 1;
+         const settled = await waitForReadout(session.page, 30000);
+         if (!settled) progress('the readout did not settle');
+         detectedDazzled = (await session.page.locator('#readout').getAttribute('data-status')) !== 'absent';
+         const sampleCount = detectedDazzled ? options.samples : 1;
          for (let index = 0; index < sampleCount; index += 1) {
             if (index) await session.page.waitForTimeout(options.interval * 1000);
             const reading = await readoutWithRetry(session.page, 3);
@@ -1213,15 +1094,15 @@ function summarise(options, baselineReadout, samples, detectedDazzled) {
    } else if (threshold === null) {
       outcome = 'no-threshold';
       verdict = `distance ${Math.max(...distances).toFixed(2)}, but the threshold could not be read`;
-   } else if (Math.min(...distances) >= threshold) {
+   } else if (Math.min(...distances) > threshold) {
       outcome = 'escaped';
-      verdict = `escaped: every reading is at or above the threshold ${threshold}`;
-   } else if (Math.max(...distances) >= threshold) {
+      verdict = `escaped: every reading is above the threshold ${threshold}`;
+   } else if (Math.max(...distances) > threshold) {
       outcome = 'unstable';
       verdict = `unstable: readings cross the threshold ${threshold} in both directions`;
    } else {
       outcome = 'recognised';
-      verdict = `still recognised: every reading is below the threshold ${threshold}`;
+      verdict = `still recognised: every reading is at or below the threshold ${threshold}`;
    }
 
    return {
@@ -1371,7 +1252,7 @@ async function shots(options, baseUrl, workDir) {
          written.push(savedFile);
 
          progress('switching to the landmark view');
-         await clickAction(session.page, '.seg[data-view="2d"]', 'Landmark view toggle');
+         await clickAction(session.page, '[data-overlay="2d"]', 'Landmark view toggle');
          await session.page.waitForTimeout(3000);
          await freezeUi(session.page);
          const plainFile = name('save-id-plain');
@@ -1399,13 +1280,13 @@ async function shots(options, baseUrl, workDir) {
          const state = await withTimeout(session.page.evaluate(() => {
             const screen = document.getElementById('gm-screen-upload');
             return {
-               screenClass: screen ? screen.className : null,
+               open: Boolean(screen?.open),
                clipMeta: (document.getElementById('gm-upload-clip-meta') || {}).textContent || null,
                submitDisabled: (document.getElementById('gm-upload-submit') || {}).disabled,
             };
-         }), 10000).catch(() => ({ screenClass: null, clipMeta: null, submitDisabled: null }));
+         }), 10000).catch(() => ({ open: false, clipMeta: null, submitDisabled: null }));
          notes.push(`upload : ${JSON.stringify(state)}`);
-         if (state.screenClass && state.screenClass.includes('hidden')) {
+         if (!state.open) {
             notes.push('upload : consent screen stayed hidden, no clip was recorded');
          }
          await withTimeout(session.page.evaluate(() => {

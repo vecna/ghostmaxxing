@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-05T12:25:43.316Z",
+  "generatedAt": "2026-11-22T21:01:17.361Z",
   "generator": "scripts-dev/capture-doc-screenshots.cjs",
   "output": "docs/assets/screenshots",
   "locales": [
@@ -12,9 +12,10 @@
   ],
   "pageGroups": [
     "lab",
+    "player",
     "loader"
   ],
-  "loaderTimestampSeconds": 1,
+  "loaderTimestampSeconds": 3,
   "includeBrush": true,
   "fixtures": {
     "fakeCamera": "tests/fixtures/mock-face.y4m",
@@ -30,7 +31,7 @@
       "widthPx": 1440,
       "heightPx": 1000,
       "aspectRatio": 1.44,
-      "fileSizeBytes": 399640,
+      "fileSizeBytes": 394880,
       "capture": {
         "kind": "viewport"
       },
@@ -39,7 +40,7 @@
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "The initial live-camera workspace and match readout before a baseline is saved.",
+      "purpose": "The workshop camera and recognition history.",
       "stateSource": "live interface with committed fixtures"
     },
     {
@@ -51,7 +52,7 @@
       "widthPx": 1440,
       "heightPx": 1000,
       "aspectRatio": 1.44,
-      "fileSizeBytes": 400707,
+      "fileSizeBytes": 396918,
       "capture": {
         "kind": "viewport"
       },
@@ -60,29 +61,8 @@
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "A saved baseline and the recognised state displayed by the local matcher.",
+      "purpose": "A saved reference and its current match.",
       "stateSource": "live interface with committed fixtures"
-    },
-    {
-      "id": "lab-03-escaped-example",
-      "page": "lab.html",
-      "locale": "en",
-      "viewport": "desktop",
-      "file": "en/desktop/lab-03-escaped-example.png",
-      "widthPx": 1440,
-      "heightPx": 1000,
-      "aspectRatio": 1.44,
-      "fileSizeBytes": 400815,
-      "capture": {
-        "kind": "viewport"
-      },
-      "sourceViewport": {
-        "widthCssPx": 1440,
-        "heightCssPx": 1000,
-        "deviceScaleFactor": 1
-      },
-      "purpose": "Illustrative escaped state for explaining distance and threshold readouts.",
-      "stateSource": "documented synthetic event over the committed fake-camera stream"
     },
     {
       "id": "lab-04-2d-points",
@@ -93,7 +73,7 @@
       "widthPx": 1440,
       "heightPx": 1000,
       "aspectRatio": 1.44,
-      "fileSizeBytes": 421761,
+      "fileSizeBytes": 404565,
       "capture": {
         "kind": "viewport"
       },
@@ -102,7 +82,7 @@
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "The 2D landmark view used by the functional guide and technical glossary.",
+      "purpose": "The Lab camera with the 2D landmarks enabled.",
       "stateSource": "live interface with committed fixtures"
     },
     {
@@ -114,7 +94,7 @@
       "widthPx": 1440,
       "heightPx": 1000,
       "aspectRatio": 1.44,
-      "fileSizeBytes": 404495,
+      "fileSizeBytes": 465775,
       "capture": {
         "kind": "viewport"
       },
@@ -123,49 +103,7 @@
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "The MediaPipe mesh view used to explain dense landmarks.",
-      "stateSource": "live interface with committed fixtures"
-    },
-    {
-      "id": "lab-06-settings-and-ghostyles",
-      "page": "lab.html",
-      "locale": "en",
-      "viewport": "desktop",
-      "file": "en/desktop/lab-06-settings-and-ghostyles.png",
-      "widthPx": 1440,
-      "heightPx": 1000,
-      "aspectRatio": 1.44,
-      "fileSizeBytes": 101140,
-      "capture": {
-        "kind": "viewport"
-      },
-      "sourceViewport": {
-        "widthCssPx": 1440,
-        "heightCssPx": 1000,
-        "deviceScaleFactor": 1
-      },
-      "purpose": "Settings, thresholds, and the available Ghostyle list.",
-      "stateSource": "live interface with committed fixtures"
-    },
-    {
-      "id": "lab-07-ghostyle-active",
-      "page": "lab.html",
-      "locale": "en",
-      "viewport": "desktop",
-      "file": "en/desktop/lab-07-ghostyle-active.png",
-      "widthPx": 1440,
-      "heightPx": 1000,
-      "aspectRatio": 1.44,
-      "fileSizeBytes": 411601,
-      "capture": {
-        "kind": "viewport"
-      },
-      "sourceViewport": {
-        "widthCssPx": 1440,
-        "heightCssPx": 1000,
-        "deviceScaleFactor": 1
-      },
-      "purpose": "A Ghostyle rendered over the deterministic fake-camera stream.",
+      "purpose": "The Lab camera with the 3D mesh enabled.",
       "stateSource": "live interface with committed fixtures"
     },
     {
@@ -177,7 +115,7 @@
       "widthPx": 1440,
       "heightPx": 1000,
       "aspectRatio": 1.44,
-      "fileSizeBytes": 132173,
+      "fileSizeBytes": 253798,
       "capture": {
         "kind": "viewport"
       },
@@ -186,19 +124,19 @@
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "The on-device saved-face archive after recording one baseline.",
+      "purpose": "The shared local face archive.",
       "stateSource": "live interface with committed fixtures"
     },
     {
-      "id": "lab-09-brush-painted",
-      "page": "lab.html",
+      "id": "player-01-source",
+      "page": "ghostyle-player.html",
       "locale": "en",
       "viewport": "desktop",
-      "file": "en/desktop/lab-09-brush-painted.png",
+      "file": "en/desktop/player-01-source.png",
       "widthPx": 1440,
       "heightPx": 1000,
       "aspectRatio": 1.44,
-      "fileSizeBytes": 393304,
+      "fileSizeBytes": 285571,
       "capture": {
         "kind": "viewport"
       },
@@ -207,8 +145,29 @@
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "Optional Face Brush authoring state with three face-anchored digital paint strokes.",
-      "stateSource": "scripted pointer strokes over the committed fake-camera stream"
+      "purpose": "The selected Ghostyle beside its editable source.",
+      "stateSource": "live interface with committed fixtures"
+    },
+    {
+      "id": "player-02-brush",
+      "page": "ghostyle-player.html",
+      "locale": "en",
+      "viewport": "desktop",
+      "file": "en/desktop/player-02-brush.png",
+      "widthPx": 1440,
+      "heightPx": 1000,
+      "aspectRatio": 1.44,
+      "fileSizeBytes": 282672,
+      "capture": {
+        "kind": "viewport"
+      },
+      "sourceViewport": {
+        "widthCssPx": 1440,
+        "heightCssPx": 1000,
+        "deviceScaleFactor": 1
+      },
+      "purpose": "A face-anchored stroke from the native brush.",
+      "stateSource": "live interface with committed fixtures"
     },
     {
       "id": "loader-01-empty",
@@ -216,13 +175,13 @@
       "locale": "en",
       "viewport": "desktop",
       "file": "en/desktop/loader-01-empty.png",
-      "widthPx": 1400,
-      "heightPx": 397,
-      "aspectRatio": 3.5264,
-      "fileSizeBytes": 124469,
+      "widthPx": 1384,
+      "heightPx": 1045,
+      "aspectRatio": 1.3244,
+      "fileSizeBytes": 438874,
       "capture": {
         "kind": "element",
-        "selector": ".loader-band--stage"
+        "selector": ".loader-stage"
       },
       "sourceViewport": {
         "widthCssPx": 1440,
@@ -238,20 +197,20 @@
       "locale": "en",
       "viewport": "desktop",
       "file": "en/desktop/loader-02-video-loaded.png",
-      "widthPx": 1400,
-      "heightPx": 397,
-      "aspectRatio": 3.5264,
-      "fileSizeBytes": 86180,
+      "widthPx": 1384,
+      "heightPx": 1045,
+      "aspectRatio": 1.3244,
+      "fileSizeBytes": 398187,
       "capture": {
         "kind": "element",
-        "selector": ".loader-band--stage"
+        "selector": ".loader-stage"
       },
       "sourceViewport": {
         "widthCssPx": 1440,
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "The committed MP4 loaded at 1.000 seconds with active controls.",
+      "purpose": "The committed MP4 loaded at 3.000 seconds with active controls.",
       "stateSource": "live interface with committed fixtures"
     },
     {
@@ -260,20 +219,20 @@
       "locale": "en",
       "viewport": "desktop",
       "file": "en/desktop/loader-03-record-result.png",
-      "widthPx": 1400,
-      "heightPx": 288,
-      "aspectRatio": 4.8611,
-      "fileSizeBytes": 54414,
+      "widthPx": 1384,
+      "heightPx": 1520,
+      "aspectRatio": 0.9105,
+      "fileSizeBytes": 545219,
       "capture": {
         "kind": "element",
-        "selector": ".loader-band--log"
+        "selector": ".loader-report"
       },
       "sourceViewport": {
         "widthCssPx": 1440,
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "A frame-level Record face result with timestamped diagnostic metadata.",
+      "purpose": "The model-separated timeline and report after a bounded local-video analysis.",
       "stateSource": "live interface with committed fixtures"
     },
     {
@@ -285,7 +244,7 @@
       "widthPx": 1440,
       "heightPx": 1000,
       "aspectRatio": 1.44,
-      "fileSizeBytes": 399777,
+      "fileSizeBytes": 394735,
       "capture": {
         "kind": "viewport"
       },
@@ -294,7 +253,7 @@
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "The initial live-camera workspace and match readout before a baseline is saved.",
+      "purpose": "The workshop camera and recognition history.",
       "stateSource": "live interface with committed fixtures"
     },
     {
@@ -306,7 +265,7 @@
       "widthPx": 1440,
       "heightPx": 1000,
       "aspectRatio": 1.44,
-      "fileSizeBytes": 400823,
+      "fileSizeBytes": 399844,
       "capture": {
         "kind": "viewport"
       },
@@ -315,29 +274,8 @@
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "A saved baseline and the recognised state displayed by the local matcher.",
+      "purpose": "A saved reference and its current match.",
       "stateSource": "live interface with committed fixtures"
-    },
-    {
-      "id": "lab-03-escaped-example",
-      "page": "lab.html",
-      "locale": "it",
-      "viewport": "desktop",
-      "file": "it/desktop/lab-03-escaped-example.png",
-      "widthPx": 1440,
-      "heightPx": 1000,
-      "aspectRatio": 1.44,
-      "fileSizeBytes": 400963,
-      "capture": {
-        "kind": "viewport"
-      },
-      "sourceViewport": {
-        "widthCssPx": 1440,
-        "heightCssPx": 1000,
-        "deviceScaleFactor": 1
-      },
-      "purpose": "Illustrative escaped state for explaining distance and threshold readouts.",
-      "stateSource": "documented synthetic event over the committed fake-camera stream"
     },
     {
       "id": "lab-04-2d-points",
@@ -348,7 +286,7 @@
       "widthPx": 1440,
       "heightPx": 1000,
       "aspectRatio": 1.44,
-      "fileSizeBytes": 416558,
+      "fileSizeBytes": 401191,
       "capture": {
         "kind": "viewport"
       },
@@ -357,7 +295,7 @@
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "The 2D landmark view used by the functional guide and technical glossary.",
+      "purpose": "The Lab camera with the 2D landmarks enabled.",
       "stateSource": "live interface with committed fixtures"
     },
     {
@@ -369,7 +307,7 @@
       "widthPx": 1440,
       "heightPx": 1000,
       "aspectRatio": 1.44,
-      "fileSizeBytes": 410897,
+      "fileSizeBytes": 465536,
       "capture": {
         "kind": "viewport"
       },
@@ -378,49 +316,7 @@
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "The MediaPipe mesh view used to explain dense landmarks.",
-      "stateSource": "live interface with committed fixtures"
-    },
-    {
-      "id": "lab-06-settings-and-ghostyles",
-      "page": "lab.html",
-      "locale": "it",
-      "viewport": "desktop",
-      "file": "it/desktop/lab-06-settings-and-ghostyles.png",
-      "widthPx": 1440,
-      "heightPx": 1000,
-      "aspectRatio": 1.44,
-      "fileSizeBytes": 106545,
-      "capture": {
-        "kind": "viewport"
-      },
-      "sourceViewport": {
-        "widthCssPx": 1440,
-        "heightCssPx": 1000,
-        "deviceScaleFactor": 1
-      },
-      "purpose": "Settings, thresholds, and the available Ghostyle list.",
-      "stateSource": "live interface with committed fixtures"
-    },
-    {
-      "id": "lab-07-ghostyle-active",
-      "page": "lab.html",
-      "locale": "it",
-      "viewport": "desktop",
-      "file": "it/desktop/lab-07-ghostyle-active.png",
-      "widthPx": 1440,
-      "heightPx": 1000,
-      "aspectRatio": 1.44,
-      "fileSizeBytes": 429373,
-      "capture": {
-        "kind": "viewport"
-      },
-      "sourceViewport": {
-        "widthCssPx": 1440,
-        "heightCssPx": 1000,
-        "deviceScaleFactor": 1
-      },
-      "purpose": "A Ghostyle rendered over the deterministic fake-camera stream.",
+      "purpose": "The Lab camera with the 3D mesh enabled.",
       "stateSource": "live interface with committed fixtures"
     },
     {
@@ -432,7 +328,7 @@
       "widthPx": 1440,
       "heightPx": 1000,
       "aspectRatio": 1.44,
-      "fileSizeBytes": 134423,
+      "fileSizeBytes": 253508,
       "capture": {
         "kind": "viewport"
       },
@@ -441,19 +337,19 @@
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "The on-device saved-face archive after recording one baseline.",
+      "purpose": "The shared local face archive.",
       "stateSource": "live interface with committed fixtures"
     },
     {
-      "id": "lab-09-brush-painted",
-      "page": "lab.html",
+      "id": "player-01-source",
+      "page": "ghostyle-player.html",
       "locale": "it",
       "viewport": "desktop",
-      "file": "it/desktop/lab-09-brush-painted.png",
+      "file": "it/desktop/player-01-source.png",
       "widthPx": 1440,
       "heightPx": 1000,
       "aspectRatio": 1.44,
-      "fileSizeBytes": 391932,
+      "fileSizeBytes": 287003,
       "capture": {
         "kind": "viewport"
       },
@@ -462,8 +358,29 @@
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "Optional Face Brush authoring state with three face-anchored digital paint strokes.",
-      "stateSource": "scripted pointer strokes over the committed fake-camera stream"
+      "purpose": "The selected Ghostyle beside its editable source.",
+      "stateSource": "live interface with committed fixtures"
+    },
+    {
+      "id": "player-02-brush",
+      "page": "ghostyle-player.html",
+      "locale": "it",
+      "viewport": "desktop",
+      "file": "it/desktop/player-02-brush.png",
+      "widthPx": 1440,
+      "heightPx": 1000,
+      "aspectRatio": 1.44,
+      "fileSizeBytes": 274702,
+      "capture": {
+        "kind": "viewport"
+      },
+      "sourceViewport": {
+        "widthCssPx": 1440,
+        "heightCssPx": 1000,
+        "deviceScaleFactor": 1
+      },
+      "purpose": "A face-anchored stroke from the native brush.",
+      "stateSource": "live interface with committed fixtures"
     },
     {
       "id": "loader-01-empty",
@@ -471,13 +388,13 @@
       "locale": "it",
       "viewport": "desktop",
       "file": "it/desktop/loader-01-empty.png",
-      "widthPx": 1400,
-      "heightPx": 397,
-      "aspectRatio": 3.5264,
-      "fileSizeBytes": 126076,
+      "widthPx": 1384,
+      "heightPx": 1045,
+      "aspectRatio": 1.3244,
+      "fileSizeBytes": 438874,
       "capture": {
         "kind": "element",
-        "selector": ".loader-band--stage"
+        "selector": ".loader-stage"
       },
       "sourceViewport": {
         "widthCssPx": 1440,
@@ -493,20 +410,20 @@
       "locale": "it",
       "viewport": "desktop",
       "file": "it/desktop/loader-02-video-loaded.png",
-      "widthPx": 1400,
-      "heightPx": 397,
-      "aspectRatio": 3.5264,
-      "fileSizeBytes": 86700,
+      "widthPx": 1384,
+      "heightPx": 1045,
+      "aspectRatio": 1.3244,
+      "fileSizeBytes": 397754,
       "capture": {
         "kind": "element",
-        "selector": ".loader-band--stage"
+        "selector": ".loader-stage"
       },
       "sourceViewport": {
         "widthCssPx": 1440,
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "The committed MP4 loaded at 1.000 seconds with active controls.",
+      "purpose": "The committed MP4 loaded at 3.000 seconds with active controls.",
       "stateSource": "live interface with committed fixtures"
     },
     {
@@ -515,20 +432,20 @@
       "locale": "it",
       "viewport": "desktop",
       "file": "it/desktop/loader-03-record-result.png",
-      "widthPx": 1400,
-      "heightPx": 288,
-      "aspectRatio": 4.8611,
-      "fileSizeBytes": 56532,
+      "widthPx": 1384,
+      "heightPx": 1520,
+      "aspectRatio": 0.9105,
+      "fileSizeBytes": 545219,
       "capture": {
         "kind": "element",
-        "selector": ".loader-band--log"
+        "selector": ".loader-report"
       },
       "sourceViewport": {
         "widthCssPx": 1440,
         "heightCssPx": 1000,
         "deviceScaleFactor": 1
       },
-      "purpose": "A frame-level Record face result with timestamped diagnostic metadata.",
+      "purpose": "The model-separated timeline and report after a bounded local-video analysis.",
       "stateSource": "live interface with committed fixtures"
     }
   ],

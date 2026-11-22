@@ -23,16 +23,6 @@ describe('Additional coverage tests', () => {
     expect(ctx.fill).not.toHaveBeenCalled();
   });
 
-  test('updateLogDisplay with missing logBox returns early', () => {
-    const original = document.getElementById('logBox');
-    if (original) original.remove();
-    expect(() => utils.updateLogDisplay()).not.toThrow();
-    // Restore element for other tests
-    const container = document.createElement('div');
-    container.id = 'logBox';
-    document.body.appendChild(container);
-  });
-
   test('expandEyePolygon returns correctly sized array and values', () => {
     const eye = [utils.point(10, 10), utils.point(12, 8), utils.point(14, 10), utils.point(14, 12), utils.point(12, 14), utils.point(10, 12)];
     const eyebrow = [utils.point(10, 5), utils.point(12, 3), utils.point(14, 5)];
@@ -68,81 +58,7 @@ describe('Additional coverage tests', () => {
  */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { state } from '../../lab-js/state.js';
 import * as utils from '../../lab-js/utils.js';
-
-describe('Time utilities', () => {
-  test('formatTime returns HH:MM:SS from current time', () => {
-    vi.useFakeTimers();
-    try {
-      vi.setSystemTime(new Date('2026-06-19T12:34:56.000Z'));
-      const result = utils.formatTime();
-      expect(result).toMatch(/^\d{2}:\d{2}:\d{2}$/);
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  test('formatRelativeTime returns "ora" for current time', () => {
-    vi.useFakeTimers();
-    try {
-      vi.setSystemTime(new Date('2026-06-29T12:00:00.000Z'));
-      expect(utils.formatRelativeTime('2026-06-29T12:00:00.000Z')).toBe('ora');
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  test('formatRelativeTime returns minutes ago', () => {
-    vi.useFakeTimers();
-    try {
-      vi.setSystemTime(new Date('2026-06-29T12:00:00.000Z'));
-      expect(utils.formatRelativeTime('2026-06-29T11:43:00.000Z')).toBe('17 minuti fa');
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  test('formatRelativeTime returns hours ago', () => {
-    vi.useFakeTimers();
-    try {
-      vi.setSystemTime(new Date('2026-06-29T12:00:00.000Z'));
-      expect(utils.formatRelativeTime('2026-06-29T09:00:00.000Z')).toBe('3 ore fa');
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  test('formatRelativeTime returns days ago', () => {
-    vi.useFakeTimers();
-    try {
-      vi.setSystemTime(new Date('2026-06-29T12:00:00.000Z'));
-      expect(utils.formatRelativeTime('2026-06-26T12:00:00.000Z')).toBe('3 giorni fa');
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  test('formatRelativeTime returns months ago', () => {
-    vi.useFakeTimers();
-    try {
-      vi.setSystemTime(new Date('2026-06-29T12:00:00.000Z'));
-      expect(utils.formatRelativeTime('2026-04-20T12:00:00.000Z')).toBe('2 mesi fa');
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  test('formatRelativeTime returns years ago', () => {
-    vi.useFakeTimers();
-    try {
-      vi.setSystemTime(new Date('2026-06-29T12:00:00.000Z'));
-      expect(utils.formatRelativeTime('2024-06-20T12:00:00.000Z')).toBe('2 anni fa');
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-});
 
 describe('Geometry utilities', () => {
   test('distance computes Euclidean distance', () => {
@@ -228,8 +144,7 @@ describe('Canvas drawing utilities', () => {
   });
 
   test('drawLabel renders text with background (supports mirrored)', () => {
-    state.isMirrored = false;
-    utils.drawLabel(ctx, 'Test', 30, 40);
+    utils.drawLabel(ctx, 'Test', 30, 40, false);
     expect(ctx.save).toHaveBeenCalled();
     expect(ctx.font).toBe('700 14px Inter, system-ui, sans-serif');
     expect(ctx.fillStyle).toBe('rgba(238, 242, 255, 0.96)'); // final fillStyle is text fill color
@@ -237,8 +152,7 @@ describe('Canvas drawing utilities', () => {
     expect(ctx.restore).toHaveBeenCalled();
 
     // With mirrored
-    state.isMirrored = true;
-    utils.drawLabel(ctx, 'Test', 30, 40);
+    utils.drawLabel(ctx, 'Test', 30, 40, true);
     expect(ctx.translate).toHaveBeenCalled();
     expect(ctx.scale).toHaveBeenCalledWith(-1, 1);
   });
@@ -321,51 +235,6 @@ describe('Canvas drawing utilities', () => {
 });
 
 
-describe('Logging utilities', () => {
-  beforeEach(() => {
-    state.logsArchive = [];
-    state.isLogExpanded = false;
-    state.visibleLogStartIndex = 0;
-    const logBox = document.getElementById('logBox');
-    if (logBox) logBox.innerHTML = '';
-  });
-
-  test('setLog creates a log line with timestamp and supports sourcePlugin', () => {
-    utils.setLog('Hello world');
-    expect(state.logsArchive.length).toBe(1);
-    const line = state.logsArchive[0];
-    expect(line.textContent).toContain('Hello world');
-    expect(line.textContent).toMatch(/\[\d{2}:\d{2}:\d{2}\]/);
-
-    utils.setLog('Plugin Message', 'PluginName');
-    expect(state.logsArchive.length).toBe(2);
-    expect(state.logsArchive[1].textContent).toContain('[PLUGINNAME]');
-  });
-
-  test('updateLogDisplay handles empty logBox, shifts logs when exceeding 100 entries', () => {
-    // Exceed 100 logs to check shifts
-    for (let i = 0; i < 105; i++) {
-      utils.setLog(`msg ${i}`);
-    }
-    expect(state.logsArchive.length).toBe(100);
-  });
-
-  test('updateLogDisplay respects expanded/collapsed state', () => {
-    const logBox = document.getElementById('logBox');
-    for (let i = 0; i < 10; i++) {
-      utils.setLog(`msg ${i}`);
-    }
-
-    state.isLogExpanded = false;
-    utils.updateLogDisplay();
-    expect(logBox.children.length).toBe(4);
-
-    state.isLogExpanded = true;
-    utils.updateLogDisplay();
-    expect(logBox.children.length).toBe(10);
-  });
-});
-
 describe('Landmark and canvas helpers', () => {
   let ctx;
 
@@ -403,40 +272,6 @@ describe('Landmark and canvas helpers', () => {
     const eye = [{ x: 10, y: 10 }, , { x: 14, y: 10 }, { x: 14, y: 12 }, { x: 12, y: 14 }, { x: 10, y: 12 }];
     const result = utils.expandEyePolygon(eye, [{ x: 9, y: 5 }, { x: 12, y: 4 }], 1, 0.5);
     expect(result).toHaveLength(6);
-  });
-
-  test('formats future and invalid relative dates and logs with an index offset', () => {
-    vi.useFakeTimers();
-    try {
-      vi.setSystemTime(new Date('2026-01-01T00:00:00.000Z'));
-      expect(utils.formatRelativeTime(null)).toBe('n/d');
-      expect(utils.formatRelativeTime('not-a-date')).toBe('n/d');
-      expect(utils.formatRelativeTime('2026-01-01T00:02:00.000Z')).toBe('tra 2 minuti');
-      expect(utils.formatRelativeTime('2026-01-01T01:00:00.000Z')).toBe('tra 1 ora');
-      expect(utils.formatRelativeTime(new Date('2025-12-31T23:00:00.000Z'))).toBe('1 ora fa');
-    } finally {
-      vi.useRealTimers();
-    }
-
-    state.logsArchive = [];
-    state.visibleLogStartIndex = 1;
-    for (let i = 0; i < 101; i++) utils.setLog(`offset ${i}`);
-    expect(state.visibleLogStartIndex).toBe(0);
-  });
-
-  test('formats thrown values and syncs canvas dimensions and mirror transforms', () => {
-    expect(utils.asErrorLabel(new TypeError('bad plugin'))).toBe('TypeError: bad plugin');
-    expect(utils.asErrorLabel('bad plugin')).toBe('bad plugin');
-
-    const canvas = { width: 0, height: 0, style: { transform: '' } };
-    const overlay = { width: 80, height: 40, style: { transform: 'scaleX(-1)' } };
-    utils.syncSize(canvas, overlay);
-    expect([canvas.width, canvas.height]).toEqual([80, 40]);
-    utils.syncSize(canvas, overlay);
-    utils.syncMirror(canvas, overlay);
-    expect(canvas.style.transform).toBe('scaleX(-1)');
-    utils.syncMirror(canvas, overlay);
-    expect(canvas.style.transform).toBe('scaleX(-1)');
   });
 
   test('drawEyeWing replaces an outer corner when a later left-eye point is farther left', () => {

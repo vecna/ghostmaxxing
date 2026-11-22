@@ -1,5 +1,7 @@
 # Local Fuzzer Docker image
 
+Use the Local Fuzzer to search Ghostyle designs across poses in a controlled video. The [functional guide](/docs/guides/localfuzzer.html) covers the workflow and report. Paste an exported module into the desktop [Ghostyle Player](/docs/guides/face-brush.html) source editor to preview it live. Use [Ghostyle Transfer](/docs/guides/ghostyle-transfer.html) to extract a design from clean and painted photos.
+
 Maintainer notes for the image built from the repository root
 [`Dockerfile`](../Dockerfile). User instructions live in the public functional
 documentation:

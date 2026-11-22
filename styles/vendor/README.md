@@ -1,6 +1,6 @@
 Vendor asset inventory for locally mirrored web fonts.
 
-`styles/pages.css` and `styles/lab.css` import `newsreader.css` and `atkinson.css`, which provide the self-hosted display and UI font faces used across the site so development and local demos do not fetch font assets from a third-party network.
+`styles/pages.css` imports `newsreader.css` and `atkinson.css`, which provide the self-hosted display and UI font faces used across the site so development and local demos do not fetch font assets from a third-party network.
 
 ## Local font files
 

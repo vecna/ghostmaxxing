@@ -3,6 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const { version } = require('../package.json');
 
 const root = path.resolve(__dirname, '..');
 const i18nPath = path.join(root, 'lab-js', 'i18n.js');
@@ -51,7 +52,7 @@ function buildPot(messages) {
       '#',
       'msgid ""',
       'msgstr ""',
-      '"Project-Id-Version: Ghostmaxxing 1.1.0\\n"',
+      `"Project-Id-Version: Ghostmaxxing ${version}\\n"`,
       `"POT-Creation-Date: ${today}\\n"`,
       '"Language-Team: NotYetExisting <translators at vecna dot eu>\\n"',
       '"Content-Type: text/plain; charset=UTF-8\\n"',
