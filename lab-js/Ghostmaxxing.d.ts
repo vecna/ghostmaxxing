@@ -59,6 +59,8 @@ export interface GhostmaxxingPluginModule {
   onClear?: (ctx: CanvasRenderingContext2D) => void;
   onDraw?: GhostmaxxingOnDraw;
   paintUV?: GhostmaxxingPaintUV;
+  /** Restrict UV paint to the face surface around the eyes and inner lip edges. */
+  preserveFaceOpenings?: boolean;
   params?: Array<{
     name: string;
     label?: string;

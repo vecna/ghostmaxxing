@@ -366,13 +366,26 @@ function renderDetail() {
     thumb.innerHTML = '';
     const svg = el('svg', { viewBox: '0 0 ' + anchor.width + ' ' + anchor.height }, thumb);
     el('image', { href: DATA.anchorImage, x: 0, y: 0, width: anchor.width, height: anchor.height }, svg);
-    for (const s of t.strokes) if (s.anchorPolygonPx.length >= 3) el('polygon', { points: s.anchorPolygonPx.map((p) => p.join(',')).join(' '), fill: s.colour, 'fill-opacity': t.recipe.opacity }, svg);
+    const paint = el('g', {}, svg);
+    const meshBased = t.geometryVersion >= 2;
+    const points = (polygon) => polygon.map((p) => p.join(',')).join(' ');
+    if (meshBased && DATA.anchorOpenings?.length) {
+      const mask = el('mask', { id: 'anchor-openings', maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: anchor.width, height: anchor.height }, svg);
+      el('rect', { width: anchor.width, height: anchor.height, fill: 'white' }, mask);
+      for (const opening of DATA.anchorOpenings) el('polygon', { points: points(opening), fill: 'black', 'fill-rule': 'evenodd' }, mask);
+      paint.setAttribute('mask', 'url(#anchor-openings)');
+    }
+    for (const s of t.strokes) {
+      const polygons = s.anchorPolygonsPx ?? [s.anchorPolygonPx];
+      const d = polygons.filter((polygon) => polygon.length >= 3).map((polygon) => 'M ' + points(polygon) + ' Z').join(' ');
+      if (d) el('path', { d, fill: s.colour, 'fill-opacity': t.recipe.opacity }, paint);
+    }
     const note = document.createElement('p'); note.className = 'muted'; note.style.fontSize = '12px';
-    note.textContent = 'Strokes drawn flat on the anchor frame. Materialise the trial for the real render.';
+    note.textContent = meshBased ? 'Mesh-clipped strokes on the anchor frame.' : 'Strokes drawn flat on the anchor frame. Materialise the trial for the real render.';
     thumb.appendChild(note);
   }
   document.getElementById('palette').innerHTML = t.palette.colours.map((c) => '<div class="mono"><span class="chip" style="background:' + c.hex + '"></span> ' + c.hex + (c.xterm === null ? ' forced colour' : ' xterm ' + c.xterm) + ' · ΔL* ' + c.deltaL + ' · ΔE00 ' + c.deltaE + '</div>').join('') +
-    '<div class="mono muted">coverage ' + pct(t.coverage) + ' · strokes cross: ' + ['eyes', 'brows', 'lips', 'nose'].filter((r) => t.strokes.some((s) => s.regions[r] > 0)).join(', ') + '</div>';
+    '<div class="mono muted">coverage ' + pct(t.coverage) + ' · painted regions: ' + (['eyes', 'brows', 'lips', 'nose'].filter((r) => t.strokes.some((s) => s.regions[r] > 0)).join(', ') || '—') + '</div>';
   document.getElementById('cli').textContent = 'node scripts-dev/ghostyle-fuzz.cjs trial --atlas ' + DATA.atlasArg + ' --recipe <' + t.recipe.name + '.json> --seed ' + t.seed + ' --trials 1';
   document.getElementById('files').innerHTML = t.files ? '<a href="' + t.files.ghostyle + '">Ghostyle .js</a> · <a href="' + t.files.csv + '">evasion-profile.csv</a> · <a href="' + t.files.sheet + '">every pose with the overlay</a>' : '';
   renderProfile(document.getElementById('profile'), [{ trial: t, colour: null }]);

@@ -47,7 +47,12 @@ const S = {
    // One stable object for the renderer's texture cache (a WeakMap keyed by
    // module): the trial's own module is swapped in, and a per-trial params
    // value forces the texture to be repainted.
-   slot: { textureSize: core.GHOSTYLE_TEXTURE_SIZE, current: null, paintUV(ctx, params) { this.current.paintUV(ctx, params); } },
+   slot: {
+      textureSize: core.GHOSTYLE_TEXTURE_SIZE,
+      current: null,
+      get preserveFaceOpenings() { return this.current?.preserveFaceOpenings; },
+      paintUV(ctx, params) { this.current.paintUV(ctx, params); },
+   },
 };
 
 const statusEl = () => document.getElementById('status');
@@ -163,7 +168,7 @@ async function init({ gpu = false, headed = false } = {}) {
    });
    const response = await fetch(UV_PATH);
    S.uvData = await response.json();
-   S.renderer = createUvRenderer({ uvPath: UV_PATH });
+   S.renderer = createUvRenderer({ atlas: S.uvData });
    await S.renderer.ensureLoaded();
    // Warm-up so the first timing is not the shader compilation.
    const warm = document.createElement('canvas');

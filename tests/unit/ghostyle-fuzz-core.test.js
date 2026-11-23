@@ -3,7 +3,6 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import {
    ZONES,
-   anchorPointToUv,
    buildGhostyleSource,
    clipToConvex,
    convexHull,
@@ -25,6 +24,7 @@ import {
    selectTop,
    stratifiedSubset,
    trialSeed,
+   trialRecipeId,
    xterm256Pool,
    zonesOfMesh,
 } from '../../scripts-dev/ghostyle-fuzz/fuzz-core.mjs';
@@ -95,17 +95,6 @@ describe('ghostyle-fuzz core: geometry', () => {
       const hull = convexHull([...square(0, 0, 4), { x: 2, y: 2 }, { x: 1, y: 3 }]);
       expect(hull).toHaveLength(4);
       expect(polygonArea(hull)).toBeCloseTo(16, 6);
-   });
-
-   it('maps an anchor point to UV through barycentric coordinates', () => {
-      const meshPx = [{ x: 0, y: 0, z: 0 }, { x: 100, y: 0, z: 0 }, { x: 0, y: 100, z: 0 }];
-      const uv = [[0.2, 0.2], [0.4, 0.2], [0.2, 0.6]];
-      const inside = anchorPointToUv({ x: 50, y: 50 }, meshPx, [[0, 1, 2]], uv);
-      expect(inside.inside).toBe(true);
-      expect(inside.uv[0]).toBeCloseTo(0.3, 5);
-      expect(inside.uv[1]).toBeCloseTo(0.4, 5);
-      const outside = anchorPointToUv({ x: 200, y: 200 }, meshPx, [[0, 1, 2]], uv);
-      expect(outside.inside).toBe(false);
    });
 
    it('reads pose from an identity transformation matrix in either layout', () => {
@@ -182,11 +171,14 @@ describe('ghostyle-fuzz core: recipe and Ghostyle source', () => {
          seed: 5,
          date: '2026-10-20',
          palette: { colours: [{ hex: '#000000', xterm: 16, deltaL: 60 }] },
-         strokes: [{ colour: '#000000', uvPolygon: [[0.1, 0.1], [0.2, 0.1], [0.2, 0.2]] }],
+         strokes: [{ colour: '#000000', uvPolygons: [[[0.1, 0.1], [0.2, 0.1], [0.2, 0.2]]] }],
       });
       expect(source).toMatch(/==Ghostyle==[\s\S]*@name\s+Fuzz x #5[\s\S]*@description\s+\S[\s\S]*==\/Ghostyle==/);
       expect(source).toMatch(/export\s+function\s+paintUV\s*\(/);
       expect(source).toContain('export const textureSize = 1024;');
+      expect(source).toContain('export const preserveFaceOpenings = true;');
+      expect(trialRecipeId(recipe)).toBe(`x-${recipeHash(recipe)}-g2`);
+      expect(trialRecipeId(recipe, 1)).toBe(`x-${recipeHash(recipe)}`);
    });
 });
 
@@ -274,6 +266,18 @@ describe('ghostyle-fuzz core 1.1.0: forced colour, overlap, zones, paired seeds'
       const pairedB = drawTrial(7, normaliseRecipe({ name: 'x', count: 3, pairedSeeds: true }), anchor, [35, 15, 20]).strokes.map((st) => st.centreIndex);
       expect(pairedB).toEqual(paired);
       expect(defaultA).not.toEqual(paired);
+   });
+
+   it('measures mesh coverage with the eye and mouth openings removed', () => {
+      const recipe = normaliseRecipe({ count: 1, lengthCm: 30, widthCm: 30, color: 'white' });
+      const { strokes, coverage } = drawTrial(1, recipe, syntheticAnchor(), skin);
+      // The rectangle covers the entire anchor. No fragment covers the 46
+      // opening triangles or the 8 iris triangles in the 906-triangle atlas.
+      expect(strokes[0].uvPolygons).toHaveLength(852);
+      expect(strokes[0].regions.eyes).toBe(0);
+      expect(strokes[0].regions.lips).toBeGreaterThan(0);
+      expect(coverage).toBeGreaterThan(0.95);
+      expect(coverage).toBeLessThan(1);
    });
 
    it('restricts stroke centres to the zones and refuses overlaps', () => {

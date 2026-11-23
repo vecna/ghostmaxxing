@@ -49,7 +49,7 @@ const { pathToFileURL } = require('node:url');
 const { chromium } = require('@playwright/test');
 const { buildReportHtml } = require('./ghostyle-fuzz/report.cjs');
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const TOOL = `ghostyle-fuzz ${VERSION}`;
 const ROOT = path.resolve(__dirname, '..');
 const HARNESS_PATH = '/scripts-dev/ghostyle-fuzz/harness.html';
@@ -712,7 +712,7 @@ async function trial(options) {
    const atlasData = readAtlas(options.atlas);
    const dir = path.dirname(options.atlas);
    const recipe = recipeWithOverrides(options);
-   const recipeId = `${recipe.name}-${core.recipeHash(recipe)}`;
+   const recipeId = core.trialRecipeId(recipe);
    const masterSeed = options.seed ?? crypto.randomBytes(4).readUInt32BE(0);
    const runId = `${new Date().toISOString().replace(/[-:]/g, '').replace(/\..*/, '')}-${masterSeed}`;
    const ndjson = path.join(dir, 'trials.ndjson');
@@ -736,7 +736,7 @@ async function trial(options) {
       progress(`control: clean frames re-described, descriptor drift median ${controlDrift.median}, max ${controlDrift.max}${controlDrift.missing ? `, ${controlDrift.missing} not found again` : ''}`);
       if (controlDrift.max > 0.05) progress('warning: this environment describes the clean frames differently from the atlas run (GPU vs swiftshader?); distances below are shifted by up to that much');
 
-      const header = { type: 'run', runId, tool: TOOL, startedAt: new Date().toISOString(), masterSeed, trials: options.trials, recipe, recipeId, backend: harness.info.backend, gpu: options.gpu, controlDrift, prune: options.prune ? { subset: options.pruneSubset, margin: options.pruneMargin, top: options.top } : null };
+      const header = { type: 'run', runId, tool: TOOL, geometryVersion: core.BAND_GEOMETRY_VERSION, startedAt: new Date().toISOString(), masterSeed, trials: options.trials, recipe, recipeId, backend: harness.info.backend, gpu: options.gpu, controlDrift, prune: options.prune ? { subset: options.pruneSubset, margin: options.pruneMargin, top: options.top } : null };
       fs.appendFileSync(ndjson, `${JSON.stringify(header)}\n`);
 
       const subset = options.prune && atlasData.imprints.length > options.pruneSubset ? core.stratifiedSubset(atlasData.imprints, options.pruneSubset) : [];
@@ -756,7 +756,7 @@ async function trial(options) {
          }
          const result = await harness.call('runTrial', { seed, subset, prune });
          const scores = core.scoreProfile(result.rows);
-         const line = { type: 'trial', runId, recipeId, seed, k, pruned: result.pruned, scores, coverage: result.coverage, palette: result.palette, strokes: result.strokes, rows: result.rows, ms: result.ms };
+         const line = { type: 'trial', runId, recipeId, geometryVersion: core.BAND_GEOMETRY_VERSION, seed, k, pruned: result.pruned, scores, coverage: result.coverage, palette: result.palette, strokes: result.strokes, rows: result.rows, ms: result.ms };
          fs.appendFileSync(ndjson, `${JSON.stringify(line)}\n`);
          all.push(line);
          if (!result.pruned) completed.push(line);
@@ -841,6 +841,7 @@ function recipeSummaryRows(trials) {
       const best = pool.slice().sort((a, b) => (b.scores.escapeRate - a.scores.escapeRate) || (core.worstCaseValue(b.scores) - core.worstCaseValue(a.scores)))[0];
       rows.push({
          recipeId,
+         geometryVersion: best.geometryVersion ?? 1,
          trials: list.length,
          complete: complete.length,
          escape: mean(pool.map((t) => t.scores.escapeRate)),
@@ -866,6 +867,8 @@ function printRecipeSummary(rows) {
 
 function report(options) {
    const atlasData = readAtlas(options.atlas);
+   const anchor = atlasData.imprints.find((i) => i.id === atlasData.anchorId);
+   const openings = anchor?.mesh && core.faceOpenings(core.meshToPx(anchor.mesh, anchor.width, anchor.height));
    const dir = path.dirname(options.atlas);
    const outputFile = options.output || path.join(dir, 'report.html');
    const rel = (file) => path.relative(path.dirname(outputFile), file).split(path.sep).join('/');
@@ -887,7 +890,8 @@ function report(options) {
          scores: line.scores,
          coverage: line.coverage,
          palette: line.palette,
-         strokes: line.strokes.map(({ uvPolygon, ...rest }) => rest),
+         geometryVersion: line.geometryVersion ?? 1,
+         strokes: line.strokes.map(({ uvPolygon, uvPolygons, ...rest }) => rest),
          rows: line.rows,
          files,
       };
@@ -898,6 +902,7 @@ function report(options) {
       threshold: core.MATCH_THRESHOLD,
       atlasArg: displayPath(options.atlas),
       anchorImage: rel(path.join(dir, 'anchor.png')),
+      anchorOpenings: openings?.map((loop) => loop.map(({ x, y }) => [x, y])),
       atlas: {
          source: atlasData.source,
          config: atlasData.config,
@@ -908,7 +913,7 @@ function report(options) {
          noiseFloor: atlasData.noiseFloor,
          imprints: atlasData.imprints.map((imp) => ({ id: imp.id, t: imp.t, yaw: imp.yaw, pitch: imp.pitch, roll: imp.roll, bin: imp.bin, noise: imp.noise, width: imp.width, height: imp.height })),
       },
-      runs: runs.map(({ runId, startedAt, masterSeed, trials: n, recipeId, backend, gpu, controlDrift }) => ({ runId, startedAt, masterSeed, trials: n, recipeId, backend, gpu, controlDrift })),
+      runs: runs.map(({ runId, startedAt, masterSeed, trials: n, recipeId, backend, gpu, controlDrift, geometryVersion = 1 }) => ({ runId, startedAt, masterSeed, trials: n, recipeId, backend, gpu, controlDrift, geometryVersion })),
       trials,
    };
    fs.mkdirSync(path.dirname(outputFile), { recursive: true });
@@ -923,7 +928,6 @@ function report(options) {
       // Paths are relative to the atlas directory.
       const atlasRel = (file) => path.relative(dir, file).split(path.sep).join('/');
       const imps = atlasData.imprints;
-      const anchor = imps.find((i) => i.id === atlasData.anchorId);
       const summary = {
          tool: TOOL,
          generatedAt: data.generatedAt,
@@ -941,7 +945,7 @@ function report(options) {
          materialised: trials.filter((t) => t.files).map((t) => {
             const folder = path.join(dir, 'runs', `${t.recipeId}-${t.seed}`);
             return {
-               recipeId: t.recipeId, seed: t.seed, pruned: t.pruned, scores: t.scores, coverage: t.coverage,
+               recipeId: t.recipeId, geometryVersion: t.geometryVersion, seed: t.seed, pruned: t.pruned, scores: t.scores, coverage: t.coverage,
                palette: t.palette.colours.map((c) => c.hex),
                folder: atlasRel(folder),
                files: { image: atlasRel(path.join(folder, 'anchor-overlay.jpg')), ghostyle: atlasRel(path.join(folder, `ghostyle-fuzz-${t.seed}.js`)), csv: atlasRel(path.join(folder, 'evasion-profile.csv')), sheet: atlasRel(path.join(folder, 'poses-overlay.jpg')) },

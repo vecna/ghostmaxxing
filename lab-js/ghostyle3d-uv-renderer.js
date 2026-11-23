@@ -1,4 +1,5 @@
 import { t } from './i18n.js';
+import { faceOpenings, paintableTriangles } from './face-paint-mesh.mjs';
 
 /**
  * @module ghostyle3d-uv-renderer
@@ -42,6 +43,7 @@ export function createUvRenderer(options) {
 
    let uvData = options?.atlas ?? null;
    let loadPromise = null;
+   let paintable = null;
 
    function ensureLoaded() {
       if (uvData) return Promise.resolve();
@@ -388,12 +390,29 @@ export function createUvRenderer(options) {
       if (!uvData) { ensureLoaded(); return; }
       if (!landmarks || !ctx) return;
 
+      const preserveOpenings = module.preserveFaceOpenings === true;
+      const openings = preserveOpenings ? faceOpenings(landmarks) : null;
+      if (preserveOpenings && !openings) return;
       const tex = ensureTexture(module, params || {});
       const texSize = tex.size;
       const w = ctx.canvas.width;
       const h = ctx.canvas.height;
       const uv = uvData.uv;
-      const tri = uvData.triangles;
+      const tri = preserveOpenings ? (paintable ??= paintableTriangles(uvData.triangles)) : uvData.triangles;
+
+      if (openings) {
+         ctx.save();
+         // Projected triangles can overlap near the eyelids or lips. Clip the
+         // entire effect to keep the openings clear even in those frames.
+         for (const loop of openings) {
+            ctx.beginPath();
+            ctx.rect(0, 0, w, h);
+            ctx.moveTo(loop[0].x * w, loop[0].y * h);
+            for (const point of loop.slice(1)) ctx.lineTo(point.x * w, point.y * h);
+            ctx.closePath();
+            ctx.clip('evenodd');
+         }
+      }
 
       for (let i = 0; i < tri.length; i++) {
          const t = tri[i];
@@ -434,6 +453,7 @@ export function createUvRenderer(options) {
          ctx.drawImage(tex.canvas, 0, 0);
          ctx.restore();
       }
+      if (openings) ctx.restore();
    }
 
    return {

@@ -14,7 +14,11 @@
  * Documentation: /docs/guides/localfuzzer-report.html.
  */
 
-export const CORE_VERSION = '1.1.0';
+import { FACE_LANDMARK_COUNT, LEFT_EYE, RIGHT_EYE, faceOpenings, paintableTriangles } from '../../lab-js/face-paint-mesh.mjs';
+
+export { faceOpenings };
+export const CORE_VERSION = '1.2.0';
+export const BAND_GEOMETRY_VERSION = 2;
 
 /** face-api identity threshold: dlib's LFW default, as in realtime.js and the video loader. */
 export const MATCH_THRESHOLD = 0.6;
@@ -424,18 +428,6 @@ export function clipToConvex(subject, clip) {
    return output;
 }
 
-/** Insert points so that no edge is longer than `step`. */
-export function densify(poly, step) {
-   const out = [];
-   for (let i = 0; i < poly.length; i += 1) {
-      const a = poly[i];
-      const b = poly[(i + 1) % poly.length];
-      const n = Math.max(1, Math.ceil(dist2d(a, b) / step));
-      for (let k = 0; k < n; k += 1) out.push({ x: a.x + ((b.x - a.x) * k) / n, y: a.y + ((b.y - a.y) * k) / n });
-   }
-   return out;
-}
-
 /** A w×h rectangle centred on c, rotated by angleDeg (screen coordinates). */
 export function rotatedRect(c, length, width, angleDeg) {
    const t = (angleDeg * Math.PI) / 180;
@@ -514,8 +506,8 @@ export function zonesOfMesh(meshPx) {
 /** Indices, matching tasks-vision FACE_LANDMARKS_* contours. "left"/"right" are the subject's. */
 export const LANDMARK_SETS = {
    faceOval: [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377, 152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109],
-   leftEye: [263, 249, 390, 373, 374, 380, 381, 382, 362, 398, 384, 385, 386, 387, 388, 466],
-   rightEye: [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246],
+   leftEye: LEFT_EYE,
+   rightEye: RIGHT_EYE,
    leftBrow: [276, 283, 282, 295, 285, 300, 293, 334, 296, 336],
    rightBrow: [46, 53, 52, 65, 55, 70, 63, 105, 66, 107],
    lips: [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 409, 270, 269, 267, 0, 37, 39, 40, 185],
@@ -525,7 +517,7 @@ export const LANDMARK_SETS = {
 };
 
 /** Number of mesh points that may host a stroke centre: 0-467, iris points excluded. */
-export const STROKE_CENTRE_COUNT = 468;
+export const STROKE_CENTRE_COUNT = FACE_LANDMARK_COUNT;
 
 /** Landmarks in pixels: MediaPipe gives x, y as fractions of width and height, z on the x scale. */
 export function meshToPx(mesh, width, height) {
@@ -635,46 +627,33 @@ function barycentric(p, a, b, c) {
    return [1 - v - w, v, w];
 }
 
-/**
- * Map a point of the anchor frame to the canonical UV texture.
- *
- * The point is located in a mesh triangle and carried by its barycentric
- * coordinates. Where triangles overlap on screen (nose wings), the one
- * closest to the camera wins (MediaPipe: smaller z = closer). A point outside
- * every triangle is snapped to the nearest one.
- *
- * @returns {{uv: number[], inside: boolean}}
- */
-export function anchorPointToUv(p, meshPx, triangles, uv) {
-   let best = null;
-   let bestZ = Infinity;
-   for (const t of triangles) {
-      const a = meshPx[t[0]]; const b = meshPx[t[1]]; const c = meshPx[t[2]];
-      const w = barycentric(p, a, b, c);
-      if (!w || w[0] < -1e-9 || w[1] < -1e-9 || w[2] < -1e-9) continue;
-      const z = w[0] * a.z + w[1] * b.z + w[2] * c.z;
-      if (z < bestZ) { bestZ = z; best = { t, w }; }
+function polygonBounds(poly) {
+   const xs = poly.map((p) => p.x);
+   const ys = poly.map((p) => p.y);
+   return { minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) };
+}
+
+/** Cut the stroke at mesh edges and map each fragment through its own triangle. */
+function bakeStroke(polygon, triangles, uv) {
+   const bounds = polygonBounds(polygon);
+   const fragments = [];
+   for (const { indices, points, bounds: triangle } of triangles) {
+      if (bounds.minX >= triangle.maxX || bounds.maxX <= triangle.minX
+         || bounds.minY >= triangle.maxY || bounds.maxY <= triangle.minY) continue;
+      const fragment = clipToConvex(polygon, points);
+      if (fragment.length < 3 || polygonArea(fragment) < 1e-8) continue;
+      const mapped = fragment.map((point) => {
+         const weights = barycentric(point, ...points);
+         return {
+            x: weights.reduce((u, weight, i) => u + weight * uv[indices[i]][0], 0),
+            y: weights.reduce((v, weight, i) => v + weight * uv[indices[i]][1], 0),
+         };
+      });
+      // Consistent winding allows one fill per stroke at the recipe's opacity.
+      if (signedArea(mapped) < 0) mapped.reverse();
+      fragments.push({ anchor: fragment, uv: mapped.map(({ x, y }) => [round(x, 7), round(y, 7)]) });
    }
-   let inside = true;
-   if (!best) {
-      inside = false;
-      let bestD = Infinity;
-      for (const t of triangles) {
-         const a = meshPx[t[0]]; const b = meshPx[t[1]]; const c = meshPx[t[2]];
-         const w0 = barycentric(p, a, b, c);
-         if (!w0) continue;
-         const clamped = w0.map((v) => Math.max(0, v));
-         const s = clamped[0] + clamped[1] + clamped[2];
-         const w = clamped.map((v) => v / s);
-         const q = { x: w[0] * a.x + w[1] * b.x + w[2] * c.x, y: w[0] * a.y + w[1] * b.y + w[2] * c.y };
-         const d = dist2d(p, q);
-         if (d < bestD) { bestD = d; best = { t, w }; }
-      }
-   }
-   const [i, j, k] = best.t;
-   const u = best.w[0] * uv[i][0] + best.w[1] * uv[j][0] + best.w[2] * uv[k][0];
-   const v = best.w[0] * uv[i][1] + best.w[1] * uv[j][1] + best.w[2] * uv[k][1];
-   return { uv: [round(u, 5), round(v, 5)], inside };
+   return fragments;
 }
 
 // ---------------------------------------------------------------------------
@@ -686,11 +665,10 @@ export function anchorPointToUv(p, meshPx, triangles, uv) {
  * face oval painted) and for which regions a stroke crosses.
  */
 function gridSamples(poly, step) {
-   const xs = poly.map((p) => p.x);
-   const ys = poly.map((p) => p.y);
+   const { minX, maxX, minY, maxY } = polygonBounds(poly);
    const out = [];
-   for (let y = Math.min(...ys) + step / 2; y < Math.max(...ys); y += step) {
-      for (let x = Math.min(...xs) + step / 2; x < Math.max(...xs); x += step) {
+   for (let y = minY + step / 2; y < maxY; y += step) {
+      for (let x = minX + step / 2; x < maxX; x += step) {
          const p = { x, y };
          if (pointInPolygon(p, poly)) out.push(p);
       }
@@ -720,11 +698,18 @@ export const PLACEMENT_ATTEMPTS = 1000;
 export function drawStrokes(rng, anchor, recipe, colours) {
    const hulls = regionHulls(anchor.meshPx);
    const oval = hulls.faceOval;
-   const step = 0.2 * anchor.pxPerCm; // 2 mm boundary sampling
    const grid = 0.1 * anchor.pxPerCm; // 1 mm area sampling
    const zoneOf = recipe.zones ? zonesOfMesh(anchor.meshPx) : null;
    const allowed = recipe.zones ? new Set(recipe.zones) : null;
    const noOverlap = recipe.overlap === false;
+   const openings = faceOpenings(anchor.meshPx);
+   if (!openings) throw new Error('The anchor mesh is missing eye or mouth landmarks');
+   const outsideOpenings = (p) => !openings.some((loop) => pointInPolygon(p, loop));
+   const triangles = paintableTriangles(anchor.triangles).map((indices) => {
+      const points = indices.map((i) => anchor.meshPx[i]);
+      return { indices, points, bounds: polygonBounds(points) };
+   }).filter(({ points }) => polygonArea(points) > 1e-8);
+   const painted = [];
    const strokes = [];
    for (let s = 0; s < recipe.count; s += 1) {
       let centreIndex; let angleDeg; let rect; let clipped;
@@ -750,9 +735,11 @@ export function drawStrokes(rng, anchor, recipe, colours) {
       const colourIndex = Math.floor(rng() * colours.length);
       const rectArea = polygonArea(rect);
       const clippedArea = clipped.length >= 3 ? polygonArea(clipped) : 0;
-      const outline = clipped.length >= 3 ? densify(clipped, step) : [];
-      const mapped = outline.map((p) => anchorPointToUv(p, anchor.meshPx, anchor.triangles, anchor.uv));
-      const samples = clipped.length >= 3 ? gridSamples(clipped, grid) : [];
+      const fragments = clipped.length >= 3 ? bakeStroke(clipped, triangles, anchor.uv) : [];
+      const polygons = fragments.map((fragment) => fragment.anchor);
+      painted.push(...polygons);
+      const samples = polygons.length ? gridSamples(clipped, grid).filter((p) => outsideOpenings(p)
+         && polygons.some((poly) => pointInPolygon(p, poly))) : [];
       const share = (polys) => (samples.length
          ? round(samples.filter((p) => polys.some((poly) => pointInPolygon(p, poly))).length / samples.length, 3)
          : 0);
@@ -762,16 +749,15 @@ export function drawStrokes(rng, anchor, recipe, colours) {
          colourIndex,
          colour: colours[colourIndex].hex,
          anchorPolygonPx: clipped.map((p) => [round(p.x, 1), round(p.y, 1)]),
-         uvPolygon: mapped.map((m) => m.uv),
-         snappedShare: mapped.length ? round(mapped.filter((m) => !m.inside).length / mapped.length, 3) : 0,
+         anchorPolygonsPx: polygons.map((poly) => poly.map(({ x, y }) => [round(x, 3), round(y, 3)])),
+         uvPolygons: fragments.map((fragment) => fragment.uv),
          clippedShare: round(1 - clippedArea / rectArea, 3),
-         regions: { eyes: share(hulls.eyes), brows: share(hulls.brows), lips: share(hulls.lips), nose: share(hulls.nose) },
+         regions: { eyes: 0, brows: share(hulls.brows), lips: share(hulls.lips), nose: share(hulls.nose) },
       });
    }
-   // Coverage: share of the face oval under at least one stroke.
+   // Coverage: share of the face oval with visible paint from any stroke.
    const ovalSamples = gridSamples(oval, grid * 2);
-   const polys = strokes.filter((s) => s.anchorPolygonPx.length >= 3).map((s) => s.anchorPolygonPx.map(([x, y]) => ({ x, y })));
-   const covered = ovalSamples.filter((p) => polys.some((poly) => pointInPolygon(p, poly))).length;
+   const covered = ovalSamples.filter((p) => outsideOpenings(p) && painted.some((poly) => pointInPolygon(p, poly))).length;
    return { strokes, coverage: ovalSamples.length ? round(covered / ovalSamples.length, 3) : 0 };
 }
 
@@ -1042,6 +1028,12 @@ export function recipeHash(recipe) {
    return h.toString(16).padStart(8, '0');
 }
 
+/** Qualify a result by its geometry without changing the recipe or its hash. */
+export function trialRecipeId(recipe, geometryVersion = BAND_GEOMETRY_VERSION) {
+   const id = `${recipe.name}-${recipeHash(recipe)}`;
+   return geometryVersion === 1 ? id : `${id}-g${geometryVersion}`;
+}
+
 // ---------------------------------------------------------------------------
 // Ghostyle source
 // ---------------------------------------------------------------------------
@@ -1060,12 +1052,13 @@ export function buildGhostyleSource({ recipe, recipeId, seed, strokes, palette, 
    const name = `Fuzz ${recipe.name} #${seed}`;
    const description = `ghostyle-fuzz trial: ${recipe.count} ${recipe.shape} stroke(s) ${recipe.lengthCm}x${recipe.widthCm} cm, opacity ${recipe.opacity}, recipe ${recipeId}, seed ${seed}.`;
    const strokeData = strokes
-      .filter((s) => s.uvPolygon.length >= 3)
-      .map((s) => `   { colour: '${s.colour}', points: ${JSON.stringify(s.uvPolygon)} }`)
+      .filter((s) => s.uvPolygons.length)
+      .map((s) => `   { colour: '${s.colour}', polygons: ${JSON.stringify(s.uvPolygons)} }`)
       .join(',\n');
    const comment = [
       `atlas source : ${atlasSource ? 'local video; filename withheld' : '-'}`,
       `recipe       : ${JSON.stringify(recipe)}`,
+      `geometry     : ${BAND_GEOMETRY_VERSION}`,
       `palette      : ${palette.colours.map((c) => `${c.hex} (${c.xterm === null ? `forced "${palette.forced}"` : `xterm ${c.xterm}`}, dL ${c.deltaL})`).join(', ')}`,
       `reproduce    : node scripts-dev/ghostyle-fuzz.cjs trial --atlas <pose-atlas.json> --recipe <recipe.json> --seed ${seed} --trials 1`,
       ...extraComment.split('\n').filter(Boolean),
@@ -1073,7 +1066,7 @@ export function buildGhostyleSource({ recipe, recipeId, seed, strokes, palette, 
    return `/**
  * ==Ghostyle==
  * @name         ${name}
- * @version      1.0.0
+ * @version      2.0.0
  * @author       ghostyle-fuzz
  * @release_date ${date}
  * @description  ${description}
@@ -1089,6 +1082,7 @@ ${comment}
  */
 
 export const textureSize = ${GHOSTYLE_TEXTURE_SIZE};
+export const preserveFaceOpenings = true;
 
 const OPACITY = ${recipe.opacity};
 
@@ -1103,11 +1097,11 @@ export function paintUV(ctx) {
    ctx.globalAlpha = OPACITY;
    for (const stroke of STROKES) {
       ctx.beginPath();
-      stroke.points.forEach(([u, v], i) => {
-         if (i === 0) ctx.moveTo(u * w, v * h);
-         else ctx.lineTo(u * w, v * h);
-      });
-      ctx.closePath();
+      for (const polygon of stroke.polygons) {
+         ctx.moveTo(polygon[0][0] * w, polygon[0][1] * h);
+         for (const [u, v] of polygon.slice(1)) ctx.lineTo(u * w, v * h);
+         ctx.closePath();
+      }
       ctx.fillStyle = stroke.colour;
       ctx.fill();
    }

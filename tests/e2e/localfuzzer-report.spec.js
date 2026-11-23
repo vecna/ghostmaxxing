@@ -88,3 +88,20 @@ test('print view expands every recipe and explains visualizations once', async (
   await expect(page.locator('#screenReport')).toBeHidden();
   await expect(page.locator('#printReport')).toBeVisible();
 });
+
+test('anchor preview draws grouped mesh fragments and masks the face openings', async ({ page }) => {
+  const data = reportFixture();
+  data.anchorOpenings = [[[40, 20], [60, 20], [60, 35], [40, 35]]];
+  for (const trial of data.trials) {
+    trial.geometryVersion = 2;
+    trial.strokes[0].anchorPolygonsPx = [
+      [[20, 20], [40, 20], [40, 35], [20, 35]],
+      [[60, 20], [80, 20], [80, 35], [60, 35]],
+    ];
+  }
+  await page.setContent(buildReportHtml(data));
+  await expect(page.locator('#thumb mask polygon')).toHaveCount(1);
+  const paint = page.locator('#thumb g[mask="url(#anchor-openings)"]');
+  await expect(paint.locator('path')).toHaveAttribute('d', 'M 20,20 40,20 40,35 20,35 Z M 60,20 80,20 80,35 60,35 Z');
+  await expect(paint.locator('path')).toHaveAttribute('fill-opacity', '0.8');
+});

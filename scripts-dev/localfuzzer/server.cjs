@@ -99,18 +99,6 @@ function planContext() {
    return { recipes: bundledRecipes(), parseColour: fuzzCore.parseCssColour, normaliseRecipe: fuzzCore.normaliseRecipe };
 }
 
-/** The recipe id the fuzzer will log for a cell (mirrors recipeWithOverrides in ghostyle-fuzz.cjs). */
-function cellRecipeId(cell, recipeJson) {
-   const overrides = {};
-   if (cell.color) overrides.color = cell.color;
-   if (cell.noOverlap) overrides.overlap = false;
-   if (cell.zones) overrides.zones = cell.zones;
-   if (cell.paired) overrides.pairedSeeds = true;
-   for (const key of Object.keys(overrides)) if (recipeJson[key] !== undefined && recipeJson[key] !== null) delete overrides[key];
-   const recipe = fuzzCore.normaliseRecipe({ ...recipeJson, ...overrides });
-   return `${recipe.name}-${fuzzCore.recipeHash(recipe)}`;
-}
-
 function effectiveCellRecipe(cell, recipeJson) {
    const overrides = {};
    if (cell.color) overrides.color = cell.color;
@@ -197,6 +185,7 @@ function createJob({ label, plan, video, probe, reuseAtlasFrom }) {
       id, label: label || path.basename(video.name, path.extname(video.name)), createdAt: new Date().toISOString(), status: 'queued',
       video: { name, original: video.name, size: fs.statSync(videoPath).size, probe },
       plan, atlasDirName, stepIndex: 0, progress: {}, interrupted: 0, error: null,
+      geometryVersion: fuzzCore.BAND_GEOMETRY_VERSION,
    };
    plan.cells.forEach((cell, i) => {
       if (typeof cell.recipe !== 'string') {
@@ -232,7 +221,7 @@ function trialsAlreadyDone(job, cellIndex) {
    const ndjson = path.join(jobDir(job.id), job.atlasDirName, 'trials.ndjson');
    if (!fs.existsSync(ndjson)) return 0;
    const recipeJson = typeof cell.recipe === 'string' ? readJson(path.join(RECIPES_DIR, cell.recipe)) : cell.recipe;
-   const recipeId = cellRecipeId(cell, recipeJson);
+   const recipeId = fuzzCore.trialRecipeId(effectiveCellRecipe(cell, recipeJson), job.geometryVersion);
    const seeds = new Set();
    for (const line of fs.readFileSync(ndjson, 'utf8').split('\n')) {
       if (!line.includes(recipeId)) continue;
@@ -284,7 +273,7 @@ function feedbackPayload(job, body = {}) {
    const recipes = job.plan.cells.map((cell, index) => {
       const raw = typeof cell.recipe === 'string' ? readJson(path.join(RECIPES_DIR, cell.recipe)) : cell.recipe;
       const definition = effectiveCellRecipe(cell, raw);
-      const recipeId = `${definition.name}-${fuzzCore.recipeHash(definition)}`;
+      const recipeId = fuzzCore.trialRecipeId(definition, job.geometryVersion ?? 1);
       const row = summary.recipes.find((item) => item.recipeId === recipeId);
       if (!row) throw new Error(`no summary row for recipe ${recipeId}`);
       return { cellName: cell.name, definition, row };
@@ -360,6 +349,19 @@ async function quietReport(job) {
 }
 
 async function runJob(job) {
+   if (job.geometryVersion !== fuzzCore.BAND_GEOMETRY_VERSION) {
+      // Reuse the atlas and keep previous results, but measure every cell with
+      // the current geometry before declaring a resumed job complete.
+      job.geometryVersion = fuzzCore.BAND_GEOMETRY_VERSION;
+      job.steps = job.steps.map((step) => {
+         if (step.kind === 'atlas') return step;
+         const { note, startedAt, endedAt, exitCode, ...definition } = step;
+         return { ...definition, status: 'pending' };
+      });
+      job.stepIndex = 0;
+      job.progress = { imprints: job.progress.imprints };
+      appendLog(job.id, `\n=== band geometry ${job.geometryVersion}: measuring the trials with the new geometry ===`);
+   }
    current = { job, child: null, cancelRequested: false };
    job.status = 'running';
    job.startedAt = job.startedAt || new Date().toISOString();
