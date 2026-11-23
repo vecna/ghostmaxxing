@@ -164,61 +164,6 @@
    louder, make the ring heavier; do not add a shape.  */
 
 
-/* --- 4. Stamp — the camera's label -----------------------------------------
-   ONE class for every camera caption. There is no second kind of label.
-
-   The arc is a PROPERTY of the stamp, not a separate species: below the width
-   where curved text stops being readable, --arc-mode flips to flat and the
-   same element renders as a straight line. lab-js/stamp.js reads --arc-mode
-   and does nothing but restore plain text if the value is "flat".
-
-     --arc-mode      arc | flat
-     --arc-radius    centre of circle to middle of each letter (px). auto =
-                     half the icon height + 16.
-     --arc-centre-y  circle centre relative to the <p>'s top edge. Negative =
-                     up inside the icon. auto = centre of the icon above.
-     --arc-spread    letter spacing along the arc. 1 = natural, 1.4 = airier.
-     --arc-flip      0 = readable at the bottom of the circle. 1 = tops out. */
-
-.gm-stamp {
-  --arc-mode: arc;
-  --arc-radius: auto;
-  --arc-centre-y: auto;
-  --arc-spread: 1;
-  --arc-flip: 0;
-  display: block;
-}
-
-.gm-stamp > p {
-  position: relative;
-  margin: 8px 0 0;
-  text-align: center;
-  white-space: nowrap;
-  font-family: var(--mono);
-  font-size: var(--t-meta);
-  letter-spacing: var(--ls-meta);
-  text-transform: uppercase;
-  color: var(--gm-green-deep);
-}
-
-.gm-stamp > p .arc-char {
-  position: absolute;
-  left: 0;
-  top: 0;
-  line-height: 1;
-  display: block;
-  transform-origin: 50% 50%;
-  will-change: transform;
-}
-
-/* Curved text under a small icon is decoration pretending to be a label.
-   Under roughly 90px of camera there is not enough arc for it to read, so the
-   stamp goes flat. Same class, same content, same meaning. */
-@media (max-width: 700px) {
-  .gm-stamp { --arc-mode: flat; }
-}
-
-
 /* --- 5. Reduced motion -----------------------------------------------------
    State transitions are information arriving, so they are allowed to be
    instant but not to disappear. */
