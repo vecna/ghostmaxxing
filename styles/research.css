@@ -1,0 +1,107 @@
+.research-page {
+  background: var(--gm-cream);
+  color: var(--gm-ink);
+}
+
+.research-masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: .85rem max(1rem, calc((100vw - 64rem) / 2));
+  background: var(--gm-green-deep);
+  color: var(--gm-cream);
+}
+
+.research-masthead a {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: inherit;
+}
+
+.research {
+  width: min(100% - 2rem, 64rem);
+  margin-inline: auto;
+  padding: clamp(1.5rem, 6vw, 4rem) 0 4rem;
+}
+
+.research-header h1 {
+  margin: .4rem 0 .8rem;
+  font: 700 clamp(2.5rem, 7vw, 5rem)/.98 var(--serif);
+  letter-spacing: -.03em;
+}
+
+.research-header p { max-width: 58ch; }
+.research section { margin-block: 2rem; }
+.research section h2 { margin: 0 0 1rem; }
+
+.research-totals,
+.research-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: .6rem;
+  margin: 1rem 0;
+}
+
+.research-totals div,
+.research-facts div {
+  padding: .65rem .85rem;
+  border: 1px solid var(--gm-ink);
+}
+
+.research-totals div { background: var(--gm-yellow); }
+.research dt { font-size: .87rem; }
+.research dd { margin: .35rem 0 0; overflow-wrap: anywhere; }
+.research-totals dd { font: 700 1.65rem/1 var(--serif); }
+
+.research button,
+.research input {
+  padding: .5rem .8rem;
+  border: 1px solid var(--gm-ink);
+  font: inherit;
+  color: inherit;
+}
+
+.research button {
+  background: var(--gm-yellow);
+  cursor: pointer;
+}
+
+.research input {
+  min-width: 0;
+  width: min(24rem, 100%);
+}
+
+.research-lookup div {
+  display: flex;
+  gap: .45rem;
+  margin-top: .25rem;
+}
+
+.research-id,
+.research-submissions a {
+  font-family: var(--mono);
+  overflow-wrap: anywhere;
+}
+
+.research-submissions,
+.research-annotations {
+  padding: 0;
+  list-style: none;
+}
+
+.research-submissions li,
+.research-annotations li,
+.research-recipes article {
+  padding-block: .9rem;
+  border-top: 1px solid var(--gm-ink);
+  overflow-wrap: anywhere;
+}
+
+.research-submissions p,
+.research-annotations p {
+  margin: .25rem 0 0;
+}
+
+.research summary { cursor: pointer; }

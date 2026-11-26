@@ -1,22 +1,15 @@
 /**
  * Privacy-preserving feedback payloads for the Local Fuzzer beta.
  *
- * This module deliberately knows nothing about videos, frames, descriptors,
- * skin samples, file names, job labels or logs. The server passes only the
- * allow-listed experiment summary, complete recipe definitions and Ghostyle
- * sources the participant explicitly selected.
+ * Keep shared records reproducible using experiment parameters and aggregate
+ * measurements. Custom labels, free text and generated source stay local.
  */
 
-const CONSENT_VERSION = '2026-11-v1';
+const CONSENT_VERSION = '2026-11-v2';
 
-function sanitiseGhostyleSource(source) {
-   return String(source || '')
-      .replace(/^\s*\*\s*atlas source\s*:.*$/gmi, ' * atlas source : local video; filename withheld')
-      .replace(/(file:\/\/|[A-Za-z]:\\|\/(?:Users|home|data|private|tmp)\/)[^\s*]+/g, '[local-path-withheld]');
-}
-
-const number = (value) => (Number.isFinite(Number(value)) ? Number(value) : null);
-const integer = (value) => (Number.isInteger(Number(value)) ? Number(value) : null);
+const number = (value) => Number.isFinite(value) ? value : null;
+const integer = (value) => Number.isSafeInteger(value) ? value : null;
+const recipeHash = (value) => value?.match(/(?:^|-)([a-f0-9]{8})(-g\d{1,4})?$/i)?.slice(1).join('') || null;
 
 function scoreSet(value) {
    const v = value || {};
@@ -31,7 +24,7 @@ function scoreSet(value) {
    };
 }
 
-function buildFeedbackPayload({ version, runtime, job, summary, recipes, selectedGhostyles = [], subjectCode = '', feedback = '' }) {
+function buildFeedbackPayload({ version, runtime, job, summary, recipes, selectedGhostyles = [] }) {
    if (!summary || !Array.isArray(summary.recipes) || !summary.recipes.length) throw new Error('the job has no result summary yet');
    if (!Array.isArray(recipes) || !recipes.length) throw new Error('the job has no recipes to share');
    const atlas = summary.atlas || {};
@@ -54,10 +47,13 @@ function buildFeedbackPayload({ version, runtime, job, summary, recipes, selecte
          node: String(runtime.node || ''),
          backend: String(runtime.backend || ''),
       },
-      subjectCode: String(subjectCode || '').trim().slice(0, 32),
-      feedback: String(feedback || '').trim().slice(0, 4000),
       preset: String(job.plan && job.plan.preset || ''),
       durationSeconds: Number.isFinite(started) && Number.isFinite(finished) ? Math.max(0, (finished - started) / 1000) : null,
+      method: {
+         geometryVersion: integer(job.geometryVersion),
+         matchThreshold: number(summary.threshold),
+         atlas: job.plan?.atlas || {},
+      },
       atlas: {
          imprints: integer(atlas.imprints),
          yaw: Array.isArray(atlas.yaw) ? atlas.yaw.slice(0, 2).map(number) : [],
@@ -68,10 +64,10 @@ function buildFeedbackPayload({ version, runtime, job, summary, recipes, selecte
          noiseFloor: atlas.noiseFloor ? { median: number(atlas.noiseFloor.median), p90: number(atlas.noiseFloor.p90) } : null,
       },
       attempts: totals,
-      recipes: recipes.map(({ cellName, definition, row }) => ({
-         recipeId: String(row.recipeId || ''),
-         cellName: String(cellName || ''),
+      recipes: recipes.map(({ definition: { name, ...definition }, row, plan }) => ({
+         recipeId: recipeHash(row.recipeId),
          definition,
+         plan,
          trials: integer(row.trials),
          complete: integer(row.complete),
          pruned: integer(row.pruned),
@@ -81,14 +77,13 @@ function buildFeedbackPayload({ version, runtime, job, summary, recipes, selecte
          best: row.best ? { seed: integer(row.best.seed), scores: scoreSet(row.best.scores), coverage: number(row.best.coverage) } : null,
       })),
       selectedGhostyles: selectedGhostyles.map((item) => ({
-         recipeId: String(item.recipeId || ''),
+         recipeId: recipeHash(item.recipeId),
          seed: integer(item.seed),
          scores: scoreSet(item.scores),
          coverage: number(item.coverage),
          palette: Array.isArray(item.palette) ? item.palette.slice(0, 32).map(String) : [],
-         source: sanitiseGhostyleSource(item.source),
       })),
    };
 }
 
-module.exports = { CONSENT_VERSION, buildFeedbackPayload, sanitiseGhostyleSource };
+module.exports = { CONSENT_VERSION, buildFeedbackPayload };

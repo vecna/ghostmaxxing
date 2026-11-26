@@ -194,20 +194,25 @@ The healthcheck calls `http://127.0.0.1:11111/api/info` inside the container.
 It proves the HTTP service responds; it does not prove Chromium, ffmpeg, or a
 full fuzz job works. That is the smoke test's role.
 
-## Anonymous beta feedback
+## Public Research beta
 
-Completed jobs can build a privacy-allow-listed JSON package and, only after
-an explicit click and consent checkbox, POST it to
-`https://ghostmaxxing.vecna.eu/api/fuzzer-results`. Override the destination
-for staging with `LOCALFUZZER_FEEDBACK_URL`.
+Completed jobs can publish structured experiment results after explicit
+consent. The local service sends the package to
+`https://ghostmaxxing.vecna.eu/api/fuzzer-results`. Set
+`LOCALFUZZER_FEEDBACK_URL` to the corresponding endpoint on a staging host
+to test the workflow there. The two research pages must be deployed on the
+same origin as that endpoint.
 
-The package builder lives in `scripts-dev/localfuzzer/feedback-core.cjs`. It
-contains aggregate atlas quality, attempts and scores, complete recipe
-definitions (including custom recipes), and explicitly selected Ghostyle
-sources. It must never gain video, frames, descriptors, skin measurements,
-file or job names, local paths, logs, or per-pose rows. Keep its privacy unit
-test next to any schema change. The intake returns a deletion token; the page
-downloads a receipt and also keeps the last receipts in local storage.
+The package contains aggregate pose quality, experiment settings, recipe
+parameters, counts, and scores. Selected trials contribute their seed,
+palette, and scores. Videos, frames, descriptors, skin measurements,
+custom labels, comments, logs, and Ghostyle source stay local.
+
+The receipt is a public ID with a link to the submission. The job panel
+keeps the link in the same browser and offers **Check research use**.
+The public [research index](/research.html) shows totals and links to every
+public submission. Maintainers can link a study or add notes through the
+backend annotation command. Older private feedback stays outside the beta.
 
 ## Release checklist
 

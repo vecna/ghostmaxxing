@@ -55,6 +55,8 @@ const MAX_UPLOAD = Number(process.env.LOCALFUZZER_MAX_UPLOAD_MB || 4096) * 1024 
 const ALLOWED_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]', ...(process.env.LOCALFUZZER_ALLOWED_HOSTS || '').split(',').map((h) => h.trim().toLowerCase()).filter(Boolean)]);
 const STOP_GRACE_MS = 100000; // SIGINT lets the fuzzer finish its trial and materialise the top
 const FEEDBACK_URL = process.env.LOCALFUZZER_FEEDBACK_URL || 'https://ghostmaxxing.vecna.eu/api/fuzzer-results';
+const feedbackEndpoint = new URL(FEEDBACK_URL);
+if (!['http:', 'https:'].includes(feedbackEndpoint.protocol)) throw new Error('LOCALFUZZER_FEEDBACK_URL must use HTTP(S)');
 
 let fuzzCore = null; // fuzz-core.mjs, loaded at start
 let toolVersion = '?';
@@ -270,21 +272,23 @@ function publicJob(job, { full = false } = {}) {
 function feedbackPayload(job, body = {}) {
    const summary = readJson(summaryFile(job.id));
    if (!summary) throw new Error('the job has no result summary yet');
-   const recipes = job.plan.cells.map((cell, index) => {
+   const recipes = job.plan.cells.map((cell) => {
       const raw = typeof cell.recipe === 'string' ? readJson(path.join(RECIPES_DIR, cell.recipe)) : cell.recipe;
       const definition = effectiveCellRecipe(cell, raw);
       const recipeId = fuzzCore.trialRecipeId(definition, job.geometryVersion ?? 1);
       const row = summary.recipes.find((item) => item.recipeId === recipeId);
       if (!row) throw new Error(`no summary row for recipe ${recipeId}`);
-      return { cellName: cell.name, definition, row };
+      return {
+         definition,
+         row,
+         plan: { seed: cell.seed, plannedTrials: cell.trials, prune: cell.prune, pruneSubset: cell.pruneSubset, pruneMargin: cell.pruneMargin },
+      };
    });
    const selected = Array.isArray(body.selectedGhostyles) ? body.selectedGhostyles : [];
    const selectedGhostyles = selected.map((picked) => {
       const item = (summary.materialised || []).find((candidate) => candidate.recipeId === picked.recipeId && candidate.seed === Number(picked.seed));
       if (!item) throw new Error(`selected Ghostyle ${picked.recipeId}/${picked.seed} was not materialised by this job`);
-      const file = inside(path.join(jobDir(job.id), job.atlasDirName), item.files && item.files.ghostyle);
-      if (!file || !fs.existsSync(file)) throw new Error(`selected Ghostyle ${picked.recipeId}/${picked.seed} is missing`);
-      return { ...item, source: fs.readFileSync(file, 'utf8') };
+      return item;
    });
    return feedbackCore.buildFeedbackPayload({
       version: VERSION,
@@ -293,8 +297,6 @@ function feedbackPayload(job, body = {}) {
       summary,
       recipes,
       selectedGhostyles,
-      subjectCode: body.subjectCode,
-      feedback: body.feedback,
    });
 }
 
@@ -307,7 +309,10 @@ async function submitFeedback(payload) {
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.message || `feedback endpoint returned HTTP ${response.status}`);
-      return data;
+      if (!data.ok || typeof data.submissionId !== 'string' || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(data.submissionId)) {
+         throw new Error('the research endpoint did not return a public submission ID');
+      }
+      return { submissionId: data.submissionId };
    } finally { clearTimeout(timer); }
 }
 
@@ -511,7 +516,7 @@ function serveFile(res, file, { download = null, csp = true } = {}) {
    fs.stat(file, (err, stat) => {
       if (err || !stat.isFile()) { fail(res, 404, 'not found'); return; }
       const headers = { 'Content-Type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Content-Length': stat.size, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
-      if (csp) headers['Content-Security-Policy'] = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'";
+      if (csp) headers['Content-Security-Policy'] = `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' ${feedbackEndpoint.origin}; frame-ancestors 'none'`;
       if (download) headers['Content-Disposition'] = `attachment; filename="${download.replace(/"/g, '')}"`;
       res.writeHead(200, headers);
       fs.createReadStream(file).pipe(res);

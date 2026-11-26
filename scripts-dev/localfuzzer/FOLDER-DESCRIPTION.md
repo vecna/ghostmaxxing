@@ -15,11 +15,11 @@ download the Ghostyles). It is what the Docker image runs (`Dockerfile`,
 - `jobs-core.cjs` — pure helpers: presets, plan validation (the CLI's own
   incompatibilities), plan → command lines, progress parsing, time estimate.
   Unit tests: `tests/unit/localfuzzer-core.test.js`.
-- `feedback-core.cjs` — the explicit allow-list for anonymous beta feedback;
+- `feedback-core.cjs` — the explicit allow-list for public experiment submissions;
   it builds a package without video, frames, descriptors, skin measurements,
-  local paths, file names, labels or logs.
+  local paths, file names, labels, logs, or generated source.
 - `public/` — the page: `index.html`, `style.css`, `app.js` (plain DOM, no
-  framework; it contacts the public intake only after an explicit submission).
+  framework; it publishes after explicit consent and checks research use when requested).
 
 Data goes to `$LOCALFUZZER_DATA` (default `scratch/localfuzzer/`, `/data` in
 the image); one folder per job.

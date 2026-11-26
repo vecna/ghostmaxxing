@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Public Research — Ghostmaxxing</title>
+  <meta name="description" content="Browse aggregate Local Fuzzer results and public research submissions.">
+  <link rel="icon" href="/images/logo/mark-color.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles/styles.css">
+  <link rel="stylesheet" href="/styles/beta-notice.css">
+  <link rel="stylesheet" href="/styles/research.css">
+  <script type="module" src="/pages-js/research.js"></script>
+</head>
+<body class="research-page">
+    <div class="gm-beta" id="gmBeta" role="dialog" aria-modal="true"
+      aria-labelledby="gmBetaTitle">
+      <div class="gm-beta__tape">
+        <p class="gm-beta__title" id="gmBetaTitle">This page is beta
+          <small>Still in development &middot; content may change</small>
+        </p>
+      </div>
+      <button class="gm-beta__close" type="button" aria-label="Close the beta notice and continue to the page">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M4 4 20 20 M20 4 4 20" />
+        </svg>
+      </button>
+      <p class="gm-beta__hint" aria-hidden="true">Continue anyway</p>
+    </div>
+    <script>
+      (function () {
+        var el = document.getElementById('gmBeta');
+        var KEY = 'gm-beta:' + window.location.pathname;
+        var dismissed = false;
+        try { dismissed = sessionStorage.getItem(KEY) === '1'; } catch (e) {}
+        if (dismissed) { el.remove(); return; }
+        function close() {
+          try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+          el.remove();
+          document.removeEventListener('keydown', onKey);
+        }
+        function onKey(e) { if (e.key === 'Escape') close(); }
+        el.querySelector('.gm-beta__close').addEventListener('click', close);
+        document.addEventListener('keydown', onKey);
+        el.querySelector('.gm-beta__close').focus({ preventScroll: true });
+      })();
+    </script>
+  <header class="research-masthead">
+    <a href="/"><img src="/images/logo/mark-color.svg" width="32" height="32" alt="">Ghostmaxxing</a>
+    <a href="/docs/">Documentation</a>
+  </header>
+  <main class="research gm-prose" data-view="overview">
+    <header class="research-header">
+      <h1>Public Research</h1>
+      <p>Explore shared Local Fuzzer runs. Each submission describes one experiment on poses sampled from a local video.</p>
+      <a href="/docs/guides/localfuzzer.html">Run the Local Fuzzer</a>
+    </header>
+    <section aria-labelledby="overview-title">
+      <h2 id="overview-title">All public submissions</h2>
+      <dl id="research-totals" class="research-totals"></dl>
+    </section>
+    <section aria-labelledby="submissions-title">
+      <h2 id="submissions-title">Submissions</h2>
+      <form class="research-lookup" action="/research-submission.html" method="get">
+        <label for="submission-id">Open by submission ID</label>
+        <div>
+          <input id="submission-id" name="id" type="text" spellcheck="false" required>
+          <button type="submit">Open</button>
+        </div>
+      </form>
+      <ol id="research-submissions" class="research-submissions"></ol>
+      <button id="research-more" type="button" hidden>Load more submissions</button>
+    </section>
+    <p id="research-status" role="status"></p>
+    <noscript>Enable JavaScript to load public research results.</noscript>
+  </main>
+</body>
+</html>
